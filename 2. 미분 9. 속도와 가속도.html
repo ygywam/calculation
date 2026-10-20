@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ⅱ. 미분 - 09. 속도와 가속도 | Resonance Math Lab</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'Inter', 'Noto Sans KR', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        
+        /* KaTeX Overflow & Responsive Styling Fix */
+        .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            max-width: 100%;
+            padding: 4px 0;
+            margin: 0.5em 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .katex {
+            font-size: 1.05em;
+            max-width: 100%;
+        }
+
+        /* Range Slider Custom */
+        input[type=range] {
+            accent-color: #4f46e5;
+        }
+        
+        /* Smooth details animation */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* Floating Button Animation */
+        .floating-btn-hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            pointer-events: none;
+        }
+        .floating-btn-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+
+    <!-- Mobile Backdrop Overlay -->
+    <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+    <!-- Top Progress & Header (Fixed at Top) -->
+    <header class="fixed top-0 inset-x-0 z-40 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 h-16">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="메뉴 열기">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <a href="#" onclick="scrollToTop(event)" class="flex items-center gap-2.5 group">
+                    <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 group-hover:bg-indigo-600 group-hover:text-white transition">Ⅱ. 미분</span>
+                    <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                        09. 속도와 가속도
+                    </h1>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3 sm:gap-4">
+                <!-- View Mode Toggle (Scroll vs Tab) -->
+                <div class="hidden md:flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-bold">
+                    <button id="modeScrollBtn" onclick="setViewMode('scroll')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition">
+                        전체 스크롤
+                    </button>
+                    <button id="modeTabBtn" onclick="setViewMode('tab')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition">
+                        섹션별 탭
+                    </button>
+                </div>
+
+                <!-- Progress Indicator -->
+                <div class="hidden sm:flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <span>학습 완료율</span>
+                    <div class="w-24 h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 w-0 transition-all duration-300"></div>
+                    </div>
+                    <span id="progressText" class="font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+                </div>
+
+                <!-- Dark Mode Button -->
+                <button id="themeToggleBtn" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition" title="테마 전환">
+                    <i data-lucide="moon" class="w-5 h-5 dark:hidden text-slate-700"></i>
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-amber-400"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Fixed Left Sidebar Navigation (Always Pinned on Desktop) -->
+    <aside id="sidebar" class="fixed top-16 left-0 bottom-0 z-50 lg:z-30 w-72 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-5 overflow-y-auto flex flex-col justify-between">
+        <div class="space-y-5">
+            <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+                <span class="font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <i data-lucide="compass" class="w-4 h-4"></i> 단원 목차 이동
+                </span>
+                <button id="closeSidebarBtn" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Achievement Standard Card -->
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-md">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-1">
+                    <i data-lucide="target" class="w-4 h-4"></i> 성취기준 (p.101)
+                </div>
+                <p class="text-xs sm:text-sm font-medium leading-relaxed">
+                    미분을 속도와 가속도에 대한 문제에 활용하고, 그 유용성을 인식할 수 있다.
+                </p>
+            </div>
+
+            <!-- Navigation Links (With ScrollSpy & Active State) -->
+            <div class="space-y-1">
+                <div class="px-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
+                    <span>단원 섹션 바로가기</span>
+                    <span id="currentSecBadge" class="text-indigo-600 dark:text-indigo-400">1 / 5</span>
+                </div>
+                <nav class="space-y-1.5" id="navLinks">
+                    <a href="#sec-1" data-target="sec-1" onclick="navigateToSection(event, 'sec-1')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                        <span class="truncate">속도와 가속도의 뜻 (p.101)</span>
+                    </a>
+                    <a href="#sec-2" data-target="sec-2" onclick="navigateToSection(event, 'sec-2')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                        <span class="truncate">수직선 위의 운동 (p.102)</span>
+                    </a>
+                    <a href="#sec-3" data-target="sec-3" onclick="navigateToSection(event, 'sec-3')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                        <span class="truncate">실생활 응용 · 생각 넓히기</span>
+                    </a>
+                    <a href="#sec-4" data-target="sec-4" onclick="navigateToSection(event, 'sec-4')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+                        <span class="truncate">스스로 확인하기 (p.104)</span>
+                    </a>
+                    <a href="#sec-5" data-target="sec-5" onclick="navigateToSection(event, 'sec-5')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">5</span>
+                        <span class="truncate">수학으로 꿈꾸는 미래 (p.105)</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Quick Formula Summary Card -->
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
+                <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <i data-lucide="gauge" class="w-4 h-4 text-indigo-500"></i> 핵심 공식 요약
+                </div>
+                <ul class="space-y-2 text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <li>• <strong class="text-slate-800 dark:text-slate-200">속도 $v(t)$</strong>: 위치 $x=f(t)$의 도함수<br> $\implies v = \dfrac{dx}{dt} = f'(t)$</li>
+                    <li>• <strong class="text-slate-800 dark:text-slate-200">가속도 $a(t)$</strong>: 속도 $v$의 도함수<br> $\implies a = \dfrac{dv}{dt}$</li>
+                    <li>• <strong class="text-slate-800 dark:text-slate-200">속력</strong>: 속도의 절댓값 $|v|$</li>
+                    <li>• <strong class="text-slate-800 dark:text-slate-200">운동 방향 전환</strong> / <strong class="text-slate-800 dark:text-slate-200">최고 높이</strong> / <strong class="text-slate-800 dark:text-slate-200">정지</strong> 순간 $\implies \mathbf{v = 0}$</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sidebar Bottom Quick Scroll Top Button -->
+        <div class="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">
+            <button onclick="scrollToTop(event)" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-indigo-50 dark:bg-slate-800 dark:hover:bg-indigo-950/60 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs font-bold flex items-center justify-center gap-2 transition">
+                <i data-lucide="arrow-up-to-line" class="w-4 h-4"></i> 페이지 맨 처음으로 이동
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="pt-16 lg:pl-72 min-h-screen">
+        <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-12 pb-24">
+
+            <!-- ==========================================
+                 SECTION 1: 속도와 가속도는 어떻게 구할까? (p.101)
+                 ========================================== -->
+            <section id="sec-1" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 101쪽</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            1. 속도와 가속도는 어떻게 구할까?
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="1">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 생각 열기 (p.101) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 text-sm font-bold">
+                        <i data-lucide="car" class="w-4 h-4"></i> 생각 열기 (p.101)
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 space-y-3">
+                        <p class="text-slate-800 dark:text-slate-200 font-medium leading-relaxed">
+                            직선 도로 위를 달리는 어떤 자동차의 출발한 지 $t$초 후의 위치를 $x\text{ m}$라고 하면
+                            $$x = t^2 + 2t \quad (0 \le t \le 10)$$
+                            라고 한다.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-sm">
+                            <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                <span class="font-bold text-indigo-600 dark:text-indigo-400">활동 ①</span>
+                                $t = 1$에서 $t = 1 + \Delta t$까지 변할 때의 $x$의 <strong>평균변화율</strong>을 구해 보자.
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                <span class="font-bold text-indigo-600 dark:text-indigo-400">활동 ②</span>
+                                ①에서 $\Delta t \to 0$일 때, 이 평균변화율의 <strong>극한값</strong>을 구해 보자.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 생각 열기 Interactive Secant-to-Tangent & Car Simulator -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-2">
+                        <div class="lg:col-span-6 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-bold text-slate-500">위치 그래프 $x(t) = t^2 + 2t$ 와 평균속도 할선</span>
+                                <span id="introVelBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                                    평균속도 Δx/Δt = 5.50 m/s
+                                </span>
+                            </div>
+                            <div class="w-full h-64">
+                                <canvas id="canvasIntroCar" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-6 space-y-4">
+                            <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 space-y-3">
+                                <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm flex items-center gap-1.5">
+                                    <i data-lucide="sliders" class="w-4 h-4"></i> 시간 간격 $\Delta t \to 0$ 극한 실험실
+                                </h4>
+                                <p class="text-xs text-slate-600 dark:text-slate-400">
+                                    슬라이더를 왼쪽으로 움직여 $\Delta t$를 $0$에 가깝게 줄여보세요. 평균변화율(할선의 기울기)이 $t=1$에서의 순간속도(접선의 기울기)에 수렴합니다!
+                                </p>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span>시간 변화량 $\Delta t$: <span id="introDtVal" class="text-indigo-600 dark:text-indigo-400">1.50</span>초</span>
+                                        <button onclick="animateDtToZero()" class="text-xs px-2.5 py-0.5 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition">Δt → 0 자동 수렴</button>
+                                    </div>
+                                    <input type="range" id="introDtSlider" min="0.01" max="2.0" step="0.01" value="1.50" class="w-full">
+                                </div>
+                            </div>
+
+                            <!-- 수식 박스 넘침 완벽 해결: 2줄 분할 정렬 & overflow-x-auto 컨테이너 -->
+                            <div class="space-y-3 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                                <div>
+                                    <span class="font-bold text-indigo-600 dark:text-indigo-400 block mb-1">① 평균변화율 (평균속도):</span>
+                                    <div class="overflow-x-auto max-w-full py-1">
+                                        $$
+                                        \begin{aligned}
+                                        \frac{\Delta x}{\Delta t} &= \frac{\{(1+\Delta t)^2 + 2(1+\Delta t)\} - (1^2 + 2\cdot 1)}{\Delta t} \\
+                                        &= \frac{4\Delta t + (\Delta t)^2}{\Delta t} = \mathbf{4 + \Delta t}
+                                        \end{aligned}
+                                        $$
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400 block mb-1">② $\Delta t \to 0$일 때의 극한값 ($t=1$에서의 순간속도):</span>
+                                    <div class="overflow-x-auto max-w-full py-1">
+                                        $$
+                                        \lim_{\Delta t \to 0} \frac{\Delta x}{\Delta t} = \lim_{\Delta t \to 0} (4 + \Delta t) = \mathbf{4\text{ (m/s)}}
+                                        $$
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 개념 정리: 속도와 가속도 (p.101) -->
+                <div class="bg-gradient-to-br from-indigo-50 to-white dark:from-slate-900 dark:to-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">개념</div>
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">수직선 위를 움직이는 점의 속도와 가속도 (p.101)</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2 overflow-hidden">
+                            <span class="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold">1. 평균속도</span>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                시각 $t$에서 $t+\Delta t$까지 변할 때의 위치 $x=f(t)$의 평균변화율:
+                            </p>
+                            <div class="font-bold text-center py-2 bg-slate-50 dark:bg-slate-900 rounded-xl overflow-x-auto">
+                                $\dfrac{\Delta x}{\Delta t} = \dfrac{f(t+\Delta t)-f(t)}{\Delta t}$
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-indigo-200 dark:border-indigo-900 space-y-2 overflow-hidden">
+                            <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 text-xs font-bold">2. 순간속도 (속도 $v$)와 속력</span>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                시각 $t$에서의 위치 $x=f(t)$의 순간변화율:
+                            </p>
+                            <div class="font-bold text-center py-2 bg-indigo-50/70 dark:bg-indigo-950/50 rounded-xl text-indigo-700 dark:text-indigo-300 overflow-x-auto">
+                                $v = \lim_{\Delta t \to 0}\dfrac{\Delta x}{\Delta t} = \dfrac{dx}{dt} = f'(t)$
+                            </div>
+                            <p class="text-[11px] text-slate-500">※ 속도의 절댓값 $|v|$를 시각 $t$에서의 <strong>속력</strong>이라고 한다.</p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-emerald-200 dark:border-emerald-900 space-y-2 overflow-hidden">
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-bold">3. 가속도 ($a$)</span>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                속도 $v$의 시각 $t$에서의 순간변화율:
+                            </p>
+                            <div class="font-bold text-center py-2 bg-emerald-50/70 dark:bg-emerald-950/50 rounded-xl text-emerald-700 dark:text-emerald-300 overflow-x-auto">
+                                $a = \lim_{\Delta t \to 0}\dfrac{\Delta v}{\Delta t} = \dfrac{dv}{dt}$
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Differentiation Flow Diagram -->
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-indigo-100 dark:border-slate-800">
+                        <div class="text-xs font-bold text-center text-slate-400 uppercase tracking-wider mb-3">미분과 위치 · 속도 · 가속도의 관계</div>
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-center">
+                            <div class="px-5 py-3 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-extrabold text-slate-800 dark:text-slate-200">
+                                위치 $x = f(t)$
+                            </div>
+                            <div class="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-bold text-xs">
+                                <span>$t$에 대하여 미분</span>
+                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            </div>
+                            <div class="px-5 py-3 rounded-2xl bg-indigo-600 text-white font-extrabold shadow-md">
+                                속도 $v = \dfrac{dx}{dt} = f'(t)$
+                            </div>
+                            <div class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                                <span>$t$에 대하여 미분</span>
+                                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                            </div>
+                            <div class="px-5 py-3 rounded-2xl bg-emerald-600 text-white font-extrabold shadow-md">
+                                가속도 $a = \dfrac{dv}{dt}$
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 2: 수직선 위를 움직이는 점의 속도와 가속도 (p.102)
+                 ========================================== -->
+            <section id="sec-2" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 102쪽</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            2. 수직선 위를 움직이는 점의 운동과 방향
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="2">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 참고: 운동 방향과 속도의 부호 (p.102 상단) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold">참고 · 핵심 원리</span>
+                        <h3 class="text-lg font-bold">속도 $v = f'(t)$의 부호와 점 $P$의 운동 방향 (p.102)</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div class="p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/60 space-y-1.5">
+                            <div class="font-extrabold text-sky-700 dark:text-sky-300 flex items-center gap-1.5">
+                                <i data-lucide="arrow-right-circle" class="w-4 h-4"></i> (i) $v > 0$일 때
+                            </div>
+                            <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                                위치 $f(t)$가 증가하므로 점 $P$는 <strong>양($+$)의 방향(오른쪽)</strong>으로 움직인다.
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/60 space-y-1.5">
+                            <div class="font-extrabold text-rose-700 dark:text-rose-300 flex items-center gap-1.5">
+                                <i data-lucide="arrow-left-circle" class="w-4 h-4"></i> (ii) $v < 0$일 때
+                            </div>
+                            <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                                위치 $f(t)$가 감소하므로 점 $P$는 <strong>음($-$)의 방향(왼쪽)</strong>으로 움직인다.
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 space-y-1.5">
+                            <div class="font-extrabold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i> 운동 방향을 바꾸는 순간
+                            </div>
+                            <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                                점 $P$가 운동 방향을 바꾸는 순간의 <strong>속도는 $v = 0$</strong>이고, 그 시각 좌우에서 $v$의 부호가 바뀐다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 통합 인터랙티브 수직선 운동 실험실 (예제 1 & 문제 1 연동) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold uppercase">Interactive Lab</span>
+                            <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">수직선 위의 점 $P$ 운동 시뮬레이터 (예제 1 & 문제 1)</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="btnModeEx1" onclick="setLineLabMode('ex1')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition">
+                                예제 1: $x = t^2 - 6t$
+                            </button>
+                            <button id="btnModeProb1" onclick="setLineLabMode('prob1')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition">
+                                문제 1: $x = \frac{1}{3}t^3 - 2t^2$
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Number Line + Real-time Telemetry -->
+                    <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                    시각 $t = $ <span id="labTVal" class="text-indigo-600 dark:text-indigo-400">1.00</span>초
+                                </span>
+                                <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                    위치 $x = $ <span id="labXVal" class="text-slate-900 dark:text-white">-5.00</span>
+                                </span>
+                                <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                    속도 $v = $ <span id="labVVal" class="text-rose-600">-4.00</span>
+                                </span>
+                                <span class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                    가속도 $a = $ <span id="labAVal" class="text-emerald-600">2.00</span>
+                                </span>
+                            </div>
+                            <span id="labDirBadge" class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                                음(-)의 방향으로 이동 중 (v &lt; 0)
+                            </span>
+                        </div>
+
+                        <!-- 1D Number Line Motion Canvas -->
+                        <div class="w-full h-28">
+                            <canvas id="canvasNumberLine" class="w-full h-full"></canvas>
+                        </div>
+
+                        <!-- Slider & Play Controls -->
+                        <div class="flex items-center gap-3 pt-1">
+                            <button id="playLineLabBtn" onclick="toggleLineLabPlay()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition">
+                                <i data-lucide="play" class="w-4 h-4"></i> <span>운동 재생</span>
+                            </button>
+                            <input type="range" id="lineLabTSlider" min="0" max="6" step="0.05" value="1" class="w-full">
+                            <div class="flex gap-1.5 shrink-0 text-[11px]">
+                                <button onclick="setLineLabT(1)" class="px-2 py-1 rounded bg-slate-200 dark:bg-slate-800 font-bold hover:bg-indigo-100">t=1</button>
+                                <button onclick="setLineLabT(3)" class="px-2 py-1 rounded bg-amber-100 text-amber-800 font-bold hover:bg-amber-200">t=3</button>
+                                <button onclick="setLineLabT(4)" class="px-2 py-1 rounded bg-amber-100 text-amber-800 font-bold hover:bg-amber-200">t=4</button>
+                                <button onclick="setLineLabT(5)" class="px-2 py-1 rounded bg-slate-200 dark:bg-slate-800 font-bold hover:bg-indigo-100">t=5</button>
+                            </div>
+                        </div>
+
+                        <!-- Position x(t) & Velocity v(t) Graph Canvas -->
+                        <div class="w-full h-56 pt-2 border-t border-slate-200 dark:border-slate-800">
+                            <canvas id="canvasLineGraphs" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 예제 1 & 문제 1 나란히 학습 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+                        <!-- 예제 1 (p.102) -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">예제 1 (p.102)</span>
+                                <button onclick="setLineLabMode('ex1'); setLineLabT(3);" class="text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline">시뮬레이터에서 t=3 보기 →</button>
+                            </div>
+                            <p class="text-sm font-medium">
+                                원점을 출발하여 수직선 위를 움직이는 점 $P$의 시각 $t$에서의 위치가 $x = t^2 - 6t$일 때, 다음을 구하시오.
+                            </p>
+                            <div class="space-y-3 text-xs sm:text-sm leading-relaxed bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                                <div>
+                                    <p class="font-bold text-slate-900 dark:text-white">(1) 점 $P$의 $t=1$에서의 속도와 가속도</p>
+                                    <p class="text-slate-600 dark:text-slate-400 mt-1">
+                                        $v = \dfrac{dx}{dt} = 2t - 6$, $\quad a = \dfrac{dv}{dt} = 2$<br>
+                                        따라서 $t=1$일 때 <strong>속도 $v = 2(1)-6 = -4$</strong>, <strong>가속도 $a = 2$</strong>이다.
+                                    </p>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                    <p class="font-bold text-slate-900 dark:text-white">(2) 점 $P$가 운동 방향을 바꿀 때의 시각</p>
+                                    <p class="text-slate-600 dark:text-slate-400 mt-1">
+                                        운동 방향을 바꾸는 순간 $v = 2t - 6 = 0$에서 $\mathbf{t = 3}$이다.<br>
+                                        ($0 < t < 3$이면 $v < 0$, $t > 3$이면 $v > 0$이므로 부호가 바뀜)
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 문제 1 (p.102) -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold">문제 1 (p.102)</span>
+                                <button onclick="setLineLabMode('prob1'); setLineLabT(4);" class="text-xs text-emerald-600 dark:text-emerald-400 font-bold hover:underline">시뮬레이터에서 t=4 보기 →</button>
+                            </div>
+                            <p class="text-sm font-medium">
+                                원점을 출발하여 수직선 위를 움직이는 점 $P$의 시각 $t$에서의 위치가 $x = \dfrac{1}{3}t^3 - 2t^2$일 때, 다음을 구하시오.
+                            </p>
+
+                            <div class="space-y-3 text-xs sm:text-sm bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                                <div class="space-y-2">
+                                    <p class="font-bold">(1) 점 $P$의 $t=5$에서의 속도와 가속도</p>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span>속도:</span>
+                                        <input type="number" id="p1_v" placeholder="v(5)" class="w-20 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                                        <span>가속도:</span>
+                                        <input type="number" id="p1_a" placeholder="a(5)" class="w-20 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                                    </div>
+                                </div>
+                                <div class="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                                    <p class="font-bold">(2) 점 $P$가 운동 방향을 바꿀 때의 시각</p>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span>시각 $t = $</span>
+                                        <input type="number" id="p1_t" placeholder="시각" class="w-20 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                                        <button onclick="checkProb1()" class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition">정답 확인</button>
+                                    </div>
+                                </div>
+                                <div id="fbProb1" class="text-xs font-bold hidden"></div>
+                                <details class="text-xs text-slate-500 pt-1">
+                                    <summary class="cursor-pointer font-bold text-indigo-600">풀이 및 정답 보기</summary>
+                                    <div class="mt-1.5 space-y-1">
+                                        <p>• $v = \dfrac{dx}{dt} = t^2 - 4t$, $\quad a = \dfrac{dv}{dt} = 2t - 4$</p>
+                                        <p>• (1) $t=5$일 때 <strong>속도 $v = 25 - 20 = 5$</strong>, <strong>가속도 $a = 10 - 4 = 6$</strong></p>
+                                        <p>• (2) $v = t(t-4) = 0$에서 출발 후($t>0$) 운동 방향을 바꾸는 시각은 $\mathbf{t = 4}$이다.</p>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 3: 속도와 가속도 응용하기 & 생각 넓히기 (p.103)
+                 ========================================== -->
+            <section id="sec-3" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 103쪽</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            3. 속도와 가속도의 응용 & 생각 넓히기
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="3">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 예제 2: 물 로켓 발사 시뮬레이터 (p.103) - 애니메이션 버그 완전 개선 -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">예제 2</span>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">속도와 가속도 응용하기 — 물 로켓 수직 발사 (p.103)</h3>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 font-medium text-slate-900 dark:text-slate-100">
+                        지면에서 $20\text{ m/s}$의 속도로 지면과 수직인 방향으로 쏘아 올린 물 로켓의 $t$초 후의 높이가 $x = -5t^2 + 20t\text{ (m)}$일 때, 다음을 구하시오.<br>
+                        <span class="text-sm text-slate-600 dark:text-slate-400">(1) 물 로켓이 최고 높이에 도달할 때까지 걸린 시간과 그때의 높이 &nbsp;|&nbsp; (2) 물 로켓이 지면에 떨어지는 순간의 속도</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        <!-- Rocket Simulation Canvas -->
+                        <div class="lg:col-span-7 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+                                <span>물 로켓 수직 궤적 & 높이 그래프 $x(t) = -5t^2 + 20t$</span>
+                                <span id="rocketBadge" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
+                                    t = 2.00초 | 높이 x = 20.0m (최고 높이 도달! v = 0)
+                                </span>
+                            </div>
+
+                            <div class="w-full h-64">
+                                <canvas id="canvasRocket" class="w-full h-full"></canvas>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2 pt-1">
+                                <button id="rocketPlayBtn" onclick="toggleRocketPlay()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition shadow-sm">
+                                    <i data-lucide="rocket" class="w-4 h-4"></i> <span id="rocketPlayBtnText">로켓 발사</span>
+                                </button>
+                                <input type="range" id="rocketTSlider" min="0" max="4" step="0.02" value="2" class="flex-1 min-w-[120px]">
+                                <div class="flex items-center gap-1 shrink-0 text-xs font-bold">
+                                    <button onclick="setRocketT(0)" class="px-2.5 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 transition">처음(0s)</button>
+                                    <button onclick="setRocketT(2)" class="px-2.5 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 hover:bg-emerald-200 transition">최고점(2s)</button>
+                                    <button onclick="setRocketT(4)" class="px-2.5 py-1.5 rounded-lg bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 hover:bg-rose-200 transition">착지(4s)</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step-by-step Solution -->
+                        <div class="lg:col-span-5 space-y-4 text-sm leading-relaxed">
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">(1) 최고 높이에 도달할 때까지 걸린 시간과 높이</div>
+                                <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                                    $t$초 후의 속도는 $v = \dfrac{dx}{dt} = -10t + 20$이다.<br>
+                                    <strong>최고 높이에서의 속도는 $0\text{ m/s}$</strong>이므로<br>
+                                    $v = -10t + 20 = 0$에서 $\mathbf{t = 2\text{ (초)}}$<br>
+                                    그때의 높이는 $x = -5\times 2^2 + 20\times 2 = \mathbf{20\text{ (m)}}$
+                                </p>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <div class="font-bold text-rose-600 dark:text-rose-400">(2) 지면에 떨어지는 순간의 속도</div>
+                                <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                                    <strong>지면에 떨어지는 순간의 높이는 $0\text{ m}$</strong>이므로<br>
+                                    $x = -5t^2 + 20t = -5t(t-4) = 0$에서 $t > 0$이므로 $\mathbf{t = 4\text{ (초)}}$<br>
+                                    따라서 지면에 떨어지는 순간의 속도는<br>
+                                    $v = -10\times 4 + 20 = \mathbf{-20\text{ (m/s)}}$
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 문제 2: 모형 기차의 제동 거리 (p.103) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-sm font-bold">문제 2</span>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">모형 기차의 제동 거리와 정지 시간 (p.103)</h3>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 text-sm sm:text-base font-medium">
+                        어느 모형 전시회에서 철길을 따라 모형 기차가 달리고 있다. 모형 기차가 정차하기 위하여 제동을 건 후 $t$초 동안 움직인 거리 $x\text{ cm}$가
+                        $$x = -\frac{5}{2}t^2 + 15t$$
+                        일 때, 다음을 구하시오.
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="font-bold text-sm">(1) 모형 기차가 제동을 건 후 $1$초가 지났을 때의 속도</div>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="ansP2_1" placeholder="속도 (cm/s)" class="w-36 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-bold">
+                                <span class="text-sm">$\text{cm/s}$</span>
+                                <button onclick="checkSimpleAns('ansP2_1', [10], 'fbP2_1', '정답입니다! v = -5t + 15에서 t=1일 때 10 cm/s 입니다.')" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">확인</button>
+                            </div>
+                            <div id="fbP2_1" class="text-xs font-bold hidden"></div>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="font-bold text-sm">(2) 제동을 건 후 정지할 때까지 걸린 시간과 움직인 거리</div>
+                            <div class="flex flex-wrap items-center gap-2 text-sm">
+                                <span>시간:</span>
+                                <input type="number" id="ansP2_2t" placeholder="초" class="w-20 px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                <span>초, 거리:</span>
+                                <input type="text" id="ansP2_2x" placeholder="22.5 또는 45/2" class="w-28 px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                <span>$\text{cm}$</span>
+                                <button onclick="checkProb2Train()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">확인</button>
+                            </div>
+                            <div id="fbP2_2" class="text-xs font-bold hidden"></div>
+                        </div>
+                    </div>
+
+                    <details class="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <summary class="cursor-pointer font-bold text-indigo-600 dark:text-indigo-400">문제 2 상세 풀이 보기</summary>
+                        <div class="mt-2 space-y-1.5 leading-relaxed">
+                            <p>• 시각 $t$에서의 속도는 $v = \dfrac{dx}{dt} = -5t + 15$이다.</p>
+                            <p>• (1) $t = 1$일 때의 속도는 $v = -5(1) + 15 = \mathbf{10\text{ (cm/s)}}$이다.</p>
+                            <p>• (2) 모형 기차가 <strong>정지하는 순간의 속도는 $0$</strong>이므로 $v = -5t + 15 = 0 \implies \mathbf{t = 3\text{ (초)}}$이다.<br>
+                            이때까지 움직인 거리는 $x = -\dfrac{5}{2}\times 3^2 + 15\times 3 = -\dfrac{45}{2} + 45 = \mathbf{\dfrac{45}{2}\text{ cm (또는 } 22.5\text{ cm)}}$이다.</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 생각 넓히기: 위치 그래프 x=f(t) 해석하기 (p.103 하단) -->
+                <div class="bg-gradient-to-br from-amber-50/90 via-white to-indigo-50/60 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700/60 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500 text-white text-sm font-extrabold">
+                            <i data-lucide="message-square-warning" class="w-4 h-4"></i> 생각 넓히기 (추론 · 의사소통 | p.103)
+                        </div>
+                        <span class="text-xs font-bold text-amber-800 dark:text-amber-300">위치 그래프 $x=f(t)$와 속도 그래프 $v=f'(t)$를 혼동하지 마세요!</span>
+                    </div>
+
+                    <p class="text-slate-800 dark:text-slate-200 font-medium">
+                        원점을 출발하여 수직선 위를 움직이는 점 $P$의 시각 $t$에서의 <strong>위치 $x=f(t)$의 그래프</strong>에 대한 세 학생(민우, 수연, 준혁)의 말에서 <strong>잘못 말한 학생</strong>을 찾고 바르게 고쳐 보자.
+                    </p>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <!-- Interactive Canvas of Textbook Graph x = f(t) -->
+                        <div class="lg:col-span-6 bg-white dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="flex items-center justify-between text-xs font-bold">
+                                <span>교과서 위치 그래프 $x = f(t)$ ($0 \le t \le 6$)</span>
+                                <span id="thinkGraphInfo" class="text-indigo-600 dark:text-indigo-400">슬라이더로 각 시각을 확인하세요!</span>
+                            </div>
+                            <div class="w-full h-60">
+                                <canvas id="canvasThinkGraph" class="w-full h-full"></canvas>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold shrink-0">시각 $t$:</span>
+                                <input type="range" id="thinkTSlider" min="0" max="6" step="0.1" value="3" class="w-full">
+                                <div class="flex gap-1 shrink-0 text-[11px]">
+                                    <button onclick="setThinkT(1)" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 font-bold">t=1</button>
+                                    <button onclick="setThinkT(3)" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 font-bold">t=3</button>
+                                    <button onclick="setThinkT(5)" class="px-2 py-1 rounded bg-amber-100 text-amber-800 font-bold">t=5</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3 Students Cards Interactive Check -->
+                        <div class="lg:col-span-6 space-y-3.5">
+                            <!-- 민우 -->
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-sm text-sky-700 dark:text-sky-400">👦 민우의 말</span>
+                                    <div class="flex gap-1.5">
+                                        <button onclick="checkStudent(1, true)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100">옳음 (O)</button>
+                                        <button onclick="checkStudent(1, false)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-rose-100">틀림 (X)</button>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-medium">"<strong>$t = 1$일 때 점 $P$의 속도는 $0$이야.</strong>"</p>
+                                <div id="fbStu1" class="text-xs font-semibold hidden pt-1"></div>
+                            </div>
+
+                            <!-- 수연 -->
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-sm text-indigo-700 dark:text-indigo-400">👧 수연의 말</span>
+                                    <div class="flex gap-1.5">
+                                        <button onclick="checkStudent(2, true)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100">옳음 (O)</button>
+                                        <button onclick="checkStudent(2, false)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-rose-100">틀림 (X)</button>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-medium">"<strong>$0 < t < 6$에서 점 $P$의 운동 방향은 총 $3$번 바뀌었어.</strong>"</p>
+                                <div id="fbStu2" class="text-xs font-semibold hidden pt-1"></div>
+                            </div>
+
+                            <!-- 준혁 -->
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-sm text-rose-700 dark:text-rose-400">👦 준혁의 말</span>
+                                    <div class="flex gap-1.5">
+                                        <button onclick="checkStudent(3, false)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100">옳음 (O)</button>
+                                        <button onclick="checkStudent(3, true)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-rose-100">틀림 (X)</button>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-medium">"<strong>$0 < t < 6$에서 출발 지점으로부터 가장 멀리 떨어져 있는 순간은 $t = 3$일 때야.</strong>"</p>
+                                <div id="fbStu3" class="text-xs font-semibold hidden pt-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 4: 스스로 확인하기 (교과서 104쪽 6문항)
+                 ========================================== -->
+            <section id="sec-4" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 104쪽</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            4. 스스로 확인하기 (전 문항 인터랙티브 워크북)
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="4">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 문항 01: 학습 목표 되새기기 -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">01</span>
+                        <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">학습 목표 되새기기</span>
+                    </div>
+                    <p class="text-sm">수직선 위를 움직이는 점 $P$의 시각 $t$에서의 위치 $x$가 $x=f(t)$일 때, 시각 $t$에서의 점 $P$의 속도 $v$와 가속도 $a$는:</p>
+                    <div class="flex flex-wrap items-center gap-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-bold">
+                        <div class="flex items-center gap-2">
+                            <span>(1) $v = \dfrac{d}{dt}($</span>
+                            <input type="text" id="sc1_1" placeholder="?" class="w-12 px-2 py-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-center">
+                            <span>$) = f'(t)$</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span>(2) $a = \dfrac{d}{dt}($</span>
+                            <input type="text" id="sc1_2" placeholder="?" class="w-12 px-2 py-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-center">
+                            <span>$)$</span>
+                        </div>
+                        <button onclick="checkSC1()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">확인</button>
+                    </div>
+                    <div id="fbSC1" class="text-xs font-bold hidden"></div>
+                </div>
+
+                <!-- 문항 02 & 03 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 02 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">02</span>
+                            <h3 class="font-bold">시각 $t=1$에서의 속도와 가속도</h3>
+                        </div>
+                        <p class="text-sm text-slate-700 dark:text-slate-300">
+                            원점을 출발하여 수직선 위를 움직이는 점 $P$의 시각 $t$에서의 위치 $x$가 $x = 4t^3 - t^2$일 때, 다음을 구하시오.
+                        </p>
+                        <div class="space-y-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm">
+                            <div class="flex items-center justify-between">
+                                <span>(1) 점 $P$의 $t=1$에서의 속도:</span>
+                                <input type="number" id="sc2_v" class="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center" placeholder="속도">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>(2) 점 $P$의 $t=1$에서의 가속도:</span>
+                                <input type="number" id="sc2_a" class="w-24 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center" placeholder="가속도">
+                            </div>
+                            <button onclick="checkSC2()" class="w-full py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">정답 확인</button>
+                            <div id="fbSC2" class="text-xs font-bold hidden"></div>
+                        </div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">풀이 보기</summary>
+                            <p class="mt-1">$v = \dfrac{dx}{dt} = 12t^2 - 2t$, $a = \dfrac{dv}{dt} = 24t - 2$이므로 $t=1$을 대입하면 속도 $v = 10$, 가속도 $a = 22$이다.</p>
+                        </details>
+                    </div>
+
+                    <!-- 03 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">03</span>
+                            <h3 class="font-bold">처음으로 운동 방향을 바꾸는 순간의 위치</h3>
+                        </div>
+                        <p class="text-sm text-slate-700 dark:text-slate-300">
+                            원점을 출발하여 수직선 위를 움직이는 점 $P$의 시각 $t$에서의 위치가
+                            $$x = \frac{1}{3}t^3 - 3t^2 + 8t$$
+                            일 때, 점 $P$가 출발 후 <strong>처음으로 운동 방향을 바꾸는 순간의 위치</strong>를 구하시오.
+                        </p>
+                        <div class="flex items-center gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm">
+                            <span class="font-bold">위치 $x = $</span>
+                            <input type="text" id="sc3_ans" placeholder="예: 20/3" class="w-32 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                            <button onclick="checkSC3()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">정답 확인</button>
+                        </div>
+                        <div id="fbSC3" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">풀이 보기</summary>
+                            <p class="mt-1">$v = \dfrac{dx}{dt} = t^2 - 6t + 8 = (t-2)(t-4) = 0$에서 운동 방향을 바꾸는 시각은 $t=2, 4$이다. 처음으로 바꾸는 시각은 $t=2$이므로 이때의 위치는 $x = \dfrac{8}{3} - 12 + 16 = \mathbf{\dfrac{20}{3}}$이다.</p>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 문항 04 & 05 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 04 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">04</span>
+                            <h3 class="font-bold">제동 거리가 주어졌을 때 미지수 구하기</h3>
+                        </div>
+                        <p class="text-sm text-slate-700 dark:text-slate-300">
+                            직선 도로 위를 달리는 어떤 자동차가 제동이 걸린 후 $t$초 동안 움직인 거리가 $x = -20t^2 + kt$이다. 제동이 걸린 후 이 자동차가 정지할 때까지 움직인 거리가 $45\text{ m}$일 때, <strong>양수 $k$의 값</strong>을 구하시오.
+                        </p>
+                        <div class="flex items-center gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm">
+                            <span class="font-bold">양수 $k = $</span>
+                            <input type="number" id="sc4_ans" placeholder="값 입력" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                            <button onclick="checkSimpleAns('sc4_ans', [60], 'fbSC4', '정답입니다! 정지 시각 t = k/40 을 대입하면 k²/80 = 45 ⟹ k = 60 입니다.')" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">정답 확인</button>
+                        </div>
+                        <div id="fbSC4" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">풀이 보기</summary>
+                            <p class="mt-1">정지할 때 $v = \dfrac{dx}{dt} = -40t + k = 0 \implies t = \dfrac{k}{40}$. 이때까지 움직인 거리가 $45\text{ m}$이므로 $-20\left(\dfrac{k}{40}\right)^2 + k\left(\dfrac{k}{40}\right) = \dfrac{k^2}{80} = 45 \implies k^2 = 3600$. $k>0$이므로 $\mathbf{k = 60}$이다.</p>
+                        </details>
+                    </div>
+
+                    <!-- 05 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">05</span>
+                            <h3 class="font-bold">두 점 $P, Q$가 서로 반대 방향으로 움직일 조건</h3>
+                        </div>
+                        <p class="text-sm text-slate-700 dark:text-slate-300">
+                            원점을 출발하여 수직선 위를 움직이는 두 점 $P, Q$의 시각 $t$에서의 위치가 각각 $f(t) = 2t^2 - 4t$, $g(t) = t^2 - 6t$일 때, 두 점 $P, Q$가 <strong>서로 반대 방향</strong>으로 움직이는 $t$의 값의 범위를 구하시오.
+                        </p>
+                        <div class="flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm">
+                            <input type="number" id="sc5_low" placeholder="?" class="w-16 px-2 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                            <span class="font-bold">$&lt; t &lt;$</span>
+                            <input type="number" id="sc5_high" placeholder="?" class="w-16 px-2 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                            <button onclick="checkSC5()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">정답 확인</button>
+                        </div>
+                        <div id="fbSC5" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">풀이 보기</summary>
+                            <p class="mt-1">점 $P$의 속도는 $v_P = f'(t) = 4t - 4$, 점 $Q$의 속도는 $v_Q = g'(t) = 2t - 6$이다. 서로 반대 방향으로 움직이려면 <strong>두 속도의 부호가 반대($v_P \cdot v_Q < 0$)</strong>여야 하므로 $(4t-4)(2t-6) < 0 \implies \mathbf{1 < t < 3}$이다.</p>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 문항 06: 생각을 키우는 문제 (스카이다이버) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">06</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold">생각을 키우는 문제</span>
+                        <h3 class="font-bold text-slate-900 dark:text-white">스카이다이버의 자유 낙하 속도 (p.104)</h3>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 font-medium">
+                        어떤 스카이다이버가 지상 $4180\text{ m}$ 높이에서 뛰어내려 낙하산을 펼치기 전까지 자유 낙하를 할 때, 뛰어내린 지 $t$초 후의 높이 $h\text{ m}$가
+                        $$h = 4180 - 5t^2$$
+                        이라고 한다. 다음 물음에 답하시오.
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-6 space-y-4 text-sm">
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">(1) 뛰어내린 지 $2$초 후의 속도를 구하시오.</div>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="sc6_1" placeholder="속도 입력" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                    <span>$\text{m/s}$</span>
+                                    <button onclick="checkSimpleAns('sc6_1', [-20], 'fbSC6_1', '정답입니다! v = dh/dt = -10t 에서 t=2일 때 -20 m/s 입니다.')" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">확인</button>
+                                </div>
+                                <div id="fbSC6_1" class="text-xs font-bold hidden"></div>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">(2) 지상 $800\text{ m}$에서 낙하산을 펼치는 순간의 스카이다이버의 속도를 구하시오.</div>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="sc6_2" placeholder="속도 입력" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                    <span>$\text{m/s}$</span>
+                                    <button onclick="checkSimpleAns('sc6_2', [-260], 'fbSC6_2', '정답입니다! 4180 - 5t² = 800 ⟹ t² = 676 ⟹ t = 26초이므로 v(26) = -260 m/s 입니다.')" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">확인</button>
+                                </div>
+                                <div id="fbSC6_2" class="text-xs font-bold hidden"></div>
+                            </div>
+
+                            <details class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                                <summary class="cursor-pointer font-bold text-indigo-600">상세 풀이 보기</summary>
+                                <div class="mt-2 space-y-1">
+                                    <p>• 시각 $t$에서의 속도는 $v = \dfrac{dh}{dt} = -10t$이다.</p>
+                                    <p>• (1) $t=2$일 때 $v = -10\times 2 = \mathbf{-20\text{ (m/s)}}$</p>
+                                    <p>• (2) $h = 4180 - 5t^2 = 800$에서 $5t^2 = 3380 \implies t^2 = 676$. $t > 0$이므로 $t = 26$초이다. 따라서 $t=26$일 때의 속도는 $v = -10\times 26 = \mathbf{-260\text{ (m/s)}}$이다.</p>
+                                </div>
+                            </details>
+                        </div>
+
+                        <!-- Skydiver Visualization Canvas -->
+                        <div class="lg:col-span-6 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+                            <div class="flex justify-between items-center text-xs font-bold">
+                                <span>스카이다이버 고도 $h(t) = 4180 - 5t^2$ 시뮬레이션</span>
+                                <span id="skydiverInfo" class="text-indigo-600">t = 26초 (h = 800m, v = -260m/s)</span>
+                            </div>
+                            <input type="range" id="skydiverSlider" min="0" max="28" step="1" value="26" class="w-full">
+                            <div class="w-full h-56">
+                                <canvas id="canvasSkydiver" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 5: 수학으로 꿈꾸는 미래 - 로봇 공학자 (p.105)
+                 ========================================== -->
+            <section id="sec-5" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 105쪽 · 수학으로 꿈꾸는 미래 (진로)</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            5. 로봇을 만들고 관리하는 로봇 공학자
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="5">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- Career Reading & Interactive Robot Trajectory Control -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-full bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 text-xs font-bold flex items-center gap-1">
+                            <i data-lucide="bot" class="w-4 h-4"></i> 진로와 수학
+                        </span>
+                        <h3 class="text-lg font-bold">로봇의 정밀 동작 제어에 활용되는 미분 (위치 · 속도 · 가속도)</h3>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 text-sm sm:text-base leading-relaxed space-y-3 text-slate-700 dark:text-slate-300">
+                        <p>
+                            버튼만 누르면 로봇이 집안 전체를 청소하고 식당에서는 로봇이 음식을 고객에게 전달해 준다. 또, 의료 분야에서는 로봇이 의사의 수술을 도와주거나 더 세밀한 부위를 수술할 수 있게 하고 환자의 옆에서 재활을 돕는다. 이러한 로봇에 대하여 연구하고 개발, 제작 그리고 유지와 관리를 하는 직업이 바로 <strong>로봇 공학자</strong>이다.
+                        </p>
+                        <p class="font-semibold text-indigo-700 dark:text-indigo-300">
+                            우리가 원하는 대로 로봇이 움직이게 하기 위해서는 로봇 동작의 제어가 필수적인데, 이러한 로봇의 동작을 모델링할 때 미분을 이용한다. 또, 로봇의 동작을 예측하여 로봇 제어에 활용하기 위해서는 로봇의 위치와 속도, 가속도의 관계를 알아야 하므로 이를 연구하는 과정에서도 미분이 이용된다.
+                        </p>
+                    </div>
+
+                    <!-- Q&A Cards from p.105 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+                        <div class="p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 space-y-2">
+                            <div class="font-extrabold text-indigo-700 dark:text-indigo-300">Q. 로봇 공학자는 어떤 일을 하나요?</div>
+                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                각 분야에 필요한 로봇에 대한 연구와 그 로봇을 개발하여 제작하는 업무를 합니다. 그리고 제작된 로봇이 잘 작동하도록 유지와 관리를 합니다.
+                            </p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900 space-y-2">
+                            <div class="font-extrabold text-emerald-700 dark:text-emerald-300">Q. 개발된 로봇에는 어떠한 것들이 있나요?</div>
+                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                교육·청소·이동에 활용되는 <strong>서비스 로봇</strong>, 제조·용접·건설 현장의 <strong>산업용 로봇</strong>, 재활과 안전을 돕는 <strong>웨어러블 로봇</strong> 및 <strong>의료 수술 로봇</strong> 등이 있습니다.
+                            </p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-amber-50/50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900 space-y-2">
+                            <div class="font-extrabold text-amber-700 dark:text-amber-300">Q. 어떤 것을 공부해야 하나요?</div>
+                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                로봇의 설계, 운영, 제어를 위한 <strong>수학(미적분·선형대수) 및 과학 지식</strong>이 필수적입니다. 대학에서 전기, 전자, 기계, 제어계측, 컴퓨터공학 등을 전공하면 도움이 됩니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Robot Arm Smooth Trajectory Simulator -->
+                    <div class="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 rounded-lg bg-violet-600 text-white text-xs font-bold">진로 체험 시뮬레이터</span>
+                                <h4 class="font-bold text-sm sm:text-base">의료·서빙 로봇의 부드러운 출발과 정지 궤적 설계 ($x(t) = -2t^3 + 3t^2$)</h4>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-400">
+                            로봇이 음식을 나르거나 정밀 수술을 할 때 급출발·급정거를 피하려면 출발($t=0$)과 도착($t=1$) 순간의 <strong>속도 $v(t)=0$</strong>이 되도록 삼차함수 궤적을 설계합니다. 슬라이더를 움직여 로봇 팔의 각도와 속도 변화를 관찰해 보세요!
+                        </p>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="lg:col-span-6 w-full h-56">
+                                <canvas id="canvasRobotArm" class="w-full h-full"></canvas>
+                            </div>
+                            <div class="lg:col-span-6 space-y-3 text-xs sm:text-sm">
+                                <div class="flex justify-between font-bold">
+                                    <span>제어 시각 $t$: <span id="robotTVal" class="text-violet-600">0.50</span>초 ($0 \le t \le 1$)</span>
+                                    <span id="robotStateBadge" class="px-2.5 py-0.5 rounded-full bg-violet-100 text-violet-800">최대 속도 구간 (a = 0)</span>
+                                </div>
+                                <input type="range" id="robotTSlider" min="0" max="1" step="0.02" value="0.5" class="w-full">
+                                <div class="grid grid-cols-3 gap-2 text-center pt-1">
+                                    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                        <div class="text-[11px] text-slate-400">위치 $x(t)$</div>
+                                        <div id="robotXOut" class="font-extrabold text-indigo-600">0.50 rad</div>
+                                    </div>
+                                    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                        <div class="text-[11px] text-slate-400">속도 $v(t)=-6t^2+6t$</div>
+                                        <div id="robotVOut" class="font-extrabold text-emerald-600">1.50 rad/s</div>
+                                    </div>
+                                    <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                                        <div class="text-[11px] text-slate-400">가속도 $a(t)=-12t+6$</div>
+                                        <div id="robotAOut" class="font-extrabold text-amber-600">0.00 rad/s²</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Floating Action Buttons (Back to Top & Mobile Quick Menu) -->
+    <div id="floatingActions" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2.5 transition-all duration-300 floating-btn-hidden">
+        <!-- Mobile Quick TOC Button -->
+        <button onclick="openMobileSidebar()" class="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/90 dark:bg-slate-800 text-white shadow-lg border border-slate-700 text-xs font-bold hover:bg-indigo-600 transition">
+            <i data-lucide="list" class="w-4 h-4"></i>
+            <span>목차 이동</span>
+        </button>
+
+        <!-- Back to Top Floating Button -->
+        <button onclick="scrollToTop(event)" title="맨 처음으로 이동" class="group flex items-center gap-2 px-4 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-500/30 border border-indigo-400/30 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer">
+            <i data-lucide="arrow-up" class="w-5 h-5 transition-transform group-hover:-translate-y-0.5"></i>
+            <span class="text-xs sm:text-sm font-extrabold pr-0.5">맨 위로</span>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Initialize KaTeX Auto-render
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError: false
+            });
+            initAllCanvases();
+            onScrollUpdate();
+        });
+
+        // Theme Toggle
+        document.getElementById('themeToggleBtn').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            drawAllCanvases();
+        });
+
+        // Mobile Sidebar Toggle & Backdrop
+        const sidebar = document.getElementById('sidebar');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+        function openMobileSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            sidebarBackdrop.classList.remove('hidden');
+        }
+        function closeMobileSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebarBackdrop.classList.add('hidden');
+        }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', openMobileSidebar);
+        document.getElementById('closeSidebarBtn').addEventListener('click', closeMobileSidebar);
+        sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+
+        // Smooth Scroll to Top
+        function scrollToTop(e) {
+            if (e) e.preventDefault();
+            if (currentViewMode === 'tab') {
+                activateSectionTab('sec-1');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            closeMobileSidebar();
+        }
+
+        // View Mode State ('scroll' vs 'tab')
+        let currentViewMode = 'scroll';
+        const sectionIds = ['sec-1', 'sec-2', 'sec-3', 'sec-4', 'sec-5'];
+        let activeSectionId = 'sec-1';
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const scrollBtn = document.getElementById('modeScrollBtn');
+            const tabBtn = document.getElementById('modeTabBtn');
+
+            if (mode === 'scroll') {
+                scrollBtn.className = 'px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition';
+                tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition';
+                sectionIds.forEach(id => document.getElementById(id).classList.remove('hidden'));
+            } else {
+                tabBtn.className = 'px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition';
+                scrollBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition';
+                activateSectionTab(activeSectionId || 'sec-1');
+            }
+            setTimeout(drawAllCanvases, 50);
+        }
+
+        function highlightNavItem(secId) {
+            activeSectionId = secId;
+            const idx = sectionIds.indexOf(secId) + 1;
+            const badge = document.getElementById('currentSecBadge');
+            if (badge && idx > 0) badge.textContent = `${idx} / 5`;
+
+            document.querySelectorAll('#navLinks .nav-item').forEach(link => {
+                const target = link.getAttribute('data-target');
+                const numBadge = link.querySelector('.nav-num');
+                if (target === secId) {
+                    link.className = 'nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 transition';
+                    if (numBadge) numBadge.className = 'nav-num w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0';
+                } else {
+                    link.className = 'nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition';
+                    if (numBadge) numBadge.className = 'nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0';
+                }
+            });
+        }
+
+        function activateSectionTab(secId) {
+            sectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === secId) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+            highlightNavItem(secId);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(drawAllCanvases, 50);
+        }
+
+        function navigateToSection(e, secId) {
+            e.preventDefault();
+            closeMobileSidebar();
+            if (currentViewMode === 'tab') {
+                activateSectionTab(secId);
+            } else {
+                const targetEl = document.getElementById(secId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    highlightNavItem(secId);
+                }
+            }
+        }
+
+        // Scroll Event Listener
+        const floatingActions = document.getElementById('floatingActions');
+        function onScrollUpdate() {
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            if (scrollY > 250) {
+                floatingActions.classList.remove('floating-btn-hidden');
+                floatingActions.classList.add('floating-btn-visible');
+            } else {
+                floatingActions.classList.remove('floating-btn-visible');
+                floatingActions.classList.add('floating-btn-hidden');
+            }
+
+            if (currentViewMode === 'scroll') {
+                let current = 'sec-1';
+                for (const id of sectionIds) {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const rect = el.getBoundingClientRect();
+                        if (rect.top <= 180) current = id;
+                    }
+                }
+                if (current !== activeSectionId) highlightNavItem(current);
+            }
+        }
+        window.addEventListener('scroll', onScrollUpdate, { passive: true });
+
+        // Progress Tracking
+        const sectionChecks = document.querySelectorAll('.section-check');
+        function updateProgress() {
+            let checked = 0;
+            sectionChecks.forEach(chk => { if (chk.checked) checked++; });
+            const pct = Math.round((checked / sectionChecks.length) * 100);
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '%';
+        }
+        sectionChecks.forEach(chk => chk.addEventListener('change', updateProgress));
+
+        // =============================================================
+        // CANVAS HELPERS
+        // =============================================================
+        function setupCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return null;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return null;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            return { ctx, w: rect.width, h: rect.height, isDark: document.documentElement.classList.contains('dark') };
+        }
+
+        function drawAxes(info, xMin, xMax, yMin, yMax, xLabel = 't', yLabel = 'x') {
+            const { ctx, w, h, isDark } = info;
+            ctx.clearRect(0, 0, w, h);
+
+            const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+            const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+            ctx.strokeStyle = isDark ? '#1e293b' : '#e2e8f0';
+            ctx.lineWidth = 1;
+            const xStep = (xMax - xMin) > 12 ? 5 : 1;
+            for (let x = Math.ceil(xMin / xStep) * xStep; x <= Math.floor(xMax); x += xStep) {
+                ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+            }
+            const yStep = (yMax - yMin) > 1000 ? 1000 : ((yMax - yMin) > 20 ? 5 : 2);
+            for (let y = Math.ceil(yMin / yStep) * yStep; y <= Math.floor(yMax); y += yStep) {
+                ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+            }
+
+            ctx.strokeStyle = isDark ? '#64748b' : '#475569';
+            ctx.lineWidth = 1.8;
+            const y0 = toY(0), x0 = toX(0);
+            ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(w, y0); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, h); ctx.stroke();
+
+            ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+            ctx.font = 'bold 11px Pretendard, sans-serif';
+            ctx.fillText('O', x0 - 14, y0 + 14);
+            ctx.fillText(xLabel, Math.min(w - 24, toX(xMax) - 20), y0 - 6);
+            ctx.fillText(yLabel, x0 + 6, 14);
+
+            return { toX, toY };
+        }
+
+        function plotFn(info, coords, fn, xStart, xEnd, color = '#4f46e5', dashed = false, width = 2.5) {
+            const { ctx } = info;
+            const { toX, toY } = coords;
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            if (dashed) ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            const steps = 240;
+            for (let i = 0; i <= steps; i++) {
+                const x = xStart + (xEnd - xStart) * (i / steps);
+                const y = fn(x);
+                if (i === 0) ctx.moveTo(toX(x), toY(y));
+                else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawDot(info, coords, x, y, label = '', color = '#ef4444', offsetY = -10, alignLeft = false) {
+            const { ctx, isDark } = info;
+            const { toX, toY } = coords;
+            const px = toX(x), py = toY(y);
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = isDark ? '#0f172a' : '#ffffff';
+            ctx.lineWidth = 1.5; ctx.stroke();
+            if (label) {
+                ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+                ctx.font = 'bold 11px Pretendard, sans-serif';
+                const textX = alignLeft ? px - 110 : px - 25;
+                ctx.fillText(label, textX, py + offsetY);
+            }
+        }
+
+        // =============================================================
+        // 1. 생각 열기 Canvas: x(t) = t^2 + 2t Secant to Tangent at t=1
+        // =============================================================
+        function drawIntroCarCanvas() {
+            const info = setupCanvas('canvasIntroCar');
+            if (!info) return;
+            const dt = parseFloat(document.getElementById('introDtSlider').value);
+            document.getElementById('introDtVal').textContent = dt.toFixed(2);
+
+            const coords = drawAxes(info, -0.3, 3.4, -2, 19, 't(초)', 'x(m)');
+            const fn = t => t * t + 2 * t;
+            plotFn(info, coords, fn, 0, 3.2, '#4f46e5', false, 2.5);
+
+            // Tangent line at t=1: slope = 4, passes through (1, 3) => y = 4(t - 1) + 3
+            plotFn(info, coords, t => 4 * (t - 1) + 3, 0, 3.2, '#10b981', true, 1.8);
+
+            // Secant line between t=1 and t=1+dt: slope = 4 + dt
+            const avgV = 4 + dt;
+            plotFn(info, coords, t => avgV * (t - 1) + 3, 0, 3.2, '#ef4444', false, 2);
+
+            drawDot(info, coords, 1, 3, 't=1 (1, 3)', '#10b981', 16);
+            drawDot(info, coords, 1 + dt, fn(1 + dt), `1+Δt (${(1+dt).toFixed(2)}, ${fn(1+dt).toFixed(1)})`, '#ef4444', -10);
+
+            document.getElementById('introVelBadge').textContent =
+                `평균속도 Δx/Δt = ${avgV.toFixed(2)} m/s (순간속도 v(1) = 4 m/s)`;
+        }
+
+        document.getElementById('introDtSlider').addEventListener('input', drawIntroCarCanvas);
+
+        function animateDtToZero() {
+            const slider = document.getElementById('introDtSlider');
+            let val = parseFloat(slider.value);
+            if (val <= 0.05) val = 1.8;
+            const timer = setInterval(() => {
+                val = Math.max(0.01, val - 0.05);
+                slider.value = val;
+                drawIntroCarCanvas();
+                if (val <= 0.01) clearInterval(timer);
+            }, 30);
+        }
+
+        // =============================================================
+        // 2. 수직선 위를 움직이는 점 P 통합 실험실 (예제 1 & 문제 1)
+        // =============================================================
+        let lineLabMode = 'ex1'; // 'ex1' or 'prob1'
+        let lineLabAnimId = null;
+
+        function setLineLabMode(mode) {
+            lineLabMode = mode;
+            const b1 = document.getElementById('btnModeEx1');
+            const b2 = document.getElementById('btnModeProb1');
+            if (mode === 'ex1') {
+                b1.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition';
+                b2.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition';
+            } else {
+                b2.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-xs transition';
+                b1.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition';
+            }
+            drawLineLabCanvases();
+        }
+
+        function setLineLabT(tVal) {
+            document.getElementById('lineLabTSlider').value = tVal;
+            drawLineLabCanvases();
+        }
+
+        function toggleLineLabPlay() {
+            const btn = document.getElementById('playLineLabBtn');
+            if (lineLabAnimId) {
+                cancelAnimationFrame(lineLabAnimId);
+                lineLabAnimId = null;
+                btn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> <span>운동 재생</span>';
+                lucide.createIcons();
+                return;
+            }
+            const slider = document.getElementById('lineLabTSlider');
+            if (parseFloat(slider.value) >= 5.95) slider.value = 0;
+            btn.innerHTML = '<i data-lucide="pause" class="w-4 h-4"></i> <span>일시정지</span>';
+            lucide.createIcons();
+
+            let lastTime = performance.now();
+
+            function step(now) {
+                const dt = (now - lastTime) / 1000;
+                lastTime = now;
+                let t = parseFloat(slider.value) + dt * 1.5;
+                if (t >= 6) {
+                    t = 6;
+                    slider.value = t;
+                    drawLineLabCanvases();
+                    lineLabAnimId = null;
+                    btn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i> <span>운동 재생</span>';
+                    lucide.createIcons();
+                    return;
+                }
+                slider.value = t;
+                drawLineLabCanvases();
+                lineLabAnimId = requestAnimationFrame(step);
+            }
+            lineLabAnimId = requestAnimationFrame(step);
+        }
+
+        function drawLineLabCanvases() {
+            const t = parseFloat(document.getElementById('lineLabTSlider').value);
+            let xFn, vFn, aFn, turnT, xMinLine, xMaxLine;
+
+            if (lineLabMode === 'ex1') {
+                xFn = tau => tau * tau - 6 * tau;
+                vFn = tau => 2 * tau - 6;
+                aFn = () => 2;
+                turnT = 3;
+                xMinLine = -11; xMaxLine = 4;
+            } else {
+                xFn = tau => (1 / 3) * Math.pow(tau, 3) - 2 * tau * tau;
+                vFn = tau => tau * tau - 4 * tau;
+                aFn = tau => 2 * tau - 4;
+                turnT = 4;
+                xMinLine = -12; xMaxLine = 4;
+            }
+
+            const x = xFn(t), v = vFn(t), a = aFn(t);
+            document.getElementById('labTVal').textContent = t.toFixed(2);
+            document.getElementById('labXVal').textContent = x.toFixed(2);
+            document.getElementById('labVVal').textContent = v.toFixed(2);
+            document.getElementById('labAVal').textContent = a.toFixed(2);
+
+            const dirBadge = document.getElementById('labDirBadge');
+            if (Math.abs(v) < 0.08 && t > 0.2) {
+                dirBadge.textContent = `운동 방향 전환 순간! (v = 0, 시각 t = ${turnT})`;
+                dirBadge.className = 'px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-bold';
+            } else if (v > 0) {
+                dirBadge.textContent = '양(+)의 방향(오른쪽)으로 이동 중 (v > 0)';
+                dirBadge.className = 'px-3 py-1 rounded-full bg-sky-100 text-sky-800 font-bold';
+            } else {
+                dirBadge.textContent = '음(-)의 방향(왼쪽)으로 이동 중 (v < 0)';
+                dirBadge.className = 'px-3 py-1 rounded-full bg-rose-100 text-rose-800 font-bold';
+            }
+
+            // 1) Number Line Canvas
+            const infoNL = setupCanvas('canvasNumberLine');
+            if (infoNL) {
+                const { ctx, w, h, isDark } = infoNL;
+                ctx.clearRect(0, 0, w, h);
+                const pad = 36;
+                const toNX = val => pad + ((val - xMinLine) / (xMaxLine - xMinLine)) * (w - 2 * pad);
+                const midY = h * 0.62;
+
+                ctx.strokeStyle = isDark ? '#64748b' : '#475569';
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(pad - 10, midY); ctx.lineTo(w - pad + 10, midY); ctx.stroke();
+
+                ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+                ctx.font = '11px Pretendard, sans-serif';
+                for (let k = Math.ceil(xMinLine); k <= Math.floor(xMaxLine); k++) {
+                    const px = toNX(k);
+                    ctx.beginPath(); ctx.moveTo(px, midY - 5); ctx.lineTo(px, midY + 5); ctx.stroke();
+                    if (k % 2 === 0 || k === 0 || k === -9) {
+                        ctx.fillText(k.toString(), px - 6, midY + 20);
+                    }
+                }
+
+                const turnX = xFn(turnT);
+                const turnPx = toNX(turnX);
+                ctx.fillStyle = '#f59e0b';
+                ctx.font = 'bold 11px Pretendard, sans-serif';
+                ctx.fillText(`방향전환(t=${turnT})`, turnPx - 28, midY - 28);
+
+                const px = toNX(x);
+                ctx.fillStyle = v >= 0 ? '#0284c7' : '#e11d48';
+                ctx.beginPath(); ctx.arc(px, midY, 8, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Pretendard, sans-serif';
+                ctx.fillText('P', px - 3.5, midY + 3.5);
+
+                if (Math.abs(v) > 0.1) {
+                    const arrowLen = Math.max(-65, Math.min(65, v * 8));
+                    ctx.strokeStyle = v > 0 ? '#0284c7' : '#e11d48';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(px, midY - 14);
+                    ctx.lineTo(px + arrowLen, midY - 14);
+                    ctx.stroke();
+                }
+            }
+
+            // 2) Graph Canvas
+            const infoG = setupCanvas('canvasLineGraphs');
+            if (infoG) {
+                const coords = drawAxes(infoG, -0.3, 6.2, -12, 12, 't(초)', '위치 x (파랑) / 속도 v (주황)');
+                plotFn(infoG, coords, xFn, 0, 6, '#4f46e5', false, 2.5);
+                plotFn(infoG, coords, vFn, 0, 6, '#f97316', true, 2);
+
+                drawDot(infoG, coords, t, x, `x(${t.toFixed(1)})=${x.toFixed(1)}`, '#4f46e5', -10);
+                drawDot(infoG, coords, t, v, `v(${t.toFixed(1)})=${v.toFixed(1)}`, '#f97316', 16);
+                drawDot(infoG, coords, turnT, 0, `방향전환(t=${turnT}, v=0)`, '#10b981', -10);
+            }
+        }
+        document.getElementById('lineLabTSlider').addEventListener('input', drawLineLabCanvases);
+
+        // =============================================================
+        // 3. 예제 2 Canvas: 물 로켓 발사 시뮬레이터 (버그 완전 해결)
+        // =============================================================
+        let rocketAnimId = null;
+        let rocketIsPlaying = false;
+        let rocketLastTimestamp = 0;
+
+        function updateRocketUIAndBadge(t) {
+            const hVal = Math.max(0, -5 * t * t + 20 * t);
+            const vVal = -10 * t + 20;
+            const badge = document.getElementById('rocketBadge');
+
+            if (Math.abs(t - 2) < 0.06) {
+                badge.textContent = `t = 2.00초 | 최고 높이 x = 20.0m 도달! (순간속도 v = 0 m/s)`;
+                badge.className = 'px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 font-bold';
+            } else if (t >= 3.98) {
+                badge.textContent = `t = 4.00초 | 지면 착지! (x = 0m, 순간속도 v = -20.0 m/s)`;
+                badge.className = 'px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 font-bold';
+            } else {
+                badge.textContent = `t = ${t.toFixed(2)}초 | 높이 x = ${hVal.toFixed(1)}m | 속도 v = ${vVal.toFixed(1)}m/s`;
+                badge.className = 'px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 font-bold';
+            }
+        }
+
+        function setRocketPlayButtonState(playing) {
+            rocketIsPlaying = playing;
+            const btn = document.getElementById('rocketPlayBtn');
+            const btnText = document.getElementById('rocketPlayBtnText');
+            if (playing) {
+                btn.innerHTML = '<i data-lucide="pause" class="w-4 h-4"></i> <span>일시정지</span>';
+            } else {
+                const sliderVal = parseFloat(document.getElementById('rocketTSlider').value);
+                const label = (sliderVal >= 4.0) ? '↺ 다시 발사' : '로켓 발사';
+                btn.innerHTML = `<i data-lucide="rocket" class="w-4 h-4"></i> <span>${label}</span>`;
+            }
+            lucide.createIcons();
+        }
+
+        function setRocketT(val) {
+            if (rocketAnimId) {
+                cancelAnimationFrame(rocketAnimId);
+                rocketAnimId = null;
+            }
+            setRocketPlayButtonState(false);
+            document.getElementById('rocketTSlider').value = val;
+            updateRocketUIAndBadge(val);
+            drawRocketCanvas();
+        }
+
+        function toggleRocketPlay() {
+            if (rocketIsPlaying) {
+                // Pause action
+                if (rocketAnimId) {
+                    cancelAnimationFrame(rocketAnimId);
+                    rocketAnimId = null;
+                }
+                setRocketPlayButtonState(false);
+                return;
+            }
+
+            // Start / Resume action
+            const slider = document.getElementById('rocketTSlider');
+            if (parseFloat(slider.value) >= 3.98) {
+                slider.value = 0; // restart if already at end
+            }
+
+            setRocketPlayButtonState(true);
+            rocketLastTimestamp = performance.now();
+
+            function rocketStep(now) {
+                if (!rocketIsPlaying) return;
+                const dt = (now - rocketLastTimestamp) / 1000;
+                rocketLastTimestamp = now;
+
+                let t = parseFloat(slider.value) + dt * 1.0; // 1.0x real-time (4 seconds total)
+
+                if (t >= 4.0) {
+                    t = 4.0;
+                    slider.value = t;
+                    updateRocketUIAndBadge(t);
+                    drawRocketCanvas();
+                    rocketAnimId = null;
+                    setRocketPlayButtonState(false);
+                    return;
+                }
+
+                slider.value = t;
+                updateRocketUIAndBadge(t);
+                drawRocketCanvas();
+                rocketAnimId = requestAnimationFrame(rocketStep);
+            }
+
+            rocketAnimId = requestAnimationFrame(rocketStep);
+        }
+
+        function drawRocketCanvas() {
+            const info = setupCanvas('canvasRocket');
+            if (!info) return;
+            const t = parseFloat(document.getElementById('rocketTSlider').value);
+            const hVal = Math.max(0, -5 * t * t + 20 * t);
+            const vVal = -10 * t + 20;
+
+            // 좌표축 오른쪽 여백을 여유있게 확보 (-0.6 ~ 4.8)하여 텍스트 잘림 방지
+            const coords = drawAxes(info, -0.6, 4.8, -3, 24, 't(초)', '높이 x(m)');
+            const fn = tau => -5 * tau * tau + 20 * tau;
+            plotFn(info, coords, fn, 0, 4, '#4f46e5', false, 2.5);
+
+            // 중요 지점 핀포인트
+            drawDot(info, coords, 2, 20, '최고점(2초, 20m, v=0)', '#10b981', -12);
+            drawDot(info, coords, 4, 0, '지면(4초, v=-20m/s)', '#e11d48', 16, true);
+            drawDot(info, coords, t, hVal, `로켓(${t.toFixed(1)}s, ${hVal.toFixed(1)}m)`, '#f59e0b', -14);
+        }
+
+        document.getElementById('rocketTSlider').addEventListener('input', () => {
+            if (rocketIsPlaying) {
+                if (rocketAnimId) cancelAnimationFrame(rocketAnimId);
+                setRocketPlayButtonState(false);
+            }
+            const t = parseFloat(document.getElementById('rocketTSlider').value);
+            updateRocketUIAndBadge(t);
+            drawRocketCanvas();
+        });
+
+        // =============================================================
+        // 4. 생각 넓히기 Canvas: 교과서 위치 그래프 x = f(t) (p.103)
+        // =============================================================
+        function textbookF(t) {
+            const pts = [
+                {t: 0, x: 0, m: 3.2},
+                {t: 1, x: 2.0, m: 0},
+                {t: 2, x: 0, m: -3.0},
+                {t: 3, x: -2.0, m: 0},
+                {t: 4, x: 0, m: 3.8},
+                {t: 5, x: 3.6, m: 0},
+                {t: 6, x: 0, m: -5.5}
+            ];
+            if (t <= 0) return 0;
+            if (t >= 6) return 0;
+            const i = Math.min(5, Math.floor(t));
+            const p0 = pts[i], p1 = pts[i + 1];
+            const s = t - p0.t;
+            const h00 = 2 * Math.pow(s, 3) - 3 * s * s + 1;
+            const h10 = Math.pow(s, 3) - 2 * s * s + s;
+            const h01 = -2 * Math.pow(s, 3) + 3 * s * s;
+            const h11 = Math.pow(s, 3) - s * s;
+            return h00 * p0.x + h10 * p0.m + h01 * p1.x + h11 * p1.m;
+        }
+
+        function setThinkT(val) {
+            document.getElementById('thinkTSlider').value = val;
+            drawThinkGraphCanvas();
+        }
+
+        function drawThinkGraphCanvas() {
+            const info = setupCanvas('canvasThinkGraph');
+            if (!info) return;
+            const t = parseFloat(document.getElementById('thinkTSlider').value);
+            const coords = drawAxes(info, -0.4, 6.5, -3.2, 4.5, 't', 'x=f(t)');
+
+            plotFn(info, coords, textbookF, 0, 6, '#4f46e5', false, 2.8);
+
+            drawDot(info, coords, 1, textbookF(1), 't=1(극대, v=0)', '#10b981', -10);
+            drawDot(info, coords, 3, textbookF(3), 't=3(극소, v=0)', '#10b981', 16);
+            drawDot(info, coords, 5, textbookF(5), 't=5(극대·최대거리!)', '#e11d48', -10);
+
+            const curX = textbookF(t);
+            drawDot(info, coords, t, curX, `t=${t.toFixed(1)}`, '#f59e0b', -12);
+
+            document.getElementById('thinkGraphInfo').textContent =
+                `t = ${t.toFixed(1)}초 | 원점으로부터의 거리 |x| = ${Math.abs(curX).toFixed(2)}`;
+        }
+        document.getElementById('thinkTSlider').addEventListener('input', drawThinkGraphCanvas);
+
+        // =============================================================
+        // 5. 스카이다이버 Canvas: h(t) = 4180 - 5t^2 (p.104 06번)
+        // =============================================================
+        function drawSkydiverCanvas() {
+            const info = setupCanvas('canvasSkydiver');
+            if (!info) return;
+            const t = parseFloat(document.getElementById('skydiverSlider').value);
+            const hVal = Math.max(0, 4180 - 5 * t * t);
+            const vVal = -10 * t;
+
+            document.getElementById('skydiverInfo').textContent =
+                `t = ${t}초 | 고도 h = ${hVal}m | 속도 v = ${vVal}m/s`;
+
+            const coords = drawAxes(info, -2, 30, -400, 4600, 't(초)', 'h(m)');
+            plotFn(info, coords, tau => 4180 - 5 * tau * tau, 0, 28.9, '#0284c7', false, 2.5);
+            plotFn(info, coords, () => 800, 0, 30, '#10b981', true, 1.5);
+
+            drawDot(info, coords, 2, 4160, 't=2 (v=-20)', '#6366f1', -10);
+            drawDot(info, coords, 26, 800, '낙하산 개방(26초, 800m, v=-260)', '#10b981', -10);
+            drawDot(info, coords, t, hVal, '', '#ef4444');
+        }
+        document.getElementById('skydiverSlider').addEventListener('input', drawSkydiverCanvas);
+
+        // =============================================================
+        // 6. 로봇 공학자 Canvas: 부드러운 로봇 팔 궤적 제어 (p.105)
+        // =============================================================
+        function drawRobotArmCanvas() {
+            const info = setupCanvas('canvasRobotArm');
+            if (!info) return;
+            const t = parseFloat(document.getElementById('robotTSlider').value);
+            const x = -2 * Math.pow(t, 3) + 3 * t * t;
+            const v = -6 * t * t + 6 * t;
+            const a = -12 * t + 6;
+
+            document.getElementById('robotTVal').textContent = t.toFixed(2);
+            document.getElementById('robotXOut').textContent = x.toFixed(2) + ' rad';
+            document.getElementById('robotVOut').textContent = v.toFixed(2) + ' rad/s';
+            document.getElementById('robotAOut').textContent = a.toFixed(2) + ' rad/s²';
+
+            const badge = document.getElementById('robotStateBadge');
+            if (t === 0 || t === 1) {
+                badge.textContent = '부드러운 정지 상태 (v = 0)';
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold';
+            } else if (t < 0.5) {
+                badge.textContent = '가속 구간 (v > 0, a > 0)';
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-bold';
+            } else if (t > 0.5) {
+                badge.textContent = '감속 제동 구간 (v > 0, a < 0)';
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold';
+            } else {
+                badge.textContent = '최대 속도 통과 (t = 0.5, a = 0)';
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-violet-100 text-violet-800 font-bold';
+            }
+
+            const { ctx, w, h, isDark } = info;
+            ctx.clearRect(0, 0, w, h);
+
+            const cx = w * 0.24, cy = h * 0.72;
+            const armLen = Math.min(w * 0.2, h * 0.52);
+            const angle = -Math.PI * 0.15 - x * (Math.PI * 0.55);
+            const ex = cx + armLen * Math.cos(angle);
+            const ey = cy + armLen * Math.sin(angle);
+
+            ctx.strokeStyle = isDark ? '#334155' : '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.arc(cx, cy, armLen, -Math.PI * 0.7, -Math.PI * 0.15);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.strokeStyle = '#7c3aed';
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+
+            ctx.fillStyle = isDark ? '#e2e8f0' : '#1e293b';
+            ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath(); ctx.arc(ex, ey, 7, 0, Math.PI * 2); ctx.fill();
+
+            const gx0 = w * 0.52, gw = w * 0.43, gy0 = h * 0.82, gh = h * 0.65;
+            ctx.strokeStyle = isDark ? '#475569' : '#94a3b8';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(gx0, gy0); ctx.lineTo(gx0 + gw, gy0); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(gx0, gy0); ctx.lineTo(gx0, gy0 - gh); ctx.stroke();
+
+            const toGX = tau => gx0 + tau * gw;
+            const toGY = val => gy0 - (val / 1.6) * gh;
+
+            ctx.strokeStyle = '#4f46e5';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            for (let i = 0; i <= 50; i++) {
+                const tau = i / 50;
+                const val = -2 * Math.pow(tau, 3) + 3 * tau * tau;
+                if (i === 0) ctx.moveTo(toGX(tau), toGY(val));
+                else ctx.lineTo(toGX(tau), toGY(val));
+            }
+            ctx.stroke();
+
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            for (let i = 0; i <= 50; i++) {
+                const tau = i / 50;
+                const val = -6 * tau * tau + 6 * tau;
+                if (i === 0) ctx.moveTo(toGX(tau), toGY(val));
+                else ctx.lineTo(toGX(tau), toGY(val));
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath(); ctx.arc(toGX(t), toGY(x), 4.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(toGX(t), toGY(v), 4.5, 0, Math.PI * 2); ctx.fill();
+        }
+        document.getElementById('robotTSlider').addEventListener('input', drawRobotArmCanvas);
+
+        function drawAllCanvases() {
+            drawIntroCarCanvas();
+            drawLineLabCanvases();
+            drawRocketCanvas();
+            drawThinkGraphCanvas();
+            drawSkydiverCanvas();
+            drawRobotArmCanvas();
+        }
+
+        function initAllCanvases() {
+            drawAllCanvases();
+            window.addEventListener('resize', drawAllCanvases);
+        }
+
+        // =============================================================
+        // QUIZ & SELF-CHECK VALIDATION FUNCTIONS
+        // =============================================================
+        function showFeedback(elId, isCorrect, msg) {
+            const el = document.getElementById(elId);
+            el.classList.remove('hidden', 'text-emerald-600', 'text-rose-600');
+            el.classList.add(isCorrect ? 'text-emerald-600' : 'text-rose-600');
+            el.textContent = msg;
+        }
+
+        function checkSimpleAns(inputId, validNums, fbId, successMsg) {
+            const val = parseFloat(document.getElementById(inputId).value);
+            if (validNums.includes(val)) {
+                showFeedback(fbId, true, successMsg);
+            } else {
+                showFeedback(fbId, false, '오답입니다. 풀이 힌트를 확인하고 다시 계산해 보세요!');
+            }
+        }
+
+        function checkProb1() {
+            const v = parseFloat(document.getElementById('p1_v').value);
+            const a = parseFloat(document.getElementById('p1_a').value);
+            const t = parseFloat(document.getElementById('p1_t').value);
+            if (v === 5 && a === 6 && t === 4) {
+                showFeedback('fbProb1', true, '정답입니다! (1) 속도: 5, 가속도: 6 / (2) 운동 방향 전환 시각: t = 4');
+            } else {
+                showFeedback('fbProb1', false, '일부 답이 틀렸습니다. v(t) = t² - 4t, a(t) = 2t - 4 에 대입해 보세요!');
+            }
+        }
+
+        function checkProb2Train() {
+            const tVal = parseFloat(document.getElementById('ansP2_2t').value);
+            const xRaw = document.getElementById('ansP2_2x').value.trim();
+            const isXOk = (xRaw === '45/2' || parseFloat(xRaw) === 22.5);
+            if (tVal === 3 && isXOk) {
+                showFeedback('fbP2_2', true, '정답입니다! 정지할 때까지 걸린 시간은 3초, 움직인 거리는 45/2 cm (22.5 cm)입니다.');
+            } else {
+                showFeedback('fbP2_2', false, '다시 확인해 보세요. 정지할 때 v = -5t + 15 = 0 에서 시각 t를 먼저 구해보세요!');
+            }
+        }
+
+        function checkStudent(stuNum, isCorrectChoice) {
+            if (stuNum === 1) {
+                showFeedback('fbStu1', isCorrectChoice,
+                    isCorrectChoice
+                        ? '정답입니다! t=1에서 위치 그래프 x=f(t)의 접선의 기울기 f\'(1)=0 이므로 속도는 0이 맞습니다.'
+                        : '다시 생각해 보세요. 위치 그래프의 극점에서는 접선의 기울기(속도)가 0입니다!');
+            } else if (stuNum === 2) {
+                showFeedback('fbStu2', isCorrectChoice,
+                    isCorrectChoice
+                        ? '정답입니다! 속도 v=f\'(t)의 부호가 바뀌는 극점(t=1, 3, 5)에서 총 3번 운동 방향이 바뀝니다.'
+                        : '주의하세요! x=0인 지점(t=2, 4)은 원점을 지나는 시각이고, 운동 방향이 바뀌는 순간은 극점(t=1, 3, 5)으로 총 3번이 맞습니다.');
+            } else if (stuNum === 3) {
+                showFeedback('fbStu3', isCorrectChoice,
+                    isCorrectChoice
+                        ? '정답입니다! 준혁이가 잘못 말했습니다. 출발점(원점)으로부터의 거리 |x|가 가장 큰 순간은 t=3이 아니라 t=5일 때입니다!'
+                        : '틀렸습니다. 그래프에서 t=3일 때보다 t=5일 때 원점으로부터의 거리 |x|가 더 큽니다.');
+            }
+        }
+
+        function checkSC1() {
+            const a1 = document.getElementById('sc1_1').value.trim().toLowerCase();
+            const a2 = document.getElementById('sc1_2').value.trim().toLowerCase();
+            if (a1 === 'x' && a2 === 'v') {
+                showFeedback('fbSC1', true, '정답입니다! (1) v = dx/dt = f\'(t), (2) a = dv/dt 입니다.');
+            } else {
+                showFeedback('fbSC1', false, '빈칸을 다시 확인하세요: 위치를 미분하면 속도, 속도를 미분하면 가속도입니다.');
+            }
+        }
+
+        function checkSC2() {
+            const v = parseFloat(document.getElementById('sc2_v').value);
+            const a = parseFloat(document.getElementById('sc2_a').value);
+            if (v === 10 && a === 22) {
+                showFeedback('fbSC2', true, '정답입니다! (1) 속도: 10, (2) 가속도: 22');
+            } else {
+                showFeedback('fbSC2', false, '다시 계산해 보세요. v = 12t² - 2t, a = 24t - 2 에 t=1을 대입합니다.');
+            }
+        }
+
+        function checkSC3() {
+            const raw = document.getElementById('sc3_ans').value.trim();
+            if (raw === '20/3' || Math.abs(parseFloat(raw) - 20 / 3) < 0.02) {
+                showFeedback('fbSC3', true, '정답입니다! v = (t-2)(t-4) = 0 에서 처음 방향을 바꾸는 t=2일 때 위치는 20/3 입니다.');
+            } else {
+                showFeedback('fbSC3', false, '오답입니다. v = t² - 6t + 8 = 0 의 두 근 t=2, 4 중 처음 시각인 t=2를 위치 x에 대입하세요.');
+            }
+        }
+
+        function checkSC5() {
+            const low = parseFloat(document.getElementById('sc5_low').value);
+            const high = parseFloat(document.getElementById('sc5_high').value);
+            if (low === 1 && high === 3) {
+                showFeedback('fbSC5', true, '정답입니다! (4t - 4)(2t - 6) < 0 을 풀면 1 < t < 3 입니다.');
+            } else {
+                showFeedback('fbSC5', false, '오답입니다. 두 점의 속도 v_P = 4t - 4 와 v_Q = 2t - 6 의 부호가 서로 반대일 조건을 구해보세요.');
+            }
+        }
+    </script>
+</body>
+</html>

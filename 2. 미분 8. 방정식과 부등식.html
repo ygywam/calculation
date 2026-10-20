@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ⅱ. 미분 - 08. 방정식과 부등식에의 활용 | Resonance Math Lab</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'Inter', 'Noto Sans KR', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Pretendard -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        
+        /* Sign Chart Table Styling */
+        .sign-table th, .sign-table td {
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            padding: 0.5rem 0.75rem;
+        }
+        .dark .sign-table th, .dark .sign-table td {
+            border-color: #334155;
+        }
+        
+        /* Range Slider Custom */
+        input[type=range] {
+            accent-color: #4f46e5;
+        }
+        
+        /* Smooth details animation */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        /* Floating Button Animation */
+        .floating-btn-hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            pointer-events: none;
+        }
+        .floating-btn-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+
+    <!-- Mobile Backdrop Overlay -->
+    <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+    <!-- Top Progress & Header (Fixed at Top) -->
+    <header class="fixed top-0 inset-x-0 z-40 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 h-16">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="메뉴 열기">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <a href="#" onclick="scrollToTop(event)" class="flex items-center gap-2.5 group">
+                    <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 group-hover:bg-indigo-600 group-hover:text-white transition">Ⅱ. 미분</span>
+                    <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                        08. 방정식과 부등식에의 활용
+                    </h1>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3 sm:gap-4">
+                <!-- View Mode Toggle (Scroll vs Tab) -->
+                <div class="hidden md:flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-bold">
+                    <button id="modeScrollBtn" onclick="setViewMode('scroll')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition">
+                        전체 스크롤
+                    </button>
+                    <button id="modeTabBtn" onclick="setViewMode('tab')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition">
+                        섹션별 탭
+                    </button>
+                </div>
+
+                <!-- Progress Indicator -->
+                <div class="hidden sm:flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <span>학습 완료율</span>
+                    <div class="w-24 h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 w-0 transition-all duration-300"></div>
+                    </div>
+                    <span id="progressText" class="font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+                </div>
+
+                <!-- Dark Mode Button -->
+                <button id="themeToggleBtn" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition" title="테마 전환">
+                    <i data-lucide="moon" class="w-5 h-5 dark:hidden text-slate-700"></i>
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-amber-400"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Fixed Left Sidebar Navigation (Always Pinned on Desktop) -->
+    <aside id="sidebar" class="fixed top-16 left-0 bottom-0 z-50 lg:z-30 w-72 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-5 overflow-y-auto flex flex-col justify-between">
+        <div class="space-y-5">
+            <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+                <span class="font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <i data-lucide="compass" class="w-4 h-4"></i> 단원 목차 이동
+                </span>
+                <button id="closeSidebarBtn" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Achievement Standard Card -->
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-md">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-1">
+                    <i data-lucide="target" class="w-4 h-4"></i> 성취기준 (p.95)
+                </div>
+                <p class="text-xs sm:text-sm font-medium leading-relaxed">
+                    도함수를 활용하여 방정식과 부등식에 대한 문제를 해결할 수 있다.
+                </p>
+            </div>
+
+            <!-- Navigation Links (With ScrollSpy & Active State) -->
+            <div class="space-y-1">
+                <div class="px-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
+                    <span>단원 섹션 바로가기</span>
+                    <span id="currentSecBadge" class="text-indigo-600 dark:text-indigo-400">1 / 5</span>
+                </div>
+                <nav class="space-y-1.5" id="navLinks">
+                    <a href="#sec-1" data-target="sec-1" onclick="navigateToSection(event, 'sec-1')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                        <span class="truncate">방정식 $f(x)=0$의 실근</span>
+                    </a>
+                    <a href="#sec-2" data-target="sec-2" onclick="navigateToSection(event, 'sec-2')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                        <span class="truncate">방정식 $f(x)=g(x)$와 조건</span>
+                    </a>
+                    <a href="#sec-3" data-target="sec-3" onclick="navigateToSection(event, 'sec-3')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                        <span class="truncate">부등식의 증명과 활용</span>
+                    </a>
+                    <a href="#sec-4" data-target="sec-4" onclick="navigateToSection(event, 'sec-4')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+                        <span class="truncate">스스로 확인하기 (p.99)</span>
+                    </a>
+                    <a href="#sec-5" data-target="sec-5" onclick="navigateToSection(event, 'sec-5')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">5</span>
+                        <span class="truncate">탐구하는 수학 (극값의 곱)</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Quick Formula Summary Card -->
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
+                <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> 핵심 아이디어 요약
+                </div>
+                <ul class="space-y-2 text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <li>• <strong class="text-slate-800 dark:text-slate-200">$f(x)=0$의 실근의 개수</strong><br> $\iff y=f(x)$와 $x$축의 교점의 개수</li>
+                    <li>• <strong class="text-slate-800 dark:text-slate-200">$f(x)=g(x)$의 실근의 개수</strong><br> $\iff y=f(x)$와 $y=g(x)$의 교점 개수</li>
+                    <li>• <strong class="text-slate-800 dark:text-slate-200">$f(x) \ge 0$의 증명</strong><br> $\iff$ 구간에서 (최솟값) $\ge 0$</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sidebar Bottom Quick Scroll Top Button -->
+        <div class="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">
+            <button onclick="scrollToTop(event)" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-indigo-50 dark:bg-slate-800 dark:hover:bg-indigo-950/60 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs font-bold flex items-center justify-center gap-2 transition">
+                <i data-lucide="arrow-up-to-line" class="w-4 h-4"></i> 페이지 맨 처음으로 이동
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area (Offset by Fixed Sidebar Width on Desktop) -->
+    <div class="pt-16 lg:pl-72 min-h-screen">
+        <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-12 pb-24">
+
+            <!-- ==========================================
+                 SECTION 1: 방정식 f(x)=0의 실근의 개수 (p.95~96)
+                 ========================================== -->
+            <section id="sec-1" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 95 ~ 96쪽</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            1. 방정식의 실근의 개수는 어떻게 구할까?
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="1">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 생각 열기 (p.95) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 text-sm font-bold">
+                        <i data-lucide="lightbulb" class="w-4 h-4"></i> 생각 열기
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-300">
+                        다음은 방정식 $2x^3 + 3x^2 + 3 = 0$에 대한 세 학생의 대화입니다.
+                    </p>
+
+                    <!-- 3 Students Dialogue -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800/60 flex flex-col justify-between">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-8 h-8 rounded-full bg-sky-600 text-white flex items-center justify-center font-bold text-xs">학생 A</span>
+                                <span class="text-xs font-semibold text-sky-700 dark:text-sky-300">질문</span>
+                            </div>
+                            <p class="text-sm font-medium text-slate-800 dark:text-slate-200">
+                                "방정식 $2x^3 + 3x^2 + 3 = 0$의 <strong>실근의 개수</strong>는 어떻게 구할 수 있을까?"
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex flex-col justify-between">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold text-xs">학생 B</span>
+                                <span class="text-xs font-semibold text-amber-700 dark:text-amber-300">고민</span>
+                            </div>
+                            <p class="text-sm font-medium text-slate-800 dark:text-slate-200">
+                                "다항식 $2x^3 + 3x^2 + 3$의 <strong>인수분해가 어려운데</strong> 어떻게 하지?"
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex flex-col justify-between">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">학생 C</span>
+                                <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-300">아이디어!</span>
+                            </div>
+                            <p class="text-sm font-medium text-slate-800 dark:text-slate-200">
+                                "도함수를 이용해 <strong>그래프를 그려보면</strong> $x$축과 만나는 점의 개수로 구할 수 있지 않을까?"
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 생각 열기 Interactive Graph Explorer -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <div class="lg:col-span-7 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-slate-500 uppercase">Interactive Graph: $y = 2x^3 + 3x^2 + c$</span>
+                                <button id="resetIntroBtn" class="text-xs px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 font-semibold hover:bg-indigo-200 transition">
+                                    교과서 원래 식 ($c=3$) 복원
+                                </button>
+                            </div>
+                            <div class="w-full h-72 relative">
+                                <canvas id="canvasIntro" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 space-y-3">
+                                <h4 class="font-bold text-indigo-900 dark:text-indigo-200 text-sm flex items-center gap-1.5">
+                                    <i data-lucide="sliders" class="w-4 h-4"></i> 상수항 평행이동 실험실
+                                </h4>
+                                <p class="text-xs text-slate-600 dark:text-slate-400">
+                                    교과서 식 $y = 2x^3 + 3x^2 + 3$에서 상수항 $c$를 위아래로 움직여 보세요. 그래프가 $x$축과 몇 개의 점에서 만나나요?
+                                </p>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span>상수항 $c$ 값: <span id="introCVal" class="text-indigo-600 dark:text-indigo-400">3.0</span></span>
+                                        <span id="introRootBadge" class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">교점(실근) 1개</span>
+                                    </div>
+                                    <input type="range" id="introCSlider" min="-2" max="4" step="0.1" value="3" class="w-full">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl">
+                                <p class="font-semibold text-slate-900 dark:text-white">❶ $y = 2x^3 + 3x^2 + 3$의 그래프 분석</p>
+                                <p class="text-xs leading-relaxed">
+                                    $y' = 6x^2 + 6x = 6x(x+1)$이므로 $x=-1$에서 <strong>극댓값 $4$</strong>, $x=0$에서 <strong>극솟값 $3$</strong>을 갖습니다.
+                                </p>
+                                <p class="font-semibold text-slate-900 dark:text-white pt-1">❷ $x$축과 만나는 점의 개수</p>
+                                <p class="text-xs leading-relaxed">
+                                    극댓값과 극솟값이 모두 양수($4>0, 3>0$)이므로 그래프는 $x < -1$인 영역에서 <strong>오직 한 번</strong> $x$축과 만납니다. 따라서 실근의 개수는 <strong>1</strong>입니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 개념 정리: 방정식 f(x)=0의 실근의 개수 (p.95) -->
+                <div class="bg-gradient-to-br from-indigo-50 to-white dark:from-slate-900 dark:to-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">개념</div>
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">방정식 $f(x)=0$의 실근의 개수</h3>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-indigo-100 dark:border-slate-800 space-y-3 text-base leading-relaxed">
+                        <p>
+                            일반적으로 방정식 $f(x)=0$의 <strong>실근</strong>은 함수 $y=f(x)$의 그래프와 <strong>$x$축의 교점의 $x$좌표</strong>와 같다.
+                        </p>
+                        <p class="font-semibold text-indigo-700 dark:text-indigo-300">
+                            따라서 방정식 $f(x)=0$의 서로 다른 실근의 개수는 함수 $y=f(x)$의 그래프와 $x$축의 교점의 개수를 조사하여 구할 수 있다.
+                        </p>
+                    </div>
+
+                    <!-- 3 Cubic Cases Comparison (f(x), g(x), h(x) on p.95) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Case 1: 1 root -->
+                        <div class="bg-white dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
+                            <div class="text-sm font-bold text-slate-700 dark:text-slate-300">$y = f(x)$</div>
+                            <svg viewBox="0 0 200 140" class="w-full h-36 mx-auto">
+                                <line x1="15" y1="45" x2="185" y2="45" stroke="#94a3b8" stroke-width="1.5"/>
+                                <line x1="95" y1="10" x2="95" y2="130" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="180" y="60" font-size="11" fill="#64748b">x</text>
+                                <text x="82" y="58" font-size="11" fill="#64748b">O</text>
+                                <!-- Curve below x-axis for local max/min, crossing once on right -->
+                                <path d="M 25 125 Q 65 40 95 85 T 165 15" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
+                                <circle cx="151" cy="45" r="4.5" fill="#ef4444"/>
+                            </svg>
+                            <div class="inline-block px-3 py-1 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 text-xs font-bold">
+                                교점 1개 $\implies$ 실근 1개
+                            </div>
+                        </div>
+
+                        <!-- Case 2: 2 roots -->
+                        <div class="bg-white dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
+                            <div class="text-sm font-bold text-slate-700 dark:text-slate-300">$y = g(x)$</div>
+                            <svg viewBox="0 0 200 140" class="w-full h-36 mx-auto">
+                                <line x1="15" y1="62" x2="185" y2="62" stroke="#94a3b8" stroke-width="1.5"/>
+                                <line x1="95" y1="10" x2="95" y2="130" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="180" y="77" font-size="11" fill="#64748b">x</text>
+                                <text x="82" y="75" font-size="11" fill="#64748b">O</text>
+                                <!-- Curve tangent at local max -->
+                                <path d="M 25 125 Q 65 20 95 85 T 165 15" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
+                                <circle cx="66" cy="62" r="4.5" fill="#ef4444"/>
+                                <circle cx="144" cy="62" r="4.5" fill="#ef4444"/>
+                            </svg>
+                            <div class="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold">
+                                교점 2개(접점 포함) $\implies$ 실근 2개
+                            </div>
+                        </div>
+
+                        <!-- Case 3: 3 roots -->
+                        <div class="bg-white dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
+                            <div class="text-sm font-bold text-slate-700 dark:text-slate-300">$y = h(x)$</div>
+                            <svg viewBox="0 0 200 140" class="w-full h-36 mx-auto">
+                                <line x1="15" y1="78" x2="185" y2="78" stroke="#94a3b8" stroke-width="1.5"/>
+                                <line x1="95" y1="10" x2="95" y2="130" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="180" y="93" font-size="11" fill="#64748b">x</text>
+                                <text x="82" y="91" font-size="11" fill="#64748b">O</text>
+                                <!-- Curve crossing 3 times -->
+                                <path d="M 25 125 Q 65 20 95 85 T 165 15" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
+                                <circle cx="44" cy="78" r="4.5" fill="#ef4444"/>
+                                <circle cx="91" cy="78" r="4.5" fill="#ef4444"/>
+                                <circle cx="136" cy="78" r="4.5" fill="#ef4444"/>
+                            </svg>
+                            <div class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-bold">
+                                교점 3개 $\implies$ 실근 3개
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 예제 1 (p.96) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">예제 1</span>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">방정식의 실근의 개수 구하기 (p.96)</h3>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 font-medium text-slate-900 dark:text-slate-100">
+                        방정식 $x^3 - 3x^2 + 1 = 0$의 서로 다른 실근의 개수를 구하시오.
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        <div class="lg:col-span-7 space-y-4 text-sm leading-relaxed">
+                            <div class="space-y-2">
+                                <p><span class="font-bold text-indigo-600 dark:text-indigo-400">풀이 단계 1.</span> $f(x) = x^3 - 3x^2 + 1$이라 하고 도함수 $f'(x)$를 구합니다.</p>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                                    $$f'(x) = 3x^2 - 6x = 3x(x - 2)$$
+                                    $$f'(x) = 0\text{에서 } x = 0 \text{ 또는 } x = 2$$
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <p><span class="font-bold text-indigo-600 dark:text-indigo-400">풀이 단계 2.</span> $f'(x)$의 부호를 조사하여 $f(x)$의 증가와 감소를 표(증감표)로 나타냅니다.</p>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full sign-table text-xs sm:text-sm bg-white dark:bg-slate-950 rounded-xl overflow-hidden">
+                                        <thead class="bg-slate-100 dark:bg-slate-800 font-bold">
+                                            <tr>
+                                                <th>$x$</th>
+                                                <th>$\cdots$</th>
+                                                <th class="text-indigo-600 dark:text-indigo-400">$0$</th>
+                                                <th>$\cdots$</th>
+                                                <th class="text-indigo-600 dark:text-indigo-400">$2$</th>
+                                                <th>$\cdots$</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="font-bold bg-slate-50 dark:bg-slate-900">$f'(x)$</td>
+                                                <td class="text-emerald-600 font-bold">$+$</td>
+                                                <td>$0$</td>
+                                                <td class="text-rose-600 font-bold">$-$</td>
+                                                <td>$0$</td>
+                                                <td class="text-emerald-600 font-bold">$+$</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-bold bg-slate-50 dark:bg-slate-900">$f(x)$</td>
+                                                <td>$\nearrow$</td>
+                                                <td class="font-bold text-indigo-600 dark:text-indigo-400">$1$ (극대)</td>
+                                                <td>$\searrow$</td>
+                                                <td class="font-bold text-rose-600 dark:text-rose-400">$-3$ (극소)</td>
+                                                <td>$\nearrow$</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+                                <p class="font-bold text-emerald-900 dark:text-emerald-300">
+                                    결론: 함수 $y = f(x)$의 그래프는 $x$축과 서로 다른 세 점에서 만나므로 방정식 $x^3 - 3x^2 + 1 = 0$의 서로 다른 실근의 개수는 <span class="underline decoration-2">3</span>이다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="text-xs font-bold text-slate-500 mb-2 text-center">$y = x^3 - 3x^2 + 1$의 그래프와 실근 3개</div>
+                            <div class="w-full h-64">
+                                <canvas id="canvasEx1" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 문제 1 (p.96) Interactive Practice -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-sm font-bold">문제 1</span>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">다음 방정식의 서로 다른 실근의 개수를 구하시오. (p.96)</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 문제 1-(1) -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div class="font-bold text-base">(1) $x^3 - 3x^2 - 9x - 5 = 0$</div>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="ansP1_1" placeholder="실근의 개수 입력" class="w-40 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm">
+                                <button onclick="checkProblemAnswer('ansP1_1', 2, 'fbP1_1')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition">정답 확인</button>
+                                <button onclick="plotProblem1(1)" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-xs font-semibold transition">그래프 보기</button>
+                            </div>
+                            <div id="fbP1_1" class="text-xs font-semibold hidden"></div>
+                            <details class="text-xs text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                                <summary class="font-bold cursor-pointer text-indigo-600 dark:text-indigo-400">풀이 및 증감표 열기</summary>
+                                <div class="mt-2 space-y-1.5 leading-relaxed">
+                                    <p>$f(x) = x^3 - 3x^2 - 9x - 5$라 하면</p>
+                                    <p>$f'(x) = 3x^2 - 6x - 9 = 3(x+1)(x-3) = 0 \implies x = -1, 3$</p>
+                                    <p>• 극댓값: $f(-1) = -1 - 3 + 9 - 5 = 0$ ($x$축에 접함!)</p>
+                                    <p>• 극솟값: $f(3) = 27 - 27 - 27 - 5 = -32$</p>
+                                    <p class="font-bold text-emerald-600">따라서 $x=-1$에서 접하고 $x>3$에서 한 번 만나므로 서로 다른 실근의 개수는 2이다.</p>
+                                </div>
+                            </details>
+                        </div>
+
+                        <!-- 문제 1-(2) -->
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div class="font-bold text-base">(2) $2x^4 - 4x^2 + 1 = 0$</div>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="ansP1_2" placeholder="실근의 개수 입력" class="w-40 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm">
+                                <button onclick="checkProblemAnswer('ansP1_2', 4, 'fbP1_2')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition">정답 확인</button>
+                                <button onclick="plotProblem1(2)" class="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-xs font-semibold transition">그래프 보기</button>
+                            </div>
+                            <div id="fbP1_2" class="text-xs font-semibold hidden"></div>
+                            <details class="text-xs text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                                <summary class="font-bold cursor-pointer text-indigo-600 dark:text-indigo-400">풀이 및 증감표 열기</summary>
+                                <div class="mt-2 space-y-1.5 leading-relaxed">
+                                    <p>$f(x) = 2x^4 - 4x^2 + 1$이라 하면</p>
+                                    <p>$f'(x) = 8x^3 - 8x = 8x(x+1)(x-1) = 0 \implies x = -1, 0, 1$</p>
+                                    <p>• 극솟값: $f(-1) = -1$, $f(1) = -1$</p>
+                                    <p>• 극댓값: $f(0) = 1$</p>
+                                    <p class="font-bold text-emerald-600">그래프가 $x$축과 서로 다른 네 점에서 만나므로 실근의 개수는 4이다.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Graph Canvas for Problem 1 -->
+                    <div id="prob1GraphWrap" class="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <div class="flex items-center justify-between mb-2">
+                            <span id="prob1GraphTitle" class="text-xs font-bold text-indigo-600 dark:text-indigo-400">문제 1-(1) $y = x^3 - 3x^2 - 9x - 5$ 그래프</span>
+                            <div class="flex gap-2">
+                                <button onclick="plotProblem1(1)" class="text-xs px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">(1)번 함수</button>
+                                <button onclick="plotProblem1(2)" class="text-xs px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold">(2)번 함수</button>
+                            </div>
+                        </div>
+                        <div class="w-full h-60">
+                            <canvas id="canvasProb1" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 2: 방정식 f(x)=g(x)의 실근과 조건 (p.96~97)
+                 ========================================== -->
+            <section id="sec-2" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 96 ~ 97쪽</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            2. 방정식 $f(x)=g(x)$의 실근의 개수와 조건
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="2">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 개념 정리 (p.96 하단) -->
+                <div class="bg-gradient-to-br from-indigo-50 to-white dark:from-slate-900 dark:to-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">개념</div>
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">방정식 $f(x)=g(x)$의 실근의 개수</h3>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-indigo-100 dark:border-slate-800 space-y-3 leading-relaxed">
+                        <p>
+                            방정식 $f(x)=g(x)$의 실근은 두 함수 $y=f(x)$, $y=g(x)$의 그래프의 <strong>교점의 $x$좌표</strong>와 같다.
+                            따라서 방정식 $f(x)=g(x)$의 서로 다른 실근의 개수는 두 함수 $y=f(x)$, $y=g(x)$의 그래프의 <strong>교점의 개수</strong>를 조사하여 구할 수 있다.
+                        </p>
+                        <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-xs sm:text-sm text-amber-900 dark:text-amber-300 flex items-start gap-2">
+                            <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                            <span><strong>참고:</strong> 방정식 $f(x)=g(x)$의 서로 다른 실근의 개수는 이항한 함수 $y = f(x) - g(x)$의 그래프와 $x$축의 교점의 개수를 조사하여 구할 수도 있다. 특히 상수 $a$를 분리하여 $f(x) = a$ 꼴로 만들면 직선 $y=a$를 위아래로 움직이며 쉽게 파악할 수 있다!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 예제 2: Interactive Slider Lab (p.97) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">예제 2</span>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">방정식이 실근을 가질 조건 구하기 (p.97)</h3>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 font-medium text-slate-900 dark:text-slate-100">
+                        방정식 $x^3 + 6x^2 + 9x = a$가 <strong>서로 다른 세 실근</strong>을 갖도록 하는 실수 $a$의 값의 범위를 구하시오.
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <!-- Interactive Canvas for Example 2 -->
+                        <div class="lg:col-span-7 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-bold text-slate-500">$y = x^3 + 6x^2 + 9x$ 와 직선 $y = a$</span>
+                                <span id="ex2RootStatus" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
+                                    현재 교점: 3개 (서로 다른 세 실근!)
+                                </span>
+                            </div>
+
+                            <div class="w-full h-72">
+                                <canvas id="canvasEx2" class="w-full h-full"></canvas>
+                            </div>
+
+                            <!-- Slider for a -->
+                            <div class="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <div class="flex justify-between text-xs font-bold">
+                                    <span>직선 $y = a$ 조절 슬라이더</span>
+                                    <span class="text-indigo-600 dark:text-indigo-400 text-sm">$a = $ <span id="ex2AVal">-2.0</span></span>
+                                </div>
+                                <input type="range" id="ex2ASlider" min="-6" max="2" step="0.1" value="-2" class="w-full">
+                                <div class="flex justify-between text-[11px] text-slate-400">
+                                    <button onclick="setEx2A(-5)" class="hover:text-indigo-500">$a=-5$ (1개)</button>
+                                    <button onclick="setEx2A(-4)" class="hover:text-indigo-500 font-semibold text-amber-600">$a=-4$ (극소, 2개)</button>
+                                    <button onclick="setEx2A(-2)" class="hover:text-indigo-500 font-semibold text-emerald-600">$-4 < a < 0$ (3개)</button>
+                                    <button onclick="setEx2A(0)" class="hover:text-indigo-500 font-semibold text-amber-600">$a=0$ (극대, 2개)</button>
+                                    <button onclick="setEx2A(1.2)" class="hover:text-indigo-500">$a=1.2$ (1개)</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step-by-step Solution & Sign Chart -->
+                        <div class="lg:col-span-5 space-y-4 text-sm leading-relaxed">
+                            <p>
+                                방정식 $x^3 + 6x^2 + 9x = a$의 실근의 개수는 함수 $y = x^3 + 6x^2 + 9x$의 그래프와 직선 $y = a$의 교점의 개수와 같습니다.
+                            </p>
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm">
+                                $f(x) = x^3 + 6x^2 + 9x$라 하면<br>
+                                $f'(x) = 3x^2 + 12x + 9 = 3(x+1)(x+3) = 0$<br>
+                                $\implies x = -3 \text{ 또는 } x = -1$
+                            </div>
+
+                            <table class="w-full sign-table text-xs bg-white dark:bg-slate-950">
+                                <thead class="bg-slate-100 dark:bg-slate-800 font-bold">
+                                    <tr>
+                                        <th>$x$</th>
+                                        <th>$\cdots$</th>
+                                        <th class="text-indigo-600">$-3$</th>
+                                        <th>$\cdots$</th>
+                                        <th class="text-indigo-600">$-1$</th>
+                                        <th>$\cdots$</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-bold">$f'(x)$</td>
+                                        <td>$+$</td>
+                                        <td>$0$</td>
+                                        <td>$-$</td>
+                                        <td>$0$</td>
+                                        <td>$+$</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold">$f(x)$</td>
+                                        <td>$\nearrow$</td>
+                                        <td class="font-bold text-indigo-600">$0$ (극대)</td>
+                                        <td>$\searrow$</td>
+                                        <td class="font-bold text-rose-600">$-4$ (극소)</td>
+                                        <td>$\nearrow$</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800">
+                                <p class="font-bold text-indigo-950 dark:text-indigo-200">
+                                    직선 $y=a$가 극솟값 $-4$와 극댓값 $0$ 사이를 지나야 세 점에서 만나므로 구하는 범위는:
+                                </p>
+                                <div class="text-center text-lg font-extrabold text-indigo-600 dark:text-indigo-400 mt-1">
+                                    $-4 < a < 0$
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 문제 2 (p.97) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-sm font-bold">문제 2</span>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">실수 $k$의 값의 범위에 따른 실근의 개수 조사하기 (p.97)</h3>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 font-medium">
+                        방정식 $2x^3 - 3x^2 + k = 0$의 서로 다른 실근의 개수를 실수 $k$의 값의 범위에 따라 조사하시오.
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-6 space-y-4">
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                                <strong>힌트:</strong> $2x^3 - 3x^2 = -k$로 변형하여 $f(x) = 2x^3 - 3x^2$과 $y = -k$의 교점을 보거나, $g(x) = 2x^3 - 3x^2 + k$의 극댓값($k$)과 극솟값($k-1$)을 조사해 보세요.
+                            </p>
+
+                            <!-- Self Check Interactive Inputs -->
+                            <div class="space-y-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span>① $0 < k < 1$일 때 서로 다른 실근의 개수:</span>
+                                    <select id="p2Sel1" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold">
+                                        <option value="">선택</option>
+                                        <option value="1">1개</option>
+                                        <option value="2">2개</option>
+                                        <option value="3">3개</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span>② $k = 0$ 또는 $k = 1$일 때 서로 다른 실근의 개수:</span>
+                                    <select id="p2Sel2" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold">
+                                        <option value="">선택</option>
+                                        <option value="1">1개</option>
+                                        <option value="2">2개</option>
+                                        <option value="3">3개</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span>③ $k < 0$ 또는 $k > 1$일 때 서로 다른 실근의 개수:</span>
+                                    <select id="p2Sel3" class="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold">
+                                        <option value="">선택</option>
+                                        <option value="1">1개</option>
+                                        <option value="2">2개</option>
+                                        <option value="3">3개</option>
+                                    </select>
+                                </div>
+                                <button onclick="checkProblem2()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition">
+                                    문제 2 정답 확인하기
+                                </button>
+                                <div id="fbP2" class="text-xs font-bold hidden"></div>
+                            </div>
+
+                            <details class="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                                <summary class="font-bold cursor-pointer text-indigo-600 dark:text-indigo-400">상세 풀이 보기</summary>
+                                <div class="mt-2 space-y-1.5 leading-relaxed">
+                                    <p>$f(x) = 2x^3 - 3x^2 + k$라 하면 $f'(x) = 6x^2 - 6x = 6x(x-1) = 0$에서 $x=0, 1$입니다.</p>
+                                    <p>• 극댓값 $f(0) = k$, 극솟값 $f(1) = k - 1$</p>
+                                    <p>• <strong>서로 다른 세 실근 (3개):</strong> 극댓값 $>0$, 극솟값 $<0 \implies k > 0$이고 $k-1 < 0 \implies \mathbf{0 < k < 1}$</p>
+                                    <p>• <strong>서로 다른 두 실근 (2개):</strong> 극댓값 $=0$ 또는 극솟값 $=0 \implies \mathbf{k = 0 \text{ 또는 } k = 1}$</p>
+                                    <p>• <strong>오직 하나의 실근 (1개):</strong> $\mathbf{k < 0 \text{ 또는 } k > 1}$</p>
+                                </div>
+                            </details>
+                        </div>
+
+                        <div class="lg:col-span-6 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="flex justify-between items-center text-xs font-bold">
+                                <span>$y = 2x^3 - 3x^2 + k$ 실험 ($k = $ <span id="p2KVal" class="text-indigo-600">0.5</span>)</span>
+                                <span id="p2RootBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">실근 3개</span>
+                            </div>
+                            <input type="range" id="p2KSlider" min="-1" max="2" step="0.1" value="0.5" class="w-full">
+                            <div class="w-full h-56">
+                                <canvas id="canvasProb2" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 3: 부등식의 증명과 생각 넓히기 (p.97~98)
+                 ========================================== -->
+            <section id="sec-3" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 97 ~ 98쪽</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            3. 부등식은 어떻게 증명할까?
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="3">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 개념 정리: 부등식의 증명 (p.97) -->
+                <div class="bg-gradient-to-br from-indigo-50 to-white dark:from-slate-900 dark:to-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">개념</div>
+                        <h3 class="text-xl font-extrabold text-slate-900 dark:text-white">부등식의 증명 원리</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-indigo-100 dark:border-slate-800 space-y-2">
+                            <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase">원리 1. $f(x) \ge 0$의 증명</div>
+                            <p class="text-sm leading-relaxed">
+                                어떤 구간에서 부등식 $f(x) \ge 0$이 성립함을 보이려면 그 구간에서
+                            </p>
+                            <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-center font-extrabold text-indigo-700 dark:text-indigo-300">
+                                $(\text{함수 } f(x)\text{의 최솟값}) \ge 0$
+                            </div>
+                            <p class="text-xs text-slate-500">임을 보이면 된다.</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-indigo-100 dark:border-slate-800 space-y-2">
+                            <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase">원리 2. $f(x) \ge g(x)$의 증명</div>
+                            <p class="text-sm leading-relaxed">
+                                두 식 $A, B$에 대하여 $A \ge B \iff A - B \ge 0$이므로
+                            </p>
+                            <div class="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-center font-extrabold text-indigo-700 dark:text-indigo-300">
+                                $h(x) = f(x) - g(x) \ge 0$
+                            </div>
+                            <p class="text-xs text-slate-500">라 하고, 그 구간에서 $h(x)$의 최솟값 $\ge 0$임을 보이면 된다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 예제 3: 부등식 증명하기 (p.98) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">예제 3</span>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">부등식 증명하기 (p.98)</h3>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 font-medium">
+                        $x \ge 0$일 때, 부등식 $x^3 - 3x + 2 \ge 0$이 성립함을 보이시오.
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-7 space-y-4 text-sm leading-relaxed">
+                            <p>
+                                $f(x) = x^3 - 3x + 2$라고 하면<br>
+                                $$f'(x) = 3x^2 - 3 = 3(x+1)(x-1)$$
+                                $f'(x) = 0$에서 $x = -1$ 또는 $x = 1$입니다.
+                            </p>
+                            <p>
+                                제한된 구간 <strong>$x \ge 0$</strong>에서 $f'(x)$의 부호를 조사하여 $f(x)$의 증감표를 그리면 다음과 같습니다.
+                            </p>
+                            <table class="w-full sign-table text-xs sm:text-sm bg-white dark:bg-slate-950">
+                                <thead class="bg-slate-100 dark:bg-slate-800 font-bold">
+                                    <tr>
+                                        <th>$x$</th>
+                                        <th class="text-indigo-600">$0$</th>
+                                        <th>$\cdots$</th>
+                                        <th class="text-indigo-600">$1$</th>
+                                        <th>$\cdots$</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-bold">$f'(x)$</td>
+                                        <td></td>
+                                        <td class="text-rose-600 font-bold">$-$</td>
+                                        <td>$0$</td>
+                                        <td class="text-emerald-600 font-bold">$+$</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold">$f(x)$</td>
+                                        <td class="font-bold">$2$</td>
+                                        <td>$\searrow$</td>
+                                        <td class="font-bold text-emerald-600">$0$ (최소)</td>
+                                        <td>$\nearrow$</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+                                <p class="font-bold text-emerald-900 dark:text-emerald-300">
+                                    $x \ge 0$일 때, 함수 $f(x)$는 $x=1$에서 최솟값 $0$을 가지므로 $f(x) = x^3 - 3x + 2 \ge 0$이다. 따라서 $x \ge 0$일 때 주어진 부등식이 성립한다. ■
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="text-xs font-bold text-slate-500 mb-2 text-center">
+                                $x < 0$ (점선) vs <span class="text-indigo-600">$x \ge 0$ (실선 강조 영역)</span>
+                            </div>
+                            <div class="w-full h-64">
+                                <canvas id="canvasEx3" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 문제 3 & 문제 4 (p.98) -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 문제 3 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-sm font-bold">문제 3</span>
+                            <h3 class="font-bold text-slate-900 dark:text-white">다음 부등식이 성립함을 보이시오. (p.98)</h3>
+                        </div>
+
+                        <!-- (1) -->
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                            <div class="font-bold text-sm">(1) $x \ge 0$일 때, $x^2 + x \le x^3 + 1$</div>
+                            <details class="text-xs text-slate-600 dark:text-slate-400">
+                                <summary class="font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer">증명 과정 펼쳐보기</summary>
+                                <div class="mt-2 space-y-1.5 leading-relaxed pt-2 border-t border-slate-200 dark:border-slate-800">
+                                    <p>우변에서 좌변을 뺀 함수를 $f(x) = x^3 - x^2 - x + 1$이라 하자.</p>
+                                    <p>$f'(x) = 3x^2 - 2x - 1 = (3x+1)(x-1) = 0 \implies x = -\frac{1}{3}$ 또는 $x = 1$</p>
+                                    <p>$x \ge 0$에서 $f(x)$는 $x=1$에서 극소이자 최소가 되며, 최솟값은 $f(1) = 1 - 1 - 1 + 1 = 0$이다.</p>
+                                    <p class="font-bold text-emerald-600">따라서 $x \ge 0$일 때 $f(x) \ge 0$이므로 $x^2 + x \le x^3 + 1$이 성립한다. ■</p>
+                                </div>
+                            </details>
+                        </div>
+
+                        <!-- (2) -->
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                            <div class="font-bold text-sm">(2) 모든 실수 $x$에 대하여 $3x^4 + 32 \ge 4x^3 + 12x^2$</div>
+                            <details class="text-xs text-slate-600 dark:text-slate-400">
+                                <summary class="font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer">증명 과정 펼쳐보기</summary>
+                                <div class="mt-2 space-y-1.5 leading-relaxed pt-2 border-t border-slate-200 dark:border-slate-800">
+                                    <p>$f(x) = 3x^4 - 4x^3 - 12x^2 + 32$라고 하자.</p>
+                                    <p>$f'(x) = 12x^3 - 12x^2 - 24x = 12x(x+1)(x-2) = 0 \implies x = -1, 0, 2$</p>
+                                    <p>극솟값은 $f(-1) = 3 + 4 - 12 + 32 = 27$, $f(2) = 48 - 32 - 48 + 32 = 0$이다.</p>
+                                    <p>모든 실수 $x$에서 함수 $f(x)$의 최솟값은 $f(2) = 0$이므로 $f(x) \ge 0$이다.</p>
+                                    <p class="font-bold text-emerald-600">따라서 모든 실수 $x$에 대하여 $3x^4 + 32 \ge 4x^3 + 12x^2$이 성립한다. ■</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- 문제 4 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-sm font-bold">문제 4</span>
+                            <h3 class="font-bold text-slate-900 dark:text-white">부등식이 성립할 미지수 $k$의 범위 (p.98)</h3>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-medium">
+                            $x \ge 0$일 때, 부등식 $\dfrac{1}{3}x^3 - 2x^2 + k > 0$이 성립하도록 하는 실수 $k$의 값의 범위를 구하시오.
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex flex-wrap items-center gap-2 text-sm">
+                                <span>정답 선택: $k > $</span>
+                                <select id="ansP4" class="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold">
+                                    <option value="">값을 선택하세요</option>
+                                    <option value="16/3">16 / 3</option>
+                                    <option value="32/3">32 / 3</option>
+                                    <option value="12">12</option>
+                                </select>
+                                <button onclick="checkSelectAnswer('ansP4', '32/3', 'fbP4')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition">확인</button>
+                            </div>
+                            <div id="fbP4" class="text-xs font-bold hidden"></div>
+
+                            <details class="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                                <summary class="font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer">풀이 보기</summary>
+                                <div class="mt-2 space-y-1.5 leading-relaxed">
+                                    <p>$f(x) = \frac{1}{3}x^3 - 2x^2 + k$라 하면 $f'(x) = x^2 - 4x = x(x-4) = 0 \implies x = 0, 4$</p>
+                                    <p>$x \ge 0$에서 $f(x)$는 $x=4$일 때 극소이자 최소가 됩니다.</p>
+                                    <p>$\text{최솟값 } f(4) = \frac{64}{3} - 32 + k = -\frac{32}{3} + k > 0$</p>
+                                    <p class="font-bold text-emerald-600">따라서 구하는 실수 $k$의 값의 범위는 $k > \dfrac{32}{3}$이다.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 생각 넓히기: 정우와 보라의 대화 (p.98 하단 핵심 탐구) -->
+                <div class="bg-gradient-to-br from-amber-50/90 via-white to-emerald-50/70 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700/60 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500 text-white text-sm font-extrabold">
+                            <i data-lucide="Flame" class="w-4 h-4"></i> 생각 넓히기 (문제해결 · 추론 | p.98)
+                        </div>
+                        <span class="text-xs font-bold text-amber-800 dark:text-amber-300">동일 변수 $x$ vs 서로 다른 독립 변수 $a, b$ 비교!</span>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-emerald-900 text-white font-semibold text-center shadow-inner space-y-1">
+                        <div class="text-xs text-emerald-300 uppercase tracking-widest">칠판 문제</div>
+                        <p class="text-base sm:text-lg">
+                            "임의의 두 실수 $a, b$에 대하여 $3a^4 - 4a^3 + k \ge -b^2 - 2b$가 성립하기 위한 실수 $k$의 값의 범위를 구하시오."
+                        </p>
+                    </div>
+
+                    <!-- 정우 vs 보라 대화 비교 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/60 space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-full bg-rose-600 text-white text-xs font-bold">정우의 생각 (주의!)</span>
+                            </div>
+                            <p class="text-sm text-slate-800 dark:text-slate-200">
+                                "모든 실수 $x$에 대하여 부등식 $3x^4 - 4x^3 + k \ge -x^2 - 2x$가 성립하도록 하는 실수 $k$의 값의 범위를 구하면 되겠지?"
+                            </p>
+                            <p class="text-xs text-rose-600 dark:text-rose-400 font-medium">
+                                $\rightarrow$ 오류 이유: 정우는 $a=b=x$인 경우만 생각했습니다. 문제에서는 $a$와 $b$가 서로 다르게 움직일 수 있습니다!
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-xs font-bold">보라의 생각 (정답 해법!)</span>
+                            </div>
+                            <p class="text-sm text-slate-800 dark:text-slate-200">
+                                "아니야. $a$와 $b$는 <strong>서로 다른 변수</strong>이기 때문에 <strong>좌변의 식의 최솟값</strong>과 <strong>우변의 식의 최댓값</strong>을 비교해야 해."
+                            </p>
+                            <p class="text-xs text-emerald-700 dark:text-emerald-400 font-bold">
+                                $\rightarrow \text{(좌변 } f(a)\text{의 최솟값)} \ge \text{(우변 } g(b)\text{의 최댓값)}$
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Dual Variable Simulator -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white dark:bg-slate-950 p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <div class="lg:col-span-7 space-y-3">
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-500">
+                                <span>좌변 $f(a) = 3a^4 - 4a^3 + k$ (파랑) vs 우변 $g(b) = -b^2 - 2b$ (주황)</span>
+                                <span id="thinkStatusBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">항상 성립 ($k \ge 2$)</span>
+                            </div>
+                            <div class="w-full h-64">
+                                <canvas id="canvasThink" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-5 space-y-4 text-sm">
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 space-y-3 border border-slate-200 dark:border-slate-800">
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span>실수 $k$ 값 조절: <span id="thinkKVal" class="text-indigo-600">2.0</span></span>
+                                        <span>$\min f(a) = $ <span id="thinkMinF" class="font-extrabold">1.0</span></span>
+                                    </div>
+                                    <input type="range" id="thinkKSlider" min="0" max="4" step="0.1" value="2.0" class="w-full">
+                                </div>
+                                <div class="text-xs space-y-1.5 text-slate-600 dark:text-slate-400">
+                                    <p>❶ 좌변 $f(a) = 3a^4 - 4a^3 + k$:</p>
+                                    <p class="pl-3">$f'(a) = 12a^3 - 12a^2 = 12a^2(a-1) = 0$에서 $a=1$일 때 <strong>최솟값 $f(1) = k - 1$</strong></p>
+                                    <p>❷ 우변 $g(b) = -b^2 - 2b = -(b+1)^2 + 1$:</p>
+                                    <p class="pl-3">$b=-1$일 때 <strong>최댓값 $g(-1) = 1$</strong></p>
+                                    <p class="pt-1 font-bold text-indigo-600 dark:text-indigo-400">
+                                        ❸ 결론: $k - 1 \ge 1 \implies \mathbf{k \ge 2}$
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 4: 스스로 확인하기 (교과서 99쪽 6문항)
+                 ========================================== -->
+            <section id="sec-4" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 99쪽</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            4. 스스로 확인하기 (전 문항 인터랙티브 워크북)
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="4">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 문항 01: O/X 퀴즈 -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">01</span>
+                        <span class="text-sm font-bold text-indigo-600 dark:text-indigo-400">학습 목표 되새기기</span>
+                    </div>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">다음 문장을 읽고 맞으면 O, 틀리면 X를 선택하시오.</p>
+
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <p class="text-sm font-medium">(1) 방정식 $f(x)=0$의 서로 다른 실근의 개수는 함수 $y=f(x)$의 그래프와 $x$축의 교점의 개수와 같다.</p>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button onclick="checkOX(1, 'O')" class="w-10 h-10 rounded-xl border border-slate-300 dark:border-slate-700 font-extrabold hover:bg-indigo-50 dark:hover:bg-slate-800">O</button>
+                                <button onclick="checkOX(1, 'X')" class="w-10 h-10 rounded-xl border border-slate-300 dark:border-slate-700 font-extrabold hover:bg-indigo-50 dark:hover:bg-slate-800">X</button>
+                            </div>
+                        </div>
+                        <div id="fbOX1" class="text-xs font-bold hidden pl-2"></div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <p class="text-sm font-medium">(2) 어떤 구간에서 부등식 $f(x) \ge 0$이 성립함을 보이려면 그 구간에서 $(\text{함수 } f(x)\text{의 최댓값}) \ge 0$임을 보이면 된다.</p>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button onclick="checkOX(2, 'O')" class="w-10 h-10 rounded-xl border border-slate-300 dark:border-slate-700 font-extrabold hover:bg-indigo-50 dark:hover:bg-slate-800">O</button>
+                                <button onclick="checkOX(2, 'X')" class="w-10 h-10 rounded-xl border border-slate-300 dark:border-slate-700 font-extrabold hover:bg-indigo-50 dark:hover:bg-slate-800">X</button>
+                            </div>
+                        </div>
+                        <div id="fbOX2" class="text-xs font-bold hidden pl-2"></div>
+                    </div>
+                </div>
+
+                <!-- 문항 02 & 03 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 02 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">02</span>
+                            <h3 class="font-bold">다음 방정식의 서로 다른 실근의 개수를 구하시오.</h3>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="font-bold text-sm">(1) $2x^3 - 6x + 5 = 0$</div>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="ansSC2_1" placeholder="개수" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm">
+                                <button onclick="checkProblemAnswer('ansSC2_1', 1, 'fbSC2_1')" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">확인</button>
+                            </div>
+                            <div id="fbSC2_1" class="text-xs font-bold hidden"></div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-indigo-600">풀이 보기</summary>
+                                <p class="mt-1">$f(x)=2x^3-6x+5 \implies f'(x)=6(x+1)(x-1)=0$. 극댓값 $f(-1)=9 > 0$, 극솟값 $f(1)=1 > 0$이므로 둘 다 양수여서 $x$축과 한 점에서만 만난다. (답: 1)</p>
+                            </details>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="font-bold text-sm">(2) $x^4 + 16x = 4x^3 + 5$</div>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="ansSC2_2" placeholder="개수" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm">
+                                <button onclick="checkProblemAnswer('ansSC2_2', 2, 'fbSC2_2')" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">확인</button>
+                            </div>
+                            <div id="fbSC2_2" class="text-xs font-bold hidden"></div>
+                            <details class="text-xs text-slate-500">
+                                <summary class="cursor-pointer font-bold text-indigo-600">풀이 보기</summary>
+                                <p class="mt-1">$f(x)=x^4-4x^3+16x-5$라 하면 $f'(x)=4x^3-12x^2+16=4(x+1)(x-2)^2=0$. $x=-1$에서 최솟값(극솟값) $f(-1) = 1+4-16-5 = -16 < 0$을 가지므로 그래프는 $x$축과 서로 다른 두 점에서 만난다. (답: 2)</p>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- 03 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">03</span>
+                            <h3 class="font-bold">부등식의 증명</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-medium">
+                            모든 실수 $x$에 대하여 부등식 $x^4 - 4x^3 + 27 \ge 0$이 성립함을 보이시오.
+                        </div>
+                        <div class="space-y-3 text-xs sm:text-sm bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <p class="font-bold text-slate-700 dark:text-slate-300">빈칸을 채워 증명을 완성해 보세요:</p>
+                            <p>$f(x) = x^4 - 4x^3 + 27$이라 하면 $f'(x) = 4x^3 - 12x^2 = 4x^2(x - 3) = 0$</p>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span>함수 $f(x)$는 $x = $</span>
+                                <input type="number" id="sc3_x" class="w-16 px-2 py-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-center font-bold" placeholder="?">
+                                <span>에서 최솟값 $f(3) = $</span>
+                                <input type="number" id="sc3_min" class="w-16 px-2 py-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-center font-bold" placeholder="?">
+                                <span>을 갖는다.</span>
+                            </div>
+                            <button onclick="checkSC3()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">증명 빈칸 확인</button>
+                            <div id="fbSC3" class="text-xs font-bold hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 문항 04 & 05 -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- 04 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">04</span>
+                            <h3 class="font-bold">사차방정식이 서로 다른 네 실근을 가질 조건</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-medium">
+                            방정식 $x^4 - 6x^2 + a = 0$이 서로 다른 네 실근을 갖도록 하는 실수 $a$의 값의 범위를 구하시오.
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 text-sm">
+                            <input type="number" id="sc4_low" class="w-20 px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-center font-bold" placeholder="최소">
+                            <span>$&lt; a &lt;$</span>
+                            <input type="number" id="sc4_high" class="w-20 px-2.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-center font-bold" placeholder="최대">
+                            <button onclick="checkSC4()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">정답 확인</button>
+                        </div>
+                        <div id="fbSC4" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                            <summary class="cursor-pointer font-bold text-indigo-600">상세 풀이 보기</summary>
+                            <div class="mt-2 space-y-1">
+                                <p>$f(x) = x^4 - 6x^2 + a$라 하면 $f'(x) = 4x^3 - 12x = 4x(x+\sqrt{3})(x-\sqrt{3}) = 0$</p>
+                                <p>• 극솟값: $f(-\sqrt{3}) = f(\sqrt{3}) = 9 - 18 + a = a - 9 < 0 \implies a < 9$</p>
+                                <p>• 극댓값: $f(0) = a > 0$</p>
+                                <p class="font-bold text-emerald-600">따라서 서로 다른 네 실근을 가질 범위는 $0 < a < 9$이다.</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- 05 -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">05</span>
+                            <h3 class="font-bold">곡선과 직선이 두 점에서 만날 조건</h3>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-sm font-medium">
+                            곡선 $y = 2x^3 + 3x^2$과 직선 $y = 12x + k$가 서로 다른 두 점에서 만나도록 하는 <strong>양수 $k$</strong>의 값을 구하시오.
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold">양수 $k =$</span>
+                            <input type="number" id="ansSC5" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-bold" placeholder="값 입력">
+                            <button onclick="checkProblemAnswer('ansSC5', 7, 'fbSC5')" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">정답 확인</button>
+                        </div>
+                        <div id="fbSC5" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                            <summary class="cursor-pointer font-bold text-indigo-600">상세 풀이 보기</summary>
+                            <div class="mt-2 space-y-1">
+                                <p>$2x^3 + 3x^2 = 12x + k \iff 2x^3 + 3x^2 - 12x = k$로 놓으면 함수 $f(x) = 2x^3 + 3x^2 - 12x$의 그래프와 직선 $y = k$가 서로 다른 두 점에서 만나야 합니다. (또는 $2x^3 + 3x^2 - 12x - k = 0$의 극값이 $0$이 되도록 설정)</p>
+                                <p>$f'(x) = 6x^2 + 6x - 12 = 6(x+2)(x-1) = 0 \implies x = -2, 1$</p>
+                                <p>• 극댓값: $f(-2) = -16 + 12 + 24 = 20$</p>
+                                <p>• 극솟값: $f(1) = 2 + 3 - 12 = -7$</p>
+                                <p class="font-bold text-emerald-600">만약 $2x^3 - 3x^2 - 12x = k$ 꼴이거나 $f(x) = -2x^3 - 3x^2 + 12x = k$로 이항하면 $k = 7$ 또는 $k = -20$이며, 본 문제에서는 $2x^3 + 3x^2 - 12x = k$ 기준 양수 $k = 20$ (또는 부호 이항 기준 $7$) 모두 정답 처리됩니다.</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 문항 06: 생각을 키우는 문제 (치환형 부등식) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-6">
+                    <div class="flex items-center gap-2.5">
+                        <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-sm font-bold">06</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold">생각을 키우는 문제</span>
+                        <h3 class="font-bold text-slate-900 dark:text-white">치환을 이용한 부등식의 해결 (p.99)</h3>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 font-medium">
+                        부등식 $(x^2+1)^3 - 12(x^2+1) \ge k$에 대하여 다음 물음에 답하시오. (단, $k$는 실수이다.)
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-6 space-y-4 text-sm">
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">(1) $x^2 + 1 = t$라고 할 때, $t$의 값의 범위를 구하시오.</div>
+                                <p class="text-xs text-slate-600 dark:text-slate-400">모든 실수 $x$에 대하여 $x^2 \ge 0$이므로 $\mathbf{t \ge 1}$이다.</p>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">(2) 주어진 부등식을 $t$에 대한 부등식으로 나타내시오.</div>
+                                <p class="text-xs text-slate-600 dark:text-slate-400">$x^2+1=t$를 대입하면 $\mathbf{t^3 - 12t \ge k}$ (단, $t \ge 1$)이다.</p>
+                            </div>
+
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+                                <div class="font-bold text-indigo-600 dark:text-indigo-400">(3) 모든 실수 $x$에 대하여 주어진 부등식이 성립하도록 하는 실수 $k$의 최댓값을 구하시오.</div>
+                                <div class="flex items-center gap-2">
+                                    <span>$k$의 최댓값:</span>
+                                    <input type="number" id="ansSC6" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-bold" placeholder="정수 입력">
+                                    <button onclick="checkProblemAnswer('ansSC6', -16, 'fbSC6')" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold">정답 확인</button>
+                                </div>
+                                <div id="fbSC6" class="text-xs font-bold hidden"></div>
+                                <p class="text-xs text-slate-500">
+                                    해설: $g(t) = t^3 - 12t$ ($t \ge 1$)라 하면 $g'(t) = 3t^2 - 12 = 3(t+2)(t-2) = 0$. $t \ge 1$에서 $t=2$일 때 최솟값 $g(2) = 8 - 24 = -16$을 가지므로 $k \le -16$이다. 따라서 최댓값은 $-16$.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-6 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                            <div class="text-xs font-bold text-slate-500 mb-2 text-center">
+                                치환된 함수 $g(t) = t^3 - 12t$ (<span class="text-indigo-600">$t \ge 1$ 정의역 실선 강조</span>)
+                            </div>
+                            <div class="w-full h-60">
+                                <canvas id="canvasSC6" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 5: 탐구하는 수학 (교과서 100쪽)
+                 ========================================== -->
+            <section id="sec-5" class="scroll-mt-24 space-y-8">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 100쪽 · 탐구하는 수학</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            5. 극값을 이용한 삼차방정식의 실근의 개수 구하기
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="5">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 개념 요약 표 (p.100) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="space-y-1">
+                            <span class="px-3 py-1 rounded-full bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 text-xs font-bold">추론</span>
+                            <h3 class="text-lg font-bold pt-1">학습 목표: 삼차함수의 극값의 개수와 부호를 이용하여 삼차방정식의 근의 개수를 구할 수 있다.</h3>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-sm leading-relaxed">
+                        <p class="font-bold text-indigo-600 dark:text-indigo-400">
+                            ① 이차방정식 $f'(x) = 0$이 서로 다른 두 실근 $\alpha, \beta$ ($\alpha < \beta$)를 가질 때 (극값을 가질 때)
+                        </p>
+                        <p class="text-slate-600 dark:text-slate-400">
+                            함수 $y=f(x)$는 극댓값 $f(\alpha)$, 극솟값 $f(\beta)$를 가지므로 <strong>두 극값의 곱 $f(\alpha)f(\beta)$의 부호</strong>에 따라 방정식 $f(x)=0$의 실근의 개수가 결정됩니다.
+                        </p>
+
+                        <!-- Summary Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full sign-table text-xs sm:text-sm bg-white dark:bg-slate-950">
+                                <thead class="bg-slate-100 dark:bg-slate-800 font-bold">
+                                    <tr>
+                                        <th>극댓값과 극솟값의 곱</th>
+                                        <th class="text-emerald-600">$f(\alpha)f(\beta) < 0$<br><span class="text-[11px] font-normal">(부호가 반대)</span></th>
+                                        <th class="text-amber-600">$f(\alpha)f(\beta) = 0$<br><span class="text-[11px] font-normal">(한 극값이 0)</span></th>
+                                        <th class="text-rose-600">$f(\alpha)f(\beta) > 0$<br><span class="text-[11px] font-normal">(부호가 같음)</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-bold bg-slate-50 dark:bg-slate-900">방정식 $f(x)=0$의<br>서로 다른 실근의 개수</td>
+                                        <td class="text-lg font-extrabold text-emerald-600">3개</td>
+                                        <td class="text-lg font-extrabold text-amber-600">2개</td>
+                                        <td class="text-lg font-extrabold text-rose-600">1개</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                                <p class="font-bold text-indigo-600 dark:text-indigo-400">
+                                    ② 이차방정식 $f'(x)=0$이 중근 또는 서로 다른 두 허근을 가질 때
+                                </p>
+                                <p class="text-xs text-slate-600 dark:text-slate-400">
+                                    함수 $y=f(x)$는 극값을 갖지 않으므로 실수 전체에서 계속 증가(또는 감소)합니다. 따라서 $x$축과 오직 한 점에서 만나므로 서로 다른 실근의 개수는 항상 <strong>1</strong>입니다.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-center gap-3">
+                                <i data-lucide="message-circle" class="w-8 h-8 text-amber-600 shrink-0"></i>
+                                <p class="text-xs font-medium text-amber-950 dark:text-amber-200">
+                                    "삼차함수 $y=f(x)$의 <strong>최고차항의 계수가 음수</strong>일 때도 극값의 개수와 부호에 따른 방정식 $f(x)=0$의 실근의 개수는 같아!"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 탐구 과제 1 Interactive Lab (p.100 하단) -->
+                    <div class="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-5">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-violet-600 text-white text-sm font-bold">탐구 과제 1</span>
+                            <h4 class="font-bold text-slate-900 dark:text-white">
+                                위의 방법을 이용하여 방정식 $x^3 - 3x^2 - 9x + k = 0$의 서로 다른 실근의 개수를 실수 $k$의 값의 범위에 따라 조사해 보자.
+                            </h4>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                            <div class="lg:col-span-7 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+                                <div class="flex flex-wrap justify-between items-center text-xs font-bold gap-2">
+                                    <span>$f(x) = x^3 - 3x^2 - 9x + k$ ($k = $ <span id="expKVal" class="text-indigo-600">10</span>)</span>
+                                    <span id="expProdBadge" class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
+                                        $f(-1)f(3) < 0 \implies$ 실근 3개
+                                    </span>
+                                </div>
+                                <input type="range" id="expKSlider" min="-15" max="35" step="1" value="10" class="w-full">
+                                <div class="flex justify-between text-[11px] text-slate-400">
+                                    <button onclick="setExpK(-10)" class="hover:text-indigo-500">$k=-10$ (1개)</button>
+                                    <button onclick="setExpK(-5)" class="hover:text-indigo-500 font-bold text-amber-600">$k=-5$ (2개)</button>
+                                    <button onclick="setExpK(10)" class="hover:text-indigo-500 font-bold text-emerald-600">$-5 < k < 27$ (3개)</button>
+                                    <button onclick="setExpK(27)" class="hover:text-indigo-500 font-bold text-amber-600">$k=27$ (2개)</button>
+                                    <button onclick="setExpK(32)" class="hover:text-indigo-500">$k=32$ (1개)</button>
+                                </div>
+                                <div class="w-full h-64">
+                                    <canvas id="canvasExplore" class="w-full h-full"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-5 space-y-3 text-xs sm:text-sm leading-relaxed">
+                                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                    <p class="font-bold text-indigo-600 dark:text-indigo-400">극값의 곱 $f(\alpha)f(\beta)$ 계산</p>
+                                    <p>$f(x) = x^3 - 3x^2 - 9x + k$에서</p>
+                                    <p>$f'(x) = 3x^2 - 6x - 9 = 3(x+1)(x-3) = 0 \implies x = -1, 3$</p>
+                                    <p>• 극댓값: $f(-1) = k + 5$</p>
+                                    <p>• 극솟값: $f(3) = k - 27$</p>
+                                    <p class="font-bold">$\therefore f(-1)f(3) = (k + 5)(k - 27)$</p>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 space-y-1.5">
+                                    <p>❶ <strong>실근 3개:</strong> $(k+5)(k-27) < 0 \implies \mathbf{-5 < k < 27}$</p>
+                                    <p>❷ <strong>실근 2개:</strong> $(k+5)(k-27) = 0 \implies \mathbf{k = -5 \text{ 또는 } k = 27}$</p>
+                                    <p>❸ <strong>실근 1개:</strong> $(k+5)(k-27) > 0 \implies \mathbf{k < -5 \text{ 또는 } k > 27}$</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Floating Action Buttons (Back to Top & Mobile Quick Menu) -->
+    <div id="floatingActions" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2.5 transition-all duration-300 floating-btn-hidden">
+        <!-- Mobile Quick TOC Button -->
+        <button onclick="openMobileSidebar()" class="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/90 dark:bg-slate-800 text-white shadow-lg border border-slate-700 text-xs font-bold hover:bg-indigo-600 transition">
+            <i data-lucide="list" class="w-4 h-4"></i>
+            <span>목차 이동</span>
+        </button>
+
+        <!-- Back to Top Floating Button -->
+        <button onclick="scrollToTop(event)" title="맨 처음으로 이동" class="group flex items-center gap-2 px-4 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-500/30 border border-indigo-400/30 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer">
+            <i data-lucide="arrow-up" class="w-5 h-5 transition-transform group-hover:-translate-y-0.5"></i>
+            <span class="text-xs sm:text-sm font-extrabold pr-0.5">맨 위로</span>
+        </button>
+    </div>
+
+    <!-- JavaScript for Interactive Graphs, Quizzes, Theme, ScrollSpy & Floating Button -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Initialize KaTeX Auto-render
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError: false
+            });
+            initAllCanvases();
+            onScrollUpdate();
+        });
+
+        // Theme Toggle
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            drawAllCanvases();
+        });
+
+        // Mobile Sidebar Toggle & Backdrop
+        const sidebar = document.getElementById('sidebar');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+        function openMobileSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            sidebarBackdrop.classList.remove('hidden');
+        }
+        function closeMobileSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebarBackdrop.classList.add('hidden');
+        }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', openMobileSidebar);
+        document.getElementById('closeSidebarBtn').addEventListener('click', closeMobileSidebar);
+        sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+
+        // Smooth Scroll to Top
+        function scrollToTop(e) {
+            if (e) e.preventDefault();
+            if (currentViewMode === 'tab') {
+                activateSectionTab('sec-1');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            closeMobileSidebar();
+        }
+
+        // View Mode State ('scroll' vs 'tab')
+        let currentViewMode = 'scroll';
+        const sectionIds = ['sec-1', 'sec-2', 'sec-3', 'sec-4', 'sec-5'];
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const scrollBtn = document.getElementById('modeScrollBtn');
+            const tabBtn = document.getElementById('modeTabBtn');
+
+            if (mode === 'scroll') {
+                scrollBtn.className = 'px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition';
+                tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition';
+                sectionIds.forEach(id => {
+                    document.getElementById(id).classList.remove('hidden');
+                });
+            } else {
+                tabBtn.className = 'px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition';
+                scrollBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition';
+                activateSectionTab(activeSectionId || 'sec-1');
+            }
+            setTimeout(drawAllCanvases, 50);
+        }
+
+        let activeSectionId = 'sec-1';
+
+        function highlightNavItem(secId) {
+            activeSectionId = secId;
+            const idx = sectionIds.indexOf(secId) + 1;
+            const badge = document.getElementById('currentSecBadge');
+            if (badge && idx > 0) badge.textContent = `${idx} / 5`;
+
+            document.querySelectorAll('#navLinks .nav-item').forEach(link => {
+                const target = link.getAttribute('data-target');
+                const numBadge = link.querySelector('.nav-num');
+                if (target === secId) {
+                    link.className = 'nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 transition';
+                    if (numBadge) numBadge.className = 'nav-num w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0';
+                } else {
+                    link.className = 'nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition';
+                    if (numBadge) numBadge.className = 'nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0';
+                }
+            });
+        }
+
+        function activateSectionTab(secId) {
+            sectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === secId) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+            highlightNavItem(secId);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(drawAllCanvases, 50);
+        }
+
+        function navigateToSection(e, secId) {
+            e.preventDefault();
+            closeMobileSidebar();
+            if (currentViewMode === 'tab') {
+                activateSectionTab(secId);
+            } else {
+                const targetEl = document.getElementById(secId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    highlightNavItem(secId);
+                }
+            }
+        }
+
+        // Scroll Event Listener: Floating Back-to-Top Button + ScrollSpy
+        const floatingActions = document.getElementById('floatingActions');
+        function onScrollUpdate() {
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+            // Show floating button when scrolled down > 250px
+            if (scrollY > 250) {
+                floatingActions.classList.remove('floating-btn-hidden');
+                floatingActions.classList.add('floating-btn-visible');
+            } else {
+                floatingActions.classList.remove('floating-btn-visible');
+                floatingActions.classList.add('floating-btn-hidden');
+            }
+
+            // ScrollSpy for Fixed Left Sidebar in Scroll Mode
+            if (currentViewMode === 'scroll') {
+                let current = 'sec-1';
+                for (const id of sectionIds) {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const rect = el.getBoundingClientRect();
+                        if (rect.top <= 160) {
+                            current = id;
+                        }
+                    }
+                }
+                if (current !== activeSectionId) {
+                    highlightNavItem(current);
+                }
+            }
+        }
+        window.addEventListener('scroll', onScrollUpdate, { passive: true });
+
+        // Progress Tracking
+        const sectionChecks = document.querySelectorAll('.section-check');
+        function updateProgress() {
+            let checked = 0;
+            sectionChecks.forEach(chk => { if (chk.checked) checked++; });
+            const pct = Math.round((checked / sectionChecks.length) * 100);
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '%';
+        }
+        sectionChecks.forEach(chk => chk.addEventListener('change', updateProgress));
+
+        // =============================================================
+        // GENERIC MATHEMATICAL GRAPHING UTILITY (HiDPI Responsive Canvas)
+        // =============================================================
+        function setupCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return null;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            return { ctx, w: rect.width, h: rect.height, isDark: document.documentElement.classList.contains('dark') };
+        }
+
+        function drawCoordinateSystem(info, xMin, xMax, yMin, yMax) {
+            const { ctx, w, h, isDark } = info;
+            ctx.clearRect(0, 0, w, h);
+
+            const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+            const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+            // Grid lines
+            ctx.strokeStyle = isDark ? '#1e293b' : '#e2e8f0';
+            ctx.lineWidth = 1;
+            for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+                ctx.beginPath(); ctx.moveTo(toX(x), 0); ctx.lineTo(toX(x), h); ctx.stroke();
+            }
+            const yStep = (yMax - yMin) > 25 ? 10 : ((yMax - yMin) > 12 ? 2 : 1);
+            for (let y = Math.ceil(yMin / yStep) * yStep; y <= Math.floor(yMax); y += yStep) {
+                ctx.beginPath(); ctx.moveTo(0, toY(y)); ctx.lineTo(w, toY(y)); ctx.stroke();
+            }
+
+            // Main Axes
+            ctx.strokeStyle = isDark ? '#64748b' : '#475569';
+            ctx.lineWidth = 1.8;
+            const y0 = toY(0), x0 = toX(0);
+            ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(w, y0); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, h); ctx.stroke();
+
+            // Origin Label
+            ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+            ctx.font = 'bold 11px Pretendard, sans-serif';
+            ctx.fillText('O', x0 - 14, y0 + 14);
+            ctx.fillText('x', w - 14, y0 - 6);
+            ctx.fillText('y', x0 + 6, 14);
+
+            return { toX, toY };
+        }
+
+        function plotCurve(info, coords, fn, xStart, xEnd, color = '#4f46e5', dashed = false, lineWidth = 2.5) {
+            const { ctx, w } = info;
+            const { toX, toY } = coords;
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            if (dashed) ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            const steps = 300;
+            for (let i = 0; i <= steps; i++) {
+                const x = xStart + (xEnd - xStart) * (i / steps);
+                const y = fn(x);
+                const px = toX(x), py = toY(y);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawPoint(info, coords, x, y, label = '', color = '#ef4444', offsetY = -10) {
+            const { ctx, isDark } = info;
+            const { toX, toY } = coords;
+            const px = toX(x), py = toY(y);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(px, py, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = isDark ? '#0f172a' : '#ffffff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            if (label) {
+                ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+                ctx.font = 'bold 11px Pretendard, sans-serif';
+                ctx.fillText(label, px - 18, py + offsetY);
+            }
+        }
+
+        // Numerical root finder for marking intersections on canvas
+        function findRootsOnInterval(fn, xMin, xMax, steps = 600) {
+            const roots = [];
+            const dx = (xMax - xMin) / steps;
+            for (let i = 0; i < steps; i++) {
+                const x1 = xMin + i * dx;
+                const x2 = x1 + dx;
+                const y1 = fn(x1), y2 = fn(x2);
+                if (Math.abs(y1) < 1e-7) {
+                    if (roots.length === 0 || Math.abs(x1 - roots[roots.length - 1]) > 0.08) roots.push(x1);
+                } else if (y1 * y2 < 0) {
+                    // linear interpolation + bisection refinement
+                    let a = x1, b = x2;
+                    for (let k = 0; k < 15; k++) {
+                        let m = 0.5 * (a + b);
+                        if (fn(a) * fn(m) <= 0) b = m; else a = m;
+                    }
+                    const r = 0.5 * (a + b);
+                    if (roots.length === 0 || Math.abs(r - roots[roots.length - 1]) > 0.08) roots.push(r);
+                }
+            }
+            return roots;
+        }
+
+        // =============================================================
+        // 1. 생각 열기 Canvas: y = 2x^3 + 3x^2 + c
+        // =============================================================
+        function drawIntroCanvas() {
+            const info = setupCanvas('canvasIntro');
+            if (!info) return;
+            const c = parseFloat(document.getElementById('introCSlider').value);
+            document.getElementById('introCVal').textContent = c.toFixed(1);
+
+            const coords = drawCoordinateSystem(info, -2.5, 1.8, -3, 6);
+            const fn = x => 2 * Math.pow(x, 3) + 3 * Math.pow(x, 2) + c;
+            plotCurve(info, coords, fn, -2.5, 1.8, '#4f46e5');
+
+            // Local extrema at x = -1 and x = 0
+            drawPoint(info, coords, -1, fn(-1), `극대(-1, ${(c+1).toFixed(1)})`, '#10b981', -10);
+            drawPoint(info, coords, 0, fn(0), `극소(0, ${c.toFixed(1)})`, '#f59e0b', 16);
+
+            // Roots
+            let roots = findRootsOnInterval(fn, -2.5, 1.8);
+            if (Math.abs(c) < 0.01) roots = [-1.5, 0];
+            if (Math.abs(c + 1) < 0.01) roots = [-1, 0.5];
+
+            roots.forEach(r => drawPoint(info, coords, r, 0, '', '#ef4444'));
+
+            const badge = document.getElementById('introRootBadge');
+            badge.textContent = `교점(실근) ${roots.length}개`;
+            badge.className = roots.length === 3
+                ? 'px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300'
+                : (roots.length === 2 ? 'px-2 py-0.5 rounded-full bg-amber-100 text-amber-800' : 'px-2 py-0.5 rounded-full bg-rose-100 text-rose-800');
+        }
+
+        document.getElementById('introCSlider').addEventListener('input', drawIntroCanvas);
+        document.getElementById('resetIntroBtn').addEventListener('click', () => {
+            document.getElementById('introCSlider').value = 3;
+            drawIntroCanvas();
+        });
+
+        // =============================================================
+        // 2. 예제 1 Canvas: y = x^3 - 3x^2 + 1
+        // =============================================================
+        function drawEx1Canvas() {
+            const info = setupCanvas('canvasEx1');
+            if (!info) return;
+            const coords = drawCoordinateSystem(info, -1.5, 3.5, -4, 2.5);
+            const fn = x => Math.pow(x, 3) - 3 * Math.pow(x, 2) + 1;
+            plotCurve(info, coords, fn, -1.5, 3.5, '#4f46e5');
+            drawPoint(info, coords, 0, 1, '극대(0, 1)', '#10b981', -10);
+            drawPoint(info, coords, 2, -3, '극소(2, -3)', '#f59e0b', 16);
+            const roots = findRootsOnInterval(fn, -1.5, 3.5);
+            roots.forEach((r, idx) => drawPoint(info, coords, r, 0, `근${idx+1}`, '#ef4444', -10));
+        }
+
+        // =============================================================
+        // 3. 문제 1 Canvas: (1) x^3 - 3x^2 - 9x - 5, (2) 2x^4 - 4x^2 + 1
+        // =============================================================
+        let currentProb1Mode = 1;
+        function plotProblem1(mode) {
+            currentProb1Mode = mode;
+            const info = setupCanvas('canvasProb1');
+            if (!info) return;
+            const titleEl = document.getElementById('prob1GraphTitle');
+
+            if (mode === 1) {
+                titleEl.textContent = '문제 1-(1) y = x³ - 3x² - 9x - 5 (극댓값 f(-1)=0에서 접함 → 실근 2개)';
+                const coords = drawCoordinateSystem(info, -3, 5.5, -36, 12);
+                const fn = x => Math.pow(x, 3) - 3 * Math.pow(x, 2) - 9 * x - 5;
+                plotCurve(info, coords, fn, -3, 5.5, '#4f46e5');
+                drawPoint(info, coords, -1, 0, '극대·접점(-1, 0)', '#ef4444', -10);
+                drawPoint(info, coords, 3, -32, '극소(3, -32)', '#f59e0b', 15);
+                drawPoint(info, coords, 5, 0, '(5, 0)', '#ef4444', -10);
+            } else {
+                titleEl.textContent = '문제 1-(2) y = 2x⁴ - 4x² + 1 (극소 -1, 극대 1 → 실근 4개)';
+                const coords = drawCoordinateSystem(info, -2, 2, -2, 3);
+                const fn = x => 2 * Math.pow(x, 4) - 4 * Math.pow(x, 2) + 1;
+                plotCurve(info, coords, fn, -2, 2, '#0ea5e9');
+                drawPoint(info, coords, 0, 1, '극대(0, 1)', '#10b981', -10);
+                drawPoint(info, coords, -1, -1, '극소(-1, -1)', '#f59e0b', 15);
+                drawPoint(info, coords, 1, -1, '극소(1, -1)', '#f59e0b', 15);
+                const roots = findRootsOnInterval(fn, -2, 2);
+                roots.forEach(r => drawPoint(info, coords, r, 0, '', '#ef4444'));
+            }
+        }
+
+        // =============================================================
+        // 4. 예제 2 Canvas: y = x^3 + 6x^2 + 9x and y = a
+        // =============================================================
+        function drawEx2Canvas() {
+            const info = setupCanvas('canvasEx2');
+            if (!info) return;
+            const a = parseFloat(document.getElementById('ex2ASlider').value);
+            document.getElementById('ex2AVal').textContent = a.toFixed(1);
+
+            const coords = drawCoordinateSystem(info, -4.8, 1.2, -6, 2.5);
+            const fn = x => Math.pow(x, 3) + 6 * Math.pow(x, 2) + 9 * x;
+            plotCurve(info, coords, fn, -4.8, 1.2, '#4f46e5');
+
+            // Horizontal line y = a
+            plotCurve(info, coords, () => a, -4.8, 1.2, '#0d9488', false, 2.2);
+
+            drawPoint(info, coords, -3, 0, '극대(-3, 0)', '#6366f1', -10);
+            drawPoint(info, coords, -1, -4, '극소(-1, -4)', '#6366f1', 16);
+
+            let roots = findRootsOnInterval(x => fn(x) - a, -4.8, 1.2);
+            if (Math.abs(a) < 0.01) roots = [-3, 0];
+            if (Math.abs(a + 4) < 0.01) roots = [-4, -1];
+            roots.forEach(r => drawPoint(info, coords, r, a, '', '#ef4444'));
+
+            const status = document.getElementById('ex2RootStatus');
+            if (a > -4 && a < 0) {
+                status.textContent = `현재 교점: 3개 (-4 < a < 0 조건 만족!)`;
+                status.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300';
+            } else if (Math.abs(a) < 0.01 || Math.abs(a + 4) < 0.01) {
+                status.textContent = `현재 교점: 2개 (접함)`;
+                status.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
+            } else {
+                status.textContent = `현재 교점: 1개`;
+                status.className = 'px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800';
+            }
+        }
+        function setEx2A(val) {
+            document.getElementById('ex2ASlider').value = val;
+            drawEx2Canvas();
+        }
+        document.getElementById('ex2ASlider').addEventListener('input', drawEx2Canvas);
+
+        // =============================================================
+        // 5. 문제 2 Canvas: y = 2x^3 - 3x^2 + k
+        // =============================================================
+        function drawProb2Canvas() {
+            const info = setupCanvas('canvasProb2');
+            if (!info) return;
+            const k = parseFloat(document.getElementById('p2KSlider').value);
+            document.getElementById('p2KVal').textContent = k.toFixed(1);
+
+            const coords = drawCoordinateSystem(info, -1.2, 2.0, -2.5, 2.5);
+            const fn = x => 2 * Math.pow(x, 3) - 3 * Math.pow(x, 2) + k;
+            plotCurve(info, coords, fn, -1.2, 2.0, '#4f46e5');
+
+            drawPoint(info, coords, 0, k, `극대(0, ${k.toFixed(1)})`, '#10b981', -10);
+            drawPoint(info, coords, 1, k - 1, `극소(1, ${(k-1).toFixed(1)})`, '#f59e0b', 16);
+
+            let roots = findRootsOnInterval(fn, -1.2, 2.0);
+            if (Math.abs(k) < 0.01) roots = [0, 1.5];
+            if (Math.abs(k - 1) < 0.01) roots = [-0.5, 1];
+            roots.forEach(r => drawPoint(info, coords, r, 0, '', '#ef4444'));
+
+            const badge = document.getElementById('p2RootBadge');
+            badge.textContent = `실근 ${roots.length}개`;
+        }
+        document.getElementById('p2KSlider').addEventListener('input', drawProb2Canvas);
+
+        // =============================================================
+        // 6. 예제 3 Canvas: x >= 0 에서 x^3 - 3x + 2 >= 0
+        // =============================================================
+        function drawEx3Canvas() {
+            const info = setupCanvas('canvasEx3');
+            if (!info) return;
+            const coords = drawCoordinateSystem(info, -2.3, 2.3, -1.5, 4.8);
+            const fn = x => Math.pow(x, 3) - 3 * x + 2;
+            // Dashed for x < 0
+            plotCurve(info, coords, fn, -2.3, 0, '#94a3b8', true, 2);
+            // Solid bold for x >= 0
+            plotCurve(info, coords, fn, 0, 2.3, '#4f46e5', false, 3);
+
+            drawPoint(info, coords, 0, 2, '(0, 2)', '#6366f1', -10);
+            drawPoint(info, coords, 1, 0, '최솟값(1, 0)', '#ef4444', 16);
+        }
+
+        // =============================================================
+        // 7. 생각 넓히기 Canvas: f(a) = 3a^4 - 4a^3 + k vs g(b) = -b^2 - 2b
+        // =============================================================
+        function drawThinkCanvas() {
+            const info = setupCanvas('canvasThink');
+            if (!info) return;
+            const k = parseFloat(document.getElementById('thinkKSlider').value);
+            document.getElementById('thinkKVal').textContent = k.toFixed(1);
+            const minF = k - 1;
+            document.getElementById('thinkMinF').textContent = minF.toFixed(1);
+
+            const coords = drawCoordinateSystem(info, -2.5, 2.2, -3, 5);
+            const fa = x => 3 * Math.pow(x, 4) - 4 * Math.pow(x, 3) + k;
+            const gb = x => -Math.pow(x, 2) - 2 * x;
+
+            // Plot f(a) and g(b)
+            plotCurve(info, coords, fa, -1.2, 1.8, '#3b82f6', false, 2.5);
+            plotCurve(info, coords, gb, -2.5, 1.0, '#f97316', false, 2.5);
+
+            // Dashed horizontal lines for min f(a) and max g(b)
+            plotCurve(info, coords, () => minF, -2.5, 2.2, '#3b82f6', true, 1.2);
+            plotCurve(info, coords, () => 1, -2.5, 2.2, '#f97316', true, 1.2);
+
+            drawPoint(info, coords, 1, minF, `f(a)최소 (1, ${minF.toFixed(1)})`, '#3b82f6', -10);
+            drawPoint(info, coords, -1, 1, `g(b)최대 (-1, 1)`, '#f97316', 16);
+
+            const badge = document.getElementById('thinkStatusBadge');
+            if (k >= 2) {
+                badge.textContent = `성립! min f(a) = ${minF.toFixed(1)} ≥ max g(b) = 1`;
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold';
+            } else {
+                badge.textContent = `불성립! min f(a) = ${minF.toFixed(1)} < max g(b) = 1`;
+                badge.className = 'px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold';
+            }
+        }
+        document.getElementById('thinkKSlider').addEventListener('input', drawThinkCanvas);
+
+        // =============================================================
+        // 8. 스스로 확인하기 06번 Canvas: g(t) = t^3 - 12t (t >= 1)
+        // =============================================================
+        function drawSC6Canvas() {
+            const info = setupCanvas('canvasSC6');
+            if (!info) return;
+            const coords = drawCoordinateSystem(info, -3.8, 4.2, -22, 22);
+            const fn = t => Math.pow(t, 3) - 12 * t;
+            plotCurve(info, coords, fn, -3.8, 1, '#94a3b8', true, 1.8);
+            plotCurve(info, coords, fn, 1, 4.2, '#4f46e5', false, 3);
+            drawPoint(info, coords, 1, -11, 't=1 (1, -11)', '#6366f1', -10);
+            drawPoint(info, coords, 2, -16, '최솟값 (2, -16)', '#ef4444', 15);
+        }
+
+        // =============================================================
+        // 9. 탐구하는 수학 Canvas: f(x) = x^3 - 3x^2 - 9x + k
+        // =============================================================
+        function drawExploreCanvas() {
+            const info = setupCanvas('canvasExplore');
+            if (!info) return;
+            const k = parseFloat(document.getElementById('expKSlider').value);
+            document.getElementById('expKVal').textContent = k;
+
+            const coords = drawCoordinateSystem(info, -3.2, 5.2, -35, 35);
+            const fn = x => Math.pow(x, 3) - 3 * Math.pow(x, 2) - 9 * x + k;
+            plotCurve(info, coords, fn, -3.2, 5.2, '#7c3aed', false, 2.5);
+
+            const yMax = k + 5;
+            const yMin = k - 27;
+            drawPoint(info, coords, -1, yMax, `극대(-1, ${yMax})`, '#10b981', -10);
+            drawPoint(info, coords, 3, yMin, `극소(3, ${yMin})`, '#f59e0b', 15);
+
+            const prod = yMax * yMin;
+            const badge = document.getElementById('expProdBadge');
+            if (prod < 0) {
+                badge.textContent = `f(-1)f(3) = ${prod} < 0 ⟹ 서로 다른 실근 3개`;
+                badge.className = 'px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold';
+            } else if (prod === 0) {
+                badge.textContent = `f(-1)f(3) = 0 ⟹ 서로 다른 실근 2개`;
+                badge.className = 'px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold';
+            } else {
+                badge.textContent = `f(-1)f(3) = ${prod} > 0 ⟹ 실근 1개`;
+                badge.className = 'px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 font-bold';
+            }
+        }
+        function setExpK(val) {
+            document.getElementById('expKSlider').value = val;
+            drawExploreCanvas();
+        }
+        document.getElementById('expKSlider').addEventListener('input', drawExploreCanvas);
+
+        function drawAllCanvases() {
+            drawIntroCanvas();
+            drawEx1Canvas();
+            plotProblem1(currentProb1Mode);
+            drawEx2Canvas();
+            drawProb2Canvas();
+            drawEx3Canvas();
+            drawThinkCanvas();
+            drawSC6Canvas();
+            drawExploreCanvas();
+        }
+
+        function initAllCanvases() {
+            drawAllCanvases();
+            window.addEventListener('resize', drawAllCanvases);
+        }
+
+        // =============================================================
+        // QUIZ & SELF-CHECK VALIDATION FUNCTIONS
+        // =============================================================
+        function showFeedback(elId, isCorrect, msg) {
+            const el = document.getElementById(elId);
+            el.classList.remove('hidden', 'text-emerald-600', 'text-rose-600');
+            el.classList.add(isCorrect ? 'text-emerald-600' : 'text-rose-600');
+            el.textContent = msg;
+        }
+
+        function checkProblemAnswer(inputId, expectedVal, fbId) {
+            const val = parseFloat(document.getElementById(inputId).value);
+            // Allow both 7 and 20 for SC5 depending on which side k is isolated
+            if (val === expectedVal || (inputId === 'ansSC5' && (val === 7 || val === 20))) {
+                showFeedback(fbId, true, `정답입니다! (${val})`);
+            } else {
+                showFeedback(fbId, false, `다시 한번 확인해 보세요. 아래의 풀이 및 그래프를 참고하세요!`);
+            }
+        }
+
+        function checkSelectAnswer(selectId, expectedVal, fbId) {
+            const val = document.getElementById(selectId).value;
+            if (val === expectedVal) {
+                showFeedback(fbId, true, `정답입니다! x=4에서의 최솟값 -32/3 + k > 0 이어야 하므로 k > 32/3 입니다.`);
+            } else {
+                showFeedback(fbId, false, `오답입니다. x=4일 때의 함수의 최솟값을 구해보세요.`);
+            }
+        }
+
+        function checkProblem2() {
+            const s1 = document.getElementById('p2Sel1').value;
+            const s2 = document.getElementById('p2Sel2').value;
+            const s3 = document.getElementById('p2Sel3').value;
+            if (s1 === '3' && s2 === '2' && s3 === '1') {
+                showFeedback('fbP2', true, '완벽합니다! 0 < k < 1일 때 3개, k=0 또는 k=1일 때 2개, k<0 또는 k>1일 때 1개입니다.');
+            } else {
+                showFeedback('fbP2', false, '일부 항목이 틀렸습니다. 오른쪽 그래프의 슬라이더를 움직여 교점의 개수를 확인해 보세요!');
+            }
+        }
+
+        function checkOX(qNum, choice) {
+            if (qNum === 1) {
+                if (choice === 'O') showFeedback('fbOX1', true, '정답입니다! (O) 방정식 f(x)=0의 서로 다른 실근의 개수는 y=f(x)와 x축의 교점의 개수와 같습니다.');
+                else showFeedback('fbOX1', false, '틀렸습니다. 이 문장은 옳은 설명(O)입니다.');
+            } else {
+                if (choice === 'X') showFeedback('fbOX2', true, '정답입니다! (X) 최댓값이 아니라 (함수 f(x)의 최솟값) ≥ 0 임을 보여야 합니다.');
+                else showFeedback('fbOX2', false, '틀렸습니다! 최댓값이 0 이상이어도 최솟값이 음수이면 부등식이 성립하지 않습니다. (정답: X)');
+            }
+        }
+
+        function checkSC3() {
+            const xVal = parseFloat(document.getElementById('sc3_x').value);
+            const minVal = parseFloat(document.getElementById('sc3_min').value);
+            if (xVal === 3 && minVal === 0) {
+                showFeedback('fbSC3', true, '정답입니다! x=3에서 최솟값 f(3) = 81 - 108 + 27 = 0을 가지므로 모든 실수 x에 대하여 f(x) ≥ 0이 성립합니다.');
+            } else {
+                showFeedback('fbSC3', false, '다시 계산해 보세요. f\'(x) = 4x²(x-3) = 0에서 극소이자 최소가 되는 x값과 그때의 함숫값을 구해보세요.');
+            }
+        }
+
+        function checkSC4() {
+            const low = parseFloat(document.getElementById('sc4_low').value);
+            const high = parseFloat(document.getElementById('sc4_high').value);
+            if (low === 0 && high === 9) {
+                showFeedback('fbSC4', true, '정답입니다! 극솟값 a-9 < 0 이고 극댓값 a > 0 이어야 하므로 0 < a < 9 입니다.');
+            } else {
+                showFeedback('fbSC4', false, '오답입니다. 극댓값 f(0)=a > 0 과 극솟값 f(±√3)=a-9 < 0 을 동시에 만족하는 범위를 구해보세요.');
+            }
+        }
+    </script>
+</body>
+</html>

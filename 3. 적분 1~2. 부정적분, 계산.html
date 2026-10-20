@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ⅲ. 적분 - 01. 부정적분 & 02. 부정적분의 계산 | Resonance Math Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'Inter', 'Noto Sans KR', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        /* KaTeX Responsive Overflow Guard */
+        .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            max-width: 100%;
+            padding: 4px 0;
+            margin: 0.45em 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .katex {
+            font-size: 1.03em;
+            max-width: 100%;
+        }
+
+        input[type=range] {
+            accent-color: #4f46e5;
+        }
+
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+
+        /* Flashcard Cloze Blank Style */
+        .cloze-blank {
+            transition: all 0.25s ease;
+            border-radius: 0.375rem;
+            padding: 0.05rem 0.35rem;
+        }
+        .cloze-hidden {
+            background-color: #e0e7ff;
+            color: transparent !important;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 2px dashed #6366f1;
+        }
+        .dark .cloze-hidden {
+            background-color: #312e81;
+            border-bottom-color: #818cf8;
+        }
+        .cloze-hidden * {
+            visibility: hidden;
+        }
+
+        /* Floating Button Animation */
+        .floating-btn-hidden {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            pointer-events: none;
+        }
+        .floating-btn-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+
+    <!-- Mobile Backdrop Overlay -->
+    <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
+
+    <header class="fixed top-0 inset-x-0 z-40 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 h-16">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" aria-label="메뉴 열기">
+                    <i class="fa-solid fa-bars w-5 h-5 flex items-center justify-center"></i>
+                </button>
+                <a href="#" onclick="scrollToTop(event)" class="flex items-center gap-2.5 group">
+                    <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 group-hover:bg-indigo-600 group-hover:text-white transition">Ⅲ. 적분</span>
+                    <h1 class="text-sm sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white truncate max-w-[230px] sm:max-w-none">
+                        01. 부정적분 & 02. 부정적분의 계산 (p.116~124)
+                    </h1>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3 sm:gap-4">
+                <!-- View Mode Toggle (Scroll vs Tab) -->
+                <div class="hidden md:flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-bold">
+                    <button id="modeScrollBtn" onclick="setViewMode('scroll')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition cursor-pointer">
+                        전체 스크롤
+                    </button>
+                    <button id="modeTabBtn" onclick="setViewMode('tab')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition cursor-pointer">
+                        섹션별 탭
+                    </button>
+                </div>
+
+                <!-- Progress Indicator -->
+                <div class="hidden sm:flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <span>학습 진도</span>
+                    <div class="w-24 h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 w-0 transition-all duration-300"></div>
+                    </div>
+                    <span id="progressText" class="font-bold text-indigo-600 dark:text-indigo-400">0%</span>
+                </div>
+
+                <!-- Dark Mode Button -->
+                <button id="themeToggleBtn" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition cursor-pointer" title="테마 전환">
+                    <i class="fa-solid fa-moon text-slate-700 dark:hidden"></i>
+                    <i class="fa-solid fa-sun text-amber-400 hidden dark:inline"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <aside id="sidebar" class="fixed top-16 left-0 bottom-0 z-50 lg:z-30 w-72 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-5 overflow-y-auto flex flex-col justify-between">
+        <div class="space-y-5">
+            <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200 dark:border-slate-800">
+                <span class="font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-compass"></i> 단원 목차 이동
+                </span>
+                <button id="closeSidebarBtn" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i class="fa-solid fa-xmark w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Achievement Standard Banner -->
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 text-white shadow-md space-y-1.5">
+                <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo-200">
+                    <i class="fa-solid fa-bullseye"></i> 성취기준 (p.116, 119)
+                </div>
+                <p class="text-xs leading-relaxed font-medium">
+                    • 부정적분의 뜻을 알고, 이를 설명할 수 있다.<br>
+                    • 함수의 실수배, 합, 차의 부정적분을 알고, 다항함수의 부정적분을 구할 수 있다.
+                </p>
+            </div>
+
+            <!-- Navigation Links (5 Sections) -->
+            <div class="space-y-1">
+                <div class="px-2 pb-1 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center justify-between">
+                    <span>단원 섹션 바로가기</span>
+                    <span id="currentSecBadge" class="text-indigo-600 dark:text-indigo-400 font-extrabold">1 / 5</span>
+                </div>
+                <nav class="space-y-1.5" id="navLinks">
+                    <a href="#sec-1" data-target="sec-1" onclick="navigateToSection(event, 'sec-1')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                        <span class="truncate">01. 부정적분의 뜻 (p.116~117)</span>
+                    </a>
+                    <a href="#sec-2" data-target="sec-2" onclick="navigateToSection(event, 'sec-2')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                        <span class="truncate">01. 스스로 확인하기 (p.118)</span>
+                    </a>
+                    <a href="#sec-3" data-target="sec-3" onclick="navigateToSection(event, 'sec-3')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                        <span class="truncate">02. 부정적분의 계산 (p.119~122)</span>
+                    </a>
+                    <a href="#sec-4" data-target="sec-4" onclick="navigateToSection(event, 'sec-4')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+                        <span class="truncate">02. 스스로 확인하기 (p.123)</span>
+                    </a>
+                    <a href="#sec-5" data-target="sec-5" onclick="navigateToSection(event, 'sec-5')" class="nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition">
+                        <span class="nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">5</span>
+                        <span class="truncate">탐구하는 수학 · 기하적 의미 (p.124)</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Score & Core Formula Quick Card -->
+            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs space-y-2">
+                <div class="flex items-center justify-between font-bold text-slate-800 dark:text-slate-200">
+                    <span><i class="fa-solid fa-check-double text-indigo-500 mr-1"></i> 문제 해결 현황</span>
+                    <span id="solvedCountBadge" class="text-indigo-600 dark:text-indigo-400">0 / 16 완료</span>
+                </div>
+                <div class="space-y-1.5 text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed pt-1.5 border-t border-slate-200 dark:border-slate-800">
+                    <p>• $F'(x)=f(x) \iff \int f(x)\,dx = F(x)+C$</p>
+                    <p>• $\int x^n\,dx = \dfrac{1}{n+1}x^{n+1}+C$ ($n$은 양의 정수)</p>
+                    <p>• $\int 1\,dx = x + C$</p>
+                    <p>• $\dfrac{d}{dx}\left\{\int f(x)\,dx\right\} = f(x)$</p>
+                    <p>• $\int\left\{\dfrac{d}{dx}f(x)\right\}\,dx = f(x)+C$</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+            <button onclick="scrollToTop(event)" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-indigo-50 dark:bg-slate-800 dark:hover:bg-indigo-950/60 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 text-xs font-bold flex items-center justify-center gap-2 transition cursor-pointer">
+                <i class="fa-solid fa-arrow-up"></i> 페이지 맨 처음으로 이동
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="pt-16 lg:pl-72 min-h-screen flex flex-col">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-8 space-y-14 pb-24 flex-1">
+
+            <!-- ==========================================
+                 SECTION 1: 01. 부정적분의 뜻과 성질 (p. 116~117)
+                 ========================================== -->
+            <section id="sec-1" class="scroll-mt-24 space-y-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 116 ~ 117쪽 · 01. 부정적분</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            1. 부정적분은 무엇일까?
+                        </h2>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <button id="clozeToggleBtn" onclick="toggleClozeMode()" class="px-3.5 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
+                            <i class="fa-solid fa-eye-slash"></i> <span>빈칸 암기 모드 켜기</span>
+                        </button>
+                        <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                            <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="1">
+                            <span>학습 완료</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 생각 열기 (p. 116): 미분하여 2x가 되는 함수들 -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 text-sm font-bold">
+                        <i class="fa-solid fa-comments"></i> 생각 열기 (p.116) · 미분하여 $2x$가 되는 함수 찾기
+                    </div>
+
+                    <!-- 세 학생 대화 카드 -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                            <span class="font-extrabold text-indigo-600 dark:text-indigo-400">👦 형균</span>
+                            <p class="font-medium">"함수 $x^2$을 미분하면 $2x$야."</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-1.5">
+                            <span class="font-extrabold text-emerald-600 dark:text-emerald-400">👧 려원</span>
+                            <p class="font-medium">"그럼 미분하면 $2x$가 되는 함수는 $x^2$이겠네!"</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 space-y-1.5">
+                            <span class="font-extrabold text-amber-700 dark:text-amber-300">👦 경수</span>
+                            <p class="font-medium">"잠깐! <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-amber-400 font-bold text-indigo-600">$x^2+1$ 또는 $x^2-2$</span> 을/를 미분해도 $2x$가 되는데?"</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center pt-2">
+                        <!-- Canvas: Family of Antiderivatives F(x) = x^2 + C -->
+                        <div class="lg:col-span-6 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+                            <div class="flex items-center justify-between text-xs font-bold">
+                                <span>$F(x) = x^2 + C$ 곡선군과 $x=1$에서의 접선 기울기($2$)</span>
+                                <span id="introCValBadge" class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300">C = 1.0 (F(x) = x² + 1)</span>
+                            </div>
+                            <input type="range" id="introCSlider" min="-3" max="3" step="0.5" value="1" class="w-full">
+                            <div class="h-56 w-full">
+                                <canvas id="canvasIntroFamily" class="w-full h-full"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 생각 열기 활동 정리 & 핵심 개념 -->
+                        <div class="lg:col-span-6 space-y-4 text-xs sm:text-sm leading-relaxed">
+                            <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900 space-y-2">
+                                <div class="font-bold text-indigo-900 dark:text-indigo-200">① 경수의 말의 빈칸에 들어갈 수 있는 함수:</div>
+                                <p class="text-slate-700 dark:text-slate-300">
+                                    상수를 미분하면 $0$이므로 $x^2+1$, $x^2-2$, $x^2+100$ 등 $x^2 + (\text{상수})$ 꼴의 함수가 모두 들어갈 수 있습니다.
+                                </p>
+                                <div class="font-bold text-indigo-900 dark:text-indigo-200 pt-1">② 미분하여 $2x$가 되는 함수들의 공통점과 차이점:</div>
+                                <p class="text-slate-700 dark:text-slate-300">
+                                    • <strong>공통점</strong>: 이차항이 모두 $x^2$으로 같고 도함수가 $2x$이다.<br>
+                                    • <strong>차이점</strong>: <span class="cloze-blank font-bold text-indigo-600 dark:text-indigo-400" onclick="revealSingleCloze(this)">상수항</span>만 서로 다르다. (그래프를 $y$축 방향으로 평행이동한 관계)
+                                </p>
+                            </div>
+
+                            <!-- 부정적분의 정의 박스 (p.116~117) -->
+                            <div class="p-5 rounded-2xl bg-white dark:bg-slate-950 border-2 border-indigo-200 dark:border-indigo-800/80 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-xs font-extrabold">핵심 개념 · 부정적분 (p.116~117)</span>
+                                    <span class="text-[11px] text-slate-400">$\int f(x)\,dx$: 'integral $f(x)\,dx$'</span>
+                                </div>
+                                <p>
+                                    함수 $F(x)$의 도함수가 $f(x)$일 때, 즉 <span class="cloze-blank font-bold text-indigo-600" onclick="revealSingleCloze(this)">$F'(x) = f(x)$</span>일 때, $F(x)$를 $f(x)$의 <span class="cloze-blank font-bold text-indigo-600" onclick="revealSingleCloze(this)">부정적분</span>이라고 한다.
+                                </p>
+                                <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 text-center font-bold overflow-x-auto cloze-blank" onclick="revealSingleCloze(this)">
+                                    $$\int f(x)\,dx = F(x) + C \quad (\text{단, } C\text{는 적분상수})$$
+                                </div>
+                                <p class="text-xs text-slate-600 dark:text-slate-400">
+                                    • 함수 $f(x)$의 부정적분을 구하는 것을 $f(x)$를 <strong>적분한다</strong>고 하며, 그 계산법을 <strong>적분법</strong>이라고 한다.<br>
+                                    • <strong class="text-slate-800 dark:text-slate-200">미분과 적분의 역연산 관계:</strong> $f(x)$를 적분하면 $\int f(x)\,dx = F(x)+C$이고, 이를 다시 미분하면 $f(x)$가 된다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 보기 & 문제 1 & 문제 2 (p. 117) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 문제 1 (p.117) -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold">문제 1 (p.117)</span>
+                            <span class="text-xs text-slate-400 font-bold">미분의 역연산으로 부정적분 구하기</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 text-xs space-y-1 border border-slate-200 dark:border-slate-800">
+                            <span class="font-bold text-indigo-600">[보기]</span> (1) $(3x)'=3$이므로 $\int 3\,dx = 3x+C$ &nbsp;|&nbsp; (2) $(3x^2)'=6x$이므로 $\int 6x\,dx = 3x^2+C$
+                        </div>
+                        <p class="text-sm font-bold">다음 부정적분을 구하시오. (단, $C$는 적분상수)</p>
+                        <div class="space-y-3 text-xs sm:text-sm">
+                            <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                                <span>(1) $\int 5\,dx = $</span>
+                                <div class="flex items-center gap-1.5">
+                                    <input type="text" id="p117_1_1" placeholder="예: 5x" class="w-24 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                    <span class="font-bold">$+ C$</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                                <span>(2) $\int (-6x^5)\,dx = $</span>
+                                <div class="flex items-center gap-1.5">
+                                    <input type="text" id="p117_1_2" placeholder="예: -x^6" class="w-24 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                    <span class="font-bold">$+ C$</span>
+                                </div>
+                            </div>
+                            <button onclick="checkP117_1()" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer">정답 확인</button>
+                            <div id="fb_p117_1" class="text-xs font-bold hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- 문제 2 (p.117) -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold">문제 2 (p.117)</span>
+                            <span class="text-xs text-slate-400 font-bold">양변을 미분하여 피적분함수 $f(x)$ 구하기</span>
+                        </div>
+                        <p class="text-sm font-bold">다음 등식을 만족시키는 함수 $f(x)$를 구하시오. (단, $C$는 적분상수)</p>
+                        <div class="space-y-3 text-xs sm:text-sm">
+                            <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                                <span>(1) $\int f(x)\,dx = 2x^2 + 5x + C \implies f(x) = $</span>
+                                <input type="text" id="p117_2_1" placeholder="예: 4x+5" class="w-28 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                            </div>
+                            <div class="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                                <span>(2) $\int f(x)\,dx = -x^3 - 4x^2 + C \implies f(x) = $</span>
+                                <input type="text" id="p117_2_2" placeholder="예: -3x^2-8x" class="w-32 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                            </div>
+                            <button onclick="checkP117_2()" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer">정답 확인</button>
+                            <div id="fb_p117_2" class="text-xs font-bold hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 생각 넓히기 (p. 117 하단): 미분과 적분의 연산 순서 비교 -->
+                <div class="bg-gradient-to-br from-amber-50/90 via-white to-indigo-50/60 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-amber-300 dark:border-amber-700/60 shadow-sm space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500 text-white text-sm font-extrabold">
+                            <i class="fa-solid fa-code-compare"></i> 생각 넓히기 (연결 · 의사소통 | p.117)
+                        </div>
+                        <span class="text-xs font-bold text-amber-800 dark:text-amber-300">적분 후 미분 vs 미분 후 적분, 결과가 같을까?</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- 경로 A: 적분 후 미분 -->
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-indigo-200 dark:border-indigo-900 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 text-xs font-extrabold">경로 A: 적분 먼저, 미분 나중</span>
+                                <span class="text-xs font-bold text-indigo-600">마지막 연산 = 미분 $\left(\frac{d}{dx}\right)$</span>
+                            </div>
+                            <div class="text-xs sm:text-sm space-y-2 overflow-x-auto">
+                                <p><strong>탐구 1 ($f(x)=4x^3$일 때):</strong></p>
+                                $$\frac{d}{dx}\left\{\int 4x^3\,dx\right\} = \frac{d}{dx}(x^4 + C) = \mathbf{4x^3}$$
+                                <p class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                    <strong>탐구 2 (일반화):</strong> $\dfrac{d}{dx}\left\{\int f(x)\,dx\right\} = \mathbf{f(x)}$<br>
+                                    <span class="text-xs text-slate-500">→ 마지막에 <strong>미분</strong>을 하므로 적분상수 $C$가 사라져 원래 함수 $f(x)$가 그대로 나옵니다.</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 경로 B: 미분 후 적분 -->
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slate-950 border border-rose-200 dark:border-rose-900 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 text-xs font-extrabold">경로 B: 미분 먼저, 적분 나중</span>
+                                <span class="text-xs font-bold text-rose-600">마지막 연산 = 적분 $\left(\int dx\right)$</span>
+                            </div>
+                            <div class="text-xs sm:text-sm space-y-2 overflow-x-auto">
+                                <p><strong>탐구 1 ($f(x)=4x^3$일 때):</strong></p>
+                                $$\int\left\{\frac{d}{dx}(4x^3)\right\}\,dx = \int 12x^2\,dx = \mathbf{4x^3 + C}$$
+                                <p class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                    <strong>탐구 2 (일반화):</strong> $\int\left\{\dfrac{d}{dx}f(x)\right\}\,dx = \mathbf{f(x) + C}$<br>
+                                    <span class="text-xs text-slate-500">→ 마지막에 <strong>적분</strong>을 하므로 반드시 <strong>적분상수 $C$</strong>가 붙습니다!</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 2: 01. 부정적분 - 스스로 확인하기 (p. 118)
+                 ========================================== -->
+            <section id="sec-2" class="scroll-mt-24 space-y-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 118쪽 · 01. 부정적분</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            2. 01단원 스스로 확인하기 (01 ~ 06번)
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="2">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 01번 -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">01</span>
+                            <span class="text-xs text-indigo-600 dark:text-indigo-400 font-bold">학습 목표 되새기기</span>
+                        </div>
+                        <div class="space-y-2.5 text-xs sm:text-sm leading-relaxed">
+                            <p>(1) 함수 $F(x)$의 도함수가 $f(x)$일 때, 즉 $F'(x)=f(x)$일 때 $F(x)$를 $f(x)$의 <input type="text" id="sc118_1_1" placeholder="4글자" class="w-24 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">(이)라고 한다.</p>
+                            <p>(2) $F'(x)=f(x)$일 때 $\int f(x)\,dx = $ <input type="text" id="sc118_1_2" placeholder="F(x)" class="w-20 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center"> $+ C$ (단, $C$는 <input type="text" id="sc118_1_3" placeholder="4글자" class="w-24 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">)</p>
+                        </div>
+                        <button onclick="checkSC118_1()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">정답 확인</button>
+                        <div id="fb_sc118_1" class="text-xs font-bold hidden"></div>
+                    </div>
+
+                    <!-- 02번 & 03번 -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">02 & 03</span>
+                            <span class="text-xs text-amber-500 font-bold">★★☆ 부정적분과 미분의 관계</span>
+                        </div>
+                        <div class="space-y-2 text-xs sm:text-sm">
+                            <div class="flex items-center justify-between">
+                                <span><strong>02-(1)</strong> $\int 5x^4\,dx = $</span>
+                                <div><input type="text" id="sc118_2_1" placeholder="예: x^5" class="w-24 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center"> $+ C$</div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span><strong>02-(2)</strong> $\int (-3x^2)\,dx = $</span>
+                                <div><input type="text" id="sc118_2_2" placeholder="예: -x^3" class="w-24 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center"> $+ C$</div>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                                <span><strong>03-(1)</strong> $\int f(x)\,dx = x^3 - 5x + C \implies f(x) =$</span>
+                                <input type="text" id="sc118_3_1" placeholder="예: 3x^2-5" class="w-28 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span><strong>03-(2)</strong> $\int f(x)\,dx = -\frac{1}{4}x^4 + x^3 - 3x + C \implies f(x) =$</span>
+                                <input type="text" id="sc118_3_2" placeholder="예: -x^3+3x^2-3" class="w-32 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                            </div>
+                        </div>
+                        <button onclick="checkSC118_23()" class="w-full py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">02 & 03 정답 확인</button>
+                        <div id="fb_sc118_23" class="text-xs font-bold hidden"></div>
+                    </div>
+
+                    <!-- 04번 -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">04</span>
+                            <span class="text-xs text-amber-500 font-bold">★★☆ 부정적분의 정의 활용</span>
+                        </div>
+                        <p class="text-sm font-medium leading-relaxed">
+                            함수 $f(x)$의 부정적분 중 하나가 $-2x^2 + 3x$일 때, $f(2)$의 값을 구하시오.
+                        </p>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold">$f(2) = $</span>
+                            <input type="number" id="sc118_4" placeholder="정답 입력" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-center font-bold">
+                            <button onclick="checkNumProblem('sc118_4', -5, 'fb_sc118_4', '118_4', '정답입니다! f(x) = (-2x² + 3x)\' = -4x + 3 이므로 f(2) = -8 + 3 = -5 입니다.')" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">확인</button>
+                        </div>
+                        <div id="fb_sc118_4" class="text-xs font-bold hidden"></div>
+                    </div>
+
+                    <!-- 05번 -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">05</span>
+                            <span class="text-xs text-amber-500 font-bold">★★☆ 두 부정적분 사이의 차</span>
+                        </div>
+                        <p class="text-sm font-medium leading-relaxed">
+                            다항함수 $f(x)$의 두 부정적분 $F(x), G(x)$에 대하여 $F(1) = 6, G(1) = 2$일 때, $F(2) - G(2)$의 값을 구하시오.
+                        </p>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold">$F(2) - G(2) = $</span>
+                            <input type="number" id="sc118_5" placeholder="정답 입력" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-center font-bold">
+                            <button onclick="checkNumProblem('sc118_5', 4, 'fb_sc118_5', '118_5', '정답입니다! 두 부정적분의 차 F(x) - G(x) = C (상수)이므로 모든 실수 x에 대하여 F(2) - G(2) = F(1) - G(1) = 6 - 2 = 4 입니다.')" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">확인</button>
+                        </div>
+                        <div id="fb_sc118_5" class="text-xs font-bold hidden"></div>
+                    </div>
+
+                    <!-- 06번: 생각을 키우는 문제 (p.118) -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-4 md:col-span-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">06</span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold">생각을 키우는 문제 (p.118)</span>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold">★★★ 접선의 기울기와 극댓값으로 원함수 구하기</span>
+                        </div>
+                        <p class="text-sm font-medium leading-relaxed">
+                            함수 $f(x)$의 그래프 위의 점 $(x, f(x))$에서의 접선의 기울기가 $-4x$이고 함수 $f(x)$의 극댓값이 $3$일 때, 다음 물음에 답하시오.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <p class="font-bold">(1) 도함수 $f'(x)$를 구하시오.</p>
+                                <div class="flex items-center gap-2">
+                                    <span>$f'(x) = $</span>
+                                    <input type="text" id="sc118_6_1" placeholder="예: -4x" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <p class="font-bold">(2) $f(1)$의 값을 구하시오.</p>
+                                <div class="flex items-center gap-2">
+                                    <span>$f(1) = $</span>
+                                    <input type="number" id="sc118_6_2" placeholder="정답 입력" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                    <button onclick="checkSC118_6()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">정답 확인</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="fb_sc118_6" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">상세 풀이 보기</summary>
+                            <div class="mt-2 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1 leading-relaxed">
+                                <p>• (1) 점 $(x, f(x))$에서의 접선의 기울기가 $-4x$이므로 $\mathbf{f'(x) = -4x}$이다.</p>
+                                <p>• (2) $(-2x^2)' = -4x$이므로 $f(x) = \int (-4x)\,dx = -2x^2 + C$이다.</p>
+                                <p>• $f'(x) = -4x = 0$에서 $x = 0$일 때 극대이자 최대이므로 극댓값은 $f(0) = C = 3$이다.</p>
+                                <p>• 따라서 $f(x) = -2x^2 + 3$이므로 $f(1) = -2(1)^2 + 3 = \mathbf{1}$이다.</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 3: 02. 부정적분의 계산 (p. 119~122)
+                 ========================================== -->
+            <section id="sec-3" class="scroll-mt-24 space-y-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 119 ~ 122쪽 · 02. 부정적분의 계산</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            3. 함수 $y=x^n$ 및 다항함수의 부정적분 계산
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="3">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- 생각 열기 (p. 119) & y=x^n의 부정적분 공식 -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 text-sm font-bold">
+                        <i class="fa-solid fa-table"></i> 생각 열기 (p.119) · 도함수 표를 보고 $y=x^n$의 부정적분 추측하기
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-center border-collapse text-xs sm:text-sm">
+                            <thead>
+                                <tr class="bg-slate-100 dark:bg-slate-800 font-bold">
+                                    <th class="p-3 border border-slate-200 dark:border-slate-700">$f(x)$</th>
+                                    <th class="p-3 border border-slate-200 dark:border-slate-700">$x$</th>
+                                    <th class="p-3 border border-slate-200 dark:border-slate-700">$\dfrac{1}{2}x^2$</th>
+                                    <th class="p-3 border border-slate-200 dark:border-slate-700">$\dfrac{1}{3}x^3$</th>
+                                    <th class="p-3 border border-slate-200 dark:border-slate-700">$\dfrac{1}{4}x^4$</th>
+                                    <th class="p-3 border border-slate-200 dark:border-slate-700">$\dfrac{1}{5}x^5$</th>
+                                    <th class="p-3 border border-slate-200 dark:border-slate-700 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">추측: $\dfrac{1}{10}x^{10}$</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="p-3 border border-slate-200 dark:border-slate-700 font-bold bg-slate-50 dark:bg-slate-900">$f'(x)$</td>
+                                    <td class="p-3 border border-slate-200 dark:border-slate-700 font-bold">$1$</td>
+                                    <td class="p-3 border border-slate-200 dark:border-slate-700"><span class="cloze-blank font-bold text-indigo-600" onclick="revealSingleCloze(this)">$x$</span></td>
+                                    <td class="p-3 border border-slate-200 dark:border-slate-700"><span class="cloze-blank font-bold text-indigo-600" onclick="revealSingleCloze(this)">$x^2$</span></td>
+                                    <td class="p-3 border border-slate-200 dark:border-slate-700"><span class="cloze-blank font-bold text-indigo-600" onclick="revealSingleCloze(this)">$x^3$</span></td>
+                                    <td class="p-3 border border-slate-200 dark:border-slate-700"><span class="cloze-blank font-bold text-indigo-600" onclick="revealSingleCloze(this)">$x^4$</span></td>
+                                    <td class="p-3 border border-slate-200 dark:border-slate-700 font-bold text-indigo-600">$x^9$</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 핵심 공식 2개 나란히 (p.119 & p.121) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+                        <div class="p-5 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900 space-y-2.5">
+                            <span class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-xs font-extrabold">공식 1 · 함수 $y=x^n$의 부정적분 (p.119)</span>
+                            <p class="text-xs sm:text-sm">$n$이 양의 정수일 때, $\left(\dfrac{1}{n+1}x^{n+1}\right)' = x^n$이므로:</p>
+                            <div class="p-3 rounded-xl bg-white dark:bg-slate-900 text-center font-bold overflow-x-auto cloze-blank" onclick="revealSingleCloze(this)">
+                                $$\int x^n\,dx = \frac{1}{n+1}x^{n+1} + C, \quad \int 1\,dx = x + C$$
+                            </div>
+                            <p class="text-[11px] text-slate-500">※ $\int 1\,dx$를 간단히 $\int dx$로 나타내기도 한다.</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 space-y-2.5">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-extrabold">공식 2 · 실수배, 합, 차의 부정적분 (p.121)</span>
+                            <div class="text-xs sm:text-sm space-y-1.5 font-bold overflow-x-auto cloze-blank" onclick="revealSingleCloze(this)">
+                                <p>① $\int kf(x)\,dx = k\int f(x)\,dx$ (단, $k \ne 0$인 실수)</p>
+                                <p>② $\int \{f(x) + g(x)\}\,dx = \int f(x)\,dx + \int g(x)\,dx$</p>
+                                <p>③ $\int \{f(x) - g(x)\}\,dx = \int f(x)\,dx - \int g(x)\,dx$</p>
+                            </div>
+                            <p class="text-[11px] text-rose-600 dark:text-rose-400 font-semibold">⚠️ 주의: $k=0$이면 좌변은 $\int 0\,dx = C$, 우변은 $0\cdot\int f(x)\,dx = 0$이므로 성립하지 않는다! (p.120 날개 주석)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 예제 1, 문제 1, 문제 2 & 예제 2, 문제 3, 문제 4 워크북 (p.120~122) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 문제 1 (p.120) & 문제 2 (p.121) -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold">문제 1 (p.120) & 문제 2 (p.121)</span>
+                            <span class="text-xs text-slate-400 font-bold">다항함수의 부정적분</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs space-y-1">
+                            <span class="font-bold text-indigo-600">[예제 1 (p.121)]</span> $\int (3x^2-2x+4)\,dx = 3\cdot\frac{1}{3}x^3 - 2\cdot\frac{1}{2}x^2 + 4x + C = \mathbf{x^3 - x^2 + 4x + C}$
+                        </div>
+                        <div class="space-y-2.5 text-xs sm:text-sm">
+                            <div class="flex items-center justify-between">
+                                <span><strong>문제 1-(1)</strong> $\int x^5\,dx = \dfrac{1}{a}x^b + C$에서 $a+b =$</span>
+                                <input type="number" id="p120_1_1" placeholder="6+6=12" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span><strong>문제 1-(3)</strong> $\int x^{49}\,dx = \dfrac{1}{n}x^n + C$에서 $n =$</span>
+                                <input type="number" id="p120_1_3" placeholder="n 입력" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                            </div>
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                                <p><strong>문제 2-(2)</strong> $F(x) = \int (4x^2-1)(2x-3)\,dx$에서 $F(0)=0$일 때 $F(1)$의 값은?</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs text-slate-500">(전개: $8x^3-12x^2-2x+3$)</span>
+                                    <input type="number" id="p121_2_2" placeholder="F(1) 값" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                                    <button onclick="checkP120_121()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">확인</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="fb_p120_121" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">문제 1 & 문제 2 전체 정답 보기</summary>
+                            <div class="mt-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                                <p>• <strong>문제 1:</strong> (1) $\dfrac{1}{6}x^6+C$ &nbsp; (2) $\dfrac{1}{11}x^{11}+C$ &nbsp; (3) $\dfrac{1}{50}x^{50}+C$</p>
+                                <p>• <strong>문제 2-(1):</strong> $\int (x^2-10x+1)\,dx = \mathbf{\dfrac{1}{3}x^3 - 5x^2 + x + C}$</p>
+                                <p>• <strong>문제 2-(2):</strong> $\int (8x^3-12x^2-2x+3)\,dx = \mathbf{2x^4 - 4x^3 - x^2 + 3x + C}$ ($C=0$일 때 $F(1)=2-4-1+3=0$)</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- 예제 2, 문제 3, 문제 4 (p.122): 초기 조건으로 함수 구하기 -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold">문제 3 & 문제 4 (p.122)</span>
+                            <span class="text-xs text-slate-400 font-bold">부정적분으로 함수 $f(x)$ 결정하기</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs">
+                            <span class="font-bold text-indigo-600">[예제 2]</span> $f'(x)=6x^2+4x-3, f(0)=3 \implies f(x)=2x^3+2x^2-3x+3$
+                        </div>
+                        <div class="space-y-2.5 text-xs sm:text-sm">
+                            <div class="flex items-center justify-between">
+                                <span><strong>문제 3-(1)</strong> $f'(x)=12x-1, f(1)=-2$일 때 $f(0) =$</span>
+                                <input type="number" id="p122_3_1" placeholder="상수항 C" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span><strong>문제 3-(2)</strong> $f'(x)=-3x^2+6x+1, f(2)=1$일 때 $f(0) =$</span>
+                                <input type="number" id="p122_3_2" placeholder="상수항 C" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                            </div>
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                                <p><strong>문제 4</strong> 점 $(x, f(x))$에서의 접선의 기울기가 $4x+3$이고 점 $(-1, 3)$을 지날 때, $f(1)$의 값은?</p>
+                                <div class="flex items-center gap-2">
+                                    <span>$f(1) = $</span>
+                                    <input type="number" id="p122_4" placeholder="f(1) 입력" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 font-bold text-center">
+                                    <button onclick="checkP122_34()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">확인</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="fb_p122_34" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">문제 3 & 문제 4 상세 풀이 보기</summary>
+                            <div class="mt-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                                <p>• <strong>문제 3-(1):</strong> $f(x)=6x^2-x+C$에서 $f(1)=5+C=-2 \implies C=-7 \implies \mathbf{f(x)=6x^2-x-7}$</p>
+                                <p>• <strong>문제 3-(2):</strong> $f(x)=-x^3+3x^2+x+C$에서 $f(2)=-8+12+2+C=1 \implies C=-5 \implies \mathbf{f(x)=-x^3+3x^2+x-5}$</p>
+                                <p>• <strong>문제 4:</strong> $f'(x)=4x+3 \implies f(x)=2x^2+3x+C$. $f(-1)=2-3+C=3 \implies C=4$. 따라서 $\mathbf{f(x)=2x^2+3x+4}$이고 $f(1)=9$이다.</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- 생각 넓히기 (p. 122 하단): 곱의 부정적분 주의점 -->
+                <div class="bg-gradient-to-br from-rose-50/80 via-white to-amber-50/60 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-rose-200 dark:border-rose-900/60 shadow-sm space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="px-3.5 py-1.5 rounded-full bg-rose-600 text-white text-xs sm:text-sm font-extrabold">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> 생각 넓히기 (p.122) · 은아와 준수의 대화: 곱의 적분 주의점!
+                        </span>
+                        <span class="text-xs font-bold text-rose-700 dark:text-rose-300">$\int f(x)g(x)\,dx \ne \int f(x)\,dx \times \int g(x)\,dx$</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                        <strong>은아:</strong> "$x^3 = x \times x^2$이잖아. 그럼 $x^3$을 적분한 것과 $x, x^2$을 각각 적분해서 곱한 것이 서로 같을까?"<br>
+                        <strong>준수:</strong> "아니야. $\int x^3\,dx = \dfrac{1}{4}x^4 + C$이지만, $\left(\int x\,dx\right)\times\left(\int x^2\,dx\right) = \left(\dfrac{1}{2}x^2+C_1\right)\left(\dfrac{1}{3}x^3+C_2\right)$는 $5$차식이 되어 전혀 달라!"
+                    </p>
+                    <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-950 border border-rose-200 dark:border-rose-800 text-xs sm:text-sm font-bold text-indigo-700 dark:text-indigo-300">
+                        💡 핵심 정리: 곱의 꼴로 된 다항함수 $\int f(x)g(x)\,dx$를 적분할 때는 각각 적분해서 곱하면 안 되고, 반드시 <u>먼저 다항식을 전개하여 합 또는 차의 꼴로 고친 후</u> 항별로 적분해야 합니다!
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 4: 02. 부정적분의 계산 - 스스로 확인하기 (p. 123)
+                 ========================================== -->
+            <section id="sec-4" class="scroll-mt-24 space-y-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 123쪽 · 02. 부정적분의 계산</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            4. 02단원 스스로 확인하기 (01 ~ 06번)
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="4">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 02번 & 03번: 정적분 성질 결합 및 인수분해 약분 -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">02 & 03 (p.123)</span>
+                            <span class="text-xs text-amber-500 font-bold">★★☆ 합·차 결합을 통한 부정적분 계산</span>
+                        </div>
+                        <div class="space-y-3 text-xs sm:text-sm">
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5">
+                                <p class="font-bold">03-(1) $\int (2x^3+3)\,dx + \int (2x^3-3)\,dx = F(x)+C$</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-500">$F(0)=0$일 때 $F(2)$의 값은?</span>
+                                    <input type="number" id="sc123_3_1" placeholder="F(2) 입력" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                </div>
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5">
+                                <p class="font-bold">03-(2) $\int \dfrac{x^4}{x^2+1}\,dx - \int \dfrac{1}{x^2+1}\,dx = G(x)+C$</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-slate-500">$G(0)=0$일 때 $G(3)$의 값은?</span>
+                                    <input type="number" id="sc123_3_2" placeholder="G(3) 입력" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                </div>
+                            </div>
+                            <button onclick="checkSC123_3()" class="w-full py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">03번 정답 확인</button>
+                            <div id="fb_sc123_3" class="text-xs font-bold hidden"></div>
+                        </div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">02번 & 03번 상세 풀이 보기</summary>
+                            <div class="mt-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                                <p>• <strong>02-(1):</strong> $\dfrac{1}{100}x^{100}+C$ &nbsp;|&nbsp; <strong>02-(2):</strong> $2x^6-2x^4+\dfrac{3}{2}x^2-2x+C$</p>
+                                <p>• <strong>02-(3):</strong> $\int (x^4-1)\,dx = \dfrac{1}{5}x^5 - x + C$</p>
+                                <p>• <strong>03-(1):</strong> $\int \{(2x^3+3)+(2x^3-3)\}\,dx = \int 4x^3\,dx = \mathbf{x^4 + C}$ ($F(2)=16$)</p>
+                                <p>• <strong>03-(2):</strong> $\int \dfrac{x^4-1}{x^2+1}\,dx = \int (x^2-1)\,dx = \mathbf{\dfrac{1}{3}x^3 - x + C}$ ($G(3)=9-3=6$)</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- 04번 (p.123) -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">04 (p.123)</span>
+                            <span class="text-xs text-amber-500 font-bold">★★☆ 조건을 만족시키는 함수 $f(x)$</span>
+                        </div>
+                        <p class="text-sm font-medium">다음 조건을 만족시키는 함수 $f(x)$를 구할 때, 상수항 $f(0)$의 값을 각각 확인하시오.</p>
+                        <div class="space-y-3 text-xs sm:text-sm">
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                                <span>(1) $f'(x)=9x^2-8x,\; f(1)=-1 \implies f(2) =$</span>
+                                <input type="number" id="sc123_4_1" placeholder="f(2) 입력" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                            </div>
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                                <span>(2) $f'(x)=4x^3-6x+3,\; f(2)=6 \implies f(0) =$</span>
+                                <input type="number" id="sc123_4_2" placeholder="f(0) 입력" class="w-24 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                            </div>
+                            <button onclick="checkSC123_4()" class="w-full py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">04번 정답 확인</button>
+                            <div id="fb_sc123_4" class="text-xs font-bold hidden"></div>
+                        </div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">04번 상세 풀이 보기</summary>
+                            <div class="mt-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1">
+                                <p>• (1) $f(x)=3x^3-4x^2+C$에서 $f(1)=3-4+C=-1 \implies C=0$. 따라서 $\mathbf{f(x)=3x^3-4x^2}$ ($f(2)=24-16=8$)</p>
+                                <p>• (2) $f(x)=x^4-3x^2+3x+C$에서 $f(2)=16-12+6+C=6 \implies C=-4$. 따라서 $\mathbf{f(x)=x^4-3x^2+3x-4}$ ($f(0)=-4$)</p>
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- 05번 (p.123): 도함수 직선 그래프로 이차함수 f(x) 구하기 (Canvas 포함) -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 md:col-span-2">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">05 (p.123) · 도함수 그래프 분석 실험실</span>
+                            <span class="text-xs text-amber-500 font-bold">★★★ 도함수의 그래프와 부정적분</span>
+                        </div>
+                        <p class="text-sm font-medium leading-relaxed">
+                            이차함수 $y=f(x)$에 대하여 그 도함수 $y=f'(x)$의 그래프가 오른쪽 그림과 같이 두 점 $(0, 2), (1, 0)$을 지나는 직선이다. $f(3)=2$일 때, $f(2)$의 값을 구하시오.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                            <div class="md:col-span-6 bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 h-52">
+                                <canvas id="canvasP123_5" class="w-full h-full"></canvas>
+                            </div>
+                            <div class="md:col-span-6 space-y-3">
+                                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    직선 $y=f'(x)$는 $y$절편이 $2$, $x$절편이 $1$이므로 기울기가 $-2$인 직선 $f'(x) = -2x + 2$입니다. 이를 적분하고 $f(3)=2$를 대입해 보세요!
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-bold">$f(2) = $</span>
+                                    <input type="number" id="sc123_5" placeholder="정답 입력" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-center font-bold">
+                                    <button onclick="checkNumProblem('sc123_5', 5, 'fb_sc123_5', '123_5', '정답입니다! f\'(x) = -2x + 2 ⟹ f(x) = -x² + 2x + C 이고, f(3) = -9 + 6 + C = 2 에서 C = 5 이므로 f(x) = -x² + 2x + 5 ⟹ f(2) = -4 + 4 + 5 = 5 입니다.')" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">확인</button>
+                                </div>
+                                <div id="fb_sc123_5" class="text-xs font-bold hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 06번 (p.123): 생각을 키우는 문제 -->
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-4 md:col-span-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">06</span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-xs font-bold">생각을 키우는 문제 (p.123)</span>
+                            </div>
+                            <span class="text-xs text-amber-500 font-bold">★★★ $F'(x)=f(x)$와 곱의 미분법 활용</span>
+                        </div>
+                        <p class="text-sm font-medium leading-relaxed">
+                            다항함수 $f(x)$와 $f(x)$의 한 부정적분 $F(x)$에 대하여
+                            $$F(x) = xf(x) - 6x^3 + x^2 - 1$$
+                            이 성립한다. $f(-1) = 2$일 때, 다음 물음에 답하시오.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <p class="font-bold">(1) 주어진 식의 양변을 $x$에 대하여 미분하여 $f'(x)$를 구하시오.</p>
+                                <div class="flex items-center gap-2">
+                                    <span>$f'(x) = $</span>
+                                    <input type="text" id="sc123_6_1" placeholder="예: 18x-2" class="w-36 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                                <p class="font-bold">(2) 함수 $f(x)$를 구할 때, $f(1)$의 값을 구하시오.</p>
+                                <div class="flex items-center gap-2">
+                                    <span>$f(1) = $</span>
+                                    <input type="number" id="sc123_6_2" placeholder="f(1) 값" class="w-28 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-bold text-center">
+                                    <button onclick="checkSC123_6()" class="px-4 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition cursor-pointer">정답 확인</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="fb_sc123_6" class="text-xs font-bold hidden"></div>
+                        <details class="text-xs text-slate-500">
+                            <summary class="cursor-pointer font-bold text-indigo-600">06번 상세 풀이 보기</summary>
+                            <div class="mt-2 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1 leading-relaxed overflow-x-auto">
+                                <p>• <strong>(1) 양변 미분:</strong> $F'(x) = f(x)$이고, 우변의 $xf(x)$를 곱의 미분법으로 미분하면 $\{xf(x)\}' = f(x) + xf'(x)$이므로</p>
+                                $$f(x) = f(x) + xf'(x) - 18x^2 + 2x \implies xf'(x) = 18x^2 - 2x$$
+                                <p>다항함수이므로 모든 실수 $x$에 대하여 $\mathbf{f'(x) = 18x - 2}$이다.</p>
+                                <p>• <strong>(2) 적분 및 초기 조건:</strong> $f(x) = \int (18x - 2)\,dx = 9x^2 - 2x + C$.<br>
+                                $f(-1) = 9 + 2 + C = 2 \implies C = -9$. 따라서 $\mathbf{f(x) = 9x^2 - 2x - 9}$이고 $f(1) = 9 - 2 - 9 = \mathbf{-2}$이다.</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 SECTION 5: 탐구하는 수학 - 부정적분의 기하적 의미 확인하기 (p. 124)
+                 ========================================== -->
+            <section id="sec-5" class="scroll-mt-24 space-y-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">교과서 124쪽 · 탐구하는 수학 (연결 · 정보처리)</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                            5. 공학 도구를 이용한 부정적분의 기하적 의미 확인하기
+                        </h2>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-pointer select-none bg-white dark:bg-slate-900 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <input type="checkbox" class="section-check w-4 h-4 rounded text-indigo-600" data-sec="5">
+                        <span>학습 완료</span>
+                    </label>
+                </div>
+
+                <!-- Interactive AlgeoMath / GeoGebra Style Lab (p. 124) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border-2 border-indigo-200 dark:border-indigo-900/60 shadow-sm space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <span class="px-3 py-1 rounded-full bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 text-xs font-extrabold">공학 도구 실험실 (p.124)</span>
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">$f(x) = x^2$과 부정적분 $g(x) = \int f(x)\,dx = \dfrac{1}{3}x^3 + C$의 기하적 관계</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-slate-50 dark:bg-slate-950 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <!-- Left Panel: AlgeoMath-style Input & Sliders -->
+                        <div class="lg:col-span-5 space-y-4 text-xs sm:text-sm">
+                            <!-- Simulated CAS Algebra Input List -->
+                            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden shadow-2xs">
+                                <div class="p-3 flex items-center gap-3">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-rose-600 shrink-0"></span>
+                                    <div class="font-mono text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
+                                        f(x) = x^2
+                                    </div>
+                                </div>
+                                <div class="p-3 space-y-1.5">
+                                    <div class="flex items-center justify-between font-bold">
+                                        <span class="font-mono">적분상수 슬라이더 C = <span id="geoCVal" class="text-emerald-600">1.0</span></span>
+                                        <span class="text-[11px] text-slate-400">$-5 \le C \le 5$</span>
+                                    </div>
+                                    <input type="range" id="geoCSlider" min="-3" max="3" step="0.2" value="1.0" class="w-full">
+                                </div>
+                                <div class="p-3 flex items-center gap-3">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-amber-500 shrink-0"></span>
+                                    <div class="font-mono text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">
+                                        g : integral(f) &nbsp;→&nbsp; <span id="geoEqOut" class="text-amber-600">g(x) = ⅓x³ + 1.0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Point x = a Explorer for Geometric Meaning -->
+                            <div class="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2.5">
+                                <div class="flex justify-between items-center font-bold">
+                                    <span>관찰 지점 $x = a$: <span id="geoAVal" class="text-indigo-600">1.20</span></span>
+                                    <span class="text-xs text-indigo-600 dark:text-indigo-400">기울기 $g'(a) = f(a)$ 확인</span>
+                                </div>
+                                <input type="range" id="geoASlider" min="-2.0" max="2.0" step="0.1" value="1.2" class="w-full">
+                                <div class="grid grid-cols-2 gap-2 text-center pt-1">
+                                    <div class="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900">
+                                        <div class="text-[11px] text-slate-500">$f(a)$의 함숫값 ($y$좌표)</div>
+                                        <div id="geoFaVal" class="text-sm font-extrabold text-rose-600">f(1.2) = 1.44</div>
+                                    </div>
+                                    <div class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900">
+                                        <div class="text-[11px] text-slate-500">$g(x)$의 접선의 기울기</div>
+                                        <div id="geoSlopeVal" class="text-sm font-extrabold text-amber-600">g'(1.2) = 1.44</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Interactive Coordinate Plane Canvas -->
+                        <div class="lg:col-span-7 h-80 w-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-2">
+                            <canvas id="canvasGeoMeaning" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 탐구 활동 1, 2, 3 정리 카드 (p. 124 하단) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 text-xs sm:text-sm">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5">
+                            <div class="font-extrabold text-indigo-600 dark:text-indigo-400">활동 ① $C$의 값을 변화시킬 때의 변화</div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                                $C$의 값이 변해도 도함수 $f(x)=x^2$의 그래프는 <strong>변하지 않고</strong>, 부정적분 $\int f(x)\,dx = \frac{1}{3}x^3+C$의 그래프는 <strong>$y$축의 방향으로 $C$만큼 평행이동</strong>합니다.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5">
+                            <div class="font-extrabold text-rose-600 dark:text-rose-400">활동 ② 도함수 $f(x)$의 그래프의 기하적 의미</div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                                임의의 실수 $a$에 대하여 도함수의 함숫값 $f(a)$는 부정적분 $y=\int f(x)\,dx$의 그래프 위의 점 $(a, F(a)+C)$에서의 <strong>접선의 기울기</strong>를 나타냅니다.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-1.5">
+                            <div class="font-extrabold text-amber-600 dark:text-amber-400">활동 ③ 부정적분 $\int f(x)\,dx$ 그래프의 기하적 의미</div>
+                            <p class="text-slate-700 dark:text-slate-300 leading-relaxed">
+                                같은 $x$좌표에서 접선의 기울기가 항상 $f(x)$로 같으므로, 부정적분 $\int f(x)\,dx$의 그래프는 한 부정적분의 그래프를 <strong>$y$축 방향으로 평행이동한 곡선들의 모임(곡선군)</strong>입니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div id="floatingActions" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2.5 transition-all duration-300 floating-btn-hidden">
+        <button onclick="openMobileSidebar()" class="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/90 dark:bg-slate-800 text-white shadow-lg border border-slate-700 text-xs font-bold hover:bg-indigo-600 transition cursor-pointer">
+            <i class="fa-solid fa-list-ul"></i> <span>목차 이동</span>
+        </button>
+        <button onclick="scrollToTop(event)" title="맨 위로 이동" class="group flex items-center gap-2 px-4 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-500/30 border border-indigo-400/30 transition-all duration-200 hover:-translate-y-0.5 cursor-pointer">
+            <i class="fa-solid fa-arrow-up transition-transform group-hover:-translate-y-0.5"></i>
+            <span class="text-xs sm:text-sm font-extrabold pr-0.5">맨 위로</span>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError: false
+            });
+            initAllCanvases();
+            onScrollUpdate();
+        });
+
+        // Theme Toggle
+        document.getElementById('themeToggleBtn').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            drawAllCanvases();
+        });
+
+        // Cloze Flashcard Mode
+        let isClozeMode = false;
+        function toggleClozeMode() {
+            isClozeMode = !isClozeMode;
+            const btn = document.getElementById('clozeToggleBtn');
+            const blanks = document.querySelectorAll('.cloze-blank');
+            if (isClozeMode) {
+                blanks.forEach(el => el.classList.add('cloze-hidden'));
+                btn.innerHTML = '<i class="fa-solid fa-eye"></i> <span>빈칸 모두 보기</span>';
+            } else {
+                blanks.forEach(el => el.classList.remove('cloze-hidden'));
+                btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> <span>빈칸 암기 모드 켜기</span>';
+            }
+        }
+        function revealSingleCloze(el) {
+            if (el.classList.contains('cloze-hidden')) {
+                el.classList.remove('cloze-hidden');
+            }
+        }
+
+        // Mobile Sidebar
+        const sidebar = document.getElementById('sidebar');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        function openMobileSidebar() {
+            sidebar.classList.remove('-translate-x-full');
+            sidebarBackdrop.classList.remove('hidden');
+        }
+        function closeMobileSidebar() {
+            sidebar.classList.add('-translate-x-full');
+            sidebarBackdrop.classList.add('hidden');
+        }
+        document.getElementById('mobileMenuBtn').addEventListener('click', openMobileSidebar);
+        document.getElementById('closeSidebarBtn').addEventListener('click', closeMobileSidebar);
+        sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+
+        function scrollToTop(e) {
+            if (e) e.preventDefault();
+            if (currentViewMode === 'tab') activateSectionTab('sec-1');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            closeMobileSidebar();
+        }
+
+        // View Mode Toggle ('scroll' vs 'tab')
+        let currentViewMode = 'scroll';
+        const sectionIds = ['sec-1', 'sec-2', 'sec-3', 'sec-4', 'sec-5'];
+        let activeSectionId = 'sec-1';
+
+        function setViewMode(mode) {
+            currentViewMode = mode;
+            const scrollBtn = document.getElementById('modeScrollBtn');
+            const tabBtn = document.getElementById('modeTabBtn');
+
+            if (mode === 'scroll') {
+                scrollBtn.className = 'px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition cursor-pointer';
+                tabBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition cursor-pointer';
+                sectionIds.forEach(id => document.getElementById(id).classList.remove('hidden'));
+            } else {
+                tabBtn.className = 'px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs transition cursor-pointer';
+                scrollBtn.className = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 transition cursor-pointer';
+                activateSectionTab(activeSectionId || 'sec-1');
+            }
+            setTimeout(drawAllCanvases, 50);
+        }
+
+        function highlightNavItem(secId) {
+            activeSectionId = secId;
+            const idx = sectionIds.indexOf(secId) + 1;
+            const badge = document.getElementById('currentSecBadge');
+            if (badge && idx > 0) badge.textContent = `${idx} / 5`;
+
+            document.querySelectorAll('#navLinks .nav-item').forEach(link => {
+                const target = link.getAttribute('data-target');
+                const numBadge = link.querySelector('.nav-num');
+                if (target === secId) {
+                    link.className = 'nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 transition';
+                    if (numBadge) numBadge.className = 'nav-num w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0';
+                } else {
+                    link.className = 'nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800/60 border border-transparent transition';
+                    if (numBadge) numBadge.className = 'nav-num w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0';
+                }
+            });
+        }
+
+        function activateSectionTab(secId) {
+            sectionIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (id === secId) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+            highlightNavItem(secId);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(drawAllCanvases, 50);
+        }
+
+        function navigateToSection(e, secId) {
+            e.preventDefault();
+            closeMobileSidebar();
+            if (currentViewMode === 'tab') {
+                activateSectionTab(secId);
+            } else {
+                const targetEl = document.getElementById(secId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    highlightNavItem(secId);
+                }
+            }
+        }
+
+        // ScrollSpy & Floating Action Button
+        const floatingActions = document.getElementById('floatingActions');
+        function onScrollUpdate() {
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            if (scrollY > 250) {
+                floatingActions.classList.remove('floating-btn-hidden');
+                floatingActions.classList.add('floating-btn-visible');
+            } else {
+                floatingActions.classList.remove('floating-btn-visible');
+                floatingActions.classList.add('floating-btn-hidden');
+            }
+
+            if (currentViewMode === 'scroll') {
+                let current = 'sec-1';
+                for (const id of sectionIds) {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        const rect = el.getBoundingClientRect();
+                        if (rect.top <= 200) current = id;
+                    }
+                }
+                if (current !== activeSectionId) highlightNavItem(current);
+            }
+        }
+        window.addEventListener('scroll', onScrollUpdate, { passive: true });
+
+        // Progress Bar
+        const sectionChecks = document.querySelectorAll('.section-check');
+        function updateProgress() {
+            let checked = 0;
+            sectionChecks.forEach(chk => { if (chk.checked) checked++; });
+            const pct = Math.round((checked / sectionChecks.length) * 100);
+            document.getElementById('progressBar').style.width = pct + '%';
+            document.getElementById('progressText').textContent = pct + '%';
+        }
+        sectionChecks.forEach(chk => chk.addEventListener('change', updateProgress));
+
+        // ==========================================
+        // Canvas Setup Helper
+        // ==========================================
+        function setupCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return null;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return null;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            return { ctx, w: rect.width, h: rect.height, isDark: document.documentElement.classList.contains('dark') };
+        }
+
+        // ==========================================
+        // Canvas 1: Family of Antiderivatives F(x) = x^2 + C (p.116)
+        // ==========================================
+        function drawIntroFamilyCanvas() {
+            const info = setupCanvas('canvasIntroFamily');
+            if (!info) return;
+            const { ctx, w, h, isDark } = info;
+            ctx.clearRect(0, 0, w, h);
+
+            const cVal = parseFloat(document.getElementById('introCSlider').value);
+            const signStr = cVal > 0 ? `+ ${cVal.toFixed(1)}` : (cVal < 0 ? `- ${Math.abs(cVal).toFixed(1)}` : '');
+            document.getElementById('introCValBadge').textContent = `C = ${cVal.toFixed(1)} (F(x) = x² ${signStr})`;
+
+            const xMin = -2.8, xMax = 2.8, yMin = -3.8, yMax = 6.2;
+            const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+            const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+            // Grid & Axes
+            ctx.strokeStyle = isDark ? '#334155' : '#cbd5e1';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0));
+            ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h);
+            ctx.stroke();
+
+            // Ghost curves for C = -2, 0, 1
+            [-2, 0, 1].forEach(ghostC => {
+                ctx.strokeStyle = isDark ? 'rgba(148, 163, 184, 0.25)' : 'rgba(148, 163, 184, 0.45)';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                for (let i = 0; i <= 80; i++) {
+                    const x = -2.4 + (i / 80) * 4.8;
+                    const y = x * x + ghostC;
+                    if (i === 0) ctx.moveTo(toX(x), toY(y));
+                    else ctx.lineTo(toX(x), toY(y));
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+
+            // Active Curve F(x) = x^2 + C
+            ctx.strokeStyle = '#4f46e5';
+            ctx.lineWidth = 2.8;
+            ctx.beginPath();
+            for (let i = 0; i <= 100; i++) {
+                const x = -2.4 + (i / 100) * 4.8;
+                const y = x * x + cVal;
+                if (i === 0) ctx.moveTo(toX(x), toY(y));
+                else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+
+            // Tangent at x = 1 (slope is always 2 regardless of C)
+            const x0 = 1, y0 = 1 + cVal;
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(toX(x0 - 0.8), toY(y0 - 1.6));
+            ctx.lineTo(toX(x0 + 0.8), toY(y0 + 1.6));
+            ctx.stroke();
+
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath(); ctx.arc(toX(x0), toY(y0), 5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+            ctx.font = 'bold 11px Pretendard, sans-serif';
+            ctx.fillText(`x=1에서 접선 기울기 F'(1)=2`, toX(x0) + 8, toY(y0) + 4);
+        }
+        document.getElementById('introCSlider').addEventListener('input', drawIntroFamilyCanvas);
+
+        // ==========================================
+        // Canvas 2: Problem 05 (p.123) Derivative Line & Parabola
+        // ==========================================
+        function drawP123_5Canvas() {
+            const info = setupCanvas('canvasP123_5');
+            if (!info) return;
+            const { ctx, w, h, isDark } = info;
+            ctx.clearRect(0, 0, w, h);
+
+            const xMin = -1.5, xMax = 3.5, yMin = -2.5, yMax = 5.8;
+            const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+            const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+            // Axes
+            ctx.strokeStyle = isDark ? '#475569' : '#94a3b8';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(10, toY(0)); ctx.lineTo(w - 10, toY(0));
+            ctx.moveTo(toX(0), 10); ctx.lineTo(toX(0), h - 10);
+            ctx.stroke();
+
+            // Line y = f'(x) = -2x + 2
+            ctx.strokeStyle = '#e11d48';
+            ctx.lineWidth = 2.6;
+            ctx.beginPath();
+            ctx.moveTo(toX(-0.8), toY(3.6));
+            ctx.lineTo(toX(2.1), toY(-2.2));
+            ctx.stroke();
+
+            // Restored Parabola y = f(x) = -x^2 + 2x + 5 (dashed guide)
+            ctx.strokeStyle = '#4f46e5';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            for (let i = 0; i <= 80; i++) {
+                const x = -1.2 + (i / 80) * 4.5;
+                const y = -x * x + 2 * x + 5;
+                if (i === 0) ctx.moveTo(toX(x), toY(y));
+                else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = isDark ? '#f8fafc' : '#0f172a';
+            ctx.font = 'bold 11px Pretendard, sans-serif';
+            ctx.fillText('2', toX(0) - 14, toY(2) + 4);
+            ctx.fillText('1', toX(1) - 10, toY(0) + 15);
+            ctx.fillText('O', toX(0) - 14, toY(0) + 15);
+            ctx.fillStyle = '#e11d48';
+            ctx.fillText("y = f'(x) = -2x + 2", toX(1.1), toY(1.8));
+            ctx.fillStyle = '#4f46e5';
+            ctx.fillText("복원된 y = f(x) (점선)", toX(1.5), toY(4.8));
+        }
+
+        // ==========================================
+        // Canvas 3: Exploring Math (p.124) Geometric Meaning of Indefinite Integral
+        // ==========================================
+        function drawGeoMeaningCanvas() {
+            const info = setupCanvas('canvasGeoMeaning');
+            if (!info) return;
+            const { ctx, w, h, isDark } = info;
+            ctx.clearRect(0, 0, w, h);
+
+            const cVal = parseFloat(document.getElementById('geoCSlider').value);
+            const aVal = parseFloat(document.getElementById('geoASlider').value);
+
+            document.getElementById('geoCVal').textContent = cVal.toFixed(1);
+            document.getElementById('geoAVal').textContent = aVal.toFixed(2);
+            const cSign = cVal >= 0 ? `+ ${cVal.toFixed(1)}` : `- ${Math.abs(cVal).toFixed(1)}`;
+            document.getElementById('geoEqOut').textContent = `g(x) = ⅓x³ ${cSign}`;
+
+            const fa = aVal * aVal;
+            const ga = (1 / 3) * Math.pow(aVal, 3) + cVal;
+            document.getElementById('geoFaVal').textContent = `f(${aVal.toFixed(1)}) = ${fa.toFixed(2)}`;
+            document.getElementById('geoSlopeVal').textContent = `g'(${aVal.toFixed(1)}) = ${fa.toFixed(2)}`;
+
+            const xMin = -3.5, xMax = 3.5, yMin = -3.2, yMax = 5.5;
+            const toX = x => ((x - xMin) / (xMax - xMin)) * w;
+            const toY = y => h - ((y - yMin) / (yMax - yMin)) * h;
+
+            // Grid
+            ctx.strokeStyle = isDark ? '#1e293b' : '#f1f5f9';
+            ctx.lineWidth = 1;
+            for (let gx = -3; gx <= 3; gx++) {
+                ctx.beginPath(); ctx.moveTo(toX(gx), 0); ctx.lineTo(toX(gx), h); ctx.stroke();
+            }
+            for (let gy = -3; gy <= 5; gy++) {
+                ctx.beginPath(); ctx.moveTo(0, toY(gy)); ctx.lineTo(w, toY(gy)); ctx.stroke();
+            }
+
+            // Axes
+            ctx.strokeStyle = isDark ? '#64748b' : '#475569';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(0, toY(0)); ctx.lineTo(w, toY(0));
+            ctx.moveTo(toX(0), 0); ctx.lineTo(toX(0), h);
+            ctx.stroke();
+
+            // 1) Derivative curve f(x) = x^2 (Rose Red, matches textbook p.124 screenshot)
+            ctx.strokeStyle = '#e11d48';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            for (let i = 0; i <= 120; i++) {
+                const x = -2.5 + (i / 120) * 5.0;
+                const y = x * x;
+                if (i === 0) ctx.moveTo(toX(x), toY(y));
+                else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+
+            // 2) Indefinite Integral curve g(x) = (1/3)x^3 + C (Amber/Orange, matches textbook p.124)
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2.8;
+            ctx.beginPath();
+            for (let i = 0; i <= 120; i++) {
+                const x = -2.6 + (i / 120) * 5.2;
+                const y = (1 / 3) * Math.pow(x, 3) + cVal;
+                if (i === 0) ctx.moveTo(toX(x), toY(y));
+                else ctx.lineTo(toX(x), toY(y));
+            }
+            ctx.stroke();
+
+            // 3) Vertical line x = a and Tangent on g(x)
+            ctx.strokeStyle = isDark ? '#475569' : '#94a3b8';
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(toX(aVal), 0); ctx.lineTo(toX(aVal), h);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Tangent segment at (a, g(a)) with slope f(a)
+            ctx.strokeStyle = '#4f46e5';
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            const dx = 0.75;
+            ctx.moveTo(toX(aVal - dx), toY(ga - fa * dx));
+            ctx.lineTo(toX(aVal + dx), toY(ga + fa * dx));
+            ctx.stroke();
+
+            // Dots at (a, f(a)) and (a, g(a))
+            ctx.fillStyle = '#e11d48';
+            ctx.beginPath(); ctx.arc(toX(aVal), toY(fa), 5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath(); ctx.arc(toX(aVal), toY(ga), 5.5, 0, Math.PI * 2); ctx.fill();
+        }
+        document.getElementById('geoCSlider').addEventListener('input', drawGeoMeaningCanvas);
+        document.getElementById('geoASlider').addEventListener('input', drawGeoMeaningCanvas);
+
+        function drawAllCanvases() {
+            drawIntroFamilyCanvas();
+            drawP123_5Canvas();
+            drawGeoMeaningCanvas();
+        }
+
+        function initAllCanvases() {
+            drawAllCanvases();
+            window.addEventListener('resize', drawAllCanvases);
+        }
+
+        // ==========================================
+        // Grading & Score Tracking Helpers
+        // ==========================================
+        const solvedSet = new Set();
+        function markSolved(id) {
+            solvedSet.add(id);
+            document.getElementById('solvedCountBadge').textContent = `${solvedSet.size} / 16 완료`;
+        }
+
+        function showFeedback(elId, isCorrect, msg) {
+            const el = document.getElementById(elId);
+            el.classList.remove('hidden', 'text-emerald-600', 'text-rose-600');
+            el.classList.add(isCorrect ? 'text-emerald-600' : 'text-rose-600');
+            el.innerHTML = msg;
+        }
+
+        function normMath(str) {
+            return str.replace(/\s+/g, '').replace(/\*\*/g, '^').toLowerCase();
+        }
+
+        function checkNumProblem(inputId, answer, fbId, probKey, successMsg) {
+            const val = parseFloat(document.getElementById(inputId).value);
+            if (val === answer) {
+                markSolved(probKey);
+                showFeedback(fbId, true, `<i class="fa-solid fa-circle-check mr-1"></i> ${successMsg}`);
+            } else {
+                showFeedback(fbId, false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 오답입니다. 조건과 부호를 다시 확인해 보세요!');
+            }
+        }
+
+        // Section 1: Problem 1 & 2 (p.117)
+        function checkP117_1() {
+            const a1 = normMath(document.getElementById('p117_1_1').value);
+            const a2 = normMath(document.getElementById('p117_1_2').value);
+            if (a1 === '5x' && (a2 === '-x^6' || a2 === '-1x^6')) {
+                markSolved('p117_1');
+                showFeedback('fb_p117_1', true, '<i class="fa-solid fa-circle-check mr-1"></i> 정답입니다! (1) 5x + C, (2) -x⁶ + C');
+            } else {
+                showFeedback('fb_p117_1', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 다시 확인해 보세요. (5x)\'=5 이고 (-x⁶)\'=-6x⁵ 입니다.');
+            }
+        }
+
+        function checkP117_2() {
+            const a1 = normMath(document.getElementById('p117_2_1').value);
+            const a2 = normMath(document.getElementById('p117_2_2').value);
+            if (a1 === '4x+5' && a2 === '-3x^2-8x') {
+                markSolved('p117_2');
+                showFeedback('fb_p117_2', true, '<i class="fa-solid fa-circle-check mr-1"></i> 정답입니다! 양변을 x에 대하여 미분하면 (1) f(x) = 4x + 5, (2) f(x) = -3x² - 8x 입니다.');
+            } else {
+                showFeedback('fb_p117_2', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 우변의 식을 x에 대하여 미분한 도함수를 입력해 보세요!');
+            }
+        }
+
+        // Section 2: Self-Check (p.118)
+        function checkSC118_1() {
+            const v1 = normMath(document.getElementById('sc118_1_1').value);
+            const v2 = normMath(document.getElementById('sc118_1_2').value);
+            const v3 = normMath(document.getElementById('sc118_1_3').value);
+            if (v1 === '부정적분' && v2 === 'f(x)' && v3 === '적분상수') {
+                markSolved('sc118_1');
+                showFeedback('fb_sc118_1', true, '<i class="fa-solid fa-circle-check mr-1"></i> 정답입니다! (1) 부정적분, (2) F(x), 적분상수');
+            } else {
+                showFeedback('fb_sc118_1', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 다시 확인하세요: (1) 부정적분, (2) F(x), 적분상수');
+            }
+        }
+
+        function checkSC118_23() {
+            const a21 = normMath(document.getElementById('sc118_2_1').value);
+            const a22 = normMath(document.getElementById('sc118_2_2').value);
+            const a31 = normMath(document.getElementById('sc118_3_1').value);
+            const a32 = normMath(document.getElementById('sc118_3_2').value);
+            if (a21 === 'x^5' && a22 === '-x^3' && a31 === '3x^2-5' && a32 === '-x^3+3x^2-3') {
+                markSolved('sc118_2');
+                markSolved('sc118_3');
+                showFeedback('fb_sc118_23', true, '<i class="fa-solid fa-circle-check mr-1"></i> 02번과 03번 모두 정답입니다!');
+            } else {
+                showFeedback('fb_sc118_23', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 일부 답을 다시 점검하세요: 02-(1) x^5, 02-(2) -x^3, 03-(1) 3x^2-5, 03-(2) -x^3+3x^2-3');
+            }
+        }
+
+        function checkSC118_6() {
+            const f1 = normMath(document.getElementById('sc118_6_1').value);
+            const f2 = parseFloat(document.getElementById('sc118_6_2').value);
+            if (f1 === '-4x' && f2 === 1) {
+                markSolved('sc118_6');
+                showFeedback('fb_sc118_6', true, '<i class="fa-solid fa-circle-check mr-1"></i> 정답입니다! (1) f\'(x) = -4x, (2) f(x) = -2x² + 3 이므로 f(1) = 1 입니다.');
+            } else {
+                showFeedback('fb_sc118_6', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 오답입니다. 아래 [상세 풀이 보기]를 열어 확인해 보세요!');
+            }
+        }
+
+        // Section 3: p.120~122 Problems
+        function checkP120_121() {
+            const v1 = parseFloat(document.getElementById('p120_1_1').value);
+            const v2 = parseFloat(document.getElementById('p120_1_3').value);
+            const v3 = parseFloat(document.getElementById('p121_2_2').value);
+            if (v1 === 12 && v2 === 50 && v3 === 0) {
+                markSolved('p120_1');
+                markSolved('p121_2');
+                showFeedback('fb_p120_121', true, '<i class="fa-solid fa-circle-check mr-1"></i> 모두 정답입니다! F(x) = 2x⁴ - 4x³ - x² + 3x + C 입니다.');
+            } else {
+                showFeedback('fb_p120_121', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 다시 확인해 보세요: 문제 1-(1) 6+6=12, 문제 1-(3) n=50, 문제 2-(2) F(1)=0');
+            }
+        }
+
+        function checkP122_34() {
+            const v1 = parseFloat(document.getElementById('p122_3_1').value);
+            const v2 = parseFloat(document.getElementById('p122_3_2').value);
+            const v3 = parseFloat(document.getElementById('p122_4').value);
+            if (v1 === -7 && v2 === -5 && v3 === 9) {
+                markSolved('p122_3');
+                markSolved('p122_4');
+                showFeedback('fb_p122_34', true, '<i class="fa-solid fa-circle-check mr-1"></i> 정답입니다! 문제 3-(1) C=-7, 3-(2) C=-5, 문제 4 f(x)=2x²+3x+4 이므로 f(1)=9 입니다.');
+            } else {
+                showFeedback('fb_p122_34', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 적분상수 C를 구하는 식을 아래 [상세 풀이 보기]에서 확인해 보세요!');
+            }
+        }
+
+        // Section 4: Self-Check (p.123)
+        function checkSC123_3() {
+            const v1 = parseFloat(document.getElementById('sc123_3_1').value);
+            const v2 = parseFloat(document.getElementById('sc123_3_2').value);
+            if (v1 === 16 && v2 === 6) {
+                markSolved('sc123_3');
+                showFeedback('fb_sc123_3', true, '<i class="fa-solid fa-circle-check mr-1"></i> 정답입니다! (1) x⁴ + C (F(2)=16), (2) ⅓x³ - x + C (G(3)=6)');
+            } else {
+                showFeedback('fb_sc123_3', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 두 인테그랄을 하나로 합쳐서 먼저 간단히 정리한 뒤 적분해 보세요!');
+            }
+        }
+
+        function checkSC123_4() {
+            const v1 = parseFloat(document.getElementById('sc123_4_1').value);
+            const v2 = parseFloat(document.getElementById('sc123_4_2').value);
+            if (v1 === 8 && v2 === -4) {
+                markSolved('sc123_4');
+                showFeedback('fb_sc123_4', true, '<i class="fa-solid fa-circle-check mr-1"></i> 정답입니다! (1) f(x)=3x³-4x² (f(2)=8), (2) f(x)=x⁴-3x²+3x-4 (f(0)=-4)');
+            } else {
+                showFeedback('fb_sc123_4', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 오답입니다. 초기 조건 f(1)=-1 과 f(2)=6 을 대입하여 적분상수 C를 다시 구해보세요.');
+            }
+        }
+
+        function checkSC123_6() {
+            const f1 = normMath(document.getElementById('sc123_6_1').value);
+            const f2 = parseFloat(document.getElementById('sc123_6_2').value);
+            if (f1 === '18x-2' && f2 === -2) {
+                markSolved('sc123_6');
+                showFeedback('fb_sc123_6', true, '<i class="fa-solid fa-circle-check mr-1"></i> 정답입니다! (1) f\'(x) = 18x - 2, (2) f(x) = 9x² - 2x - 9 이므로 f(1) = -2 입니다.');
+            } else {
+                showFeedback('fb_sc123_6', false, '<i class="fa-solid fa-circle-xmark mr-1"></i> 양변을 미분할 때 F\'(x) = f(x) 임과 {xf(x)}\' = f(x) + xf\'(x) 임을 이용해 보세요!');
+            }
+        }
+    </script>
+</body>
+</html>

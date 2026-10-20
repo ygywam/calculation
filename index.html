@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2022 개정 미적분Ⅰ 기말고사 수업 허브 대시보드</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        mathGreen: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            600: '#059669',
+                            700: '#047857',
+                        },
+                        mathPurple: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            600: '#9333ea',
+                            700: '#7e22ce',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- KaTeX for Math Rendering in descriptions -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .card-shadow {
+            box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+        }
+        .card-shadow:hover {
+            box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+        }
+        /* Custom scrollbar for preview modal */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-infinity text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded text-xs font-bold bg-blue-100 text-blue-700 tracking-wide">2022 개정 교육과정</span>
+                        <span class="text-xs font-semibold text-slate-500">고등학교 2학년 수학과</span>
+                    </div>
+                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                        <span>미적분Ⅰ</span>
+                        <span class="text-sm font-semibold text-slate-500 hidden sm:inline">| 기말고사 수업 허브 대시보드</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Header Quick Stats -->
+            <div class="hidden md:flex items-center gap-6">
+                <div class="text-right">
+                    <div class="text-xs font-medium text-slate-500">기말고사 수업 진도율</div>
+                    <div class="text-lg font-black text-blue-600 flex items-center justify-end gap-1.5">
+                        <span id="progress-text">0 / 8 단원</span>
+                        <span id="progress-percent" class="text-xs font-bold px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded-md">0%</span>
+                    </div>
+                </div>
+                <div class="w-32 bg-slate-200 h-2.5 rounded-full overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full w-0 transition-all duration-500"></div>
+                </div>
+                <button onclick="resetProgress()" title="진도 체크 초기화" class="text-slate-400 hover:text-slate-600 text-sm p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Welcome Banner & Scope Notice -->
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-700 via-indigo-700 to-indigo-800 text-white p-6 sm:p-8 shadow-xl shadow-indigo-900/10">
+            <div class="relative z-10 max-w-3xl">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur text-xs font-bold text-blue-100 mb-3 border border-white/20">
+                    <i class="fa-solid fa-bullhorn text-amber-300"></i> 기말고사 시험 대비 완성형 수업자료 포털
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold leading-snug tracking-tight text-white mb-2">
+                    미분의 활용부터 적분 전 단원까지,<br class="hidden sm:inline"> 한 화면에서 자유롭게 넘나드는 인터랙티브 수업
+                </h2>
+                <p class="text-sm sm:text-base text-blue-100/90 leading-relaxed font-normal">
+                    선생님께서 제미나이 4 아르곤으로 정성껏 구축한 웹 인터랙티브 수업자료와 교과서 원본 PDF가 연결되어 있습니다. 원하는 단원 카드를 클릭하여 즉시 수업을 시작하세요.
+                </p>
+                <div class="mt-4 flex flex-wrap items-center gap-3 text-xs text-blue-200">
+                    <span class="flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded-md"><i class="fa-solid fa-layer-group text-blue-300"></i> 총 8개 핵심 단원 탑재</span>
+                    <span class="flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded-md"><i class="fa-solid fa-file-code text-blue-300"></i> 인터랙티브 HTML 웹 자료</span>
+                    <span class="flex items-center gap-1.5 bg-black/20 px-2.5 py-1 rounded-md"><i class="fa-solid fa-file-pdf text-blue-300"></i> 교과서 원본 PDF 열람</span>
+                </div>
+            </div>
+            <!-- Decorative Background Element -->
+            <div class="absolute right-0 bottom-0 translate-x-12 translate-y-12 text-white/5 pointer-events-none select-none text-[220px] font-black">
+                ∫dx
+            </div>
+        </div>
+
+        <!-- Filter, Search & Utility Bar -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+            <!-- Category Tabs -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                <button onclick="setFilter('all')" id="tab-all" class="tab-btn active px-4 py-2 rounded-xl text-sm font-bold transition-all bg-blue-600 text-white shadow-sm shadow-blue-500/20">
+                    전체 보기 <span class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-white/20">8</span>
+                </button>
+                <button onclick="setFilter('diff')" id="tab-diff" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    Ⅱ. 미분의 활용 <span class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700">3</span>
+                </button>
+                <button onclick="setFilter('int')" id="tab-int" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    Ⅲ. 적분 <span class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700">5</span>
+                </button>
+                <button onclick="setFilter('review')" id="tab-review" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    대단원 마무리 <span class="ml-1 text-xs px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-700">2</span>
+                </button>
+            </div>
+
+            <!-- Search Input -->
+            <div class="relative w-full md:w-80">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="단원명, 키워드 검색 (/ 키)"
+                    class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-slate-50/70 focus:bg-white transition-all" />
+                <button onclick="clearSearch()" id="search-clear" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-circle-xmark text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 1: Ⅱ. 미분의 활용 Header & Grid -->
+        <section id="section-diff" class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-6 bg-blue-600 rounded-full"></span>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">Ⅱ. 미분 (도함수의 활용)</h3>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">3개 단원</span>
+                </div>
+                <span class="text-xs font-medium text-slate-400">교과서 p.95 ~ 111</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="grid-diff">
+                <!-- Card 1: 08. 방정식과 부등식 -->
+                <div class="unit-card bg-white rounded-2xl border border-slate-200 p-6 card-shadow transition-all duration-300 flex flex-col justify-between"
+                     data-category="diff" data-id="u1" data-keywords="방정식 부등식 실근의 개수 극값 최솟값 미적분">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 flex items-center gap-1.5">
+                                <i class="fa-solid fa-square-root-variable text-blue-500"></i> 미분 활용
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-500 hover:text-blue-600 transition-colors">
+                                <input type="checkbox" onchange="toggleDone('u1')" id="check-u1" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 transition-all cursor-pointer" />
+                                <span>완료</span>
+                            </label>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 mb-1 leading-snug group-hover:text-blue-600">
+                            08. 방정식과 부등식에의 활용
+                        </h4>
+                        <p class="text-xs text-slate-400 font-medium mb-3">교과서 p.95~100</p>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+                            방정식 $f(x)=0$ 및 $f(x)=a$의 서로 다른 실근의 개수 파악, 삼차방정식 극값 판별과 최솟값을 이용한 부등식 증명
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#실근의 개수</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#교점 탐구</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#부등식 증명</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#최솟값</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center gap-2">
+                        <a href="./2. 미분 8. 방정식과 부등식.html" target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm shadow-blue-500/20 transition-all">
+                            <i class="fa-solid fa-chalkboard-user"></i> 수업 열기
+                        </a>
+                        <button onclick="openPreview('./2. 미분 8. 방정식과 부등식.html', '08. 방정식과 부등식에의 활용')" title="대시보드 내 미리보기"
+                                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm transition-all">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                        <a href="./2. 미분 8. 방정식과 부등식.pdf" target="_blank" title="교과서 PDF 열기"
+                           class="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm transition-all">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 2: 09. 속도와 가속도 -->
+                <div class="unit-card bg-white rounded-2xl border border-slate-200 p-6 card-shadow transition-all duration-300 flex flex-col justify-between"
+                     data-category="diff" data-id="u2" data-keywords="속도 가속도 속력 수직선 운동 운동방향 물로켓 미적분">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 flex items-center gap-1.5">
+                                <i class="fa-solid fa-gauge-high text-blue-500"></i> 미분 활용
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-500 hover:text-blue-600 transition-colors">
+                                <input type="checkbox" onchange="toggleDone('u2')" id="check-u2" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 transition-all cursor-pointer" />
+                                <span>완료</span>
+                            </label>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 mb-1 leading-snug">
+                            09. 속도와 가속도
+                        </h4>
+                        <p class="text-xs text-slate-400 font-medium mb-3">교과서 p.101~105</p>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+                            수직선 위를 움직이는 점의 위치 함수 미분과 속도·가속도 정의, 운동 방향 전환($v=0$)과 연직 투상 운동(물로켓) 해석
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#순간속도</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#가속도</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#운동 방향 전환</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#물로켓 최고점</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center gap-2">
+                        <a href="./2. 미분 9. 속도와 가속도.html" target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm shadow-blue-500/20 transition-all">
+                            <i class="fa-solid fa-chalkboard-user"></i> 수업 열기
+                        </a>
+                        <button onclick="openPreview('./2. 미분 9. 속도와 가속도.html', '09. 속도와 가속도')" title="대시보드 내 미리보기"
+                                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm transition-all">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                        <a href="./2. 미분 9. 속도와 가속도.pdf" target="_blank" title="교과서 PDF 열기"
+                           class="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm transition-all">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 3: Ⅱ. 미분 대단원 마무리 -->
+                <div class="unit-card bg-white rounded-2xl border border-purple-200 p-6 card-shadow transition-all duration-300 flex flex-col justify-between"
+                     data-category="review" data-id="u3" data-keywords="미분 대단원 마무리 총정리 기출문제 기말고사 실전">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
+                                <i class="fa-solid fa-award text-purple-500"></i> 대단원 총정리
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-500 hover:text-purple-600 transition-colors">
+                                <input type="checkbox" onchange="toggleDone('u3')" id="check-u3" class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 transition-all cursor-pointer" />
+                                <span>완료</span>
+                            </label>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 mb-1 leading-snug">
+                            Ⅱ. 미분 : 대단원 마무리평가
+                        </h4>
+                        <p class="text-xs text-purple-600 font-semibold mb-3">교과서 p.106~111</p>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+                            미분계수, 접선, 극대·극소, 그래프 개형, 방정식·부등식, 속도와 가속도까지 미분 전 단원 핵심 유형과 고난도 실전 기출 문제 풀이
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">#미분 총정리</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">#대단원 평가</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">#서술형 완성</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">#수능 연계</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-purple-100 flex items-center gap-2">
+                        <a href="./2. 미분 대단원마무리.html" target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-sm shadow-purple-500/20 transition-all">
+                            <i class="fa-solid fa-chalkboard-user"></i> 수업 열기
+                        </a>
+                        <button onclick="openPreview('./2. 미분 대단원마무리.html', 'Ⅱ. 미분 대단원 마무리평가')" title="대시보드 내 미리보기"
+                                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm transition-all">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                        <a href="./2. 미분 대단원마무리.pdf" target="_blank" title="교과서 PDF 열기"
+                           class="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm transition-all">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Ⅲ. 적분 Header & Grid -->
+        <section id="section-int" class="space-y-4 pt-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-6 bg-emerald-600 rounded-full"></span>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">Ⅲ. 적분 (부정적분, 정적분 및 그 활용)</h3>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">5개 단원</span>
+                </div>
+                <span class="text-xs font-medium text-slate-400">교과서 p.116 ~ 157</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="grid-int">
+                <!-- Card 4: 01~02. 부정적분과 계산 -->
+                <div class="unit-card bg-white rounded-2xl border border-slate-200 p-6 card-shadow transition-all duration-300 flex flex-col justify-between"
+                     data-category="int" data-id="u4" data-keywords="부정적분 계산 역도함수 적분상수 거듭제곱 미적분">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-1.5">
+                                <i class="fa-solid fa-calculator text-emerald-500"></i> 적분의 기초
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-500 hover:text-emerald-600 transition-colors">
+                                <input type="checkbox" onchange="toggleDone('u4')" id="check-u4" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 transition-all cursor-pointer" />
+                                <span>완료</span>
+                            </label>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 mb-1 leading-snug">
+                            01~02. 부정적분과 그 계산
+                        </h4>
+                        <p class="text-xs text-slate-400 font-medium mb-3">교과서 p.116~124</p>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+                            부정적분의 뜻과 도함수와의 역연산 관계, 적분상수 $C$, 거듭제곱 함수 $\int x^n dx$의 적분법 및 부정적분의 선형성
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#부정적분</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#적분상수 C</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#다항함수 적분</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center gap-2">
+                        <a href="./3. 적분 1~2. 부정적분, 계산.html" target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm shadow-emerald-500/20 transition-all">
+                            <i class="fa-solid fa-chalkboard-user"></i> 수업 열기
+                        </a>
+                        <button onclick="openPreview('./3. 적분 1~2. 부정적분, 계산.html', '01~02. 부정적분과 계산')" title="대시보드 내 미리보기"
+                                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm transition-all">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                        <a href="./3. 적분 1~2. 부정적분, 계산.pdf" target="_blank" title="교과서 PDF 열기"
+                           class="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm transition-all">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 5: 03. 정적분 -->
+                <div class="unit-card bg-white rounded-2xl border border-slate-200 p-6 card-shadow transition-all duration-300 flex flex-col justify-between"
+                     data-category="int" data-id="u5" data-keywords="정적분 미적분의 기본정리 우함수 기함수 정적분으로 정의된 함수 대칭성">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-1.5">
+                                <i class="fa-solid fa-chart-area text-emerald-500"></i> 정적분 이론
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-500 hover:text-emerald-600 transition-colors">
+                                <input type="checkbox" onchange="toggleDone('u5')" id="check-u5" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 transition-all cursor-pointer" />
+                                <span>완료</span>
+                            </label>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 mb-1 leading-snug">
+                            03. 정적분
+                        </h4>
+                        <p class="text-xs text-slate-400 font-medium mb-3">교과서 p.125~137</p>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+                            정적분의 정의와 미적분의 기본정리 $\int_a^b f(x)dx = F(b)-F(a)$, 정적분의 성질, 구간 분할, 우함수·기함수 대칭 정적분
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#정적분</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#미적분 기본정리</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#우함수/기함수</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#정적분 함수</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center gap-2">
+                        <a href="./3. 적분 3. 정적분.html" target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm shadow-emerald-500/20 transition-all">
+                            <i class="fa-solid fa-chalkboard-user"></i> 수업 열기
+                        </a>
+                        <button onclick="openPreview('./3. 적분 3. 정적분.html', '03. 정적분')" title="대시보드 내 미리보기"
+                                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm transition-all">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                        <a href="./3. 적분 3. 정적분.pdf" target="_blank" title="교과서 PDF 열기"
+                           class="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm transition-all">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 6: 04. 넓이 -->
+                <div class="unit-card bg-white rounded-2xl border border-slate-200 p-6 card-shadow transition-all duration-300 flex flex-col justify-between"
+                     data-category="int" data-id="u6" data-keywords="넓이 곡선과 x축 두 곡선 사이의 넓이 포물선 공식 역함수와 넓이 적분활용">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-1.5">
+                                <i class="fa-solid fa-draw-polygon text-emerald-500"></i> 적분의 활용
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-500 hover:text-emerald-600 transition-colors">
+                                <input type="checkbox" onchange="toggleDone('u6')" id="check-u6" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 transition-all cursor-pointer" />
+                                <span>완료</span>
+                            </label>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 mb-1 leading-snug">
+                            04. 넓이
+                        </h4>
+                        <p class="text-xs text-slate-400 font-medium mb-3">교과서 p.138~145</p>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+                            곡선과 $x$축 사이의 넓이($\int |f(x)|dx$), 두 곡선으로 둘러싸인 도형의 넓이, 이차함수 포물선 넓이 공식과 역함수 넓이 문제
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#곡선과 x축</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#두 곡선 사이 넓이</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#포물선 공식</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#역함수 그래프</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center gap-2">
+                        <a href="./3. 적분 4. 넓이.html" target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm shadow-emerald-500/20 transition-all">
+                            <i class="fa-solid fa-chalkboard-user"></i> 수업 열기
+                        </a>
+                        <button onclick="openPreview('./3. 적분 4. 넓이.html', '04. 넓이')" title="대시보드 내 미리보기"
+                                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm transition-all">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                        <a href="./3. 적분 4. 넓이.pdf" target="_blank" title="교과서 PDF 열기"
+                           class="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm transition-all">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 7: 05. 속도와 거리 -->
+                <div class="unit-card bg-white rounded-2xl border border-slate-200 p-6 card-shadow transition-all duration-300 flex flex-col justify-between"
+                     data-category="int" data-id="u7" data-keywords="속도 거리 위치의 변화량 변위 이동거리 정적분활용">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-1.5">
+                                <i class="fa-solid fa-person-running text-emerald-500"></i> 적분의 활용
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-500 hover:text-emerald-600 transition-colors">
+                                <input type="checkbox" onchange="toggleDone('u7')" id="check-u7" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 transition-all cursor-pointer" />
+                                <span>완료</span>
+                            </label>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 mb-1 leading-snug">
+                            05. 속도와 거리
+                        </h4>
+                        <p class="text-xs text-slate-400 font-medium mb-3">교과서 p.146~151</p>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+                            속도 함수의 정적분과 수직선 위 점의 위치($x_0 + \int v dt$), 위치의 변화량(변위)과 실제로 움직인 거리($\int |v| dt$)의 명확한 구분
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#위치 계산</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#위치의 변화량</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#움직인 거리</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-medium">#넓이와의 관계</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 flex items-center gap-2">
+                        <a href="./3. 적분 5. 속도와 거리.html" target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm shadow-emerald-500/20 transition-all">
+                            <i class="fa-solid fa-chalkboard-user"></i> 수업 열기
+                        </a>
+                        <button onclick="openPreview('./3. 적분 5. 속도와 거리.html', '05. 속도와 거리')" title="대시보드 내 미리보기"
+                                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm transition-all">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                        <a href="./3. 적분 5. 속도와 거리.pdf" target="_blank" title="교과서 PDF 열기"
+                           class="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm transition-all">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 8: Ⅲ. 적분 대단원 마무리 -->
+                <div class="unit-card bg-white rounded-2xl border border-purple-200 p-6 card-shadow transition-all duration-300 flex flex-col justify-between"
+                     data-category="review" data-id="u8" data-keywords="적분 대단원 마무리 총정리 기출문제 기말고사 실전평가">
+                    <div>
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
+                                <i class="fa-solid fa-award text-purple-500"></i> 대단원 총정리
+                            </span>
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-500 hover:text-purple-600 transition-colors">
+                                <input type="checkbox" onchange="toggleDone('u8')" id="check-u8" class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 transition-all cursor-pointer" />
+                                <span>완료</span>
+                            </label>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 mb-1 leading-snug">
+                            Ⅲ. 적분 : 대단원 마무리평가
+                        </h4>
+                        <p class="text-xs text-purple-600 font-semibold mb-3">교과서 p.152~157</p>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2 leading-relaxed">
+                            부정적분, 정적분의 성질, 넓이, 속도와 거리 전 단원 핵심 마인드맵과 기말고사 만점을 위한 실전 기출 문제 풀이
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 mb-5">
+                            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">#적분 총정리</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">#마인드맵</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">#대단원 평가</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-purple-50 text-purple-700 font-medium">#수능 실전</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-purple-100 flex items-center gap-2">
+                        <a href="./3. 적분 대단원마무리.html" target="_blank"
+                           class="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-sm shadow-purple-500/20 transition-all">
+                            <i class="fa-solid fa-chalkboard-user"></i> 수업 열기
+                        </a>
+                        <button onclick="openPreview('./3. 적분 대단원마무리.html', 'Ⅲ. 적분 대단원 마무리평가')" title="대시보드 내 미리보기"
+                                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-sm transition-all">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                        <a href="./3. 적분 대단원마무리.pdf" target="_blank" title="교과서 PDF 열기"
+                           class="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm transition-all">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- No Results Fallback -->
+        <div id="no-results" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200">
+            <i class="fa-solid fa-magnifying-glass text-4xl text-slate-300 mb-3"></i>
+            <h4 class="text-lg font-bold text-slate-700">검색 결과가 없습니다.</h4>
+            <p class="text-sm text-slate-400 mt-1">다른 검색어나 단원명을 입력해 보세요.</p>
+        </div>
+
+        <!-- Expansion Slot: Future Addition Notice (1학기 중간고사 범위 안내) -->
+        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-amber-500/20">
+                    <i class="fa-solid fa-compass text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="text-base font-bold text-amber-950 flex items-center gap-2">
+                        <span>중간고사 앞단원 확장 슬롯 안내</span>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-amber-200 text-amber-800 font-semibold">추후 업데이트 예정</span>
+                    </h4>
+                    <p class="text-sm text-amber-900/80 mt-1 leading-relaxed">
+                        Ⅰ. 함수의 극한과 연속, Ⅱ. 미분계수와 도함수 등 앞부분 단원도 HTML 자료가 준비되는 대로 본 대시보드에 즉시 카드로 통합 연결됩니다.
+                    </p>
+                </div>
+            </div>
+            <span class="text-xs text-amber-700 font-bold bg-white/70 px-3 py-1.5 rounded-lg border border-amber-200 flex-shrink-0">
+                <i class="fa-solid fa-code-merge mr-1"></i> 대시보드 확장 준비 완료
+            </span>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 bg-white border-t border-slate-200 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-700">2022 개정 고등학교 미적분Ⅰ 디지털 수업 연구실</span>
+                <span>•</span>
+                <span>교과서 연계 인터랙티브 에듀테크 허브</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <span>단원 파일 총 8종 연동 완료</span>
+                <span>•</span>
+                <span class="text-slate-400">교실 전자칠판 및 학생 기기 완벽 지원</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Inline Modal Viewer -->
+    <div id="preview-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-2 sm:p-6 transition-all duration-200">
+        <div class="bg-white rounded-2xl w-full max-w-6xl h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <!-- Modal Header -->
+            <div class="h-16 px-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <span class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
+                    <h3 id="modal-title" class="font-bold text-slate-900 text-base sm:text-lg truncate max-w-md sm:max-w-xl">
+                        수업자료 미리보기
+                    </h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a id="modal-newtab-btn" href="#" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 전체화면 새 탭
+                    </a>
+                    <button onclick="closePreview()" class="w-9 h-9 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-all flex items-center justify-center text-base">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Modal Body (Iframe) -->
+            <div class="flex-1 bg-slate-100 relative">
+                <div id="modal-spinner" class="absolute inset-0 flex items-center justify-center bg-white z-10">
+                    <div class="flex flex-col items-center gap-3 text-slate-500">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-blue-600"></i>
+                        <span class="text-sm font-medium">수업자료를 불러오는 중입니다...</span>
+                    </div>
+                </div>
+                <iframe id="modal-iframe" src="" class="w-full h-full border-0" onload="hideSpinner()"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Script -->
+    <script>
+        let currentFilter = 'all';
+
+        // Initialize progress from localStorage
+        function initProgress() {
+            const cards = document.querySelectorAll('.unit-card');
+            cards.forEach(card => {
+                const id = card.dataset.id;
+                const isDone = localStorage.getItem(`math1_done_${id}`) === 'true';
+                const checkbox = document.getElementById(`check-${id}`);
+                if (checkbox) {
+                    checkbox.checked = isDone;
+                    updateCardStyle(card, isDone);
+                }
+            });
+            updateProgressBar();
+        }
+
+        // Toggle card done state
+        function toggleDone(id) {
+            const checkbox = document.getElementById(`check-${id}`);
+            const card = document.querySelector(`.unit-card[data-id="${id}"]`);
+            if (checkbox && card) {
+                const isChecked = checkbox.checked;
+                localStorage.setItem(`math1_done_${id}`, isChecked ? 'true' : 'false');
+                updateCardStyle(card, isChecked);
+                updateProgressBar();
+            }
+        }
+
+        function updateCardStyle(card, isDone) {
+            if (isDone) {
+                card.classList.add('bg-slate-50/80', 'border-blue-300');
+                card.classList.remove('bg-white');
+            } else {
+                card.classList.remove('bg-slate-50/80', 'border-blue-300');
+                card.classList.add('bg-white');
+            }
+        }
+
+        function updateProgressBar() {
+            const total = 8;
+            let done = 0;
+            for (let i = 1; i <= total; i++) {
+                if (localStorage.getItem(`math1_done_u${i}`) === 'true') {
+                    done++;
+                }
+            }
+            const percent = Math.round((done / total) * 100);
+            document.getElementById('progress-text').textContent = `${done} / ${total} 단원`;
+            document.getElementById('progress-percent').textContent = `${percent}%`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+
+        function resetProgress() {
+            if (confirm('수업 진도 완료 체크를 모두 초기화하시겠습니까?')) {
+                for (let i = 1; i <= 8; i++) {
+                    localStorage.removeItem(`math1_done_u${i}`);
+                }
+                initProgress();
+            }
+        }
+
+        // Tab Filtering
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-600', 'text-white', 'shadow-sm', 'shadow-blue-500/20');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+
+            const activeBtn = document.getElementById(`tab-${filter}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'bg-blue-600', 'text-white', 'shadow-sm', 'shadow-blue-500/20');
+                activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+            }
+
+            applyFilters();
+        }
+
+        // Search Handling
+        function handleSearch() {
+            const input = document.getElementById('search-input');
+            const clearBtn = document.getElementById('search-clear');
+            if (input.value.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            applyFilters();
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            input.value = '';
+            document.getElementById('search-clear').classList.add('hidden');
+            input.focus();
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.unit-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const category = card.dataset.category;
+                const keywords = (card.dataset.keywords + ' ' + card.innerText).toLowerCase();
+                
+                const matchesFilter = (currentFilter === 'all') || (category === currentFilter);
+                const matchesQuery = query === '' || keywords.includes(query);
+
+                if (matchesFilter && matchesQuery) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Section headers visibility
+            const secDiff = document.getElementById('section-diff');
+            const secInt = document.getElementById('section-int');
+            const diffVisible = document.querySelectorAll('#grid-diff .unit-card:not(.hidden)').length > 0;
+            const intVisible = document.querySelectorAll('#grid-int .unit-card:not(.hidden)').length > 0;
+
+            secDiff.style.display = diffVisible ? 'block' : 'none';
+            secInt.style.display = intVisible ? 'block' : 'none';
+
+            // No results notice
+            const noResults = document.getElementById('no-results');
+            if (visibleCount === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        // Preview Modal Controls
+        function openPreview(url, title) {
+            const modal = document.getElementById('preview-modal');
+            const iframe = document.getElementById('modal-iframe');
+            const titleElem = document.getElementById('modal-title');
+            const newtabBtn = document.getElementById('modal-newtab-btn');
+            const spinner = document.getElementById('modal-spinner');
+
+            const safeUrl = encodeURI(url);
+            spinner.style.display = 'flex';
+            titleElem.textContent = title;
+            newtabBtn.href = safeUrl;
+            iframe.src = safeUrl;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideSpinner() {
+            const spinner = document.getElementById('modal-spinner');
+            if (spinner) spinner.style.display = 'none';
+        }
+
+        function closePreview() {
+            const modal = document.getElementById('preview-modal');
+            const iframe = document.getElementById('modal-iframe');
+            iframe.src = '';
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closePreview();
+            }
+            if (e.key === '/' && document.activeElement !== document.getElementById('search-input')) {
+                e.preventDefault();
+                document.getElementById('search-input').focus();
+            }
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initProgress();
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+        });
+    </script>
+</body>
+</html>
