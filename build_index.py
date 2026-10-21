@@ -1,0 +1,700 @@
+import json
+
+def generate_index_html():
+    lessons = [
+        # 대단원 1: 함수의 극한과 연속 (5개)
+        {
+            "id": 1,
+            "chapter": "Ⅰ. 함수의 극한과 연속",
+            "chapterNum": 1,
+            "unit": "01. 함수의 극한",
+            "period": "1~2차시",
+            "page": "12 ~ 20쪽",
+            "html": "1. 함수의 극한과 연속 1. 함수의 극한.html",
+            "pdf": "1. 함수의 극한과 연속 1. 함수의 극한.pdf",
+            "desc": "함수의 극한의 뜻을 알고, 수렴과 발산의 직관적 의미와 좌극한·우극한을 이해한다.",
+            "tags": ["수렴과 발산", "좌극한·우극한", "극한값의 존재"],
+            "lab": "좌극한·우극한 분절함수 접근 시뮬레이터",
+            "isReview": False
+        },
+        {
+            "id": 2,
+            "chapter": "Ⅰ. 함수의 극한과 연속",
+            "chapterNum": 1,
+            "unit": "02. 함수의 극한에 대한 성질",
+            "period": "3~4차시",
+            "page": "21 ~ 28쪽",
+            "html": "1. 함수의 극한과 연속 2. 함수의 극한에 대한 성질.html",
+            "pdf": "1. 함수의 극한과 연속 2. 함수의 극한에 대한 성질.pdf",
+            "desc": "함수의 극한에 대한 기본 성질을 이해하고, 0/0꼴 및 무한대/무한대꼴 부정형 극한값을 구한다.",
+            "tags": ["기본 성질", "0/0 부정형", "유리화·인수분해", "미정계수"],
+            "lab": "0/0 꼴 인수분해 및 약분 극한 실험실",
+            "isReview": False
+        },
+        {
+            "id": 3,
+            "chapter": "Ⅰ. 함수의 극한과 연속",
+            "chapterNum": 1,
+            "unit": "03. 함수의 연속",
+            "period": "5~6차시",
+            "page": "29 ~ 34쪽",
+            "html": "1. 함수의 극한과 연속 3. 함수의 연속.html",
+            "pdf": "1. 함수의 극한과 연속 3. 함수의 연속.pdf",
+            "desc": "함수의 연속의 3가지 조건을 이해하고, 여러 가지 함수의 연속성을 판별한다.",
+            "tags": ["연속의 정의", "불연속 유형", "열린구간·닫힌구간"],
+            "lab": "함숫값 f(1) 조절에 따른 연속/불연속 판정 시뮬레이터",
+            "isReview": False
+        },
+        {
+            "id": 4,
+            "chapter": "Ⅰ. 함수의 극한과 연속",
+            "chapterNum": 1,
+            "unit": "04. 연속함수의 성질",
+            "period": "7~8차시",
+            "page": "35 ~ 41쪽",
+            "html": "1. 함수의 극한과 연속 4. 연속함수의 성질.html",
+            "pdf": "1. 함수의 극한과 연속 4. 연속함수의 성질.pdf",
+            "desc": "연속함수의 성질을 이해하고, 최대·최소 정리와 사잇값 정리를 활용하여 실근의 존재를 판정한다.",
+            "tags": ["최대·최소 정리", "사잇값 정리", "실근의 존재"],
+            "lab": "사잇값 정리 f(a)·f(b)<0 실근 탐색 실험실",
+            "isReview": False
+        },
+        {
+            "id": 5,
+            "chapter": "Ⅰ. 함수의 극한과 연속",
+            "chapterNum": 1,
+            "unit": "대단원 마무리",
+            "period": "9~10차시",
+            "page": "42 ~ 47쪽",
+            "html": "1. 함수의 극한과 연속 대단원마무리.html",
+            "pdf": "1. 함수의 극한과 연속 대단원마무리.pdf",
+            "desc": "Ⅰ단원 핵심 개념 총정리 및 수능/내신 대비 기본·표준·발전 6대 핵심 문항 풀이.",
+            "tags": ["대단원 총정리", "수능형 발전문제", "서술형 대비"],
+            "lab": "1단원 핵심 개념 마인드맵 & 연습장",
+            "isReview": True
+        },
+
+        # 대단원 2: 미분 (10개)
+        {
+            "id": 6,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "01. 미분계수",
+            "period": "11~12차시",
+            "page": "50 ~ 57쪽",
+            "html": "2. 미분 1. 미분계수.html",
+            "pdf": "2. 미분 1. 미분계수.pdf",
+            "desc": "평균변화율과 미분계수의 뜻을 알고, 그 기하학적 의미(접선의 기울기)를 이해한다.",
+            "tags": ["평균변화율", "미분계수", "순간변화율", "접선 기울기"],
+            "lab": "할선이 접선으로 수렴하는 기하학적 애니메이션",
+            "isReview": False
+        },
+        {
+            "id": 7,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "02. 미분가능성과 연속성",
+            "period": "13~14차시",
+            "page": "58 ~ 61쪽",
+            "html": "2. 미분 2. 미분가능성과 연속성.html",
+            "pdf": "2. 미분 2. 미분가능성과 연속성.pdf",
+            "desc": "미분가능성과 연속성의 포함 관계를 이해하고, 뾰족점에서의 미분 불가능성을 탐구한다.",
+            "tags": ["미분가능이면 연속", "뾰족점(첨점)", "좌·우미분계수"],
+            "lab": "f(x)=|x| 뾰족점 좌우미분계수 불일치 비교 시뮬레이터",
+            "isReview": False
+        },
+        {
+            "id": 8,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "03. 도함수",
+            "period": "15~16차시",
+            "page": "62 ~ 68쪽",
+            "html": "2. 미분 3. 도함수.html",
+            "pdf": "2. 미분 3. 도함수.pdf",
+            "desc": "함수 y=xⁿ의 도함수를 구할 수 있고, 함수의 실수배, 합, 차, 곱의 미분법을 익힌다.",
+            "tags": ["도함수 정의", "xⁿ 미분법", "곱의 미분법"],
+            "lab": "원래 함수 f(x)와 도함수 f'(x) 실시간 자취 비교기",
+            "isReview": False
+        },
+        {
+            "id": 9,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "04. 접선의 방정식",
+            "period": "17~18차시",
+            "page": "69 ~ 72쪽",
+            "html": "2. 미분 4. 접선의 방정식.html",
+            "pdf": "2. 미분 4. 접선의 방정식.pdf",
+            "desc": "곡선 위의 점, 기울기, 곡선 밖의 점이 주어졌을 때의 접선의 방정식을 구한다.",
+            "tags": ["접선의 방정식", "접점", "기울기 조건", "곡선 밖의 점"],
+            "lab": "접점 t 이동에 따른 실시간 접선 계산 시뮬레이터",
+            "isReview": False
+        },
+        {
+            "id": 10,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "05. 평균값정리",
+            "period": "19~20차시",
+            "page": "73 ~ 78쪽",
+            "html": "2. 미분 5. 평균값정리.html",
+            "pdf": "2. 미분 5. 평균값정리.pdf",
+            "desc": "롤의 정리와 평균값 정리를 이해하고 기하학적 의미를 파악한다.",
+            "tags": ["롤의 정리", "평균값 정리", "할선과 평행한 접선"],
+            "lab": "할선 기울기와 일치하는 접선 c 탐색기",
+            "isReview": False
+        },
+        {
+            "id": 11,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "06. 함수의 증가와 감소, 극대와 극소",
+            "period": "21~22차시",
+            "page": "79 ~ 86쪽",
+            "html": "2. 미분 6. 함수의 증가와 감소, 극대와 극소.html",
+            "pdf": "2. 미분 6. 함수의 증가와 감소, 극대와 극소.pdf",
+            "desc": "도함수의 부호를 이용하여 함수의 증가·감소를 판정하고, 극대·극소를 구한다.",
+            "tags": ["증가와 감소", "극댓값·극솟값", "증감표"],
+            "lab": "3차함수 극대·극소 실시간 탐색기",
+            "isReview": False
+        },
+        {
+            "id": 12,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "07. 함수의 그래프",
+            "period": "23~24차시",
+            "page": "87 ~ 92쪽",
+            "html": "2. 미분 7. 함수의 그래프.html",
+            "pdf": "2. 미분 7. 함수의 그래프.pdf",
+            "desc": "도함수를 활용하여 3·4차 다항함수의 그래프 개형을 그리고 닫힌구간에서의 최대·최소를 구한다.",
+            "tags": ["그래프 개형", "3차함수", "닫힌구간 최대·최소"],
+            "lab": "3차 다항함수 계수 조절 인터랙티브 실험실",
+            "isReview": False
+        },
+        {
+            "id": 13,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "08. 방정식과 부등식",
+            "period": "25~26차시",
+            "page": "93 ~ 99쪽",
+            "html": "2. 미분 8. 방정식과 부등식.html",
+            "pdf": "2. 미분 8. 방정식과 부등식.pdf",
+            "desc": "함수의 그래프를 이용하여 방정식의 실근의 개수를 판정하고 부등식을 증명한다.",
+            "tags": ["실근의 개수", "부등식의 증명", "미분 활용"],
+            "lab": "상수 k에 따른 실근 개수 교점 판정기",
+            "isReview": False
+        },
+        {
+            "id": 14,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "09. 속도와 가속도",
+            "period": "27~28차시",
+            "page": "100 ~ 105쪽",
+            "html": "2. 미분 9. 속도와 가속도.html",
+            "pdf": "2. 미분 9. 속도와 가속도.pdf",
+            "desc": "수직선 위를 움직이는 점의 위치, 속도, 가속도의 관계를 이해하고 운동 방향을 분석한다.",
+            "tags": ["순간 속도", "가속도", "운동 방향 전환"],
+            "lab": "수직선 위 동점의 실시간 운동 시뮬레이터",
+            "isReview": False
+        },
+        {
+            "id": 15,
+            "chapter": "Ⅱ. 미분",
+            "chapterNum": 2,
+            "unit": "대단원 마무리",
+            "period": "29~30차시",
+            "page": "106 ~ 111쪽",
+            "html": "2. 미분 대단원마무리.html",
+            "pdf": "2. 미분 대단원마무리.pdf",
+            "desc": "Ⅱ단원 미분 전체 핵심 개념 총정리 및 수능/내신 실전 8문항 풀이.",
+            "tags": ["미분 총정리", "수능 실전 문항", "킬러 유형 분석"],
+            "lab": "미분 전 단원 핵심 마인드맵 & 연습장",
+            "isReview": True
+        },
+
+        # 대단원 3: 적분 (5개)
+        {
+            "id": 16,
+            "chapter": "Ⅲ. 적분",
+            "chapterNum": 3,
+            "unit": "01~02. 부정적분, 계산",
+            "period": "31~32차시",
+            "page": "114 ~ 123쪽",
+            "html": "3. 적분 1~2. 부정적분, 계산.html",
+            "pdf": "3. 적분 1~2. 부정적분, 계산.pdf",
+            "desc": "부정적분의 뜻과 성질을 이해하고 다항함수의 부정적분을 구한다.",
+            "tags": ["부정적분", "적분상수 C", "다항함수 적분"],
+            "lab": "적분상수 C에 따른 곡선 족 시각화",
+            "isReview": False
+        },
+        {
+            "id": 17,
+            "chapter": "Ⅲ. 적분",
+            "chapterNum": 3,
+            "unit": "03. 정적분",
+            "period": "33~34차시",
+            "page": "124 ~ 132쪽",
+            "html": "3. 적분 3. 정적분.html",
+            "pdf": "3. 적분 3. 정적분.pdf",
+            "desc": "정적분의 뜻과 미적분의 기본정리를 이해하고 정적분의 성질을 활용한다.",
+            "tags": ["정적분", "미적분의 기본정리", "우함수·기함수"],
+            "lab": "리만 합 수렴 및 정적분 넓이 계산기",
+            "isReview": False
+        },
+        {
+            "id": 18,
+            "chapter": "Ⅲ. 적분",
+            "chapterNum": 3,
+            "unit": "04. 넓이",
+            "period": "35~36차시",
+            "page": "133 ~ 139쪽",
+            "html": "3. 적분 4. 넓이.html",
+            "pdf": "3. 적분 4. 넓이.pdf",
+            "desc": "곡선과 좌표축 또는 두 곡선으로 둘러싸인 도형의 넓이를 정적분으로 계산한다.",
+            "tags": ["곡선 사이의 넓이", "이차함수 넓이 공식", "정적분 활용"],
+            "lab": "두 곡선 교점 및 둘러싸인 넓이 실시간 계산기",
+            "isReview": False
+        },
+        {
+            "id": 19,
+            "chapter": "Ⅲ. 적분",
+            "chapterNum": 3,
+            "unit": "05. 속도와 거리",
+            "period": "37~38차시",
+            "page": "140 ~ 146쪽",
+            "html": "3. 적분 5. 속도와 거리.html",
+            "pdf": "3. 적분 5. 속도와 거리.pdf",
+            "desc": "수직선 위를 움직이는 점의 위치의 변화량과 실제로 움직인 거리를 구한다.",
+            "tags": ["위치 변화량", "이동 거리", "속도 적분"],
+            "lab": "엘리베이터 운동 v-t 그래프 및 이동 거리 시뮬레이터",
+            "isReview": False
+        },
+        {
+            "id": 20,
+            "chapter": "Ⅲ. 적분",
+            "chapterNum": 3,
+            "unit": "대단원 마무리",
+            "period": "39~40차시",
+            "page": "147 ~ 153쪽",
+            "html": "3. 적분 대단원마무리.html",
+            "pdf": "3. 적분 대단원마무리.pdf",
+            "desc": "Ⅲ단원 적분 전체 핵심 개념 총정리 및 미적분Ⅰ 전 단원 종합 성취평가.",
+            "tags": ["적분 총정리", "미적분Ⅰ 종합평가", "실전 수능 문항"],
+            "lab": "적분 총정리 마인드맵 & 연습장",
+            "isReview": True
+        }
+    ]
+
+    lessons_json = json.dumps(lessons, ensure_ascii=False)
+
+    html_content = f"""<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2022 개정 미적분Ⅰ 수업 대시보드</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {{
+            theme: {{
+                extend: {{
+                    fontFamily: {{
+                        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
+                    }},
+                    colors: {{
+                        brand: {{
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }}
+                    }}
+                }}
+            }}
+        }}
+    </script>
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        body {{
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }}
+        .card-shadow {{
+            box-shadow: 0 2px 8px -1px rgba(15, 23, 42, 0.05), 0 1px 3px -1px rgba(15, 23, 42, 0.03);
+            transition: all 0.2s ease-in-out;
+        }}
+        .card-shadow:hover {{
+            box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+            transform: translateY(-2px);
+        }}
+        ::-webkit-scrollbar {{
+            width: 8px;
+            height: 8px;
+        }}
+        ::-webkit-scrollbar-track {{
+            background: #f1f5f9;
+        }}
+        ::-webkit-scrollbar-thumb {{
+            background: #cbd5e1;
+            border-radius: 4px;
+        }}
+        ::-webkit-scrollbar-thumb:hover {{
+            background: #94a3b8;
+        }}
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-infinity text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-700 tracking-wide">2022 개정 교육과정</span>
+                        <span class="text-xs font-semibold text-slate-500">고등학교 2학년 수학과</span>
+                    </div>
+                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                        <span>미적분Ⅰ</span>
+                        <span class="text-sm font-semibold text-slate-500 hidden sm:inline">| 수업 대시보드</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex items-center gap-6 px-4 py-2 rounded-xl bg-slate-100/80 border border-slate-200 text-xs">
+                    <div>
+                        <span class="text-slate-500 block text-[10px]">전체 수업 단원</span>
+                        <span class="font-extrabold text-blue-600 text-sm">20개 단원</span>
+                    </div>
+                    <div class="w-px h-6 bg-slate-300"></div>
+                    <div>
+                        <span class="text-slate-500 block text-[10px]">총 학습 차시</span>
+                        <span class="font-extrabold text-indigo-600 text-sm">40차시 완결</span>
+                    </div>
+                    <div class="w-px h-6 bg-slate-300"></div>
+                    <div>
+                        <span class="text-slate-500 block text-[10px]">전자칠판 모드</span>
+                        <span class="font-extrabold text-emerald-600 text-sm"><i class="fa-solid fa-chalkboard-user mr-1"></i>전 단원 탑재</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+
+        <!-- Hero Banner: 미적분1 학습을 돕기 위한 수업자료 소개 -->
+        <section class="bg-gradient-to-r from-blue-700 via-indigo-700 to-indigo-800 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 text-[220px] pointer-events-none select-none">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="relative z-10 max-w-3xl space-y-3">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur text-blue-100 text-xs font-bold">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>고등학교 미적분Ⅰ 인터랙티브 학습 포털</span>
+                </div>
+                <h2 class="text-2xl sm:text-4xl font-extrabold leading-tight tracking-tight">
+                    직관적 개념 탐구와 실시간 시뮬레이션으로<br>
+                    완성하는 미적분Ⅰ 전 단원 수업자료
+                </h2>
+                <p class="text-sm sm:text-base text-blue-100/90 leading-relaxed font-normal pt-1">
+                    2022 개정 교육과정 고등학교 2학년 미적분Ⅰ 학습을 돕기 위한 전문 수업 포털입니다.<br class="hidden sm:inline">
+                    교과서 단원별 <b>핵심 개념 정리</b>, <b>인터랙티브 캔버스 실험실</b>, <b>전자칠판 판서 모드</b>, <b>대표 예제 풀이</b> 및 <b>형성평가</b>를 한 화면에서 유기적으로 학습할 수 있습니다.
+                </p>
+                <div class="flex flex-wrap gap-2 pt-2 text-xs">
+                    <span class="px-3 py-1 rounded-lg bg-white/10 text-white font-medium">Ⅰ. 함수의 극한과 연속 (5개)</span>
+                    <span class="px-3 py-1 rounded-lg bg-white/10 text-white font-medium">Ⅱ. 미분 (10개)</span>
+                    <span class="px-3 py-1 rounded-lg bg-white/10 text-white font-medium">Ⅲ. 적분 (5개)</span>
+                    <span class="px-3 py-1 rounded-lg bg-emerald-400/20 text-emerald-200 font-bold border border-emerald-400/30">✓ Vercel 온라인 배포 완비</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter & Search Controls -->
+        <section class="space-y-4">
+            <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+                <!-- Chapter Tabs -->
+                <div class="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-white border border-slate-200 shadow-xs" id="chapter-tabs">
+                    <button onclick="setFilter('all')" class="tab-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition bg-blue-600 text-white shadow-sm" data-filter="all">
+                        전체 단원 (20)
+                    </button>
+                    <button onclick="setFilter(1)" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition" data-filter="1">
+                        Ⅰ. 함수의 극한과 연속 (5)
+                    </button>
+                    <button onclick="setFilter(2)" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition" data-filter="2">
+                        Ⅱ. 미분 (10)
+                    </button>
+                    <button onclick="setFilter(3)" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition" data-filter="3">
+                        Ⅲ. 적분 (5)
+                    </button>
+                    <button onclick="setFilter('review')" class="tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition" data-filter="review">
+                        대단원 마무리 (3)
+                    </button>
+                </div>
+
+                <!-- Live Search Box -->
+                <div class="relative w-full sm:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" oninput="handleSearch()" placeholder="단원명, 개념 키워드 검색..." 
+                           class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs">
+                </div>
+            </div>
+
+            <!-- Active Filter Status & Count -->
+            <div class="flex items-center justify-between text-xs text-slate-500 px-1">
+                <div>
+                    검색 결과: <span id="filtered-count" class="font-extrabold text-blue-600 text-sm">20</span>개 단원 표시 중
+                </div>
+                <div class="text-[11px] text-slate-400">
+                    <i class="fa-solid fa-circle-info mr-1"></i> 카드의 [수업 열기]를 누르면 전체 화면으로, [미리보기]는 모달에서 바로 확인 가능합니다.
+                </div>
+            </div>
+        </section>
+
+        <!-- Lesson Cards Grid -->
+        <section id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards rendered dynamically via JS -->
+        </section>
+
+        <!-- No Results Fallback -->
+        <div id="no-results" class="hidden py-16 text-center space-y-3">
+            <div class="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <p class="font-bold text-slate-600">검색 조건과 일치하는 수업자료가 없습니다.</p>
+            <p class="text-xs text-slate-400">다른 키워드로 검색하거나 필터 탭을 변경해보세요.</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-200 bg-white py-8 text-slate-500 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-md bg-blue-600 text-white flex items-center justify-center font-black text-xs">M</div>
+                <span class="font-bold text-slate-700">2022 개정 고등학교 미적분Ⅰ 인터랙티브 수업 대시보드</span>
+            </div>
+            <div class="flex items-center gap-4 text-slate-500">
+                <span>전 단원 전자칠판 판서 지원</span>
+                <span>•</span>
+                <span>Vercel 배포 최적화</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Preview Modal -->
+    <div id="preview-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[92vh] flex flex-col border border-slate-200 overflow-hidden">
+            <!-- Modal Header -->
+            <div class="h-14 px-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <span id="modal-chapter-badge" class="px-2 py-0.5 rounded text-[11px] font-extrabold bg-blue-100 text-blue-700 whitespace-nowrap">단원</span>
+                    <h3 id="modal-title" class="font-extrabold text-slate-900 text-sm sm:text-base truncate">수업 미리보기</h3>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a id="modal-newtab-btn" href="#" target="_blank" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <span>새 창으로 열기</span>
+                    </a>
+                    <a id="modal-pdf-btn" href="#" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-pdf text-red-500"></i>
+                        <span>PDF 보기</span>
+                    </a>
+                    <button onclick="closePreviewModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Modal Body (Iframe) -->
+            <div class="flex-1 bg-white relative">
+                <iframe id="preview-iframe" src="" class="w-full h-full border-0" title="수업 자료 미리보기"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Script -->
+    <script>
+    const LESSONS = {lessons_json};
+
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    function getChapterBadgeClass(chapterNum) {{
+        switch(chapterNum) {{
+            case 1: return 'bg-purple-100 text-purple-700 border-purple-200';
+            case 2: return 'bg-blue-100 text-blue-700 border-blue-200';
+            case 3: return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+            default: return 'bg-slate-100 text-slate-700 border-slate-200';
+        }}
+    }}
+
+    function renderCards() {{
+        const grid = document.getElementById('lessons-grid');
+        const noResults = document.getElementById('no-results');
+        const countSpan = document.getElementById('filtered-count');
+
+        const filtered = LESSONS.filter(l => {{
+            const matchFilter = (currentFilter === 'all') || 
+                                (currentFilter === 'review' && l.isReview) || 
+                                (l.chapterNum === currentFilter && !l.isReview);
+            
+            const q = currentSearch.toLowerCase().trim();
+            const matchSearch = !q || 
+                                l.unit.toLowerCase().includes(q) || 
+                                l.chapter.toLowerCase().includes(q) || 
+                                l.desc.toLowerCase().includes(q) || 
+                                l.tags.some(t => t.toLowerCase().includes(q));
+
+            return matchFilter && matchSearch;
+        }});
+
+        countSpan.textContent = filtered.length;
+
+        if (filtered.length === 0) {{
+            grid.innerHTML = '';
+            noResults.classList.remove('hidden');
+            return;
+        }}
+
+        noResults.classList.add('hidden');
+
+        grid.innerHTML = filtered.map(l => {{
+            const encodedHtml = encodeURI(l.html);
+            const encodedPdf = encodeURI(l.pdf);
+            const badgeClass = getChapterBadgeClass(l.chapterNum);
+
+            return `
+            <div class="card-shadow bg-white rounded-2xl border border-slate-200/90 overflow-hidden flex flex-col justify-between">
+                <!-- Card Header -->
+                <div class="p-5 pb-3">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${{badgeClass}}">
+                            ${{l.chapter}}
+                        </span>
+                        <div class="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
+                            <i class="fa-regular fa-clock text-slate-400"></i>
+                            <span>${{l.period}}</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-black text-slate-900 group-hover:text-blue-600 transition flex items-center justify-between">
+                        <span>${{l.unit}}</span>
+                        ${{l.isReview ? '<span class="text-[10px] font-extrabold px-2 py-0.5 bg-amber-100 text-amber-800 rounded">대단원 총괄</span>' : ''}}
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">교과서 ${{l.page}}</p>
+
+                    <p class="text-xs text-slate-600 leading-relaxed mt-3 line-clamp-2">
+                        ${{l.desc}}
+                    </p>
+
+                    <!-- Lab Badge -->
+                    <div class="mt-3.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-flask text-sky-600"></i>
+                        <span class="font-medium text-slate-700 truncate">${{l.lab}}</span>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="flex flex-wrap gap-1.5 mt-3">
+                        ${{l.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-[11px] font-medium text-slate-600">#${{t}}</span>`).join('')}}
+                    </div>
+                </div>
+
+                <!-- Card Footer & Action Buttons -->
+                <div class="p-4 bg-slate-50/70 border-t border-slate-200/80 flex items-center gap-2">
+                    <a href="./${{encodedHtml}}" target="_blank" 
+                       class="flex-1 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-xs cursor-pointer">
+                        <i class="fa-solid fa-play text-[10px]"></i>
+                        <span>수업 열기</span>
+                    </a>
+                    <button onclick="openPreviewModal('${{encodedHtml}}', '${{l.chapter}}', '${{l.unit}}', '${{encodedPdf}}')" 
+                            class="py-2 px-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition cursor-pointer">
+                        <i class="fa-regular fa-eye"></i>
+                        <span>미리보기</span>
+                    </button>
+                    <a href="./${{encodedPdf}}" target="_blank" title="교과서 PDF 보기"
+                       class="w-8 h-8 rounded-xl bg-white hover:bg-red-50 border border-slate-200 text-red-500 flex items-center justify-center transition cursor-pointer shrink-0">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </a>
+                </div>
+            </div>
+            `;
+        }}).join('');
+    }}
+
+    function setFilter(filter) {{
+        currentFilter = filter;
+        document.querySelectorAll('#chapter-tabs .tab-btn').forEach(btn => {{
+            const btnFilter = btn.getAttribute('data-filter');
+            if (btnFilter == filter) {{
+                btn.className = 'tab-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition bg-blue-600 text-white shadow-sm';
+            }} else {{
+                btn.className = 'tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition';
+            }}
+        }});
+        renderCards();
+    }}
+
+    function handleSearch() {{
+        currentSearch = document.getElementById('search-input').value;
+        renderCards();
+    }}
+
+    function openPreviewModal(htmlPath, chapter, unit, pdfPath) {{
+        const modal = document.getElementById('preview-modal');
+        const iframe = document.getElementById('preview-iframe');
+        const title = document.getElementById('modal-title');
+        const badge = document.getElementById('modal-chapter-badge');
+        const newtabBtn = document.getElementById('modal-newtab-btn');
+        const pdfBtn = document.getElementById('modal-pdf-btn');
+
+        badge.textContent = chapter;
+        title.textContent = unit;
+        newtabBtn.href = './' + htmlPath;
+        pdfBtn.href = './' + pdfPath;
+        iframe.src = './' + htmlPath;
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }}
+
+    function closePreviewModal() {{
+        const modal = document.getElementById('preview-modal');
+        const iframe = document.getElementById('preview-iframe');
+        iframe.src = '';
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }}
+
+    window.addEventListener('keydown', (e) => {{
+        if (e.key === 'Escape') closePreviewModal();
+    }});
+
+    // Initial Render
+    renderCards();
+    </script>
+</body>
+</html>
+"""
+
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print("Successfully generated index.html with 20 units!")
+
+if __name__ == "__main__":
+    generate_index_html()

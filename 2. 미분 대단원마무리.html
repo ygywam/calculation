@@ -105,8 +105,101 @@
             pointer-events: auto;
         }
     </style>
+
+    <!-- Electronic Whiteboard Styles -->
+    <style id="wb-styles">
+        #wb-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 45;
+            pointer-events: none;
+            touch-action: none;
+        }
+        #wb-canvas.wb-drawing-active {
+            pointer-events: auto;
+            cursor: crosshair;
+        }
+        .wb-color-btn.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px #fff, 0 0 0 5px #4f46e5;
+        }
+        .wb-tool-btn.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+        #wb-toolbar {
+            z-index: 50;
+        }
+        #floating-controls {
+            z-index: 49;
+        }
+        @media print {
+            #wb-toolbar, #wb-canvas, #floating-controls {
+                display: none !important;
+            }
+        }
+    </style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+
+    <!-- Full-screen Electronic Whiteboard Canvas -->
+    <canvas id="wb-canvas"></canvas>
+
+    <!-- Electronic Whiteboard Floating Toolbar -->
+    <div id="wb-toolbar" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-wrap items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-extrabold tracking-wide text-sky-300">전자칠판</span>
+        </div>
+
+        <!-- Mode Switch: Pointer vs Pen vs Highlighter vs Eraser -->
+        <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
+            <button id="wb-btn-pointer" onclick="setWbTool('pointer')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="화면 스크롤 및 버튼 클릭">
+                <i class="fa-solid fa-hand-pointer"></i> <span class="hidden sm:inline">조작</span>
+            </button>
+            <button id="wb-btn-pen" onclick="setWbTool('pen')" class="wb-tool-btn active px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="일반 펜 판서">
+                <i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">펜</span>
+            </button>
+            <button id="wb-btn-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="형광펜 강조">
+                <i class="fa-solid fa-highlighter"></i> <span class="hidden sm:inline">형광펜</span>
+            </button>
+            <button id="wb-btn-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="부분 지우개">
+                <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline">지우개</span>
+            </button>
+        </div>
+
+        <!-- Color Palette -->
+        <div class="flex items-center gap-2 px-2 border-l border-r border-slate-700">
+            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-5 h-5 rounded-full bg-red-500 transition" title="빨강"></button>
+            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-5 h-5 rounded-full bg-blue-500 transition" title="파랑"></button>
+            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-5 h-5 rounded-full bg-emerald-500 transition" title="초록"></button>
+            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-amber-400 transition" title="노랑"></button>
+            <button onclick="setWbColor('#1e293b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-slate-800 border border-white/50 transition" title="검정"></button>
+        </div>
+
+        <!-- Stroke Width -->
+        <div class="hidden md:flex items-center gap-2">
+            <span class="text-[11px] text-slate-400">굵기</span>
+            <input type="range" id="wb-size" min="2" max="14" value="4" class="w-16 accent-indigo-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+        </div>
+
+        <!-- Actions: Undo, Clear, Close -->
+        <div class="flex items-center gap-1.5 pl-1">
+            <button onclick="undoWb()" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition" title="실행 취소">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button onclick="clearWb()" class="p-1.5 px-2.5 rounded-lg bg-rose-900/70 hover:bg-rose-800 text-rose-200 text-xs font-semibold transition" title="판서 전체 지우기">
+                <i class="fa-solid fa-trash-can mr-1"></i>전체 지우기
+            </button>
+            <button onclick="toggleWhiteboard()" class="p-1.5 px-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold transition" title="전자칠판 닫기">
+                <i class="fa-solid fa-xmark"></i> 닫기
+            </button>
+        </div>
+    </div>
+
 
     <!-- Mobile Backdrop Overlay -->
     <div id="sidebarBackdrop" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs hidden lg:hidden transition-opacity"></div>
@@ -227,6 +320,14 @@
                 <i class="fa-solid fa-arrow-up"></i> 페이지 맨 처음으로 이동
             </button>
         </div>
+    
+        <div class="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 no-print">
+            <button onclick="toggleWhiteboard()" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-extrabold shadow-sm flex items-center justify-center gap-2 transition cursor-pointer">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span>전자칠판 판서 모드</span>
+            </button>
+        </div>
+
     </aside>
 
     <!-- Main Content Area -->
@@ -2199,5 +2300,226 @@
             }
         }
     </script>
+
+    <!-- Floating Whiteboard Toggle Button -->
+    <div id="floating-controls" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 no-print">
+        <button onclick="toggleWhiteboard()" title="전자칠판 판서 모드 켜기/끄기"
+            class="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center ring-4 ring-indigo-500/20 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer">
+            <i class="fa-solid fa-chalkboard-user text-lg"></i>
+        </button>
+    </div>
+
+
+    <script id="whiteboard-engine-script">
+    // =========================================================================
+    // Document-Anchored Electronic Whiteboard Engine
+    // =========================================================================
+    let wbActive = false;
+    let wbTool = 'pen';
+    let wbColor = '#ef4444';
+    let wbStrokes = [];
+    let wbCurrentStroke = null;
+    let wbDrawing = false;
+
+    function initWhiteboard() {
+        const canvas = document.getElementById('wb-canvas');
+        if (!canvas) return;
+        syncWhiteboardHeight();
+
+        if (window.ResizeObserver) {
+            const ro = new ResizeObserver(() => {
+                syncWhiteboardHeight();
+            });
+            ro.observe(document.body);
+        }
+
+        function getDocPt(e) {
+            const touch = e.touches && e.touches[0] ? e.touches[0] : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
+            return {
+                x: touch.clientX + window.scrollX,
+                y: touch.clientY + window.scrollY
+            };
+        }
+
+        function startDraw(e) {
+            if (!wbActive || wbTool === 'pointer') return;
+            if (e.button !== undefined && e.button !== 0) return;
+            wbDrawing = true;
+            const pt = getDocPt(e);
+            const sizeInput = document.getElementById('wb-size');
+            const size = sizeInput ? parseFloat(sizeInput.value) : 4;
+
+            wbCurrentStroke = {
+                tool: wbTool,
+                color: wbColor,
+                size: size,
+                points: [pt]
+            };
+            wbStrokes.push(wbCurrentStroke);
+            redrawWhiteboard();
+        }
+
+        function moveDraw(e) {
+            if (!wbDrawing || !wbActive || wbTool === 'pointer' || !wbCurrentStroke) return;
+            e.preventDefault();
+            const pt = getDocPt(e);
+            wbCurrentStroke.points.push(pt);
+            drawStrokeSegment(wbCurrentStroke);
+        }
+
+        function endDraw() {
+            if (!wbDrawing) return;
+            wbDrawing = false;
+            wbCurrentStroke = null;
+            redrawWhiteboard();
+        }
+
+        canvas.addEventListener('mousedown', startDraw);
+        window.addEventListener('mousemove', moveDraw, { passive: false });
+        window.addEventListener('mouseup', endDraw);
+        canvas.addEventListener('touchstart', startDraw, { passive: false });
+        canvas.addEventListener('touchmove', moveDraw, { passive: false });
+        window.addEventListener('touchend', endDraw);
+    }
+
+    function applyStrokeStyle(ctx, stroke) {
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        if (stroke.tool === 'eraser') {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineWidth = stroke.size * 4.5;
+            ctx.strokeStyle = 'rgba(0,0,0,1)';
+        } else if (stroke.tool === 'highlighter') {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.lineWidth = stroke.size * 3.4;
+            ctx.strokeStyle = stroke.color + '44';
+        } else {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.lineWidth = stroke.size;
+            ctx.strokeStyle = stroke.color;
+        }
+    }
+
+    function drawStrokeSegment(stroke) {
+        const canvas = document.getElementById('wb-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const pts = stroke.points;
+        if (pts.length < 2) return;
+
+        if (stroke.tool === 'highlighter') {
+            redrawWhiteboard();
+            return;
+        }
+
+        ctx.save();
+        applyStrokeStyle(ctx, stroke);
+        const p1 = pts[pts.length - 2];
+        const p2 = pts[pts.length - 1];
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function redrawWhiteboard() {
+        const canvas = document.getElementById('wb-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (const stroke of wbStrokes) {
+            if (!stroke.points || stroke.points.length === 0) continue;
+            ctx.save();
+            applyStrokeStyle(ctx, stroke);
+            ctx.beginPath();
+            ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+            if (stroke.points.length === 1) {
+                ctx.lineTo(stroke.points[0].x + 0.1, stroke.points[0].y + 0.1);
+            } else {
+                for (let i = 1; i < stroke.points.length; i++) {
+                    ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+                }
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+
+    function syncWhiteboardHeight() {
+        const canvas = document.getElementById('wb-canvas');
+        if (!canvas) return;
+        const docWidth = document.documentElement.clientWidth;
+        const docHeight = Math.max(
+            document.body.scrollHeight,
+            document.documentElement.scrollHeight,
+            window.innerHeight
+        );
+        if (canvas.width !== docWidth || Math.abs(canvas.height - docHeight) > 4) {
+            canvas.width = docWidth;
+            canvas.height = docHeight;
+            redrawWhiteboard();
+        }
+    }
+
+    function resizeWhiteboard() {
+        syncWhiteboardHeight();
+    }
+
+    function toggleWhiteboard() {
+        wbActive = !wbActive;
+        const toolbar = document.getElementById('wb-toolbar');
+        const canvas = document.getElementById('wb-canvas');
+        if (wbActive) {
+            syncWhiteboardHeight();
+            toolbar.classList.remove('hidden');
+            setWbTool('pen');
+        } else {
+            toolbar.classList.add('hidden');
+            canvas.classList.remove('wb-drawing-active');
+        }
+    }
+
+    function setWbTool(tool) {
+        wbTool = tool;
+        const canvas = document.getElementById('wb-canvas');
+        document.querySelectorAll('.wb-tool-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById('wb-btn-' + tool);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        if (tool === 'pointer') {
+            canvas.classList.remove('wb-drawing-active');
+        } else {
+            canvas.classList.add('wb-drawing-active');
+        }
+    }
+
+    function setWbColor(hex, btnEl) {
+        wbColor = hex;
+        document.querySelectorAll('.wb-color-btn').forEach(b => b.classList.remove('active'));
+        if (btnEl) btnEl.classList.add('active');
+        if (wbTool === 'pointer' || wbTool === 'eraser') setWbTool('pen');
+    }
+
+    function undoWb() {
+        if (wbStrokes.length === 0) return;
+        wbStrokes.pop();
+        redrawWhiteboard();
+    }
+
+    function clearWb() {
+        wbStrokes = [];
+        redrawWhiteboard();
+    }
+
+    // Auto initialize on load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initWhiteboard);
+    } else {
+        initWhiteboard();
+    }
+    </script>
+
 </body>
 </html>
