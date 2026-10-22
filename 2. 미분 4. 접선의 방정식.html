@@ -3,728 +3,1892 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ⅱ. 미분 - 04. 접선의 방정식 | 인터랙티브 수업 자료</title>
-    <!-- Tailwind CSS -->
+    <title>4. 접선의 방정식 - 2022 개정 미적분Ⅰ | 전자교과서</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Pretendard Font -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <!-- KaTeX for Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            word-break: keep-all;
-            overflow-x: hidden;
-        }
-        .katex-display {
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 0.5rem 0;
-        }
-        .active-nav {
-            background-color: #e0e7ff;
-            color: #4338ca;
-            font-weight: 700;
-            border-right: 4px solid #6366f1;
-        }
-        .dark .active-nav {
-            background-color: #312e81;
-            color: #c7d2fe;
-            border-right: 4px solid #818cf8;
-        }
-        /* Drawing Canvas */
-        .scratchpad-canvas {
-            touch-action: none;
-            cursor: crosshair;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 16px 16px;
-        }
-        .dark .scratchpad-canvas {
-            background-image: radial-gradient(#334155 1px, transparent 1px);
-        }
-        /* Electronic Whiteboard Overlay */
-        #wb-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 45;
-            pointer-events: none;
-            touch-action: none;
-        }
-        #wb-canvas.wb-drawing-active {
-            pointer-events: auto;
-            cursor: crosshair;
-        }
-        .wb-color-btn.active {
-            transform: scale(1.2);
-            box-shadow: 0 0 0 3px #fff, 0 0 0 5px #4f46e5;
-        }
-        .wb-tool-btn.active {
-            background-color: #4f46e5;
-            color: #ffffff;
-        }
-        #wb-toolbar {
-            z-index: 50;
-        }
-        #floating-controls {
-            z-index: 49;
-        }
-        @media print {
-            #sidebar, #floating-controls, #wb-toolbar, #wb-canvas, .no-print {
-                display: none !important;
-            }
-            #main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-            }
-            .solution-box {
-                display: block !important;
-            }
-        }
-    </style>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4f46e5',
-                        secondary: '#0ea5e9',
+                        primary: '#2563eb',
+                        secondary: '#4f46e5',
+                        accent: '#0d9488',
                     }
                 }
             }
         }
     </script>
-</head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
-
-    <!-- Full-screen Electronic Whiteboard Canvas -->
-    <canvas id="wb-canvas"></canvas>
-
-    <!-- Electronic Whiteboard Floating Toolbar -->
-    <div id="wb-toolbar" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-wrap items-center gap-2 sm:gap-3">
-        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-xs font-extrabold tracking-wide text-sky-300">전자칠판</span>
-        </div>
-
-        <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
-            <button id="wb-btn-pointer" onclick="setWbTool('pointer')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="화면 스크롤 및 버튼 클릭">
-                <i class="fa-solid fa-hand-pointer"></i> <span class="hidden sm:inline">조작</span>
-            </button>
-            <button id="wb-btn-pen" onclick="setWbTool('pen')" class="wb-tool-btn active px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="일반 펜 판서">
-                <i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">펜</span>
-            </button>
-            <button id="wb-btn-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="형광펜 강조">
-                <i class="fa-solid fa-highlighter"></i> <span class="hidden sm:inline">형광펜</span>
-            </button>
-            <button id="wb-btn-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="부분 지우개">
-                <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline">지우개</span>
-            </button>
-        </div>
-
-        <div class="flex items-center gap-2 px-2 border-l border-r border-slate-700">
-            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-5 h-5 rounded-full bg-red-500 transition" title="빨강"></button>
-            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-5 h-5 rounded-full bg-blue-500 transition" title="파랑"></button>
-            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-5 h-5 rounded-full bg-emerald-500 transition" title="초록"></button>
-            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-amber-400 transition" title="노랑"></button>
-            <button onclick="setWbColor('#1e293b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-slate-800 border border-white/50 transition" title="검정"></button>
-        </div>
-
-        <div class="hidden md:flex items-center gap-2">
-            <span class="text-[11px] text-slate-400">굵기</span>
-            <input type="range" id="wb-size" min="2" max="14" value="4" class="w-16 accent-indigo-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
-        </div>
-
-        <div class="flex items-center gap-1.5 pl-1">
-            <button onclick="undoWb()" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition" title="실행 취소">
-                <i class="fa-solid fa-rotate-left"></i>
-            </button>
-            <button onclick="clearWb()" class="p-1.5 px-2.5 rounded-lg bg-rose-900/70 hover:bg-rose-800 text-rose-200 text-xs font-semibold transition" title="판서 전체 지우기">
-                <i class="fa-solid fa-trash-can mr-1"></i>전체 지우기
-            </button>
-            <button onclick="toggleWhiteboard()" class="p-1.5 px-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold transition" title="전자칠판 닫기">
-                <i class="fa-solid fa-xmark"></i> 닫기
-            </button>
-        </div>
-    </div>
-
-    <header class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur border-b border-slate-200 z-40 flex items-center justify-between px-4">
-        <span class="font-bold text-lg text-indigo-600">04. 접선의 방정식</span>
-        <button onclick="toggleWhiteboard()" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold flex items-center gap-1">
-            <i class="fa-solid fa-chalkboard-user"></i> 칠판
-        </button>
-    </header>
-
-    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-40 flex flex-col justify-between shadow-lg lg:shadow-none">
-        <div class="p-5 border-b border-slate-200">
-            <span class="text-xs font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-700">Ⅱ. 미분</span>
-            <h1 class="text-2xl font-extrabold text-slate-900 mt-2 flex items-center gap-2">
-                <i class="fa-solid fa-lines-leaning text-indigo-600"></i>
-                <span>04. 접선의 방정식</span>
-            </h1>
-            <p class="text-xs text-slate-500 mt-1">교과서 69 ~ 72쪽</p>
-        </div>
-        <nav class="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-            <a href="#sec-intro" class="nav-link active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-lightbulb text-amber-500"></i><span>성취기준 & 생각 열기</span>
-            </a>
-            <a href="#sec-concept1" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-ruler-combined text-indigo-500"></i><span>1. 접선의 방정식 구하는 3가지 유형</span>
-            </a>
-            <a href="#sec-lab" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-sliders text-sky-500"></i><span>동적 접선 시뮬레이터</span>
-            </a>
-            <a href="#sec-ex1" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-pen-to-square text-rose-500"></i><span>대표 예제 & 연습장</span>
-            </a>
-            <a href="#sec-check" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-clipboard-check text-teal-500"></i><span>스스로 확인하기 (01~04)</span>
-            </a>
-        </nav>
-        <div class="p-3 border-t border-slate-200 bg-slate-50 no-print">
-            <button onclick="toggleWhiteboard()" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-extrabold shadow-sm flex items-center justify-center gap-2 transition cursor-pointer">
-                <i class="fa-solid fa-chalkboard-user"></i>
-                <span>전자칠판 판서 모드</span>
-            </button>
-        </div>
-    </aside>
-
-    <main id="main-content" class="lg:ml-72 min-h-screen p-6 sm:p-10 space-y-12">
-        <section id="sec-intro" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-4">
-                <i class="fa-solid fa-compass"></i> 성취기준
-            </div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-4">
-                접선의 방정식을 구할 수 있다
-            </h2>
-            <div class="bg-indigo-50/70 rounded-xl p-5 border border-indigo-100">
-                <h3 class="font-bold text-indigo-900 text-base mb-2">💡 생각 열기 : 롤러코스터 트랙을 벗어나는 순간의 궤적은?</h3>
-                <p class="text-sm text-slate-700 leading-relaxed">
-                    곡선 궤도를 달리던 물체가 트랙에서 이탈하면 접선 방향으로 직진합니다. 곡선 $y = f(x)$ 위의 한 점을 지나며 그 순간의 진행 방향과 일치하는 직선의 방정식을 어떻게 구할 수 있을까요?
-                </p>
-                <div class="mt-3 flex items-center gap-3">
-                    <button onclick="toggleSolution('intro-ans9')" class="text-xs font-bold text-indigo-600 hover:underline">정답 확인</button>
-                    <span id="intro-ans9" class="hidden text-xs font-bold text-emerald-600">지나는 점 $(x_1, y_1)$과 미분계수 기울기 $m = f'(x_1)$을 이용해 직선의 방정식을 세웁니다!</span>
-                </div>
-            </div>
-        </section>
-
-        <section id="sec-concept1" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-indigo-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">1. 접선의 방정식을 구하는 3가지 유형</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">유형 1</span>
-                    <h4 class="font-bold text-slate-900 text-sm">곡선 위의 점 $(x_1, y_1)$</h4>
-                    <p class="text-xs text-slate-600">기울기 $m = f'(x_1)$을 구한 후 공식 적용:</p>
-                    <div class="p-2 bg-white rounded border border-slate-200 text-xs font-bold text-indigo-600">
-                        $$y - y_1 = f'(x_1)(x - x_1)$$
-                    </div>
-                </div>
-
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">유형 2</span>
-                    <h4 class="font-bold text-slate-900 text-sm">기울기 $m$이 주어진 경우</h4>
-                    <p class="text-xs text-slate-600">도함수 방정식 $f'(t) = m$을 풀어 접점 $(t, f(t))$를 구한 후 유형 1 공식 적용.</p>
-                </div>
-
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-700">유형 3</span>
-                    <h4 class="font-bold text-slate-900 text-sm">곡선 밖의 점 $(x_0, y_0)$</h4>
-                    <p class="text-xs text-slate-600">접점을 $(t, f(t))$로 놓고 접선 식을 세운 뒤, 점 $(x_0, y_0)$를 대입하여 $t$를 구함.</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section Interactive Lab -->
-        <section id="sec-lab" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-2.5 h-6 bg-sky-600 rounded-full"></span>
-                    <h3 class="text-xl font-bold text-slate-900">동적 접선 시뮬레이터</h3>
-                </div>
-                <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">f(x) = x³ - 3x</span>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <div class="md:col-span-2 bg-slate-50 rounded-xl p-4 flex flex-col items-center border border-slate-200">
-                    <canvas id="tan-canvas" width="500" height="260" class="w-full h-56 rounded-lg bg-white shadow-inner"></canvas>
-                </div>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">접점의 $x$좌표 $t$ 조절</label>
-                        <input type="range" id="t-slider" min="-1.8" max="1.8" step="0.1" value="0.5" class="w-full accent-indigo-600 cursor-pointer">
-                        <div class="flex justify-between text-xs text-slate-500 mt-1">
-                            <span>t = -1.8</span>
-                            <span id="t-val" class="font-bold text-indigo-600 text-sm">t = 0.5</span>
-                            <span>t = 1.8</span>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-slate-50 rounded-xl space-y-2 text-xs border border-slate-200">
-                        <div class="flex justify-between">
-                            <span class="text-slate-600">접점 좌표:</span>
-                            <span id="pt-val" class="font-bold text-slate-800">(0.50, -1.38)</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-600">접선의 기울기:</span>
-                            <span id="tan-slope" class="font-bold text-rose-600">-2.25</span>
-                        </div>
-                        <div class="flex justify-between border-t border-slate-200 pt-2">
-                            <span class="text-slate-600">접선의 방정식:</span>
-                            <span id="tan-eqn" class="font-black text-indigo-600 text-xs">y = -2.25x - 0.25</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section Problems -->
-        <section id="sec-ex1" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-rose-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">대표 예제 풀이 & 연습장</h3>
-            </div>
-            <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
-                <div class="flex items-center justify-between">
-                    <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-700 text-xs font-bold">예제 1 (곡선 밖의 점에서 그은 접선)</span>
-                    <button onclick="toggleSolution('sol-ex9-1')" class="text-xs font-bold text-indigo-600 hover:underline">풀이 확인</button>
-                </div>
-                <h4 class="font-bold text-slate-900 text-base">
-                    점 $(0, -4)$에서 곡선 $y = x^2$ 에 그은 접선의 방정식을 모두 구하시오.
-                </h4>
-                <div id="sol-ex9-1" class="hidden p-4 rounded-xl bg-white border border-slate-200 text-sm space-y-2">
-                    <p class="text-slate-700">접점을 $(t, t^2)$이라 하면 $y' = 2x$이므로 접선의 기울기는 $2t$입니다.</p>
-                    <p class="font-semibold text-slate-900">$$y - t^2 = 2t(x - t) \implies y = 2tx - t^2$$</p>
-                    <p class="text-slate-700">이 직선이 점 $(0, -4)$를 지나므로 대입하면:</p>
-                    <p class="font-semibold text-slate-900">$$-4 = -t^2 \implies t^2 = 4 \implies t = \pm 2$$</p>
-                    <p class="font-bold text-emerald-600">따라서 구하는 접선의 방정식은 $y = 4x - 4$ 및 $y = -4x - 4$ 입니다.</p>
-                </div>
-                <div class="mt-4">
-                    <div class="flex justify-between items-center mb-1.5 text-xs text-slate-500">
-                        <span><i class="fa-solid fa-pen-nib mr-1"></i> 문제 풀이 연습장</span>
-                        <button class="clear-scratchpad-btn hover:text-slate-700 font-bold">지우기</button>
-                    </div>
-                    <canvas class="scratchpad-canvas w-full h-36 rounded-xl border border-slate-300 bg-white"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section Check -->
-        <section id="sec-check" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-teal-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">스스로 확인하기 (형성평가)</h3>
-            </div>
-            <div class="space-y-4">
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <p class="font-bold text-sm mb-2 text-slate-900">01. 곡선 $y = x^2 - 3x + 2$ 위의 점 $(2, 0)$에서의 접선의 기울기는?</p>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleSolution('ans-9-01')" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">정답 확인</button>
-                        <span id="ans-9-01" class="hidden font-bold text-sm text-teal-700">$y' = 2x - 3 \implies 2(2) - 3 = 1$</span>
-                    </div>
-                </div>
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <p class="font-bold text-sm mb-2 text-slate-900">02. 곡선 $y = x^3 + 2$에 접하고 기울기가 3인 접선의 $y$절편은?</p>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleSolution('ans-9-02')" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">정답 확인</button>
-                        <span id="ans-9-02" class="hidden font-bold text-sm text-teal-700">$3x^2 = 3 \implies x = \pm 1$. $x=1$일 때 $(1, 3) \implies y = 3x$; $x=-1$일 때 $(-1, 1) \implies y = 3x + 4$. 절편은 $0$ 또는 $4$</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
+        <!-- MathJax 3 CDN with Safe Config -->
     <script>
-    const cv9 = document.getElementById('tan-canvas');
-    if (cv9) {
-        const ctx = cv9.getContext('2d');
-        const s = document.getElementById('t-slider');
-        const tVal = document.getElementById('t-val');
-        const ptVal = document.getElementById('pt-val');
-        const tanSlope = document.getElementById('tan-slope');
-        const tanEqn = document.getElementById('tan-eqn');
-
-        function f(x) { return x * x * x - 3 * x; }
-        function df(x) { return 3 * x * x - 3; }
-
-        function draw9() {
-            const t = parseFloat(s.value);
-            const ft = f(t);
-            const m = df(t);
-            const c = ft - m * t;
-
-            tVal.textContent = 't = ' + t.toFixed(2);
-            ptVal.textContent = '(' + t.toFixed(2) + ', ' + ft.toFixed(2) + ')';
-            tanSlope.textContent = m.toFixed(2);
-            tanEqn.textContent = 'y = ' + m.toFixed(2) + 'x ' + (c >= 0 ? '+ ' : '- ') + Math.abs(c).toFixed(2);
-
-            ctx.clearRect(0, 0, cv9.width, cv9.height);
-            const ox = 250, oy = 130, sx = 80, sy = 35;
-
-            // Axes
-            ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(20, oy); ctx.lineTo(480, oy);
-            ctx.moveTo(ox, 10); ctx.lineTo(ox, 240);
-            ctx.stroke();
-
-            // Cubic curve
-            ctx.strokeStyle = '#0284c7';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            for(let px = -2.2; px <= 2.2; px += 0.05) {
-                const py = f(px);
-                const cx = ox + px * sx;
-                const cy = oy - py * sy;
-                if(px === -2.2) ctx.moveTo(cx, cy);
-                else ctx.lineTo(cx, cy);
-            }
-            ctx.stroke();
-
-            // Tangent line
-            ctx.strokeStyle = '#ef4444';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            const x1 = t - 1.5, y1 = m * x1 + c;
-            const x2 = t + 1.5, y2 = m * x2 + c;
-            ctx.moveTo(ox + x1 * sx, oy - y1 * sy);
-            ctx.lineTo(ox + x2 * sx, oy - y2 * sy);
-            ctx.stroke();
-
-            // Tangent point
-            ctx.fillStyle = '#10b981';
-            ctx.beginPath();
-            ctx.arc(ox + t * sx, oy - ft * sy, 6, 0, Math.PI * 2);
-            ctx.fill();
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\(', '\)']],
+          displayMath: [['$$', '$$'], ['\[', '\]']]
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
         }
-        s.addEventListener('input', draw9);
-        draw9();
-    }
+      };
     </script>
-    
-    <!-- Floating Whiteboard & Scroll Controls -->
-    <div id="floating-controls" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 no-print">
-        <button onclick="toggleWhiteboard()" title="전자칠판 판서 모드 켜기/끄기"
-            class="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center ring-4 ring-indigo-500/20 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer">
-            <i class="fa-solid fa-chalkboard-user text-lg"></i>
-        </button>
-        <button id="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="맨 위로 가기"
-            class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center opacity-0 pointer-events-none translate-y-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200">
-            <i class="fa-solid fa-arrow-up text-sm"></i>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .katex-display {
+            margin: 0.75em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.25em 0;
+        }
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen relative selection:bg-blue-100 selection:text-blue-900">
+
+    <!-- ===================================================================
+         풀스크린 전자칠판 레이어 & 플로팅 툴바
+         =================================================================== -->
+    <canvas id="wb-canvas" class="fixed inset-0 z-50 pointer-events-none w-full h-full"></canvas>
+
+    <!-- 전자칠판 컨트롤 툴바 -->
+    <div id="wb-toolbar" class="fixed bottom-6 right-6 z-50 hidden items-center gap-2 p-2.5 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200 text-slate-700 transition-all">
+        <!-- 도구 선택 -->
+        <div class="flex items-center gap-1 border-r border-slate-200 pr-2">
+            <button id="wb-tool-pen" onclick="setWbTool('pen')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent border-blue-500 bg-blue-50 text-blue-600" title="펜 (단축키 P)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            </button>
+            <button id="wb-tool-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent text-slate-600" title="형광펜 (단축키 H)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            </button>
+            <button id="wb-tool-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent text-slate-600" title="지우개 (단축키 E)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        </div>
+
+        <!-- 색상 팔레트 (6색) -->
+        <div class="flex items-center gap-1.5 border-r border-slate-200 pr-2">
+            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn w-6 h-6 rounded-full bg-red-500 ring-2 ring-offset-2 ring-slate-600 transition" title="빨강"></button>
+            <button onclick="setWbColor('#2563eb', this)" class="wb-color-btn w-6 h-6 rounded-full bg-blue-600 transition" title="파랑"></button>
+            <button onclick="setWbColor('#059669', this)" class="wb-color-btn w-6 h-6 rounded-full bg-emerald-600 transition" title="초록"></button>
+            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-6 h-6 rounded-full bg-amber-500 transition" title="노랑"></button>
+            <button onclick="setWbColor('#7c3aed', this)" class="wb-color-btn w-6 h-6 rounded-full bg-purple-600 transition" title="보라"></button>
+            <button onclick="setWbColor('#0f172a', this)" class="wb-color-btn w-6 h-6 rounded-full transition" style="background-color: #0f172a;" title="검정"></button>
+        </div>
+
+        <!-- 굵기 (3단계) -->
+        <div class="flex items-center gap-1 border-r border-slate-200 pr-2 text-xs font-semibold">
+            <button onclick="setWbSize(2, this)" class="wb-size-btn px-2 py-1 rounded-md hover:bg-slate-100 transition">얇게</button>
+            <button onclick="setWbSize(4, this)" class="wb-size-btn px-2 py-1 rounded-md bg-blue-500 text-white transition">보통</button>
+            <button onclick="setWbSize(8, this)" class="wb-size-btn px-2 py-1 rounded-md hover:bg-slate-100 transition">굵게</button>
+        </div>
+
+        <!-- 판서 초기화 & 다운로드 & 닫기 -->
+        <div class="flex items-center gap-1">
+            <button onclick="clearWhiteboard()" class="p-2 rounded-xl hover:bg-rose-50 text-rose-600 transition" title="전체 지우기 (단축키 C)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+            <button onclick="downloadWhiteboard()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition" title="판서 PNG 저장">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            </button>
+            <button onclick="toggleWhiteboard()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition" title="칠판 닫기 (ESC)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- 플로팅 전자칠판 토글 버튼 -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button onclick="toggleWhiteboard()" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 active:scale-95 transition-all text-xs font-bold border border-blue-400/40">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            <span>전자칠판 판서 모드</span>
+            <span id="wb-status-indicator" class="w-2 h-2 rounded-full bg-slate-300"></span>
         </button>
     </div>
 
-    <!-- Common JavaScript -->
-    <script>
-    // KaTeX Auto-render
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof renderMathInElement === 'function') {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ],
-                throwOnError: false
-            });
-        }
-    });
+    <!-- 상단 스크롤 진행률 표시줄 -->
+    <div class="fixed top-0 left-0 right-0 h-1 bg-slate-200 z-50">
+        <div id="scroll-progress-bar" class="h-full bg-blue-600 w-0 transition-all duration-150"></div>
+    </div>
 
-    // Dark Mode Toggle
-    function toggleDarkMode() {
-        document.documentElement.classList.toggle('dark');
-        if (typeof drawSimulation === 'function') drawSimulation();
-    }
+    <!-- 전체 레이아웃 컨테이너 (사이드바 + 메인 본문) -->
+    <div class="flex min-h-screen pt-1">
+        
+        <!-- ===================================================================
+             좌측 사이드바 내비게이션 (17~19차시)
+             =================================================================== -->
+        <aside class="hidden lg:block w-72 shrink-0 border-r border-slate-200 bg-white/95 backdrop-blur-sm sticky top-1 h-[calc(100vh-4px)] overflow-y-auto p-5 select-none">
+            <div class="space-y-6">
+                <!-- 대단원/소단원 헤더 -->
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        Ⅱ. 미분
+                    </span>
+                    <h2 class="text-lg font-bold text-slate-900 mt-1">4. 접선의 방정식</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">2022 개정 교육과정 · 교과서 71~74쪽</p>
+                </div>
 
-    // Solution Toggle
-    function toggleSolution(id) {
-        const box = document.getElementById(id);
-        if (box) {
-            box.classList.toggle('hidden');
-        }
-    }
+                <!-- 17차시: 접선의 방정식 3대 유형 기초 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>17차시 (71~72쪽)</span>
+                        <span class="text-blue-600 font-semibold">접점 & 기울기</span>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <a href="#sec-17-intro" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            01. 단원 개요 & 성취기준
+                        </a>
+                        <a href="#sec-17-warmup" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            💡 생각 열기 (공학 도구 관찰)
+                        </a>
+                        <a href="#sec-17-formula" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📐 접선의 방정식 기본 공식
+                        </a>
+                        <a href="#sec-17-type1" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📝 유형 1: 접점이 주어진 경우
+                        </a>
+                        <a href="#sec-17-type2" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📝 유형 2: 기울기가 주어진 경우
+                        </a>
+                        <a href="#sec-17-sim1" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📊 시뮬레이터 1: 접선 작도기
+                        </a>
+                    </nav>
+                </div>
 
-    // Scratchpad canvas initialization
-    function initScratchpads() {
-        document.querySelectorAll('.scratchpad-canvas').forEach(canvas => {
-            const ctx = canvas.getContext('2d');
-            let drawing = false;
+                <!-- 18차시: 곡선 밖의 점에서의 접선 -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>18차시 (73쪽)</span>
+                        <span class="text-indigo-600 font-semibold">곡선 밖의 점</span>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <a href="#sec-18-type3" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📝 유형 3: 외부 점 접선 3단계
+                        </a>
+                        <a href="#sec-18-count" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            🔍 문제해결: k에 따른 접선 개수
+                        </a>
+                        <a href="#sec-18-sim2" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📊 시뮬레이터 2: 접선 개수 판별기
+                        </a>
+                    </nav>
+                </div>
 
-            function resize() {
-                const rect = canvas.getBoundingClientRect();
-                if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                    canvas.width = rect.width;
-                    canvas.height = rect.height;
-                }
-            }
-            resize();
-            window.addEventListener('resize', resize);
+                <!-- 19차시: 스스로 확인하기 & 최단거리 기하 -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>19차시 (74쪽)</span>
+                        <span class="text-teal-600 font-semibold">확인 & 최단거리</span>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <a href="#prob-sc4-01" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            01. 학습 목표 되새기기 (빈칸)
+                        </a>
+                        <a href="#prob-sc4-02" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            02. 접선의 방정식 기본
+                        </a>
+                        <a href="#prob-sc4-03" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            03. 삼차곡선의 접선
+                        </a>
+                        <a href="#prob-sc4-04" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            04. 수직 직선에 평행한 접선
+                        </a>
+                        <a href="#prob-sc4-05" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            05. 외부 점에서 그은 접선
+                        </a>
+                        <a href="#prob-sc4-06" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            06. 생각 키우기 (최단거리 & 삼각형)
+                        </a>
+                        <a href="#sec-19-sim3" class="sidebar-nav-link block px-3 py-2 rounded-lg text-teal-700 bg-teal-50/70 hover:bg-teal-100 transition font-semibold text-xs mt-2">
+                            📐 최단거리 평행접선 시뮬레이터
+                        </a>
+                        <a href="#sec-19-reflection" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            ✓ 학습 성찰 & 자기 점검
+                        </a>
+                    </nav>
+                </div>
 
-            function getPos(e) {
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches ? e.touches[0] : e;
-                return {
-                    x: touch.clientX - rect.left,
-                    y: touch.clientY - rect.top
-                };
-            }
+                <!-- 수업 진도율 뱃지 -->
+                <div class="pt-4 border-t border-slate-100 text-xs text-slate-500">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-semibold text-slate-700">미적분Ⅰ 전체 진도</span>
+                        <span class="text-blue-600 font-bold">19차시 / 40차시</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div class="bg-blue-600 h-full rounded-full" style="width: 47.5%"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
 
-            function start(e) {
-                drawing = true;
-                ctx.beginPath();
-                const p = getPos(e);
-                ctx.moveTo(p.x, p.y);
-            }
-            function move(e) {
-                if (!drawing) return;
-                e.preventDefault();
-                const p = getPos(e);
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#93c5fd' : '#2563eb';
-                ctx.lineTo(p.x, p.y);
-                ctx.stroke();
-            }
-            function stop() {
-                drawing = false;
-            }
+        <!-- ===================================================================
+             메인 학습 콘텐츠 영역
+             =================================================================== -->
+        <main class="flex-1 min-w-0">
 
-            canvas.addEventListener('mousedown', start);
-            canvas.addEventListener('mousemove', move);
-            window.addEventListener('mouseup', stop);
-            canvas.addEventListener('touchstart', start, {passive: false});
-            canvas.addEventListener('touchmove', move, {passive: false});
-            window.addEventListener('touchend', stop);
 
-            const clearBtn = canvas.parentElement.querySelector('.clear-scratchpad-btn');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                });
-            }
+        <!-- ===================================================================
+             [17차시] 1. 접선의 방정식 (접점과 기울기) (교과서 71~72쪽)
+             =================================================================== -->
+        <section id="sec-17-intro" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <!-- 단원 배너 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-blue-50 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                        17차시 / 19차시
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">교과서 71~72쪽</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                    01. 접선의 방정식: 접점과 기울기 (Equation of Tangent Line)
+                </h1>
+                <p class="mt-2 text-slate-600 leading-relaxed text-sm md:text-base">
+                    미분계수의 기하학적 의미인 '접선의 기울기'를 고등학교 1학년의 직선의 방정식 공식과 융합하여, 곡선에 스치는 접선의 방정식을 구하는 핵심 3대 유형 중 [유형 1: 접점이 주어질 때]와 [유형 2: 기울기가 주어질 때]를 완벽히 정복합니다.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-3 text-xs md:text-sm text-slate-600 font-medium">
+                    <span class="flex items-center gap-1">🎯 <strong>핵심 성취기준:</strong> 미분계수와 접선의 기울기의 관계를 이해하고, 접선의 방정식을 구할 수 있다.</span>
+                </div>
+            </div>
+
+            <!-- 교사용 지도서 지도 가이드 (접이식 아코디언) -->
+            <div class="bg-blue-50/60 rounded-xl border border-blue-200 overflow-hidden shadow-sm">
+                <button type="button" onclick="toggleTeacherTip('tip-17')" class="w-full px-5 py-3.5 flex items-center justify-between text-left font-bold text-blue-900 hover:bg-blue-100/50 transition">
+                    <span class="flex items-center gap-2 text-sm md:text-base">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        교사용 지도서 핵심 착안점 & 교수학습 전략
+                    </span>
+                    <span id="tip-17-arrow" class="text-xs bg-white px-2 py-1 rounded text-blue-700 font-semibold border border-blue-200">펼치기 ▼</span>
+                </button>
+                <div id="tip-17" class="hidden px-5 pb-5 pt-2 text-sm text-slate-700 space-y-3 bg-white border-t border-blue-100">
+                    <p class="leading-relaxed">
+                        • <strong>접선의 모든 열쇠는 '접점'이다:</strong> 접선의 방정식의 3대 유형(1. 접점 주어짐, 2. 기울기 주어짐, 3. 곡선 밖의 점 주어짐) 중 어떤 조건이 제시되더라도, 학생들에게 <strong>"항상 접점의 좌표를 $(t, f(t))$로 설정하고 출발하라"</strong>는 핵심 알고리즘을 체화시킵니다.
+                    </p>
+                    <p class="leading-relaxed">
+                        • <strong>기울기가 주어질 때 복수 접선의 가능성:</strong> 삼차 이상의 고차함수에서는 주어진 기울기 $m$에 대해 $f'(t) = m$의 실근이 2개 이상 존재하여 접선이 2개 이상 나올 수 있음을 시각적으로 확인시킵니다.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 생각 열기: 공학 도구를 활용한 접선의 관찰 (교과서 71쪽) -->
+            <div id="sec-17-warmup" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">💡</span>
+                    <h2 class="text-xl font-bold text-slate-900">생각 열기: 곡선 위의 점과 접선</h2>
+                </div>
+
+                <p class="text-slate-600 text-sm md:text-base leading-relaxed">
+                    다음 그림은 공학 도구를 이용하여 함수 \(f(x) = x^2\)의 그래프와 그 위의 점 \(A(1, 1)\)에서의 접선을 그린 것입니다.
+                </p>
+
+                <!-- 탐구 발문 1, 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs md:text-sm">
+                        <span class="font-bold text-blue-700 uppercase tracking-wide">탐구 ➊ \(f'(1)\)의 값</span>
+                        <p class="text-slate-700">
+                            함수 \(f(x) = x^2\)을 미분하면 \(f'(x) = 2x\)이므로, \(x=1\)에서의 미분계수는:
+                        </p>
+                        <div class="p-2 bg-white rounded border border-blue-200 font-bold text-blue-900 text-center">
+                            \(f'(1) = 2 \times 1 = \mathbf{2}\)
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs md:text-sm">
+                        <span class="font-bold text-emerald-700 uppercase tracking-wide">탐구 ➋ 점 A에서의 접선의 방정식</span>
+                        <p class="text-slate-700">
+                            점 \((1, 1)\)을 지나고 기울기가 \(2\)인 직선의 방정식:
+                        </p>
+                        <div class="p-2 bg-white rounded border border-emerald-200 font-bold text-emerald-900 text-center">
+                            \(y - 1 = 2(x - 1) \implies \mathbf{y = 2x - 1}\)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개념 1: 접선의 방정식 기본 공식 (교과서 71쪽) -->
+            <div id="sec-17-formula" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">1</span>
+                    <h2 class="text-xl font-bold text-slate-900">개념 정립: 접선의 방정식 공식</h2>
+                </div>
+
+                <div class="space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
+                    <p>
+                        함수 \(f(x)\)가 \(x=a\)에서 미분가능할 때, 곡선 \(y=f(x)\) 위의 점 \(P(a, f(a))\)에서의 접선의 기울기는 \(x=a\)에서의 미분계수 \(f'(a)\)입니다.
+                        따라서 점 \(P(a, f(a))\)를 지나고 기울기가 \(f'(a)\)인 직선의 방정식은 다음과 같습니다:
+                    </p>
+
+                    <!-- 핵심 공식 카드 -->
+                    <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-white p-6 rounded-2xl border-2 border-blue-300 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-100 px-2.5 py-1 rounded-md">핵심 공식</span>
+                            <span class="text-xs text-slate-500">교과서 71쪽</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">곡선 위의 점 \((a, f(a))\)에서의 접선의 방정식</h3>
+                        <div class="p-4 bg-white rounded-xl border border-blue-200 text-center overflow-x-auto shadow-xs">
+                            <div class="text-base md:text-xl font-extrabold text-blue-900 py-1">
+                                \(y - f(a) = f'(a)(x - a)\)
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-600 bg-white/80 p-2.5 rounded-lg border border-blue-100">
+                            💡 점 \((x_1, y_1)\)을 지나고 기울기가 \(m\)인 직선의 방정식 \(y - y_1 = m(x - x_1)\)에서 기울기 자리에 미분계수 \(f'(a)\)를 대입한 것입니다!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 유형 1: 접점이 주어질 때 (예제 1 & 문제 1, 교과서 72쪽) -->
+            <div id="sec-17-type1" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-xs">유형 1</span>
+                        <h3 class="text-lg font-bold text-slate-900">곡선 위의 한 점에서의 접선의 방정식</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 72쪽 예제 1</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    곡선 \(y = x^2 + 2x\) 위의 점 \((-2, 0)\)에서의 접선의 방정식을 구하시오.
+                </div>
+
+                <!-- 예제 풀이 -->
+                <div class="p-4 bg-white rounded-xl border border-slate-200 text-xs md:text-sm text-slate-700 space-y-1.5 leading-relaxed">
+                    <div>\(f(x) = x^2 + 2x\)라고 하면 \(f'(x) = 2x + 2\)</div>
+                    <div>점 \((-2, 0)\)에서의 접선의 기울기는 \(f'(-2) = 2(-2) + 2 = \mathbf{-2}\)</div>
+                    <div>따라서 구하는 접선의 방정식은:</div>
+                    <div class="p-2.5 bg-blue-50/50 rounded text-blue-900 font-bold text-sm">
+                        \(y - 0 = -2\{x - (-2)\} \implies \mathbf{y = -2x - 4}\)
+                    </div>
+                </div>
+
+                <!-- 문제 1: 스크래치패드 & 채점기 -->
+                <div class="pt-4 border-t border-slate-200 space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 1</span>
+                        <h4 class="font-bold text-slate-900 text-sm md:text-base">다음 곡선 위의 주어진 점에서의 접선의 방정식을 구하시오.</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm font-medium text-slate-800">
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">⑴ \(y = 2x^3\) 위의 점 \((1, 2)\)</div>
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">⑵ \(y = 4x^2 + 2x + 3\) 위의 점 \((-1, 5)\)</div>
+                    </div>
+
+                    <!-- 전자 스크래치패드 -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                풀이 연습장
+                            </span>
+                            <button type="button" onclick="clearScratchpad('sp-u4-p1')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                        </div>
+                        <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                            <canvas id="sp-u4-p1" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 채점 및 토글 해설 -->
+                    <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- 소문항 1 -->
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-700">⑴ 기울기와 y절편 (예: 6, -4):</label>
+                                <div class="flex gap-2">
+                                    <input id="ans-u4-p1-1" type="text" placeholder="예: 6, -4" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 bg-white">
+                                    <button type="button" onclick="checkU4Prob1_1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
+                                </div>
+                                <div id="res-u4-p1-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                            </div>
+
+                            <!-- 소문항 2 토글 -->
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-700">⑵ 상세 정답 및 풀이 확인:</label>
+                                <button type="button" onclick="toggleSolution('sol-u4-p1-2')" class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition text-left flex justify-between items-center">
+                                    <span>정답 및 풀이 보기</span>
+                                    <span id="sol-u4-p1-2-arrow">▼</span>
+                                </button>
+                                <div id="sol-u4-p1-2" class="hidden p-3 bg-white rounded-lg border border-emerald-200 text-xs text-slate-700 mt-2 space-y-1">
+                                    <div><strong>⑴ 정답:</strong> \(y' = 6x^2 \implies f'(1) = 6\), \(y - 2 = 6(x - 1) \implies \mathbf{y = 6x - 4}\)</div>
+                                    <div><strong>⑵ 정답:</strong> \(y' = 8x + 2 \implies f'(-1) = -6\), \(y - 5 = -6(x + 1) \implies \mathbf{y = -6x - 1}\)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 유형 2: 기울기가 주어질 때 (예제 2 & 문제 2, 교과서 72쪽) -->
+            <div id="sec-17-type2" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">유형 2</span>
+                        <h3 class="text-lg font-bold text-slate-900">기울기가 주어질 때의 접선의 방정식</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 72쪽 예제 2</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    곡선 \(y = 2x^2 - 1\)에 접하고 기울기가 \(4\)인 접선의 방정식을 구하시오.
+                </div>
+
+                <!-- 예제 풀이 -->
+                <div class="p-4 bg-white rounded-xl border border-slate-200 text-xs md:text-sm text-slate-700 space-y-2 leading-relaxed">
+                    <div>\(f(x) = 2x^2 - 1\)이라고 하면 \(f'(x) = 4x\)</div>
+                    <div>접점의 좌표를 \((a, 2a^2 - 1)\)이라고 하면, 이 접점에서의 접선의 기울기가 \(4\)이므로:</div>
+                    <div class="font-bold text-indigo-900">\(f'(a) = 4a = 4 \implies \mathbf{a = 1}\)</div>
+                    <div>따라서 접점의 좌표는 \((1, 2(1)^2 - 1) = (1, 1)\)입니다.</div>
+                    <div>구하는 접선의 방정식은 \(y - 1 = 4(x - 1) \implies \mathbf{y = 4x - 3}\)</div>
+                </div>
+
+                <!-- 문제 2 카드 + 스크래치패드 + 채점기 -->
+                <div class="pt-4 border-t border-slate-200 space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 2</span>
+                        <h4 class="font-bold text-slate-900 text-sm md:text-base">다음 곡선에 접하고 기울기가 \(-4\)인 접선의 방정식을 구하시오.</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm font-medium text-slate-800">
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">⑴ \(y = -2x^2 + 8x\)</div>
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">⑵ \(y = -x^3 + 8x\)</div>
+                    </div>
+
+                    <!-- 전자 스크래치패드 -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                접점 좌표 계산장
+                            </span>
+                            <button type="button" onclick="clearScratchpad('sp-u4-p2')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                        </div>
+                        <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                            <canvas id="sp-u4-p2" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 채점 및 토글 해설 -->
+                    <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- 소문항 1 -->
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-700">⑴ 접선의 y절편 입력 (기울기 -4x + b):</label>
+                                <div class="flex gap-2">
+                                    <input id="ans-u4-p2-1" type="text" placeholder="예: 18" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 bg-white">
+                                    <button type="button" onclick="checkU4Prob2_1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
+                                </div>
+                                <div id="res-u4-p2-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                            </div>
+
+                            <!-- 소문항 2 토글 -->
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-700">⑵ 상세 정답 및 해설 보기:</label>
+                                <button type="button" onclick="toggleSolution('sol-u4-p2-2')" class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition text-left flex justify-between items-center">
+                                    <span>정답 및 복수 접선 풀이</span>
+                                    <span id="sol-u4-p2-2-arrow">▼</span>
+                                </button>
+                                <div id="sol-u4-p2-2" class="hidden p-3 bg-white rounded-lg border border-emerald-200 text-xs text-slate-700 mt-2 space-y-2">
+                                    <div><strong>⑴ 풀이:</strong> \(y' = -4x + 8 = -4 \implies -4x = -12 \implies x = 3\). 접점 \((3, 6)\).<br>\(y - 6 = -4(x - 3) \implies \mathbf{y = -4x + 18}\)</div>
+                                    <div><strong>⑵ 풀이 (접선 2개!):</strong> \(y' = -3x^2 + 8 = -4 \implies 3x^2 = 12 \implies x = \pm 2\)<br>
+                                    • \(x = 2\): 접점 \((2, 8) \implies y - 8 = -4(x - 2) \implies \mathbf{y = -4x + 16}\)<br>
+                                    • \(x = -2\): 접점 \((-2, -8) \implies y - (-8) = -4(x - (-2)) \implies \mathbf{y = -4x - 16}\)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 인터랙티브 시뮬레이터 1: 접선 작도기 (tangent-types-canvas) -->
+            <div id="sec-17-sim1" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-100 text-blue-800 font-bold text-xs">SIMULATOR 1</span>
+                        <h3 class="text-lg font-bold text-slate-900">곡선 위의 점 이동에 따른 실시간 접선 작도기</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">슬라이더로 접점 x를 이동시키며 접선의 변화를 관찰하세요</span>
+                </div>
+
+                <div class="relative w-full h-[340px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="tangent-types-canvas" width="800" height="340" class="w-full h-full block"></canvas>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-slate-700 mb-1">접점의 위치 \(a\): <span id="val-tan-a" class="text-blue-600 font-bold">1.0</span></label>
+                        <input id="slider-tan-a" type="range" min="-2.0" max="2.0" step="0.1" value="1.0" class="w-full accent-blue-600 cursor-pointer">
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                        <div class="text-slate-500 text-xs">현재 접선의 방정식</div>
+                        <div id="stat-tan-eq" class="text-base font-extrabold text-blue-700">y = 4.0x - 3.0</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    
+
+        <!-- ===================================================================
+             [18차시] 2. 곡선 밖의 점에서의 접선 & 접선의 개수 (교과서 73쪽)
+             =================================================================== -->
+        <section id="sec-18-type3" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <!-- 18차시 배너 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-indigo-50 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                        <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                        18차시 / 19차시
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">교과서 73쪽</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                    02. 곡선 밖의 점에서 그은 접선과 접선의 개수 (Tangents from External Point)
+                </h1>
+                <p class="mt-2 text-slate-600 leading-relaxed text-sm md:text-base">
+                    곡선 위에 있지 않은 외부 점에서 곡선을 향해 쏘아 올린 접선을 구하는 가장 정교한 유형입니다. 미지수 접점 \(t\)를 설정하고 방정식을 풀어 접점의 개수와 접선의 개수가 완벽히 일치함을 대수적으로 증명합니다.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-3 text-xs md:text-sm text-slate-600 font-medium">
+                    <span class="flex items-center gap-1">🎯 <strong>핵심 성취기준:</strong> 곡선 밖의 한 점에서 그은 접선의 방정식을 3단계로 구하고, 실근의 개수로 접선의 개수를 판별할 수 있다.</span>
+                </div>
+            </div>
+
+            <!-- 유형 3: 외부 점 접선의 3단계 마스터 알고리즘 (교과서 73쪽) -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">유형 3</span>
+                        <h3 class="text-lg font-bold text-slate-900">곡선 밖의 한 점에서 그은 접선 3단계 풀이법</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 73쪽 예제 3</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    원점 \((0, 0)\)에서 곡선 \(y = x^2 + 4\)에 그은 접선의 방정식을 구하시오.
+                </div>
+
+                <!-- 3단계 완벽 해설 카드 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-white rounded-xl border border-indigo-200 space-y-2 text-xs md:text-sm">
+                        <span class="font-bold text-indigo-700">[단계 ➊] 접선의 식 세우기</span>
+                        <p class="text-slate-600">
+                            접점을 \((a, a^2+4)\)라 하면 기울기 \(f'(a) = 2a\).<br>
+                            \(y - (a^2+4) = 2a(x - a)\)<br>
+                            \(\implies y = 2ax - a^2 + 4\) ⋯ ㉠
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-white rounded-xl border border-indigo-200 space-y-2 text-xs md:text-sm">
+                        <span class="font-bold text-blue-700">[단계 ➋] 외부 점 대입 & a 구하기</span>
+                        <p class="text-slate-600">
+                            접선 ㉠이 원점 \((0, 0)\)을 지나므로:<br>
+                            \(0 = -a^2 + 4 \implies a^2 = 4\)<br>
+                            \(\mathbf{a = -2 \text{ 또는 } a = 2}\)
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-white rounded-xl border border-indigo-200 space-y-2 text-xs md:text-sm">
+                        <span class="font-bold text-emerald-700">[단계 ➌] 접선의 방정식 완성</span>
+                        <p class="text-slate-600">
+                            \(a\)의 값을 ㉠에 대입하면:<br>
+                            \(a = -2 \implies \mathbf{y = -4x}\)<br>
+                            \(a = 2 \implies \mathbf{y = 4x}\)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-blue-50 rounded-lg text-xs text-blue-900">
+                    💡 <strong>시각적 통찰:</strong> 원점에서 포물선을 올려다보며 왼쪽과 오른쪽에 각각 1개씩 총 2개의 접선(\(\pm 4x\))이 대칭적으로 그어집니다!
+                </div>
+            </div>
+
+            <!-- 문제 3: 외부 점 접선 구하기 (교과서 73쪽) -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 3</span>
+                        <h4 class="font-bold text-slate-900 text-sm md:text-base">다음 주어진 점에서 곡선에 그은 접선의 방정식을 구하시오.</h4>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 73쪽</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm font-medium text-slate-800">
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">⑴ \(y = x^2 + x\), 점 \((-1, -1)\)</div>
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">⑵ \(y = -x^3 + 3x^2 - x - 1\), 점 \((1, -2)\)</div>
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            외부 점 접선 계산장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-u4-p3')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-u4-p3" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑴ 접선의 개수 및 방정식 확인:</label>
+                            <button type="button" onclick="toggleSolution('sol-u4-p3-1')" class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition text-left flex justify-between items-center">
+                                <span>⑴ 풀이 보기 (접선 2개)</span>
+                                <span id="sol-u4-p3-1-arrow">▼</span>
+                            </button>
+                            <div id="sol-u4-p3-1" class="hidden p-3 bg-white rounded-lg border border-emerald-200 text-xs text-slate-700 mt-2 space-y-1">
+                                <div>접점 \((t, t^2+t)\), 접선 \(y = (2t+1)x - t^2\)</div>
+                                <div>점 \((-1, -1)\) 대입: \(-1 = -(2t+1) - t^2 \implies t^2 + 2t = 0 \implies t = 0\text{ 또는 } -2\)</div>
+                                <div><strong>정답:</strong> \(\mathbf{y = x}\) 또는 \(\mathbf{y = -3x - 4}\)</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑵ 삼차곡선 접선 풀이 확인:</label>
+                            <button type="button" onclick="toggleSolution('sol-u4-p3-2')" class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition text-left flex justify-between items-center">
+                                <span>⑵ 풀이 보기 (실근 1개)</span>
+                                <span id="sol-u4-p3-2-arrow">▼</span>
+                            </button>
+                            <div id="sol-u4-p3-2" class="hidden p-3 bg-white rounded-lg border border-emerald-200 text-xs text-slate-700 mt-2 space-y-1">
+                                <div>접선에 \((1, -2)\) 대입하면 \(2t(t^2 - 3t + 3) = 0\). 이차식 판별식 \(D < 0\)이므로 실근은 \(t = 0\) 오직 하나!</div>
+                                <div>\(t=0\) 대입: 기울기 \(-1\), 접점 \((0, -1)\)</div>
+                                <div><strong>정답:</strong> \(\mathbf{y = -x - 1}\)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문제해결 탐구: 접선의 개수와 판별식 (교과서 73쪽) -->
+            <div id="sec-18-count" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-purple-600 text-white font-bold text-xs">문제해결 탐구</span>
+                        <h3 class="text-lg font-bold text-slate-900">외부 점 A(1, k)에서 곡선에 그은 접선의 개수</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 73쪽</span>
+                </div>
+
+                <div class="p-5 bg-purple-50/50 rounded-xl border border-purple-200 space-y-3 text-sm text-slate-800 leading-relaxed">
+                    <p>
+                        곡선 \(y = x^2 + 2\)와 점 \(A(1, k)\)에 대하여 점 \(A\)에서 곡선에 그을 수 있는 접선의 개수를 \(k\)의 값의 범위에 따라 분류해 봅시다.
+                    </p>
+                    <div class="p-4 bg-white rounded-xl border border-purple-200 space-y-2 text-xs md:text-sm">
+                        <div>1. 접점의 좌표를 \((t, t^2+2)\)라 하면 접선: \(y - (t^2+2) = 2t(x - t) \implies y = 2tx - t^2 + 2\)</div>
+                        <div>2. 점 \(A(1, k)\) 대입: \(k = 2t - t^2 + 2 \implies \mathbf{t^2 - 2t + k - 2 = 0}\)</div>
+                        <div>3. 판별식 \(D/4 = (-1)^2 - (k - 2) = \mathbf{3 - k}\)</div>
+                    </div>
+
+                    <!-- 결론 분류 표 -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-center text-xs md:text-sm font-semibold">
+                        <div class="p-3 bg-white rounded-xl border border-blue-200 text-blue-900">
+                            \(k < 3\) 일 때<br>
+                            <strong class="text-base text-blue-600">접선 2개</strong> (D > 0)
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border border-emerald-200 text-emerald-900">
+                            \(k = 3\) 일 때<br>
+                            <strong class="text-base text-emerald-600">접선 1개</strong> (D = 0, 곡선 위)
+                        </div>
+                        <div class="p-3 bg-white rounded-xl border border-rose-200 text-rose-900">
+                            \(k > 3\) 일 때<br>
+                            <strong class="text-base text-rose-600">접선 0개</strong> (D < 0, 곡선 안쪽)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 인터랙티브 시뮬레이터 2: 외부 점 접선 개수 판별기 (tangent-count-canvas) -->
+            <div id="sec-18-sim2" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-purple-100 text-purple-800 font-bold text-xs">SIMULATOR 2</span>
+                        <h3 class="text-lg font-bold text-slate-900">외부 점 위치에 따른 접선 소멸 시뮬레이터</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">슬라이더로 점 A(1, k)의 y좌표 k를 움직여 접선 개수 변화를 확인하세요</span>
+                </div>
+
+                <div class="relative w-full h-[340px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="tangent-count-canvas" width="800" height="340" class="w-full h-full block"></canvas>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-slate-700 mb-1">점 A의 y좌표 \(k\): <span id="val-tan-k" class="text-purple-600 font-bold">1.0</span></label>
+                        <input id="slider-tan-k" type="range" min="-1.0" max="5.0" step="0.2" value="1.0" class="w-full accent-purple-600 cursor-pointer">
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                        <div class="text-slate-500 text-xs">접선 판정 상태</div>
+                        <div id="stat-tan-count" class="text-base font-extrabold text-blue-700">접선 2개 존재 (k < 3)</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    
+
+        <!-- ===================================================================
+             [19차시] 스스로 확인하기 & 최단거리 기하 탐구 (교과서 74쪽)
+             =================================================================== -->
+        <section id="sec-19-selfcheck" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <!-- 19차시 배너 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-teal-50 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 border border-teal-200">
+                        <span class="w-2 h-2 rounded-full bg-teal-600 animate-pulse"></span>
+                        19차시 / 19차시
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">교과서 74쪽</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                    03. 스스로 확인하기 & 최단거리 기하 탐구
+                </h1>
+                <p class="mt-2 text-slate-600 leading-relaxed text-sm md:text-base">
+                    접선의 방정식의 3대 유형을 총망라하여 해결력을 다지고, 곡선과 직선 사이의 최단거리를 평행접선의 접점으로 파악하여 기하학적 도형의 넓이 최솟값을 구하는 심화 최적화 문제를 탐구합니다.
+                </p>
+            </div>
+
+            <!-- 문항 01: 학습 목표 되새기기 -->
+            <div id="prob-sc4-01" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-xs">01</span>
+                        <h3 class="text-lg font-bold text-slate-900">학습 목표 되새기기 (접선 공식 완성)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 74쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3 text-sm text-slate-800">
+                    <p>함수 \(f(x)\)가 \(x=a\)에서 미분가능할 때, 곡선 \(y=f(x)\) 위의 점 \((a, f(a))\)에서의 접선의 방정식은:</p>
+                    <div class="flex items-center gap-2 font-mono">
+                        <span>\(y - f(a) = \)</span>
+                        <input id="blank-u4-1" type="text" placeholder="기울기 기호 (예: f'(a))" class="px-3 py-1.5 rounded border border-slate-300 w-36 bg-white font-bold text-blue-900">
+                        <span>\((x - a)\)</span>
+                        <button type="button" onclick="checkSc4_01()" class="px-4 py-1.5 bg-blue-600 text-white rounded text-xs font-bold hover:bg-blue-700 transition">확인</button>
+                    </div>
+                    <div id="res-sc4-01" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                </div>
+            </div>
+
+            <!-- 문항 02: 접선 기본 -->
+            <div id="prob-sc4-02" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">02</span>
+                        <h3 class="text-lg font-bold text-slate-900">미분계수와 함숫값이 주어진 접선</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 74쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    미분가능한 함수 \(f(x)\)에 대하여 \(f'(4) = \frac{1}{2}\), \(f(4) = 3\)일 때, 곡선 위의 점 \((4, f(4))\)에서의 접선의 방정식을 구하시오.
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">접선의 y절편 입력 (\(y = \frac{1}{2}x + b\)):</label>
+                            <input id="ans-sc4-02" type="text" placeholder="예: 1" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-32 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc4_02()" class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc4-02" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc4-02')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>풀이 보기</span>
+                            <span id="sol-sc4-02-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc4-02" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-1">
+                            <div>\(y - 3 = \frac{1}{2}(x - 4) \implies y = \frac{1}{2}x - 2 + 3 \implies \mathbf{y = \frac{1}{2}x + 1}\)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 03: 삼차곡선 접선 -->
+            <div id="prob-sc4-03" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">03</span>
+                        <h3 class="text-lg font-bold text-slate-900">삼차곡선 위의 점에서의 접선</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 74쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    곡선 \(y = x^3 + 2x\) 위의 점 \((1, 3)\)에서의 접선의 방정식을 구하시오.
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            미분 및 접선 계산장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc4-03')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc4-03" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">접선의 기울기와 y절편 (예: 5, -2):</label>
+                            <input id="ans-sc4-03" type="text" placeholder="예: 5, -2" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc4_03()" class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc4-03" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc4-03')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>풀이 보기</span>
+                            <span id="sol-sc4-03-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc4-03" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-1">
+                            <div>\(y' = 3x^2 + 2 \implies f'(1) = 3(1)^2 + 2 = 5\)</div>
+                            <div>\(y - 3 = 5(x - 1) \implies \mathbf{y = 5x - 2}\)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 04: 수직 조건 접선 -->
+            <div id="prob-sc4-04" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">04</span>
+                        <h3 class="text-lg font-bold text-slate-900">주어진 직선에 수직인 접선의 방정식</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 74쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    곡선 \(y = -x^2 + x + 3\)에 접하고 직선 \(x - 3y = 0\)에 수직인 직선의 방정식을 구하시오.
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            수직 기울기 & 접점 계산장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc4-04')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc4-04" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">접선의 방정식 입력 (예: y = -3x + 7):</label>
+                            <input id="ans-sc4-04" type="text" placeholder="예: -3, 7" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc4_04()" class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc4-04" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc4-04')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>풀이 보기</span>
+                            <span id="sol-sc4-04-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc4-04" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-1">
+                            <div>• 직선 \(x - 3y = 0 \iff y = \frac{1}{3}x\)이므로, 수직인 직선의 기울기는 \(m = \mathbf{-3}\)</div>
+                            <div>• \(y' = -2x + 1 = -3 \implies -2x = -4 \implies \mathbf{x = 2}\)</div>
+                            <div>• 접점: \((2, -(2)^2 + 2 + 3) = (2, 1)\)</div>
+                            <div class="font-bold text-blue-700 pt-1">\(y - 1 = -3(x - 2) \implies \mathbf{y = -3x + 7}\)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 05: 외부 점에서 그은 접선 -->
+            <div id="prob-sc4-05" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">05</span>
+                        <h3 class="text-lg font-bold text-slate-900">곡선 밖의 점 (2, 9)에서 그은 접선</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 74쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    점 \((2, 9)\)에서 곡선 \(y = x^3 - 4x^2 + 5x - 1\)에 그은 접선의 방정식을 구하시오.
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            접점 방정식 풀이장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc4-05')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc4-05" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">접선의 기울기와 y절편 (예: 5, -1):</label>
+                            <input id="ans-sc4-05" type="text" placeholder="예: 5, -1" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc4_05()" class="px-5 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc4-05" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc4-05')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>상세 풀이 해설</span>
+                            <span id="sol-sc4-05-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc4-05" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-1">
+                            <div>• 접점 \((t, t^3-4t^2+5t-1)\), 접선 \(y - (t^3-4t^2+5t-1) = (3t^2-8t+5)(x - t)\)</div>
+                            <div>• 점 \((2, 9)\) 대입하여 정리하면 \(2t(t^2 - 5t + 8) = 0\)</div>
+                            <div>• 이차식 판별식 \(D = 25 - 32 < 0\)이므로 유일한 실근은 \(\mathbf{t = 0}\)</div>
+                            <div class="font-bold text-blue-700 pt-1">\(t=0\) 대입: 기울기 5, 점 (0, -1) \(\implies \mathbf{y = 5x - 1}\)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 06: 생각을 키우는 문제 (최단거리 & 삼각형 넓이의 최솟값) -->
+            <div id="prob-sc4-06" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-rose-600 text-white font-bold text-xs">06</span>
+                        <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-800 font-semibold text-xs border border-rose-200">생각을 키우는 문제 · 기하 최적화</span>
+                        <h3 class="text-lg font-bold text-slate-900">곡선과 직선 사이의 최단거리 & 삼각형 넓이의 최솟값</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 74쪽</span>
+                </div>
+
+                <div class="p-5 bg-gradient-to-r from-rose-50/50 via-white to-white rounded-xl border border-rose-200 text-slate-800 text-sm md:text-base space-y-3 leading-relaxed">
+                    <p>
+                        두 점 \(A(3, 1)\), \(B(5, -3)\)과 곡선 \(y = -x^2\) 위의 임의의 점 \(P\)에 대하여 다음 물음에 답하시오.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs md:text-sm text-slate-700">
+                        <div class="p-3 bg-white rounded-lg border border-rose-100">⑴ 두 점 A, B를 지나는 직선의 방정식</div>
+                        <div class="p-3 bg-white rounded-lg border border-rose-100">⑵ 곡선 위의 점 P와 직선 AB 사이 거리가 최소가 되는 점 P의 좌표</div>
+                        <div class="p-3 bg-white rounded-lg border border-rose-100">⑶ 삼각형 APB의 넓이의 최솟값</div>
+                    </div>
+                </div>
+
+                <!-- 인터랙티브 시뮬레이터 3: 최단거리 평행접선 캔버스 -->
+                <div id="sec-19-sim3" class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">SIMULATOR 3: 평행접선과 삼각형 APB의 최소 면적 시각화</span>
+                        <span class="text-xs text-slate-500">점 P의 x좌표를 슬라이더로 움직여 삼각형 넓이의 변화를 확인하세요</span>
+                    </div>
+                    <div class="relative w-full h-[340px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="min-distance-canvas" width="800" height="340" class="w-full h-full block"></canvas>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold text-slate-700 mb-1">곡선 위 점 P의 x좌표: <span id="val-p-x" class="text-rose-600 font-bold">1.0</span></label>
+                            <input id="slider-p-x" type="range" min="-1.0" max="3.0" step="0.1" value="1.0" class="w-full accent-rose-600 cursor-pointer">
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <div class="text-slate-500 text-xs">삼각형 APB의 넓이</div>
+                            <div id="stat-triangle-area" class="text-base font-extrabold text-rose-700">최솟값: 6.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            평행 조건 및 점과 직선 거리 계산장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc4-06')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc4-06" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">⑶ 삼각형 APB 넓이의 최솟값 (정수):</label>
+                            <input id="ans-sc4-06-3" type="text" placeholder="예: 6" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc4_06_3()" class="px-5 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc4-06-3" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc4-06')" class="text-xs font-bold text-rose-700 hover:text-rose-800 flex items-center gap-1">
+                            <span>단계별 정밀 풀이 보기</span>
+                            <span id="sol-sc4-06-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc4-06" class="hidden mt-3 p-4 bg-white rounded-xl border border-rose-200 text-xs md:text-sm text-slate-700 space-y-2">
+                            <div>⑴ 기울기 \(\frac{-3 - 1}{5 - 3} = -2\)이므로 직선 AB: \(y - 1 = -2(x - 3) \implies \mathbf{y = -2x + 7}\)</div>
+                            <div>⑵ 직선 AB와 거리가 최소가 되는 점 P는 직선 AB와 평행한 접선의 접점입니다!<br>
+                            \(y' = -2x = -2 \implies \mathbf{x = 1}\), 따라서 점 P의 좌표는 \(\mathbf{(1, -1)}\)</div>
+                            <div>⑶ 밑변 \(AB = \sqrt{(5-3)^2 + (-3-1)^2} = \sqrt{20} = 2\sqrt{5}\)<br>
+                            높이 \(d = \frac{|2(1) + (-1) - 7|}{\sqrt{2^2+1^2}} = \frac{6}{\sqrt{5}}\)<br>
+                            삼각형 넓이 \(S = \frac{1}{2} \times 2\sqrt{5} \times \frac{6}{\sqrt{5}} = \mathbf{6}\)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 단원 성찰 및 자기 점검 -->
+            <div id="sec-19-reflection" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">✓</span>
+                    <h2 class="text-xl font-bold text-slate-900">학습 성찰 및 자기 점검 (Self-Reflection)</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            곡선 위의 점 \((a, f(a))\)에서의 접선의 방정식 공식 \(y - f(a) = f'(a)(x - a)\)를 능숙하게 적용할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            기울기가 주어졌을 때 접점의 좌표를 미지수로 놓고 방정식을 풀어 접선을 구할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            곡선 밖의 점에서 그은 접선을 3단계(접점설정 $\to$ 대입 $\to$ 접선완성)로 해결할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            곡선과 직선 사이의 최단거리를 평행접선 원리로 해결하는 기하학적 직관을 체화했는가?
+                        </span>
+                    </label>
+                </div>
+
+                <!-- 배움 노트 작성란 -->
+                <div class="space-y-2 pt-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">오늘의 수학 배움 성찰 메모 (자동 저장):</label>
+                    <textarea id="reflection-memo-u2-4" rows="3" placeholder="접선의 방정식 3대 유형을 공부하며 느낀 핵심 풀이 전략을 정리해 보세요." class="w-full p-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>브라우저 로컬 저장소에 안전하게 보관됩니다.</span>
+                        <span id="memo-status-u2-4" class="text-emerald-600 font-semibold"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 하단 여백 및 페이지 끝 표시 -->
+            <div class="py-12 text-center text-xs text-slate-400">
+                고등학교 2학년 미적분Ⅰ · 2022 개정 교육과정 · Ⅱ. 미분 4. 접선의 방정식 (교과서 71~74쪽)
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- ===================================================================
+     스크립트 엔진 (KaTeX, 전자칠판, 스크래치패드, 채점, 3대 캔버스 시뮬레이터)
+     =================================================================== -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. KaTeX 수식 자동 렌더링
+    if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "\\[", right: "\\]", display: true},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
         });
     }
 
-    // Whiteboard Engine
-    let wbActive = false;
-    let wbTool = 'pen';
-    let wbColor = '#ef4444';
-    let wbStrokes = [];
-    let wbCurrentStroke = null;
-    let wbDrawing = false;
+    // 2. 전자칠판 엔진 초기화
+    initWhiteboardEngine();
 
-    function initWhiteboard() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        syncWhiteboardHeight();
+    // 3. 개별 스크래치패드 초기화
+    initScratchpads();
 
-        if (window.ResizeObserver) {
-            const ro = new ResizeObserver(() => syncWhiteboardHeight());
-            ro.observe(document.body);
+    // 4. 3대 캔버스 인터랙티브 시뮬레이터 초기화
+    initTangentTypesSim();   // Widget 1 (접선 작도기)
+    initTangentCountSim();   // Widget 2 (접선 개수 판별기)
+    initMinDistanceSim();    // Widget 3 (최단거리 평행접선 캔버스)
+
+    // 5. 스크롤스파이
+    initScrollSpy();
+
+    // 6. 성찰 메모
+    initReflectionMemo();
+});
+
+/* =====================================================================
+   아코디언 토글 유틸리티
+   ===================================================================== */
+function toggleTeacherTip(id) {
+    const el = document.getElementById(id);
+    const arrow = document.getElementById(id + "-arrow");
+    if (!el) return;
+    if (el.classList.contains("hidden")) {
+        el.classList.remove("hidden");
+        if (arrow) arrow.textContent = "접기 ▲";
+    } else {
+        el.classList.add("hidden");
+        if (arrow) arrow.textContent = "펼치기 ▼";
+    }
+}
+
+function toggleSolution(id) {
+    const el = document.getElementById(id);
+    const arrow = document.getElementById(id + "-arrow");
+    if (!el) return;
+    if (el.classList.contains("hidden")) {
+        el.classList.remove("hidden");
+        if (arrow) arrow.textContent = "▲";
+    } else {
+        el.classList.add("hidden");
+        if (arrow) arrow.textContent = "▼";
+    }
+}
+
+/* =====================================================================
+   즉시 채점 시스템
+   ===================================================================== */
+function checkU4Prob1_1() {
+    const val = document.getElementById("ans-u4-p1-1").value.replace(/\s/g, "");
+    const res = document.getElementById("res-u4-p1-1");
+    if (val === "6,-4" || val === "y=6x-4" || val === "6x-4") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 y = 6x - 4</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 확인해 보세요. (6, -4)</span>";
+    }
+}
+
+function checkU4Prob2_1() {
+    const val = document.getElementById("ans-u4-p2-1").value.trim();
+    const res = document.getElementById("res-u4-p2-1");
+    if (val === "18" || val === "-4x+18" || val === "y=-4x+18") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 y = -4x + 18</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 풀어보세요.</span>";
+    }
+}
+
+function checkSc4_01() {
+    const val = document.getElementById("blank-u4-1").value.replace(/\s/g, "");
+    const res = document.getElementById("res-sc4-01");
+    if (val.includes("f'(a)") || val.includes("f'a")) {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! f'(a) 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 입력해 보세요. (f'(a))</span>";
+    }
+}
+
+function checkSc4_02() {
+    const val = document.getElementById("ans-sc4-02").value.trim();
+    const res = document.getElementById("res-sc4-02");
+    if (val === "1" || val.includes("x+1")) {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 y = 1/2 x + 1</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 확인해 보세요.</span>";
+    }
+}
+
+function checkSc4_03() {
+    const val = document.getElementById("ans-sc4-03").value.replace(/\s/g, "");
+    const res = document.getElementById("res-sc4-03");
+    if (val === "5,-2" || val === "y=5x-2" || val === "5x-2") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 y = 5x - 2</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>오답입니다. (5, -2)</span>";
+    }
+}
+
+function checkSc4_04() {
+    const val = document.getElementById("ans-sc4-04").value.replace(/\s/g, "");
+    const res = document.getElementById("res-sc4-04");
+    if (val === "-3,7" || val === "y=-3x+7" || val === "-3x+7") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 y = -3x + 7</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 계산해 보세요.</span>";
+    }
+}
+
+function checkSc4_05() {
+    const val = document.getElementById("ans-sc4-05").value.replace(/\s/g, "");
+    const res = document.getElementById("res-sc4-05");
+    if (val === "5,-1" || val === "y=5x-1" || val === "5x-1") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 y = 5x - 1</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 풀어보세요.</span>";
+    }
+}
+
+function checkSc4_06_3() {
+    const val = document.getElementById("ans-sc4-06-3").value.trim();
+    const res = document.getElementById("res-sc4-06-3");
+    if (val === "6") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 삼각형 넓이의 최솟값은 6</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 계산해 보세요. (밑변 2√5, 높이 6/√5)</span>";
+    }
+}
+
+/* =====================================================================
+   풀스크린 전자칠판 엔진
+   ===================================================================== */
+let wbCanvas, wbCtx;
+let wbActive = false;
+let wbDrawing = false;
+let wbTool = "pen";
+let wbColor = "#ef4444";
+let wbSize = 4;
+
+function initWhiteboardEngine() {
+    wbCanvas = document.getElementById("wb-canvas");
+    if (!wbCanvas) return;
+    wbCtx = wbCanvas.getContext("2d");
+
+    function resizeWb() {
+        const dpr = window.devicePixelRatio || 1;
+        wbCanvas.width = window.innerWidth * dpr;
+        wbCanvas.height = window.innerHeight * dpr;
+        wbCanvas.style.width = window.innerWidth + "px";
+        wbCanvas.style.height = window.innerHeight + "px";
+        wbCtx.scale(dpr, dpr);
+    }
+    window.addEventListener("resize", resizeWb);
+    resizeWb();
+
+    wbCanvas.addEventListener("mousedown", startWbDraw);
+    wbCanvas.addEventListener("mousemove", drawWb);
+    window.addEventListener("mouseup", stopWbDraw);
+
+    wbCanvas.addEventListener("touchstart", function(e) {
+        if (!wbActive) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        startWbDraw({ clientX: touch.clientX, clientY: touch.clientY });
+    }, { passive: false });
+
+    wbCanvas.addEventListener("touchmove", function(e) {
+        if (!wbActive) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        drawWb({ clientX: touch.clientX, clientY: touch.clientY });
+    }, { passive: false });
+
+    window.addEventListener("touchend", stopWbDraw);
+
+    window.addEventListener("keydown", function(e) {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+        if (e.key === "w" || e.key === "W") toggleWhiteboard();
+        if (e.key === "e" || e.key === "E") setWbTool("eraser");
+        if (e.key === "c" || e.key === "C") clearWhiteboard();
+        if (e.key === "Escape" && wbActive) toggleWhiteboard();
+    });
+}
+
+function toggleWhiteboard() {
+    wbActive = !wbActive;
+    const canvas = document.getElementById("wb-canvas");
+    const toolbar = document.getElementById("wb-toolbar");
+    const indicator = document.getElementById("wb-status-indicator");
+
+    if (wbActive) {
+        canvas.classList.remove("pointer-events-none");
+        canvas.classList.add("pointer-events-auto");
+        toolbar.classList.remove("hidden");
+        toolbar.classList.add("flex");
+        if (indicator) {
+            indicator.classList.remove("bg-slate-300");
+            indicator.classList.add("bg-emerald-500", "animate-pulse");
         }
+    } else {
+        canvas.classList.add("pointer-events-none");
+        canvas.classList.remove("pointer-events-auto");
+        toolbar.classList.add("hidden");
+        toolbar.classList.remove("flex");
+        if (indicator) {
+            indicator.classList.add("bg-slate-300");
+            indicator.classList.remove("bg-emerald-500", "animate-pulse");
+        }
+    }
+}
 
-        function getDocPt(e) {
-            const touch = e.touches && e.touches[0] ? e.touches[0] : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
+function setWbTool(tool) {
+    wbTool = tool;
+    document.querySelectorAll(".wb-tool-btn").forEach(btn => btn.classList.remove("border-blue-500", "bg-blue-50"));
+    const activeBtn = document.getElementById("wb-tool-" + tool);
+    if (activeBtn) activeBtn.classList.add("border-blue-500", "bg-blue-50");
+}
+
+function setWbColor(color, el) {
+    wbColor = color;
+    document.querySelectorAll(".wb-color-btn").forEach(btn => btn.classList.remove("ring-2", "ring-offset-2", "ring-slate-600"));
+    if (el) el.classList.add("ring-2", "ring-offset-2", "ring-slate-600");
+}
+
+function setWbSize(size, el) {
+    wbSize = parseInt(size);
+    document.querySelectorAll(".wb-size-btn").forEach(btn => btn.classList.remove("bg-blue-500", "text-white"));
+    if (el) el.classList.add("bg-blue-500", "text-white");
+}
+
+function clearWhiteboard() {
+    if (!wbCtx || !wbCanvas) return;
+    wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+}
+
+function downloadWhiteboard() {
+    const link = document.createElement("a");
+    link.download = "2_미분_4_접선의방정식_판서.png";
+    link.href = wbCanvas.toDataURL("image/png");
+    link.click();
+}
+
+let lastWbX = 0, lastWbY = 0;
+function startWbDraw(e) {
+    if (!wbActive) return;
+    wbDrawing = true;
+    lastWbX = e.clientX;
+    lastWbY = e.clientY;
+}
+
+function drawWb(e) {
+    if (!wbActive || !wbDrawing) return;
+    wbCtx.beginPath();
+    wbCtx.moveTo(lastWbX, lastWbY);
+    wbCtx.lineTo(e.clientX, e.clientY);
+    wbCtx.lineCap = "round";
+    wbCtx.lineJoin = "round";
+
+    if (wbTool === "eraser") {
+        wbCtx.globalCompositeOperation = "destination-out";
+        wbCtx.lineWidth = wbSize * 8;
+        wbCtx.strokeStyle = "rgba(0,0,0,1)";
+    } else if (wbTool === "highlighter") {
+        wbCtx.globalCompositeOperation = "source-over";
+        wbCtx.lineWidth = wbSize * 6;
+        wbCtx.strokeStyle = wbColor + "55";
+    } else {
+        wbCtx.globalCompositeOperation = "source-over";
+        wbCtx.lineWidth = wbSize;
+        wbCtx.strokeStyle = wbColor;
+    }
+    wbCtx.stroke();
+    lastWbX = e.clientX;
+    lastWbY = e.clientY;
+}
+
+function stopWbDraw() {
+    wbDrawing = false;
+}
+
+/* =====================================================================
+   개별 스크래치패드 드로잉 엔진
+   ===================================================================== */
+function initScratchpads() {
+    document.querySelectorAll(".scratchpad-canvas").forEach(canvas => {
+        const ctx = canvas.getContext("2d");
+        let isDrawing = false;
+        let lx = 0, ly = 0;
+
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
             return {
-                x: touch.clientX + window.scrollX,
-                y: touch.clientY + window.scrollY
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
             };
         }
 
-        function startDraw(e) {
-            if (!wbActive || wbTool === 'pointer') return;
-            if (e.button !== undefined && e.button !== 0) return;
-            wbDrawing = true;
-            const pt = getDocPt(e);
-            const sizeInput = document.getElementById('wb-size');
-            const size = sizeInput ? parseFloat(sizeInput.value) : 4;
+        canvas.addEventListener("mousedown", e => {
+            isDrawing = true;
+            const p = getPos(e);
+            lx = p.x; ly = p.y;
+        });
 
-            wbCurrentStroke = {
-                tool: wbTool,
-                color: wbColor,
-                size: size,
-                points: [pt]
-            };
-            wbStrokes.push(wbCurrentStroke);
-            redrawWhiteboard();
-        }
-
-        function moveDraw(e) {
-            if (!wbDrawing || !wbActive || wbTool === 'pointer' || !wbCurrentStroke) return;
-            e.preventDefault();
-            const pt = getDocPt(e);
-            wbCurrentStroke.points.push(pt);
-            drawStrokeSegment(wbCurrentStroke);
-        }
-
-        function endDraw() {
-            if (!wbDrawing) return;
-            wbDrawing = false;
-            wbCurrentStroke = null;
-            redrawWhiteboard();
-        }
-
-        canvas.addEventListener('mousedown', startDraw);
-        window.addEventListener('mousemove', moveDraw, { passive: false });
-        window.addEventListener('mouseup', endDraw);
-        canvas.addEventListener('touchstart', startDraw, { passive: false });
-        canvas.addEventListener('touchmove', moveDraw, { passive: false });
-        window.addEventListener('touchend', endDraw);
-    }
-
-    function applyStrokeStyle(ctx, stroke) {
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        if (stroke.tool === 'eraser') {
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.lineWidth = stroke.size * 4.5;
-            ctx.strokeStyle = 'rgba(0,0,0,1)';
-        } else if (stroke.tool === 'highlighter') {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = stroke.size * 3.4;
-            ctx.strokeStyle = stroke.color + '44';
-        } else {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = stroke.size;
-            ctx.strokeStyle = stroke.color;
-        }
-    }
-
-    function drawStrokeSegment(stroke) {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const pts = stroke.points;
-        if (pts.length < 2) return;
-
-        if (stroke.tool === 'highlighter') {
-            redrawWhiteboard();
-            return;
-        }
-
-        ctx.save();
-        applyStrokeStyle(ctx, stroke);
-        const p1 = pts[pts.length - 2];
-        const p2 = pts[pts.length - 1];
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-        ctx.restore();
-    }
-
-    function redrawWhiteboard() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        for (const stroke of wbStrokes) {
-            if (!stroke.points || stroke.points.length === 0) continue;
-            ctx.save();
-            applyStrokeStyle(ctx, stroke);
+        canvas.addEventListener("mousemove", e => {
+            if (!isDrawing) return;
+            const p = getPos(e);
             ctx.beginPath();
-            ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-            if (stroke.points.length === 1) {
-                ctx.lineTo(stroke.points[0].x + 0.1, stroke.points[0].y + 0.1);
-            } else {
-                for (let i = 1; i < stroke.points.length; i++) {
-                    ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
-                }
-            }
+            ctx.moveTo(lx, ly);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = "#2563eb";
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
             ctx.stroke();
-            ctx.restore();
+            lx = p.x; ly = p.y;
+        });
+
+        window.addEventListener("mouseup", () => isDrawing = false);
+
+        canvas.addEventListener("touchstart", e => {
+            e.preventDefault();
+            isDrawing = true;
+            const p = getPos(e.touches[0]);
+            lx = p.x; ly = p.y;
+        }, { passive: false });
+
+        canvas.addEventListener("touchmove", e => {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const p = getPos(e.touches[0]);
+            ctx.beginPath();
+            ctx.moveTo(lx, ly);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = "#2563eb";
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.stroke();
+            lx = p.x; ly = p.y;
+        }, { passive: false });
+
+        window.addEventListener("touchend", () => isDrawing = false);
+    });
+}
+
+function clearScratchpad(id) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* =====================================================================
+   SIMULATOR 1: 접선 작도기 (tangent-types-canvas)
+   ===================================================================== */
+function initTangentTypesSim() {
+    const canvas = document.getElementById("tangent-types-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sA = document.getElementById("slider-tan-a");
+    const vA = document.getElementById("val-tan-a");
+    const statEq = document.getElementById("stat-tan-eq");
+
+    // f(x) = 2x^2 - 1, f'(x) = 4x
+    function f(x) { return 2 * x * x - 1; }
+    function df(x) { return 4 * x; }
+
+    function draw() {
+        const a = parseFloat(sA.value);
+        vA.textContent = a.toFixed(1);
+
+        const fa = f(a);
+        const slope = df(a);
+        const yInt = fa - slope * a;
+
+        const sign = yInt >= 0 ? "+ " + yInt.toFixed(1) : "- " + Math.abs(yInt).toFixed(1);
+        statEq.textContent = `y = ${slope.toFixed(1)}x ${sign}`;
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const ox = w / 2, oy = h / 2 + 50;
+        const sx = 90, sy = 30;
+
+        function toX(x) { return ox + x * sx; }
+        function toY(y) { return oy - y * sy; }
+
+        // 축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(40, oy); ctx.lineTo(w - 40, oy);
+        ctx.moveTo(ox, h - 20); ctx.lineTo(ox, 20);
+        ctx.stroke();
+
+        // 포물선 y = 2x^2 - 1
+        ctx.beginPath();
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 3;
+        for (let x = -2.2; x <= 2.2; x += 0.05) {
+            const px = toX(x), py = toY(f(x));
+            if (x === -2.2) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         }
+        ctx.stroke();
+
+        // 접선 (주황색)
+        ctx.beginPath();
+        ctx.strokeStyle = "#ea580c";
+        ctx.lineWidth = 2.5;
+        const x1 = -2.5, y1 = slope * x1 + yInt;
+        const x2 = 2.5, y2 = slope * x2 + yInt;
+        ctx.moveTo(toX(x1), toY(y1));
+        ctx.lineTo(toX(x2), toY(y2));
+        ctx.stroke();
+
+        // 접점 (a, f(a))
+        ctx.beginPath();
+        ctx.arc(toX(a), toY(fa), 7, 0, Math.PI * 2);
+        ctx.fillStyle = "#ea580c";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(`접점 (${a.toFixed(1)}, ${fa.toFixed(1)})`, toX(a) + 10, toY(fa) - 8);
     }
 
-    function syncWhiteboardHeight() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const docWidth = document.documentElement.clientWidth;
-        const docHeight = Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight,
-            window.innerHeight
-        );
-        if (canvas.width !== docWidth || Math.abs(canvas.height - docHeight) > 4) {
-            canvas.width = docWidth;
-            canvas.height = docHeight;
-            redrawWhiteboard();
-        }
-    }
+    sA.addEventListener("input", draw);
+    draw();
+}
 
-    function toggleWhiteboard() {
-        wbActive = !wbActive;
-        const toolbar = document.getElementById('wb-toolbar');
-        const canvas = document.getElementById('wb-canvas');
-        if (wbActive) {
-            syncWhiteboardHeight();
-            toolbar.classList.remove('hidden');
-            setWbTool('pen');
+/* =====================================================================
+   SIMULATOR 2: 접선 개수 판별기 (tangent-count-canvas)
+   ===================================================================== */
+function initTangentCountSim() {
+    const canvas = document.getElementById("tangent-count-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sK = document.getElementById("slider-tan-k");
+    const vK = document.getElementById("val-tan-k");
+    const statCount = document.getElementById("stat-tan-count");
+
+    // 곡선: y = x^2 + 2, 점 A(1, k)
+    // t^2 - 2t + k - 2 = 0 => D/4 = 3 - k
+    function f(x) { return x * x + 2; }
+
+    function draw() {
+        const k = parseFloat(sK.value);
+        vK.textContent = k.toFixed(1);
+
+        const disc = 3 - k;
+        let count = 0;
+        let roots = [];
+
+        if (disc > 0.05) {
+            count = 2;
+            const r1 = 1 - Math.sqrt(disc);
+            const r2 = 1 + Math.sqrt(disc);
+            roots = [r1, r2];
+            statCount.textContent = `접선 2개 존재 (k = ${k.toFixed(1)} < 3, D > 0)`;
+            statCount.className = "text-base font-extrabold text-blue-700";
+        } else if (Math.abs(disc) <= 0.05) {
+            count = 1;
+            roots = [1.0];
+            statCount.textContent = `접선 1개 존재 (k = 3.0, 점 A가 곡선 위!)`;
+            statCount.className = "text-base font-extrabold text-emerald-700";
         } else {
-            toolbar.classList.add('hidden');
-            canvas.classList.remove('wb-drawing-active');
+            count = 0;
+            statCount.textContent = `접선 0개 (k = ${k.toFixed(1)} > 3, 곡선 안쪽 영역)`;
+            statCount.className = "text-base font-extrabold text-rose-700";
+        }
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const ox = w / 2, oy = h - 60;
+        const sx = 90, sy = 35;
+
+        function toX(x) { return ox + x * sx; }
+        function toY(y) { return oy - y * sy; }
+
+        // 축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(40, oy); ctx.lineTo(w - 40, oy);
+        ctx.moveTo(ox, h - 20); ctx.lineTo(ox, 20);
+        ctx.stroke();
+
+        // 포물선 y = x^2 + 2
+        ctx.beginPath();
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 3;
+        for (let x = -2.5; x <= 2.5; x += 0.05) {
+            const px = toX(x), py = toY(f(x));
+            if (x === -2.5) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // 점 A(1, k)
+        const ax = toX(1), ay = toY(k);
+        ctx.beginPath();
+        ctx.arc(ax, ay, 7, 0, Math.PI * 2);
+        ctx.fillStyle = "#7c3aed";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#6d28d9";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText(`A(1, ${k.toFixed(1)})`, ax + 12, ay + 4);
+
+        // 접선 그리기
+        if (count > 0) {
+            roots.forEach(t => {
+                const ft = f(t);
+                const m = 2 * t;
+                const ptx = toX(t), pty = toY(ft);
+
+                // 접선
+                ctx.beginPath();
+                ctx.strokeStyle = "#f59e0b";
+                ctx.lineWidth = 2;
+                ctx.moveTo(toX(-2.5), toY(ft + m * (-2.5 - t)));
+                ctx.lineTo(toX(3.0), toY(ft + m * (3.0 - t)));
+                ctx.stroke();
+
+                // 접점
+                ctx.beginPath();
+                ctx.arc(ptx, pty, 5, 0, Math.PI * 2);
+                ctx.fillStyle = "#f59e0b";
+                ctx.fill();
+            });
         }
     }
 
-    function setWbTool(tool) {
-        wbTool = tool;
-        const canvas = document.getElementById('wb-canvas');
-        document.querySelectorAll('.wb-tool-btn').forEach(b => b.classList.remove('active'));
-        const activeBtn = document.getElementById('wb-btn-' + tool);
-        if (activeBtn) activeBtn.classList.add('active');
+    sK.addEventListener("input", draw);
+    draw();
+}
 
-        if (tool === 'pointer') {
-            canvas.classList.remove('wb-drawing-active');
+/* =====================================================================
+   SIMULATOR 3: 최단거리 평행접선 (min-distance-canvas)
+   ===================================================================== */
+function initMinDistanceSim() {
+    const canvas = document.getElementById("min-distance-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sPx = document.getElementById("slider-p-x");
+    const vPx = document.getElementById("val-p-x");
+    const statArea = document.getElementById("stat-triangle-area");
+
+    // A(3, 1), B(5, -3)
+    // 직선 AB: y = -2x + 7 => 2x + y - 7 = 0
+    // 곡선: y = -x^2
+    // 점 P(x, -x^2)
+    function f(x) { return -x * x; }
+
+    function draw() {
+        const pxVal = parseFloat(sPx.value);
+        vPx.textContent = pxVal.toFixed(1);
+
+        const pyVal = f(pxVal);
+
+        // 점과 직선 거리 d = |2(px) + (-px^2) - 7| / sqrt(5)
+        // 넓이 S = 1/2 * (2*sqrt(5)) * d = |-px^2 + 2px - 7| = px^2 - 2px + 7 = (px-1)^2 + 6
+        const area = pxVal * pxVal - 2 * pxVal + 7;
+        statArea.textContent = `현재 넓이: ${area.toFixed(2)} (최솟값: 6.00 at x=1)`;
+        if (Math.abs(pxVal - 1.0) < 0.05) {
+            statArea.className = "text-base font-extrabold text-emerald-600";
         } else {
-            canvas.classList.add('wb-drawing-active');
+            statArea.className = "text-base font-extrabold text-rose-700";
         }
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const ox = 150, oy = 110;
+        const sx = 80, sy = 40;
+
+        function toX(x) { return ox + x * sx; }
+        function toY(y) { return oy - y * sy; }
+
+        // 축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(30, oy); ctx.lineTo(w - 30, oy);
+        ctx.moveTo(ox, h - 20); ctx.lineTo(ox, 20);
+        ctx.stroke();
+
+        // 1) 곡선 y = -x^2 (파랑)
+        ctx.beginPath();
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 3;
+        for (let x = -1.5; x <= 3.5; x += 0.05) {
+            const px = toX(x), py = toY(f(x));
+            if (x === -1.5) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // 2) 점 A(3, 1), 점 B(5, -3) 및 직선 AB
+        const ax = toX(3), ay = toY(1);
+        const bx = toX(5), by = toY(-3);
+
+        ctx.beginPath();
+        ctx.strokeStyle = "#475569";
+        ctx.lineWidth = 2.5;
+        ctx.moveTo(toX(1), toY(-2 * 1 + 7));
+        ctx.lineTo(toX(6), toY(-2 * 6 + 7));
+        ctx.stroke();
+
+        // 3) 현재 점 P(pxVal, pyVal) 및 삼각형 APB (연빨강 채우기)
+        const curPx = toX(pxVal), curPy = toY(pyVal);
+
+        ctx.fillStyle = "rgba(239, 68, 68, 0.2)";
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(bx, by);
+        ctx.lineTo(curPx, curPy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "#dc2626";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 점 A, B 표시
+        ctx.beginPath();
+        ctx.arc(ax, ay, 6, 0, Math.PI * 2);
+        ctx.arc(bx, by, 6, 0, Math.PI * 2);
+        ctx.fillStyle = "#0f172a";
+        ctx.fill();
+        ctx.fillText("A(3, 1)", ax - 15, ay - 10);
+        ctx.fillText("B(5, -3)", bx + 10, by + 5);
+
+        // 점 P 표시
+        ctx.beginPath();
+        ctx.arc(curPx, curPy, 7, 0, Math.PI * 2);
+        ctx.fillStyle = "#dc2626";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.fillStyle = "#b91c1c";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(`P(${pxVal.toFixed(1)}, ${pyVal.toFixed(1)})`, curPx - 25, curPy + 20);
+
+        // 평행접선 (기울기 -2, 초록 점선)
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = "#059669";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(toX(-0.5), toY(-2 * (-0.5) + 1));
+        ctx.lineTo(toX(3.0), toY(-2 * 3.0 + 1));
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#059669";
+        ctx.fillText("평행접선 y = -2x + 1 (접점 P(1, -1))", toX(0.2), toY(2));
     }
 
-    function setWbColor(hex, btnEl) {
-        wbColor = hex;
-        document.querySelectorAll('.wb-color-btn').forEach(b => b.classList.remove('active'));
-        if (btnEl) btnEl.classList.add('active');
-        if (wbTool === 'pointer' || wbTool === 'eraser') setWbTool('pen');
-    }
+    sPx.addEventListener("input", draw);
+    draw();
+}
 
-    function undoWb() {
-        if (wbStrokes.length === 0) return;
-        wbStrokes.pop();
-        redrawWhiteboard();
-    }
+/* =====================================================================
+   스크롤스파이 및 프로그레스 바
+   ===================================================================== */
+function initScrollSpy() {
+    const pBar = document.getElementById("scroll-progress-bar");
+    const sections = document.querySelectorAll("section[id], div[id^='sec-'], div[id^='prob-']");
+    const navLinks = document.querySelectorAll(".sidebar-nav-link");
 
-    function clearWb() {
-        wbStrokes = [];
-        redrawWhiteboard();
-    }
+    window.addEventListener("scroll", function() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        if (pBar) pBar.style.width = progress + "%";
 
-    // Scroll listener for top button and scrollspy
-    window.addEventListener('scroll', () => {
-        const scrollTopBtn = document.getElementById('scroll-top-btn');
-        if (scrollTopBtn) {
-            if (window.scrollY > 260) {
-                scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-                scrollTopBtn.classList.add('opacity-100', 'translate-y-0');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-                scrollTopBtn.classList.remove('opacity-100', 'translate-y-0');
+        let currentId = "";
+        sections.forEach(sec => {
+            const top = sec.offsetTop - 120;
+            if (scrollTop >= top) currentId = sec.getAttribute("id");
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove("text-blue-600", "font-bold", "bg-blue-50/70");
+            if (link.getAttribute("href") === "#" + currentId) {
+                link.classList.add("text-blue-600", "font-bold", "bg-blue-50/70");
             }
-        }
+        });
     });
+}
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initWhiteboard();
-        initScratchpads();
+/* =====================================================================
+   배움 메모장 로컬스토리지 연동
+   ===================================================================== */
+function initReflectionMemo() {
+    const memo = document.getElementById("reflection-memo-u2-4");
+    const status = document.getElementById("memo-status-u2-4");
+    if (!memo) return;
+
+    const saved = localStorage.getItem("u2_4_reflection_memo");
+    if (saved) memo.value = saved;
+
+    let timeout;
+    memo.addEventListener("input", function() {
+        if (status) status.textContent = "저장 중...";
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            localStorage.setItem("u2_4_reflection_memo", memo.value);
+            if (status) {
+                status.textContent = "저장 완료 ✓";
+                setTimeout(() => status.textContent = "", 2000);
+            }
+        }, 600);
     });
-    </script>
+}
+</script>
 </body>
 </html>
+    

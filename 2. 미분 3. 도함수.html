@@ -3,739 +3,2166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ⅱ. 미분 - 03. 도함수 | 인터랙티브 수업 자료</title>
-    <!-- Tailwind CSS -->
+    <title>3. 도함수 - 2022 개정 미적분Ⅰ | 전자교과서</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Pretendard Font -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <!-- KaTeX for Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            word-break: keep-all;
-            overflow-x: hidden;
-        }
-        .katex-display {
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 0.5rem 0;
-        }
-        .active-nav {
-            background-color: #e0e7ff;
-            color: #4338ca;
-            font-weight: 700;
-            border-right: 4px solid #6366f1;
-        }
-        .dark .active-nav {
-            background-color: #312e81;
-            color: #c7d2fe;
-            border-right: 4px solid #818cf8;
-        }
-        /* Drawing Canvas */
-        .scratchpad-canvas {
-            touch-action: none;
-            cursor: crosshair;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 16px 16px;
-        }
-        .dark .scratchpad-canvas {
-            background-image: radial-gradient(#334155 1px, transparent 1px);
-        }
-        /* Electronic Whiteboard Overlay */
-        #wb-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 45;
-            pointer-events: none;
-            touch-action: none;
-        }
-        #wb-canvas.wb-drawing-active {
-            pointer-events: auto;
-            cursor: crosshair;
-        }
-        .wb-color-btn.active {
-            transform: scale(1.2);
-            box-shadow: 0 0 0 3px #fff, 0 0 0 5px #4f46e5;
-        }
-        .wb-tool-btn.active {
-            background-color: #4f46e5;
-            color: #ffffff;
-        }
-        #wb-toolbar {
-            z-index: 50;
-        }
-        #floating-controls {
-            z-index: 49;
-        }
-        @media print {
-            #sidebar, #floating-controls, #wb-toolbar, #wb-canvas, .no-print {
-                display: none !important;
-            }
-            #main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-            }
-            .solution-box {
-                display: block !important;
-            }
-        }
-    </style>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4f46e5',
-                        secondary: '#0ea5e9',
+                        primary: '#2563eb',
+                        secondary: '#4f46e5',
+                        accent: '#0d9488',
                     }
                 }
             }
         }
     </script>
+    <!-- KaTeX CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .katex-display {
+            margin: 0.75em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.25em 0;
+        }
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen relative selection:bg-blue-100 selection:text-blue-900">
 
-    <!-- Full-screen Electronic Whiteboard Canvas -->
-    <canvas id="wb-canvas"></canvas>
+    <!-- ===================================================================
+         풀스크린 전자칠판 레이어 & 플로팅 툴바
+         =================================================================== -->
+    <canvas id="wb-canvas" class="fixed inset-0 z-50 pointer-events-none w-full h-full"></canvas>
 
-    <!-- Electronic Whiteboard Floating Toolbar -->
-    <div id="wb-toolbar" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-wrap items-center gap-2 sm:gap-3">
-        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-xs font-extrabold tracking-wide text-sky-300">전자칠판</span>
-        </div>
-
-        <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
-            <button id="wb-btn-pointer" onclick="setWbTool('pointer')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="화면 스크롤 및 버튼 클릭">
-                <i class="fa-solid fa-hand-pointer"></i> <span class="hidden sm:inline">조작</span>
+    <!-- 전자칠판 컨트롤 툴바 -->
+    <div id="wb-toolbar" class="fixed bottom-6 right-6 z-50 hidden items-center gap-2 p-2.5 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200 text-slate-700 transition-all">
+        <!-- 도구 선택 -->
+        <div class="flex items-center gap-1 border-r border-slate-200 pr-2">
+            <button id="wb-tool-pen" onclick="setWbTool('pen')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent border-blue-500 bg-blue-50 text-blue-600" title="펜 (단축키 P)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
             </button>
-            <button id="wb-btn-pen" onclick="setWbTool('pen')" class="wb-tool-btn active px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="일반 펜 판서">
-                <i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">펜</span>
+            <button id="wb-tool-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent text-slate-600" title="형광펜 (단축키 H)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
             </button>
-            <button id="wb-btn-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="형광펜 강조">
-                <i class="fa-solid fa-highlighter"></i> <span class="hidden sm:inline">형광펜</span>
-            </button>
-            <button id="wb-btn-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="부분 지우개">
-                <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline">지우개</span>
+            <button id="wb-tool-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent text-slate-600" title="지우개 (단축키 E)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
         </div>
 
-        <div class="flex items-center gap-2 px-2 border-l border-r border-slate-700">
-            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-5 h-5 rounded-full bg-red-500 transition" title="빨강"></button>
-            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-5 h-5 rounded-full bg-blue-500 transition" title="파랑"></button>
-            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-5 h-5 rounded-full bg-emerald-500 transition" title="초록"></button>
-            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-amber-400 transition" title="노랑"></button>
-            <button onclick="setWbColor('#1e293b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-slate-800 border border-white/50 transition" title="검정"></button>
+        <!-- 색상 팔레트 (6색) -->
+        <div class="flex items-center gap-1.5 border-r border-slate-200 pr-2">
+            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn w-6 h-6 rounded-full bg-red-500 ring-2 ring-offset-2 ring-slate-600 transition" title="빨강"></button>
+            <button onclick="setWbColor('#2563eb', this)" class="wb-color-btn w-6 h-6 rounded-full bg-blue-600 transition" title="파랑"></button>
+            <button onclick="setWbColor('#059669', this)" class="wb-color-btn w-6 h-6 rounded-full bg-emerald-600 transition" title="초록"></button>
+            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-6 h-6 rounded-full bg-amber-500 transition" title="노랑"></button>
+            <button onclick="setWbColor('#7c3aed', this)" class="wb-color-btn w-6 h-6 rounded-full bg-purple-600 transition" title="보라"></button>
+            <button onclick="setWbColor('#0f172a', this)" class="wb-color-btn w-6 h-6 rounded-full transition" style="background-color: #0f172a;" title="검정"></button>
         </div>
 
-        <div class="hidden md:flex items-center gap-2">
-            <span class="text-[11px] text-slate-400">굵기</span>
-            <input type="range" id="wb-size" min="2" max="14" value="4" class="w-16 accent-indigo-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+        <!-- 굵기 (3단계) -->
+        <div class="flex items-center gap-1 border-r border-slate-200 pr-2 text-xs font-semibold">
+            <button onclick="setWbSize(2, this)" class="wb-size-btn px-2 py-1 rounded-md hover:bg-slate-100 transition">얇게</button>
+            <button onclick="setWbSize(4, this)" class="wb-size-btn px-2 py-1 rounded-md bg-blue-500 text-white transition">보통</button>
+            <button onclick="setWbSize(8, this)" class="wb-size-btn px-2 py-1 rounded-md hover:bg-slate-100 transition">굵게</button>
         </div>
 
-        <div class="flex items-center gap-1.5 pl-1">
-            <button onclick="undoWb()" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition" title="실행 취소">
-                <i class="fa-solid fa-rotate-left"></i>
+        <!-- 판서 초기화 & 다운로드 & 닫기 -->
+        <div class="flex items-center gap-1">
+            <button onclick="clearWhiteboard()" class="p-2 rounded-xl hover:bg-rose-50 text-rose-600 transition" title="전체 지우기 (단축키 C)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             </button>
-            <button onclick="clearWb()" class="p-1.5 px-2.5 rounded-lg bg-rose-900/70 hover:bg-rose-800 text-rose-200 text-xs font-semibold transition" title="판서 전체 지우기">
-                <i class="fa-solid fa-trash-can mr-1"></i>전체 지우기
+            <button onclick="downloadWhiteboard()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition" title="판서 PNG 저장">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             </button>
-            <button onclick="toggleWhiteboard()" class="p-1.5 px-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold transition" title="전자칠판 닫기">
-                <i class="fa-solid fa-xmark"></i> 닫기
+            <button onclick="toggleWhiteboard()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition" title="칠판 닫기 (ESC)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
     </div>
 
-    <header class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur border-b border-slate-200 z-40 flex items-center justify-between px-4">
-        <span class="font-bold text-lg text-indigo-600">03. 도함수</span>
-        <button onclick="toggleWhiteboard()" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold flex items-center gap-1">
-            <i class="fa-solid fa-chalkboard-user"></i> 칠판
+    <!-- 플로팅 전자칠판 토글 버튼 -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button onclick="toggleWhiteboard()" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 active:scale-95 transition-all text-xs font-bold border border-blue-400/40">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            <span>전자칠판 판서 모드</span>
+            <span id="wb-status-indicator" class="w-2 h-2 rounded-full bg-slate-300"></span>
         </button>
-    </header>
+    </div>
 
-    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-40 flex flex-col justify-between shadow-lg lg:shadow-none">
-        <div class="p-5 border-b border-slate-200">
-            <span class="text-xs font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-700">Ⅱ. 미분</span>
-            <h1 class="text-2xl font-extrabold text-slate-900 mt-2 flex items-center gap-2">
-                <i class="fa-solid fa-square-root-variable text-indigo-600"></i>
-                <span>03. 도함수</span>
-            </h1>
-            <p class="text-xs text-slate-500 mt-1">교과서 62 ~ 68쪽</p>
-        </div>
-        <nav class="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-            <a href="#sec-intro" class="nav-link active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-lightbulb text-amber-500"></i><span>성취기준 & 생각 열기</span>
-            </a>
-            <a href="#sec-concept1" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-calculator text-indigo-500"></i><span>1. 도함수의 정의와 y=xⁿ 미분법</span>
-            </a>
-            <a href="#sec-concept2" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-xmark text-emerald-500"></i><span>2. 곱의 미분법 공식</span>
-            </a>
-            <a href="#sec-lab" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-sliders text-sky-500"></i><span>도함수 그래프 생성 실험실</span>
-            </a>
-            <a href="#sec-ex1" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-pen-to-square text-rose-500"></i><span>대표 예제 & 연습장</span>
-            </a>
-            <a href="#sec-check" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-clipboard-check text-teal-500"></i><span>스스로 확인하기 (01~04)</span>
-            </a>
-        </nav>
-        <div class="p-3 border-t border-slate-200 bg-slate-50 no-print">
-            <button onclick="toggleWhiteboard()" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-extrabold shadow-sm flex items-center justify-center gap-2 transition cursor-pointer">
-                <i class="fa-solid fa-chalkboard-user"></i>
-                <span>전자칠판 판서 모드</span>
-            </button>
-        </div>
-    </aside>
+    <!-- 상단 스크롤 진행률 표시줄 -->
+    <div class="fixed top-0 left-0 right-0 h-1 bg-slate-200 z-50">
+        <div id="scroll-progress-bar" class="h-full bg-blue-600 w-0 transition-all duration-150"></div>
+    </div>
 
-    <main id="main-content" class="lg:ml-72 min-h-screen p-6 sm:p-10 space-y-12">
-        <section id="sec-intro" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-4">
-                <i class="fa-solid fa-compass"></i> 성취기준
+    <!-- 전체 레이아웃 컨테이너 (사이드바 + 메인 본문) -->
+    <div class="flex min-h-screen pt-1">
+        
+        <!-- ===================================================================
+             좌측 사이드바 내비게이션 (14~16차시)
+             =================================================================== -->
+        <aside class="hidden lg:block w-72 shrink-0 border-r border-slate-200 bg-white/95 backdrop-blur-sm sticky top-1 h-[calc(100vh-4px)] overflow-y-auto p-5 select-none">
+            <div class="space-y-6">
+                <!-- 대단원/소단원 헤더 -->
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        Ⅱ. 미분
+                    </span>
+                    <h2 class="text-lg font-bold text-slate-900 mt-1">3. 도함수</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">2022 개정 교육과정 · 교과서 64~70쪽</p>
+                </div>
+
+                <!-- 14차시: 도함수의 뜻 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>14차시 (64~65쪽)</span>
+                        <span class="text-blue-600 font-semibold">도함수 개념</span>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <a href="#sec-14-intro" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            01. 단원 개요 & 성취기준
+                        </a>
+                        <a href="#sec-14-warmup" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            💡 생각 열기 (지후의 고민)
+                        </a>
+                        <a href="#sec-14-def" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📐 도함수의 정의 & 기호 표기법
+                        </a>
+                        <a href="#sec-14-sim1" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📊 시뮬레이터 1: 도함수 동기화 캔버스
+                        </a>
+                        <a href="#sec-14-ex1" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📝 예제 1: 도함수 정의 계산
+                        </a>
+                        <a href="#sec-14-prob1" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            ✏️ 문제 1: 다항함수의 도함수
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- 15차시: 거듭제곱과 곱의 미분법 -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>15차시 (66~69쪽)</span>
+                        <span class="text-indigo-600 font-semibold">미분법 공식</span>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <a href="#sec-15-power" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            ⚡ 거듭제곱 & 상수함수의 도함수
+                        </a>
+                        <a href="#sec-15-rules" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📐 미분법의 기본 성질 (실수배, 합, 차)
+                        </a>
+                        <a href="#sec-15-product" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📦 곱의 미분법 엄밀 증명
+                        </a>
+                        <a href="#sec-15-sim2" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📊 시뮬레이터 2: 직사각형 면적 팽창
+                        </a>
+                        <a href="#sec-15-ex2" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📝 예제 2 & 문제 4: 곱의 미분
+                        </a>
+                        <a href="#sec-15-triple" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            🔍 생각 넓히기: 세 함수의 곱의 미분
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- 16차시: 스스로 확인하기 & 건축에너지 탐구 -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>16차시 (70쪽)</span>
+                        <span class="text-teal-600 font-semibold">확인 & 건축공학</span>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <a href="#prob-sc3-01" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            01. 학습 목표 되새기기 (빈칸)
+                        </a>
+                        <a href="#prob-sc3-02" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            02. 다항함수 미분 계산 4제
+                        </a>
+                        <a href="#prob-sc3-03" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            03. 도함수 함숫값 연산 f'(1)+g'(-1)
+                        </a>
+                        <a href="#prob-sc3-04" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            04. 곱의 미분계수 h'(1)
+                        </a>
+                        <a href="#prob-sc3-05" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            05. 미분계수 조건의 미정계수
+                        </a>
+                        <a href="#prob-sc3-06" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            06. 생각 키우기 (건물 연간 난방 부하)
+                        </a>
+                        <a href="#sec-16-heating" class="sidebar-nav-link block px-3 py-2 rounded-lg text-teal-700 bg-teal-50/70 hover:bg-teal-100 transition font-semibold text-xs mt-2">
+                            🏢 건축공학: 연간 난방 부하 시뮬레이터
+                        </a>
+                        <a href="#sec-16-reflection" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            ✓ 학습 성찰 & 자기 점검
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- 수업 진도율 뱃지 -->
+                <div class="pt-4 border-t border-slate-100 text-xs text-slate-500">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-semibold text-slate-700">미적분Ⅰ 전체 진도</span>
+                        <span class="text-blue-600 font-bold">16차시 / 40차시</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div class="bg-blue-600 h-full rounded-full" style="width: 40%"></div>
+                    </div>
+                </div>
             </div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-4">
-                함수 $y=x^n$의 도함수를 구할 수 있고, 함수의 실수배, 합, 차, 곱의 미분법을 안다
-            </h2>
-            <div class="bg-indigo-50/70 rounded-xl p-5 border border-indigo-100">
-                <h3 class="font-bold text-indigo-900 text-base mb-2">💡 생각 열기 : 매번 극한 계산을 하지 않고 접선의 기울기를 알 수 있을까?</h3>
-                <p class="text-sm text-slate-700 leading-relaxed">
-                    $x=1, 2, 3$에서의 미분계수를 구할 때마다 극한 식을 세우지 않고, 임의의 $x$에 대하여 미분계수를 대응시키는 새로운 함수를 만들면 한 번에 계산할 수 있습니다!
+        </aside>
+
+        <!-- ===================================================================
+             메인 학습 콘텐츠 영역
+             =================================================================== -->
+        <main class="flex-1 min-w-0">
+
+        <!-- ===================================================================
+             [14차시] 1. 도함수의 뜻 (교과서 64~65쪽)
+             =================================================================== -->
+        <section id="sec-14-intro" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <!-- 단원 배너 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-blue-50 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                        14차시 / 16차시
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">교과서 64~65쪽</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                    01. 도함수의 뜻 (The Derivative Function)
+                </h1>
+                <p class="mt-2 text-slate-600 leading-relaxed text-sm md:text-base">
+                    특정 한 지점에서의 순간변화율(미분계수)을 매번 극한으로 구하는 번거로움에서 벗어나, 정의역의 임의의 점 \(x\)에 그 점에서의 접선 기울기 \(f'(x)\)를 대응시키는 '새로운 함수(도함수)'의 개념을 정립합니다.
                 </p>
-                <div class="mt-3 flex items-center gap-3">
-                    <button onclick="toggleSolution('intro-ans8')" class="text-xs font-bold text-indigo-600 hover:underline">정답 확인</button>
-                    <span id="intro-ans8" class="hidden text-xs font-bold text-emerald-600">이 새로운 함수가 바로 도함수 $f'(x)$입니다!</span>
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-3 text-xs md:text-sm text-slate-600 font-medium">
+                    <span class="flex items-center gap-1">🎯 <strong>핵심 성취기준:</strong> 도함수의 뜻을 알고, 정의를 이용하여 간단한 함수의 도함수를 구할 수 있다.</span>
                 </div>
             </div>
-        </section>
 
-        <section id="sec-concept1" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-indigo-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">1. 도함수의 정의 & 거듭제곱 미분법</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="font-bold text-slate-900 text-sm mb-2">📌 도함수 정의</h4>
-                    <p class="text-xs text-slate-600 mb-2">정의역의 각 $x$에 미분계수 $f'(x)$를 대응시키는 함수:</p>
-                    <div class="p-2.5 bg-white rounded-lg border border-slate-200 text-center font-bold text-indigo-700 text-sm">
-                        $$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
-                    </div>
-                </div>
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                    <h4 class="font-bold text-slate-900 text-sm mb-2">⚡ 거듭제곱과 상수의 미분법</h4>
-                    <div class="space-y-2 text-xs">
-                        <div class="p-2 bg-white rounded border border-slate-200">1. $y = c$ (상수함수) $\implies y' = 0$</div>
-                        <div class="p-2 bg-white rounded border border-slate-200">2. $y = x^n$ ($n$은 양의 정수) $\implies y' = n x^{n-1}$</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="sec-concept2" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-emerald-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">2. 함수의 곱의 미분법 공식</h3>
-            </div>
-            <div class="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                <div class="p-4 bg-white rounded-xl border border-emerald-200 shadow-xs">
-                    <h4 class="font-bold text-emerald-900 text-sm mb-1">📌 두 함수의 곱의 미분법</h4>
-                    <p class="text-sm font-black text-slate-900">
-                        $$\{f(x)g(x)\}' = f'(x)g(x) + f(x)g'(x)$$
+            <!-- 교사용 지도서 지도 가이드 (접이식 아코디언) -->
+            <div class="bg-blue-50/60 rounded-xl border border-blue-200 overflow-hidden shadow-sm">
+                <button type="button" onclick="toggleTeacherTip('tip-14')" class="w-full px-5 py-3.5 flex items-center justify-between text-left font-bold text-blue-900 hover:bg-blue-100/50 transition">
+                    <span class="flex items-center gap-2 text-sm md:text-base">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        교사용 지도서 핵심 착안점 & 개념 연결 지도
+                    </span>
+                    <span id="tip-14-arrow" class="text-xs bg-white px-2 py-1 rounded text-blue-700 font-semibold border border-blue-200">펼치기 ▼</span>
+                </button>
+                <div id="tip-14" class="hidden px-5 pb-5 pt-2 text-sm text-slate-700 space-y-3 bg-white border-t border-blue-100">
+                    <p class="leading-relaxed">
+                        • <strong>'값'에서 '함수'로의 질적 도약:</strong> 미분계수 \(f'(a)\)는 특정 상수 \(a\)에서의 '하나의 값(수치)'이지만, 도함수 \(f'(x)\)는 변수 \(x\)에 따라 기울기 값이 변하는 '함수(Function)'입니다. 이 개념적 차이를 명확히 인식시키는 것이 단원 학습의 성패를 가릅니다.
                     </p>
-                    <p class="text-xs text-slate-500 mt-1">"앞 미분 뒤 그대로 + 앞 그대로 뒤 미분"</p>
-                </div>
-                <div class="p-4 bg-white rounded-xl border border-sky-200 shadow-xs">
-                    <h4 class="font-bold text-sky-900 text-sm mb-1">📌 세 함수의 곱의 미분법</h4>
-                    <p class="text-sm font-black text-slate-900">
-                        $$\{f(x)g(x)h(x)\}' = f'gh + fg'h + fgh'$$
+                    <p class="leading-relaxed">
+                        • <strong>라이프니츠 기호 \(\frac{dy}{dx}\) 지도:</strong> 분수처럼 보이지만 분수가 아닌 하나의 연산자 기호이며, '디와이 디엑스'라고 읽음을 정확히 지도합니다. 훗날 적분 치환적분이나 연쇄법칙(합성함수 미분)에서 라이프니츠 표기법이 갖는 강력한 편의성을 안내합니다.
                     </p>
                 </div>
             </div>
-        </section>
 
-        <!-- Section Interactive Lab -->
-        <section id="sec-lab" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-2.5 h-6 bg-sky-600 rounded-full"></span>
-                    <h3 class="text-xl font-bold text-slate-900">원래 함수 $f(x)$와 도함수 $f'(x)$의 실시간 비교</h3>
+            <!-- 생각 열기: 지후의 고민 (교과서 64쪽) -->
+            <div id="sec-14-warmup" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">💡</span>
+                    <h2 class="text-xl font-bold text-slate-900">생각 열기: 지후의 공책 풀이와 발견</h2>
                 </div>
-                <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">f(x) = x² - 2x</span>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <div class="md:col-span-2 bg-slate-50 rounded-xl p-4 flex flex-col items-center border border-slate-200">
-                    <canvas id="deriv-canvas" width="500" height="260" class="w-full h-56 rounded-lg bg-white shadow-inner"></canvas>
+
+                <p class="text-slate-600 text-sm md:text-base leading-relaxed">
+                    다음은 지후가 함수 \(f(x) = x^2\)에서 \(f'(1), f'(2)\)의 값을 구하는 과정을 공책에 작성한 것입니다.
+                </p>
+
+                <div class="p-5 bg-amber-50/50 rounded-xl border border-amber-200 space-y-3 text-xs md:text-sm text-slate-800 font-mono">
+                    <div>\(f'(1) = \lim_{\Delta x \to 0} \frac{f(1+\Delta x)-f(1)}{\Delta x} = \lim_{\Delta x \to 0} \frac{(1+\Delta x)^2 - 1^2}{\Delta x} = \lim_{\Delta x \to 0} (2 + \Delta x) = \mathbf{2}\)</div>
+                    <div>\(f'(2) = \lim_{\Delta x \to 0} \frac{f(2+\Delta x)-f(2)}{\Delta x} = \lim_{\Delta x \to 0} \frac{(2+\Delta x)^2 - 2^2}{\Delta x} = \lim_{\Delta x \to 0} (4 + \Delta x) = \mathbf{4}\)</div>
                 </div>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">$x$ 좌표 이동 슬라이더</label>
-                        <input type="range" id="x8-slider" min="-0.5" max="2.5" step="0.1" value="1.0" class="w-full accent-emerald-600 cursor-pointer">
-                        <div class="flex justify-between text-xs text-slate-500 mt-1">
-                            <span>x = -0.5</span>
-                            <span id="x8-val" class="font-bold text-emerald-600 text-sm">x = 1.0</span>
-                            <span>x = 2.5</span>
-                        </div>
-                    </div>
-                    <div class="p-3 bg-slate-50 rounded-xl space-y-2 text-xs border border-slate-200">
-                        <div class="flex justify-between">
-                            <span class="text-slate-600">함숫값 $f(x)$:</span>
-                            <span id="fx8-val" class="font-bold text-slate-800">-1.00</span>
-                        </div>
-                        <div class="flex justify-between border-t border-slate-200 pt-2">
-                            <span class="text-slate-600">도함숫값 $f'(x) = 2x - 2$:</span>
-                            <span id="dfx8-val" class="font-black text-indigo-600 text-sm">0.00 (수평 접선)</span>
-                        </div>
+
+                <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <span class="text-2xl">👦</span>
+                    <div class="text-xs md:text-sm text-slate-700">
+                        <strong>지후의 탄식:</strong> "으.... 풀이 과정이 너무 긴데? \(f'(3)\), \(f'(4)\)도 이렇게 매번 일일이 극한을 계산해야 하나? 임의의 \(x\)에 대해 한 번에 기울기를 알려주는 공식은 없을까?"
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- Section Problems -->
-        <section id="sec-ex1" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-rose-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">대표 예제 풀이 & 연습장</h3>
-            </div>
-            <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
-                <div class="flex items-center justify-between">
-                    <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-700 text-xs font-bold">예제 1 (곱의 미분법)</span>
-                    <button onclick="toggleSolution('sol-ex8-1')" class="text-xs font-bold text-indigo-600 hover:underline">풀이 확인</button>
-                </div>
-                <h4 class="font-bold text-slate-900 text-base">
-                    함수 $f(x) = (2x + 1)(x^2 - 3x + 2)$ 에 대하여 $f'(1)$의 값을 구하시오.
-                </h4>
-                <div id="sol-ex8-1" class="hidden p-4 rounded-xl bg-white border border-slate-200 text-sm space-y-2">
-                    <p class="text-slate-700">곱의 미분법을 적용합니다:</p>
-                    <p class="font-semibold text-slate-900">$$f'(x) = (2x+1)'(x^2 - 3x + 2) + (2x+1)(x^2 - 3x + 2)'$$</p>
-                    <p class="font-semibold text-slate-900">$$= 2(x^2 - 3x + 2) + (2x + 1)(2x - 3)$$</p>
-                    <p class="text-slate-700">$x=1$을 대입하면:</p>
-                    <p class="font-bold text-emerald-600">$$f'(1) = 2(1 - 3 + 2) + (2 + 1)(2 - 3) = 2(0) + 3(-1) = -3$$</p>
-                </div>
-                <div class="mt-4">
-                    <div class="flex justify-between items-center mb-1.5 text-xs text-slate-500">
-                        <span><i class="fa-solid fa-pen-nib mr-1"></i> 문제 풀이 연습장</span>
-                        <button class="clear-scratchpad-btn hover:text-slate-700 font-bold">지우기</button>
+                <!-- 발문 탐구 -->
+                <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 space-y-2 text-xs md:text-sm">
+                    <span class="font-bold text-blue-900">🔍 탐구 질문: 지후의 풀이 규칙성을 보고 다음을 추측해 보자!</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <div class="bg-white p-3 rounded-lg border border-blue-100">
+                            \(f'(1) = 2 = 2 \times 1\)<br>
+                            \(f'(2) = 4 = 2 \times 2\)<br>
+                            \(f'(3) = \mathbf{6 = 2 \times 3}\)
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-blue-100 font-bold text-blue-900 flex items-center justify-center text-center">
+                            임의의 실수 \(x\)에서의 접선 기울기:<br>
+                            \(f'(x) = \mathbf{2x}\)
+                        </div>
                     </div>
-                    <canvas class="scratchpad-canvas w-full h-36 rounded-xl border border-slate-300 bg-white"></canvas>
                 </div>
             </div>
-        </section>
 
-        <!-- Section Check -->
-        <section id="sec-check" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-teal-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">스스로 확인하기 (형성평가)</h3>
+            <!-- 개념 1: 도함수의 정의 & 기호 표기법 (교과서 64~65쪽) -->
+            <div id="sec-14-def" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">1</span>
+                    <h2 class="text-xl font-bold text-slate-900">개념 정립: 도함수(Derivative)의 정의와 표기법</h2>
+                </div>
+
+                <div class="space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
+                    <p>
+                        일반적으로 함수 \(y=f(x)\)가 정의역 \(X\)에 속하는 모든 \(x\)에서 미분가능할 때, 정의역의 각 원소 \(x\)에 미분계수 \(f'(x)\)를 대응시키는 새로운 함수
+                    </p>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center font-bold text-slate-900">
+                        \(f' : X \to \mathbb{R}, \quad x \mapsto f'(x)\)
+                    </div>
+                    <p>
+                        를 얻을 수 있습니다. 이 새로운 함수를 함수 \(y=f(x)\)의 <strong>도함수(Derivative Function)</strong>라고 합니다.
+                    </p>
+
+                    <!-- 핵심 공식 박스 -->
+                    <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-white p-6 rounded-2xl border-2 border-blue-300 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-100 px-2.5 py-1 rounded-md">핵심 정의</span>
+                            <span class="text-xs text-slate-500">교과서 65쪽</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">도함수의 정의 공식</h3>
+                        <div class="p-4 bg-white rounded-xl border border-blue-200 text-center overflow-x-auto shadow-xs">
+                            <div class="text-base md:text-xl font-extrabold text-blue-900 py-1">
+                                \(f'(x) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x} = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}\)
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600">
+                            함수 \(f(x)\)로부터 도함수 \(f'(x)\)를 구하는 과정을 <strong>"\(f(x)\)를 \(x\)에 대하여 미분한다"</strong>고 하며, 그 계산법을 <strong>미분법(Differentiation)</strong>이라고 합니다.
+                        </p>
+                    </div>
+
+                    <!-- 다양한 도함수 표기법 카드 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">도함수의 다양한 기호 표기법:</span>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-sm font-bold text-slate-800">
+                            <div class="p-2.5 bg-white rounded-lg border border-slate-200">\(f'(x)\)</div>
+                            <div class="p-2.5 bg-white rounded-lg border border-slate-200">\(y'\)</div>
+                            <div class="p-2.5 bg-white rounded-lg border border-slate-200">\(\frac{dy}{dx}\)</div>
+                            <div class="p-2.5 bg-white rounded-lg border border-slate-200">\(\frac{d}{dx}f(x)\)</div>
+                        </div>
+                        <p class="text-xs text-slate-500 pt-1">
+                            💡 기호 \(\frac{dy}{dx}\)는 독일의 수학자 라이프니츠(Leibniz)가 처음 고안한 것으로, '디와이 디엑스'라고 읽습니다.
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="space-y-4">
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <p class="font-bold text-sm mb-2 text-slate-900">01. $f(x) = 4x^3 - 5x^2 + 7$ 의 도함수 $f'(x)$는?</p>
+
+            <!-- 인터랙티브 시뮬레이터 1: 도함수 동기화 캔버스 -->
+            <div id="sec-14-sim1" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
                     <div class="flex items-center gap-2">
-                        <button onclick="toggleSolution('ans-8-01')" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">정답 확인</button>
-                        <span id="ans-8-01" class="hidden font-bold text-sm text-teal-700">$12x^2 - 10x$</span>
+                        <span class="px-2.5 py-1 rounded bg-blue-100 text-blue-800 font-bold text-xs">SIMULATOR 1</span>
+                        <h3 class="text-lg font-bold text-slate-900">원래 함수 f(x)와 도함수 f'(x)의 동기화 생성기</h3>
                     </div>
+                    <span class="text-xs text-slate-500">슬라이더로 x의 위치를 옮기면 접선의 기울기가 도함수 그래프로 실시간 사상됩니다</span>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <p class="font-bold text-sm mb-2 text-slate-900">02. $f(x) = (x^2 + 1)^2$ 의 $x=1$에서의 미분계수는?</p>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleSolution('ans-8-02')" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">정답 확인</button>
-                        <span id="ans-8-02" class="hidden font-bold text-sm text-teal-700">$f(x) = x^4 + 2x^2 + 1 \implies f'(x) = 4x^3 + 4x \implies f'(1) = 8$</span>
+
+                <div class="relative w-full h-[340px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="deriv-sync-canvas" width="800" height="340" class="w-full h-full block"></canvas>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-slate-700 mb-1">관찰 위치 \(x\): <span id="val-sync-x" class="text-blue-600 font-bold">1.0</span></label>
+                        <input id="slider-sync-x" type="range" min="-2.0" max="2.0" step="0.1" value="1.0" class="w-full accent-blue-600 cursor-pointer">
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                        <div class="text-slate-500 text-xs">현재 접선 기울기 = f'(x) 함숫값</div>
+                        <div id="stat-sync-slope" class="text-base font-extrabold text-blue-700">기울기: 2.00</div>
                     </div>
                 </div>
             </div>
+
+            <!-- 예제 1: 도함수 구하기 (교과서 65쪽) -->
+            <div id="sec-14-ex1" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-xs">예제 1</span>
+                        <h3 class="text-lg font-bold text-slate-900">도함수의 정의를 이용한 도함수 계산</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 65쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    함수 \(f(x) = x^2 - 2x\)의 도함수를 정의를 이용하여 구하시오.
+                </div>
+
+                <!-- 단계별 정밀 풀이 해설 -->
+                <div class="p-5 bg-white rounded-xl border border-slate-200 space-y-3 text-sm text-slate-700 leading-relaxed">
+                    <p>도함수의 정의 \(f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}\)에 대입합니다:</p>
+                    <div class="p-4 bg-slate-50 rounded-lg overflow-x-auto font-medium text-slate-900 space-y-2">
+                        <div>\(f'(x) = \lim_{h \to 0} \frac{\{(x+h)^2 - 2(x+h)\} - (x^2 - 2x)}{h}\)</div>
+                        <div>\(= \lim_{h \to 0} \frac{(x^2 + 2xh + h^2 - 2x - 2h) - (x^2 - 2x)}{h}\)</div>
+                        <div>\(= \lim_{h \to 0} \frac{2xh + h^2 - 2h}{h}\)</div>
+                        <div>\(= \lim_{h \to 0} (2x + h - 2) = \mathbf{2x - 2}\)</div>
+                    </div>
+                    <div class="text-xs font-bold text-blue-700 pt-1">
+                        정답: 따라서 함수 \(f(x)\)의 도함수는 \(f'(x) = \mathbf{2x - 2}\)입니다.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문제 1: 기본 다항함수 도함수 (교과서 65쪽) + 스크래치패드 + 채점기 -->
+            <div id="sec-14-prob1" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 1</span>
+                        <h3 class="text-lg font-bold text-slate-900">정의를 이용한 도함수 구하기</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 65쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    다음 함수의 도함수를 구하시오.
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-200 text-sm">
+                        <div>⑴ \(f(x) = 5x - 1\)</div>
+                        <div>⑵ \(f(x) = -2x^2 + 3x\)</div>
+                    </div>
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            도함수 정의 전개 연습장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-u3-p1')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-u3-p1" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- 소문항 1 -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑴ f'(x) 답안 (상수):</label>
+                            <div class="flex gap-2">
+                                <input id="ans-u3-p1-1" type="text" placeholder="예: 5" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
+                                <button type="button" onclick="checkU3Prob1_1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
+                            </div>
+                            <div id="res-u3-p1-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                        </div>
+
+                        <!-- 소문항 2 -->
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑵ f'(x) 수식 확인:</label>
+                            <button type="button" onclick="toggleSolution('sol-u3-p1-2')" class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition text-left flex justify-between items-center">
+                                <span>정답 및 단계별 전개식 보기</span>
+                                <span id="sol-u3-p1-2-arrow">▼</span>
+                            </button>
+                            <div id="sol-u3-p1-2" class="hidden p-3 bg-white rounded-lg border border-emerald-200 text-xs text-slate-700 mt-2 space-y-1">
+                                <div><strong>정답:</strong> \(f'(x) = -4x + 3\)</div>
+                                <div class="text-slate-600 leading-relaxed">
+                                    \(\lim_{h \to 0} \frac{\{-2(x+h)^2+3(x+h)\} - (-2x^2+3x)}{h} = \lim_{h \to 0} \frac{-4xh - 2h^2 + 3h}{h} = -4x + 3\)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </section>
-    </main>
-
-    <script>
-    const cv8 = document.getElementById('deriv-canvas');
-    if (cv8) {
-        const ctx = cv8.getContext('2d');
-        const s = document.getElementById('x8-slider');
-        const xVal = document.getElementById('x8-val');
-        const fxVal = document.getElementById('fx8-val');
-        const dfxVal = document.getElementById('dfx8-val');
-
-        function f(x) { return x * x - 2 * x; }
-        function df(x) { return 2 * x - 2; }
-
-        function draw8() {
-            const x = parseFloat(s.value);
-            const y = f(x);
-            const m = df(x);
-            xVal.textContent = 'x = ' + x.toFixed(1);
-            fxVal.textContent = y.toFixed(2);
-            dfxVal.textContent = m.toFixed(2) + (Math.abs(m) < 0.05 ? ' (극값, 수평 접선)' : '');
-
-            ctx.clearRect(0, 0, cv8.width, cv8.height);
-            const ox = 150, oy = 160, sx = 80, sy = 50;
-
-            // Axes
-            ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(20, oy); ctx.lineTo(460, oy);
-            ctx.moveTo(ox, 10); ctx.lineTo(ox, 240);
-            ctx.stroke();
-
-            // Parabola f(x)
-            ctx.strokeStyle = '#0284c7';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            for(let px = -0.5; px <= 2.8; px += 0.05) {
-                const py = f(px);
-                const cx = ox + px * sx;
-                const cy = oy - py * sy;
-                if(px === -0.5) ctx.moveTo(cx, cy);
-                else ctx.lineTo(cx, cy);
-            }
-            ctx.stroke();
-
-            // Tangent line at (x, y)
-            ctx.strokeStyle = '#ef4444';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            const lx1 = x - 1.0, ly1 = y - m * 1.0;
-            const lx2 = x + 1.0, ly2 = y + m * 1.0;
-            ctx.moveTo(ox + lx1 * sx, oy - ly1 * sy);
-            ctx.lineTo(ox + lx2 * sx, oy - ly2 * sy);
-            ctx.stroke();
-
-            // Current point
-            ctx.fillStyle = '#10b981';
-            ctx.beginPath();
-            ctx.arc(ox + x * sx, oy - y * sy, 6, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        s.addEventListener('input', draw8);
-        draw8();
-    }
-    </script>
     
-    <!-- Floating Whiteboard & Scroll Controls -->
-    <div id="floating-controls" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 no-print">
-        <button onclick="toggleWhiteboard()" title="전자칠판 판서 모드 켜기/끄기"
-            class="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center ring-4 ring-indigo-500/20 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer">
-            <i class="fa-solid fa-chalkboard-user text-lg"></i>
-        </button>
-        <button id="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="맨 위로 가기"
-            class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center opacity-0 pointer-events-none translate-y-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200">
-            <i class="fa-solid fa-arrow-up text-sm"></i>
-        </button>
-    </div>
+        <!-- ===================================================================
+             [15차시] 2. 거듭제곱과 곱의 미분법 (교과서 66~69쪽)
+             =================================================================== -->
+        <section id="sec-15-power" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <!-- 15차시 배너 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-indigo-50 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">
+                        <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                        15차시 / 16차시
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">교과서 66~69쪽</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                    02. 미분법의 공식과 곱의 미분법 (Differentiation Rules)
+                </h1>
+                <p class="mt-2 text-slate-600 leading-relaxed text-sm md:text-base">
+                    다항함수를 극한 계산 없이 단 몇 초 만에 미분할 수 있게 해주는 거듭제곱 공식 \((x^n)' = n x^{n-1}\)과 실수배, 합, 차, 그리고 두 함수가 곱해진 형태를 미분하는 강력한 <strong>곱의 미분법(Product Rule)</strong>을 정립합니다.
+                </p>
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-3 text-xs md:text-sm text-slate-600 font-medium">
+                    <span class="flex items-center gap-1">🎯 <strong>핵심 성취기준:</strong> 함수의 실수배, 합, 차, 곱의 미분법을 알고, 다항함수의 도함수를 빠르고 정확하게 구할 수 있다.</span>
+                </div>
+            </div>
 
-    <!-- Common JavaScript -->
-    <script>
-    // KaTeX Auto-render
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof renderMathInElement === 'function') {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ],
-                throwOnError: false
-            });
-        }
-    });
+            <!-- 개념 2: y=x^n 과 상수함수의 도함수 (교과서 66쪽) -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">2</span>
+                    <h2 class="text-xl font-bold text-slate-900">거듭제곱 함수 \(y = x^n\)과 상수함수의 도함수</h2>
+                </div>
 
-    // Dark Mode Toggle
-    function toggleDarkMode() {
-        document.documentElement.classList.toggle('dark');
-        if (typeof drawSimulation === 'function') drawSimulation();
-    }
+                <div class="space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
+                    <p>
+                        도함수의 정의를 이용하여 함수 \(y = x^n\) (단, \(n\)은 \(2\) 이상의 자연수)의 도함수를 유도해 봅시다.
+                    </p>
 
-    // Solution Toggle
-    function toggleSolution(id) {
-        const box = document.getElementById(id);
-        if (box) {
-            box.classList.toggle('hidden');
-        }
-    }
+                    <!-- 엄밀한 인수분해 증명 박스 -->
+                    <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-3 text-sm">
+                        <div class="font-bold text-slate-900">📐 인수분해 공식을 이용한 엄밀 증명:</div>
+                        <p class="text-xs text-slate-600">
+                            곱셈공식 \(A^n - B^n = (A - B)(A^{n-1} + A^{n-2}B + \dots + B^{n-1})\)에서 \(A = x+h, B = x\)를 대입하면:
+                        </p>
+                        <div class="p-4 bg-white rounded-lg border border-indigo-200 overflow-x-auto text-slate-900 space-y-2 text-xs md:text-sm">
+                            <div>\(y' = \lim_{h \to 0} \frac{(x+h)^n - x^n}{h}\)</div>
+                            <div>\(= \lim_{h \to 0} \frac{\{(x+h)-x\}\{(x+h)^{n-1} + (x+h)^{n-2}x + \dots + x^{n-1}\}}{h}\)</div>
+                            <div>\(= \lim_{h \to 0} \left\{ (x+h)^{n-1} + (x+h)^{n-2}x + \dots + x^{n-1} \right\}\)</div>
+                            <div>\(= \underbrace{x^{n-1} + x^{n-1} + \dots + x^{n-1}}_{n\text{개}} = \mathbf{n x^{n-1}}\)</div>
+                        </div>
+                    </div>
 
-    // Scratchpad canvas initialization
-    function initScratchpads() {
-        document.querySelectorAll('.scratchpad-canvas').forEach(canvas => {
-            const ctx = canvas.getContext('2d');
-            let drawing = false;
+                    <!-- 핵심 정리 공식 카드 -->
+                    <div class="bg-gradient-to-r from-indigo-50 via-blue-50 to-white p-6 rounded-2xl border-2 border-indigo-300 shadow-sm space-y-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-100 px-2.5 py-1 rounded-md">핵심 정리</span>
+                        <h3 class="text-lg font-bold text-slate-900">함수 \(y = x^n\) 및 상수함수의 도함수</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                            <div class="p-3 bg-white rounded-xl border border-indigo-200 text-center">
+                                <div class="text-xs text-slate-500 mb-1">\(n \ge 2\)인 자연수</div>
+                                <div class="text-base font-extrabold text-indigo-900">\((x^n)' = n x^{n-1}\)</div>
+                            </div>
+                            <div class="p-3 bg-white rounded-xl border border-indigo-200 text-center">
+                                <div class="text-xs text-slate-500 mb-1">\(n = 1\) (일차함수)</div>
+                                <div class="text-base font-extrabold text-blue-900">\((x)' = 1\)</div>
+                            </div>
+                            <div class="p-3 bg-white rounded-xl border border-indigo-200 text-center">
+                                <div class="text-xs text-slate-500 mb-1">상수함수 (\(c\)는 상수)</div>
+                                <div class="text-base font-extrabold text-emerald-900">\((c)' = 0\)</div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500">
+                            💡 직관적 이해: 지수 \(n\)이 앞으로 뚝 떨어져 곱해지고, 차수는 1만큼 줄어듭니다! 상수함수는 기울기가 항상 0인 수평선이므로 미분하면 0이 됩니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-            function resize() {
-                const rect = canvas.getBoundingClientRect();
-                if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                    canvas.width = rect.width;
-                    canvas.height = rect.height;
-                }
-            }
-            resize();
-            window.addEventListener('resize', resize);
+            <!-- 인터랙티브 시뮬레이터 3: 거듭제곱 파워 슬라이더 (power-rule-canvas) -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-indigo-100 text-indigo-800 font-bold text-xs">SIMULATOR 3</span>
+                        <h3 class="text-lg font-bold text-slate-900">거듭제곱 함수 미분 규칙 관찰기 (Power Rule Explorer)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">지수 n을 변경하며 원래 함수와 도함수의 차수 변화를 확인하세요</span>
+                </div>
 
-            function getPos(e) {
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches ? e.touches[0] : e;
-                return {
-                    x: touch.clientX - rect.left,
-                    y: touch.clientY - rect.top
-                };
-            }
+                <div class="relative w-full h-[300px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="power-rule-canvas" width="800" height="300" class="w-full h-full block"></canvas>
+                </div>
 
-            function start(e) {
-                drawing = true;
-                ctx.beginPath();
-                const p = getPos(e);
-                ctx.moveTo(p.x, p.y);
-            }
-            function move(e) {
-                if (!drawing) return;
-                e.preventDefault();
-                const p = getPos(e);
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#93c5fd' : '#2563eb';
-                ctx.lineTo(p.x, p.y);
-                ctx.stroke();
-            }
-            function stop() {
-                drawing = false;
-            }
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center text-xs md:text-sm">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">지수 \(n\): <span id="val-power-n" class="text-indigo-600 font-bold">3</span></label>
+                        <input id="slider-power-n" type="range" min="1" max="6" step="1" value="3" class="w-full accent-indigo-600 cursor-pointer">
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                        <div class="text-slate-500 text-xs">도함수 공식 결과</div>
+                        <div id="stat-power-rule" class="text-base font-extrabold text-indigo-700">\((x^3)' = 3x^2\)</div>
+                    </div>
+                </div>
+            </div>
 
-            canvas.addEventListener('mousedown', start);
-            canvas.addEventListener('mousemove', move);
-            window.addEventListener('mouseup', stop);
-            canvas.addEventListener('touchstart', start, {passive: false});
-            canvas.addEventListener('touchmove', move, {passive: false});
-            window.addEventListener('touchend', stop);
+            <!-- 개념 3: 실수배, 합, 차의 미분법 (교과서 67쪽) -->
+            <div id="sec-15-rules" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">3</span>
+                    <h2 class="text-xl font-bold text-slate-900">함수의 실수배, 합, 차의 미분법 (선형성)</h2>
+                </div>
 
-            const clearBtn = canvas.parentElement.querySelector('.clear-scratchpad-btn');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                });
-            }
+                <div class="space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
+                    <p>
+                        두 함수 \(f(x), g(x)\)가 미분가능할 때, 극한의 선형성에 의해 다음 미분 공식들이 성립합니다:
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                            <span class="text-xs font-bold text-blue-600 uppercase">[실수배]</span>
+                            <div class="text-base font-bold text-slate-900 py-2">\(\{c f(x)\}' = c f'(x)\)</div>
+                            <span class="text-xs text-slate-500">상수는 그대로 곱해짐</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                            <span class="text-xs font-bold text-emerald-600 uppercase">[합의 미분]</span>
+                            <div class="text-base font-bold text-slate-900 py-2">\(\{f(x) + g(x)\}' = f'(x) + g'(x)\)</div>
+                            <span class="text-xs text-slate-500">각각 미분하여 더함</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+                            <span class="text-xs font-bold text-purple-600 uppercase">[차의 미분]</span>
+                            <div class="text-base font-bold text-slate-900 py-2">\(\{f(x) - g(x)\}' = f'(x) - g'(x)\)</div>
+                            <span class="text-xs text-slate-500">각각 미분하여 뺌</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개념 4: 곱의 미분법 (Product Rule) (교과서 68~69쪽) -->
+            <div id="sec-15-product" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">4</span>
+                    <h2 class="text-xl font-bold text-slate-900">함수의 곱의 미분법 (Product Rule)</h2>
+                </div>
+
+                <div class="space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
+                    <!-- 오개념 경고 박스 -->
+                    <div class="p-4 bg-rose-50 rounded-xl border border-rose-200 text-xs md:text-sm text-rose-900 flex items-start gap-2">
+                        <span class="text-rose-600 font-bold text-base">⚠️ 절대 금지 오개념:</span>
+                        <span>두 함수의 곱을 미분할 때 <strong>\(\{f(x)g(x)\}' \ne f'(x)g'(x)\)</strong> 입니다! 곱의 미분은 특별한 규칙을 따릅니다.</span>
+                    </div>
+
+                    <!-- 핵심 정리 공식 카드 -->
+                    <div class="bg-gradient-to-r from-rose-50 via-amber-50 to-white p-6 rounded-2xl border-2 border-rose-300 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-rose-700 bg-rose-100 px-2.5 py-1 rounded-md">핵심 정리</span>
+                            <span class="text-xs text-slate-500">교과서 68쪽</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">함수의 곱의 미분법</h3>
+                        <p class="text-xs text-slate-600">두 함수 \(f(x), g(x)\)가 미분가능할 때:</p>
+                        <div class="p-4 bg-white rounded-xl border border-rose-200 text-center overflow-x-auto shadow-xs">
+                            <div class="text-base md:text-xl font-extrabold text-rose-950 py-1">
+                                \(\{f(x)g(x)\}' = f'(x)g(x) + f(x)g'(x)\)
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 bg-white/80 p-2.5 rounded-lg border border-rose-100">
+                            💡 <strong>암기 비법:</strong> <em>"앞에 거 미분하고 뒤에 거 곱하고, 앞에 거 두고 뒤에 거 미분해서 더한다!"</em> (미그그미)
+                        </p>
+                    </div>
+
+                    <!-- 엄밀한 증명 박스 (분자에 빼고 더하기 기교) -->
+                    <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-3 text-sm">
+                        <div class="font-bold text-slate-900">📐 도함수 정의에 의한 엄밀 증명:</div>
+                        <p class="text-xs text-slate-600">
+                            분자에 \(f(x)g(x+h)\)를 빼고 더하는 기교를 적용합니다:
+                        </p>
+                        <div class="p-4 bg-white rounded-lg border border-slate-200 overflow-x-auto text-slate-900 space-y-2 text-xs md:text-sm">
+                            <div>\(\{f(x)g(x)\}' = \lim_{h \to 0} \frac{f(x+h)g(x+h) - f(x)g(x)}{h}\)</div>
+                            <div>\(= \lim_{h \to 0} \frac{\{f(x+h)g(x+h) - f(x)g(x+h)\} + \{f(x)g(x+h) - f(x)g(x)\}}{h}\)</div>
+                            <div>\(= \lim_{h \to 0} \left\{ \frac{f(x+h)-f(x)}{h} \times g(x+h) \right\} + \lim_{h \to 0} \left\{ f(x) \times \frac{g(x+h)-g(x)}{h} \right\}\)</div>
+                            <div>\(= \lim_{h \to 0} \frac{f(x+h)-f(x)}{h} \times \lim_{h \to 0} g(x+h) + f(x) \times \lim_{h \to 0} \frac{g(x+h)-g(x)}{h}\)</div>
+                            <div>\(= \mathbf{f'(x)g(x) + f(x)g'(x)}\) (단, \(g(x)\)가 미분가능하므로 연속이어서 \(\lim_{h \to 0} g(x+h) = g(x)\))</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 인터랙티브 시뮬레이터 2: 직사각형 면적 팽창 시뮬레이터 -->
+            <div id="sec-15-sim2" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-800 font-bold text-xs">SIMULATOR 2</span>
+                        <h3 class="text-lg font-bold text-slate-900">곱의 미분법 기하학적 증명 (직사각형 면적 팽창기)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">가로 u, 세로 v가 Δu, Δv만큼 늘어날 때 생기는 면적 분할을 관찰하세요</span>
+                </div>
+
+                <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="product-rule-canvas" width="800" height="320" class="w-full h-full block"></canvas>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">가로 증가량 \(\Delta u\): <span id="val-p-du" class="text-blue-600 font-bold">1.0</span></label>
+                        <input id="slider-p-du" type="range" min="0.2" max="2.0" step="0.2" value="1.0" class="w-full accent-blue-600 cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">세로 증가량 \(\Delta v\): <span id="val-p-dv" class="text-emerald-600 font-bold">1.0</span></label>
+                        <input id="slider-p-dv" type="range" min="0.2" max="2.0" step="0.2" value="1.0" class="w-full accent-emerald-600 cursor-pointer">
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                        <div class="text-slate-500 text-xs">증가 면적의 주요 성분</div>
+                        <div class="text-xs font-bold text-rose-700">\(u\Delta v + v\Delta u\) (\(\Delta u\Delta v \to 0\))</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 예제 2 & 문제 4: 곱의 미분법 계산 (교과서 69쪽) -->
+            <div id="sec-15-ex2" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-xs">예제 2</span>
+                        <h3 class="text-lg font-bold text-slate-900">곱의 미분법 적용하기</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 69쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    함수 \(y = (x^2 + 2x)(x + 1)\)을 미분하시오.
+                </div>
+
+                <!-- 단계별 모범 풀이 -->
+                <div class="p-4 bg-white rounded-xl border border-slate-200 text-sm text-slate-700 space-y-2 leading-relaxed">
+                    <div>\(y' = \{(x^2+2x)(x+1)\}'\)</div>
+                    <div>\(= (x^2+2x)'(x+1) + (x^2+2x)(x+1)'\)</div>
+                    <div>\(= (2x+2)(x+1) + (x^2+2x) \times 1\)</div>
+                    <div>\(= (2x^2 + 4x + 2) + (x^2 + 2x) = \mathbf{3x^2 + 6x + 2}\)</div>
+                    <div class="text-xs text-slate-500 pt-1">
+                        💡 식을 전개하여 미분해도 \(y = x^3 + 3x^2 + 2x \implies y' = 3x^2 + 6x + 2\)로 완전히 동일합니다!
+                    </div>
+                </div>
+
+                <!-- 문제 4 카드 + 스크래치패드 + 채점기 -->
+                <div class="pt-4 border-t border-slate-200 space-y-4">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 4</span>
+                        <h4 class="font-bold text-slate-900 text-sm md:text-base">다음 함수를 미분하시오.</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm font-medium text-slate-800">
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">⑴ \(y = (x - 2)(2x + 3)\)</div>
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">⑵ \(y = (x + 2)(-x^2 + 5x + 1)\)</div>
+                    </div>
+
+                    <!-- 전자 스크래치패드 -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                풀이 연습장
+                            </span>
+                            <button type="button" onclick="clearScratchpad('sp-u3-p4')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                        </div>
+                        <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                            <canvas id="sp-u3-p4" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 채점 및 토글 해설 -->
+                    <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- 소문항 1 -->
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-700">⑴ y'의 일차항 계수와 상수항 (예: 4, -1):</label>
+                                <div class="flex gap-2">
+                                    <input id="ans-u3-p4-1" type="text" placeholder="예: 4, -1" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
+                                    <button type="button" onclick="checkU3Prob4_1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
+                                </div>
+                                <div id="res-u3-p4-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                            </div>
+
+                            <!-- 소문항 2 토글 -->
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-semibold text-slate-700">⑵ 상세 정답 및 풀이 확인:</label>
+                                <button type="button" onclick="toggleSolution('sol-u3-p4-2')" class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition text-left flex justify-between items-center">
+                                    <span>정답 및 전개 과정 보기</span>
+                                    <span id="sol-u3-p4-2-arrow">▼</span>
+                                </button>
+                                <div id="sol-u3-p4-2" class="hidden p-3 bg-white rounded-lg border border-emerald-200 text-xs text-slate-700 mt-2 space-y-1">
+                                    <div><strong>⑴ 정답:</strong> \(y' = 1(2x+3) + (x-2)(2) = \mathbf{4x - 1}\)</div>
+                                    <div><strong>⑵ 정답:</strong> \(y' = 1(-x^2+5x+1) + (x+2)(-2x+5) = \mathbf{-3x^2 + 6x + 11}\)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 문제 5 (추론): 제곱함수의 미분법 유도 -->
+                <div class="pt-4 border-t border-slate-200 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-purple-600 text-white font-bold text-xs">문제 5</span>
+                        <span class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded font-semibold border border-purple-200">추론</span>
+                        <h4 class="font-bold text-slate-900 text-sm md:text-base">합성 거듭제곱 미분 공식의 발견</h4>
+                    </div>
+                    <p class="text-sm text-slate-700 leading-relaxed">
+                        미분가능한 함수 \(f(x)\)에 대하여 \(y = \{f(x)\}^2\)의 도함수가 \(y' = 2f(x)f'(x)\)임을 곱의 미분법을 이용하여 설명하시오.
+                    </p>
+                    <div class="p-4 bg-purple-50/50 rounded-xl border border-purple-200 text-xs md:text-sm text-slate-800 space-y-1 leading-relaxed">
+                        <div class="font-bold text-purple-950">설명 과정:</div>
+                        <div>\(y = f(x) \cdot f(x)\)로 나타낼 수 있으므로, 곱의 미분법을 적용하면:</div>
+                        <div class="py-1 font-mono font-bold text-purple-900">\(y' = \{f(x) \cdot f(x)\}' = f'(x)f(x) + f(x)f'(x) = 2f(x)f'(x)\)</div>
+                        <div class="text-slate-500 text-xs">💡 겉미분·속미분(합성함수 미분법)의 가장 기본 형태입니다!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 생각 넓히기: 세 함수의 곱의 미분법 (교과서 69쪽) -->
+            <div id="sec-15-triple" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-amber-600 text-white font-bold text-xs">생각 넓히기</span>
+                        <span class="text-xs text-amber-800 bg-amber-50 px-2 py-0.5 rounded font-semibold border border-amber-200">추론 & 의사소통</span>
+                        <h3 class="text-lg font-bold text-slate-900">세 함수의 곱은 어떻게 미분할까?</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 69쪽</span>
+                </div>
+
+                <div class="p-5 bg-amber-50/50 rounded-xl border border-amber-200 space-y-3 text-xs md:text-sm text-slate-800 leading-relaxed">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-3 bg-white rounded-lg border border-amber-200">
+                            <span class="font-bold text-blue-700">👦 호승:</span> "세 함수의 곱 \(f(x)g(x)h(x)\)는 어떻게 미분할까?"
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-amber-200">
+                            <span class="font-bold text-emerald-700">👧 경아:</span> "세 함수의 곱은 \(\{f(x)g(x)\}h(x)\)와 같이 두 덩어리로 묶으면 곱의 미분법을 적용할 수 있어!"
+                        </div>
+                    </div>
+
+                    <!-- 세 함수의 곱 공식 박스 -->
+                    <div class="p-4 bg-white rounded-xl border border-amber-300 text-center font-extrabold text-amber-950 text-sm md:text-base shadow-xs mt-2">
+                        \(\{f(x)g(x)h(x)\}' = f'(x)g(x)h(x) + f(x)g'(x)h(x) + f(x)g(x)h'(x)\)
+                    </div>
+                </div>
+
+                <!-- 인터랙티브 시뮬레이터 5: 세 함수의 곱 3D 부피 팽창 시뮬레이터 -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">SIMULATOR 5: 세 함수의 곱 기하학적 의미 (3D 직육면체 부피 팽창)</span>
+                        <span class="text-xs text-slate-500">가로 u, 세로 v, 높이 w의 증분에 따른 3개 면의 팽창을 관찰하세요</span>
+                    </div>
+                    <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="triple-product-cube-canvas" width="800" height="320" class="w-full h-full block"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    
+        <!-- ===================================================================
+             [16차시] 스스로 확인하기 & 건축에너지 융합 탐구 (교과서 70쪽)
+             =================================================================== -->
+        <section id="sec-16-selfcheck" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <!-- 16차시 배너 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-teal-50 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 border border-teal-200">
+                        <span class="w-2 h-2 rounded-full bg-teal-600 animate-pulse"></span>
+                        16차시 / 16차시
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">교과서 70쪽</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                    03. 스스로 확인하기 & 건축에너지 공학 탐구
+                </h1>
+                <p class="mt-2 text-slate-600 leading-relaxed text-sm md:text-base">
+                    다항함수와 곱의 미분법 공식 숙련도를 총점검하고, 제로에너지 건축물 설계의 핵심인 연간 난방 부하 예측 모델에 미분을 적용하여 에너지 변화율을 정밀 분석합니다.
+                </p>
+            </div>
+
+            <!-- 문항 01: 학습 목표 되새기기 (빈칸 완성) -->
+            <div id="prob-sc3-01" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-xs">01</span>
+                        <h3 class="text-lg font-bold text-slate-900">학습 목표 되새기기 (핵심 미분 공식 완성)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 70쪽</span>
+                </div>
+
+                <p class="text-sm text-slate-700">다음 빈칸에 알맞은 공식이나 결과를 써넣으시오.</p>
+
+                <div class="space-y-4 text-xs md:text-sm">
+                    <!-- 1) 도함수 정의 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <div class="font-bold text-slate-800">⑴ 미분가능한 함수 \(f(x)\)의 도함수 \(f'(x)\):</div>
+                        <div class="flex items-center gap-2">
+                            <span>\(f'(x) = \lim_{\Delta x \to 0} \frac{f(x+\Delta x)-f(x)}{\Delta x} = \)</span>
+                            <input id="blank-u3-1" type="text" placeholder="예: f(x+h)-f(x) / h" class="px-3 py-1.5 rounded border border-slate-300 w-52 bg-white">
+                        </div>
+                    </div>
+
+                    <!-- 2) 거듭제곱 도함수 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <div class="font-bold text-slate-800">⑵ 거듭제곱과 상수함수의 미분:</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-slate-600 mb-1">① \((x^n)' =\)</label>
+                                <input id="blank-u3-2" type="text" placeholder="예: nx^(n-1)" class="w-full px-3 py-1.5 rounded border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-1">② \((x)' =\)</label>
+                                <input id="blank-u3-3" type="text" placeholder="예: 1" class="w-full px-3 py-1.5 rounded border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-1">③ \((c)' =\) (상수)</label>
+                                <input id="blank-u3-4" type="text" placeholder="예: 0" class="w-full px-3 py-1.5 rounded border border-slate-300 bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3) 곱의 미분법 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <div class="font-bold text-slate-800">⑶ 미분법의 기본 공식:</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-600 mb-1">① \(\{cf(x)\}' =\)</label>
+                                <input id="blank-u3-5" type="text" placeholder="예: cf'(x)" class="w-full px-3 py-1.5 rounded border border-slate-300 bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-slate-600 mb-1">② \(\{f(x)g(x)\}' =\)</label>
+                                <input id="blank-u3-6" type="text" placeholder="예: f'g + fg'" class="w-full px-3 py-1.5 rounded border border-slate-300 bg-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2">
+                        <button type="button" onclick="checkSc3_01()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition">01번 정답 일괄 채점</button>
+                        <div id="res-sc3-01" class="text-xs font-semibold"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 02: 다항함수 미분 계산 4제 (교과서 70쪽) -->
+            <div id="prob-sc3-02" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold text-xs">02</span>
+                        <h3 class="text-lg font-bold text-slate-900">다항함수의 도함수 구하기</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 70쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    다음 함수를 미분하시오.
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-200 text-sm">
+                        <div>⑴ \(f(x) = x^{10}\)</div>
+                        <div>⑵ \(f(x) = -3^{10}\)</div>
+                        <div>⑶ \(f(x) = 7x^3 - 2x^2 + 5x + 3\)</div>
+                        <div>⑷ \(f(x) = (4x^3 + 7x)(3x - 4)\)</div>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑵ 상수 함정 확인 (f'(x) 값):</label>
+                            <div class="flex gap-2">
+                                <input id="ans-sc3-02-2" type="text" placeholder="예: 0" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 bg-white">
+                                <button type="button" onclick="checkSc3_02_2()" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">확인</button>
+                            </div>
+                            <div id="res-sc3-02-2" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">전체 문항 모범 정답 확인:</label>
+                            <button type="button" onclick="toggleSolution('sol-sc3-02')" class="w-full py-2 px-3 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition text-left flex justify-between items-center">
+                                <span>⑴~⑷ 단계별 정답 보기</span>
+                                <span id="sol-sc3-02-arrow">▼</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="sol-sc3-02" class="hidden p-4 bg-white rounded-xl border border-slate-200 text-xs md:text-sm text-slate-700 space-y-2">
+                        <div>⑴ \(f'(x) = \mathbf{10x^9}\)</div>
+                        <div>⑵ \(f'(x) = \mathbf{0}\) (💡 주의: \(-3^{10}\)은 거듭제곱처럼 보이지만 \(x\)가 없는 상수이므로 미분하면 0!)</div>
+                        <div>⑶ \(f'(x) = 7(3x^2) - 2(2x) + 5(1) + 0 = \mathbf{21x^2 - 4x + 5}\)</div>
+                        <div>⑷ \(f'(x) = (4x^3+7x)'(3x-4) + (4x^3+7x)(3x-4)' = (12x^2+7)(3x-4) + (4x^3+7x)(3) = \mathbf{48x^3 - 48x^2 + 42x - 28}\)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 03: 도함수 함숫값 연산 (교과서 70쪽) -->
+            <div id="prob-sc3-03" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold text-xs">03</span>
+                        <h3 class="text-lg font-bold text-slate-900">도함수 함숫값의 계산</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 70쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    두 함수 \(f(x) = 4x^2 + 2x + 1\), \(g(x) = -5x^3 + 2x^2 + 5\)에 대하여 \(f'(1) + g'(-1)\)의 값을 구하시오.
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            미분 및 대입 계산장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc3-03')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc3-03" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">\(f'(1) + g'(-1)\) 답안 입력 (정수):</label>
+                            <input id="ans-sc3-03" type="text" placeholder="예: -9" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc3_03()" class="px-5 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc3-03" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc3-03')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>상세 풀이 보기</span>
+                            <span id="sol-sc3-03-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc3-03" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-1">
+                            <div>• \(f'(x) = 8x + 2 \implies f'(1) = 8(1) + 2 = 10\)</div>
+                            <div>• \(g'(x) = -15x^2 + 4x \implies g'(-1) = -15(-1)^2 + 4(-1) = -15 - 4 = -19\)</div>
+                            <div class="font-bold text-blue-700 pt-1">따라서 \(f'(1) + g'(-1) = 10 + (-19) = \mathbf{-9}\)입니다.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 04: 곱의 미분계수 h'(1) (교과서 70쪽) -->
+            <div id="prob-sc3-04" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold text-xs">04</span>
+                        <h3 class="text-lg font-bold text-slate-900">곱의 미분법을 이용한 미분계수 계산</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 70쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    두 함수 \(f(x) = 2x^2 + 2\), \(g(x) = -3x^3 + x + 1\)에 대하여 \(h(x) = f(x)g(x)\)라고 할 때, \(h'(1)\)의 값을 구하시오.
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            곱의 미분 공식 적용 연습장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc3-04')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc3-04" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">\(h'(1)\) 값 입력 (정수):</label>
+                            <input id="ans-sc3-04" type="text" placeholder="예: -36" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc3_04()" class="px-5 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc3-04" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc3-04')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>상세 풀이 보기</span>
+                            <span id="sol-sc3-04-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc3-04" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-1">
+                            <div>• \(f(1) = 2(1)^2 + 2 = 4\), \(f'(x) = 4x \implies f'(1) = 4\)</div>
+                            <div>• \(g(1) = -3(1)^3 + 1 + 1 = -1\), \(g'(x) = -9x^2 + 1 \implies g'(1) = -9 + 1 = -8\)</div>
+                            <div>• \(h'(x) = f'(x)g(x) + f(x)g'(x)\)이므로:</div>
+                            <div class="font-bold text-blue-700 py-1">\(h'(1) = f'(1)g(1) + f(1)g'(1) = 4(-1) + 4(-8) = -4 - 32 = \mathbf{-36}\)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 05: 미정계수 결정 (교과서 70쪽) -->
+            <div id="prob-sc3-05" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold text-xs">05</span>
+                        <h3 class="text-lg font-bold text-slate-900">미분계수 조건에 따른 다항함수 결정</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 70쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    함수 \(f(x) = x^2 + ax + b\)에 대하여 \(f(2) = 1\), \(f'(1) = 0\)일 때, \(f(4)\)의 값을 구하시오. (단, \(a, b\)는 상수이다.)
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            연립방정식 전개 연습장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc3-05')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc3-05" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">\(f(4)\)의 값 입력 (정수):</label>
+                            <input id="ans-sc3-05" type="text" placeholder="예: 9" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc3_05()" class="px-5 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc3-05" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc3-05')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>상세 풀이 해설</span>
+                            <span id="sol-sc3-05-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc3-05" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-1">
+                            <div>• \(f'(x) = 2x + a\)이므로 \(f'(1) = 2(1) + a = 0 \implies \mathbf{a = -2}\)</div>
+                            <div>• \(f(x) = x^2 - 2x + b\)에 \(f(2) = 1\) 대입: \(2^2 - 2(2) + b = 1 \implies \mathbf{b = 1}\)</div>
+                            <div>• 따라서 완성된 함수식은 \(f(x) = x^2 - 2x + 1\)입니다.</div>
+                            <div class="font-bold text-blue-700 pt-1">\(f(4) = 4^2 - 2(4) + 1 = 16 - 8 + 1 = \mathbf{9}\)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 06: 생각을 키우는 문제 (건물 연간 난방 부하, 교과서 70쪽) -->
+            <div id="prob-sc3-06" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-rose-600 text-white font-bold text-xs">06</span>
+                        <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-800 font-semibold text-xs border border-rose-200">생각을 키우는 문제 · 건축에너지공학</span>
+                        <h3 class="text-lg font-bold text-slate-900">건물의 연간 난방 부하와 순간변화율 예측</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 70쪽</span>
+                </div>
+
+                <div class="p-5 bg-gradient-to-r from-rose-50/50 via-white to-white rounded-xl border border-rose-200 text-slate-800 text-sm md:text-base space-y-3 leading-relaxed">
+                    <p>
+                        건물의 냉난방 에너지를 효율적으로 사용하기 위해서는 설계 단계에서부터 건물의 정확한 연간 열 출입량을 계산하여 연간 난방 부하를 예측할 수 있어야 합니다.
+                        연중 최대 난방 부하가 걸리는 날을 1월 3일이라고 할 때, 1월 1일 0시로부터 \(t\)시간 후 어느 건물의 연간 난방 부하를 \(f(t)\,\text{kW}\)라고 하면:
+                    </p>
+                    <div class="p-4 bg-white rounded-lg border border-rose-200 text-center font-bold text-rose-950 text-base md:text-lg">
+                        \(f(t) = (t - 49)^2 (t + 8711)^2 \quad (1 \le t \le 8760,\; 1\text{년}=8760\text{시간})\)
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-sm text-slate-700">
+                        <div>⑴ 도함수 \(f'(t)\)를 구하시오.</div>
+                        <div>⑵ \(t=50\)일 때, 연간 난방 부하의 순간변화율을 구하시오.</div>
+                    </div>
+                </div>
+
+                <!-- 인터랙티브 시뮬레이터 6: 건축 연간 난방 부하 시뮬레이터 -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">SIMULATOR 6: 연간 8,760시간 난방 부하 프로파일 & 순간변화율 분석기</span>
+                        <span class="text-xs text-slate-500">시간 슬라이더를 움직여 특정 시각의 접선 기울기(부하 급증율)를 관찰하세요</span>
+                    </div>
+                    <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="heating-load-canvas" width="800" height="320" class="w-full h-full block"></canvas>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold text-slate-700 mb-1">관측 시간 \(t\): <span id="val-heat-t" class="text-rose-600 font-bold">50 시간 (1월 3일 02시)</span></label>
+                            <input id="slider-heat-t" type="range" min="1" max="150" step="1" value="50" class="w-full accent-rose-600 cursor-pointer">
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <div class="text-slate-500 text-xs">순간변화율 \(f'(t)\)</div>
+                            <div id="stat-heat-slope" class="text-sm font-bold text-rose-700">1.54 × 10⁸ kW/h</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            거듭제곱 미분 및 대입 계산장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc3-06')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc3-06" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">⑵ \(t=50\) 순간변화율 \(f'(50)\) 정답 입력:</label>
+                            <input id="ans-sc3-06-2" type="text" placeholder="예: 153527764" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-44 bg-white">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc3_06_2()" class="px-5 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc3-06-2" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc3-06')" class="text-xs font-bold text-rose-700 hover:text-rose-800 flex items-center gap-1">
+                            <span>상세 풀이 및 공학적 의미</span>
+                            <span id="sol-sc3-06-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc3-06" class="hidden mt-3 p-4 bg-white rounded-xl border border-rose-200 text-xs md:text-sm text-slate-700 space-y-2">
+                            <p><strong>⑴ \(f'(t)\) 전개:</strong><br>
+                            곱의 미분법과 거듭제곱 미분법을 적용하면:<br>
+                            \(\begin{aligned}
+                            f'(t) &= 2(t-49)(t+8711)^2 + (t-49)^2 \cdot 2(t+8711) \\[4pt]
+                            &= 2(t-49)(t+8711)\{(t+8711) + (t-49)\} \\[4pt]
+                            &= 2(t-49)(t+8711)(2t + 8662) = \mathbf{4(t-49)(t+8711)(t + 4331)}
+                            \end{aligned}\)</p>
+                            <p><strong>⑵ \(t=50\) 대입:</strong><br>
+                            \(f'(50) = 4(50-49)(50+8711)(50+4331) = 4 \times 1 \times 8761 \times 4381 = \mathbf{153,527,764}\)</p>
+                            <p class="text-xs text-rose-800 bg-rose-50 p-2.5 rounded mt-1">
+                                💡 <strong>건축에너지 해석:</strong> 1월 3일 새벽 2시(\(t=50\)) 시점에는 기온 급강하로 인해 난방 부하가 시간당 무려 1억 5천만 kW 비율로 폭증하고 있음을 뜻합니다. 건축 엔지니어는 이 미분계수를 통해 난방 보일러의 순간 가동 용량을 설계합니다!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 단원 성찰 및 자기 점검 -->
+            <div id="sec-16-reflection" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">✓</span>
+                    <h2 class="text-xl font-bold text-slate-900">학습 성찰 및 자기 점검 (Self-Reflection)</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            도함수 \(f'(x)\)의 뜻을 이해하고, 거듭제곱 공식 \((x^n)' = n x^{n-1}\)을 설명할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            함수의 실수배, 합, 차의 미분법을 능숙하게 활용하여 모든 다항함수를 즉시 미분할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            곱의 미분법 \(\{f(x)g(x)\}' = f'(x)g(x) + f(x)g'(x)\)을 증명하고 계산에 적용할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            건축 에너지 난방 부하 예측 등 실생활의 복잡한 함수 모델을 미분하여 변화율을 분석할 수 있는가?
+                        </span>
+                    </label>
+                </div>
+
+                <!-- 배움 노트 작성란 -->
+                <div class="space-y-2 pt-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">오늘의 수학 배움 성찰 메모 (자동 저장):</label>
+                    <textarea id="reflection-memo-u2-3" rows="3" placeholder="오늘 도함수와 미분법 공식을 학습하며 느낀 점이나 유용했던 공식들을 정리해 보세요." class="w-full p-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>브라우저 로컬 저장소에 안전하게 보관됩니다.</span>
+                        <span id="memo-status-u2-3" class="text-emerald-600 font-semibold"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 하단 여백 및 페이지 끝 표시 -->
+            <div class="py-12 text-center text-xs text-slate-400">
+                고등학교 2학년 미적분Ⅰ · 2022 개정 교육과정 · Ⅱ. 미분 3. 도함수 (교과서 64~70쪽)
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- ===================================================================
+     스크립트 엔진 (KaTeX, 전자칠판, 스크래치패드, 채점, 6대 캔버스 시뮬레이터)
+     =================================================================== -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. KaTeX 수식 자동 렌더링
+    if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "\\[", right: "\\]", display: true},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
         });
     }
 
-    // Whiteboard Engine
-    let wbActive = false;
-    let wbTool = 'pen';
-    let wbColor = '#ef4444';
-    let wbStrokes = [];
-    let wbCurrentStroke = null;
-    let wbDrawing = false;
+    // 2. 전자칠판 엔진 초기화
+    initWhiteboardEngine();
 
-    function initWhiteboard() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        syncWhiteboardHeight();
+    // 3. 개별 스크래치패드 초기화
+    initScratchpads();
 
-        if (window.ResizeObserver) {
-            const ro = new ResizeObserver(() => syncWhiteboardHeight());
-            ro.observe(document.body);
+    // 4. 6대 캔버스 인터랙티브 시뮬레이터 초기화
+    initDerivSyncSim();     // Widget 1 (도함수 동기화 캔버스)
+    initProductRuleSim();   // Widget 2 (곱의 미분 직사각형 팽창)
+    initPowerRuleSim();     // Widget 3 (거듭제곱 파워 슬라이더)
+    initTripleProductSim(); // Widget 5 (3D 직육면체 부피 팽창)
+    initHeatingLoadSim();   // Widget 6 (건물 연간 난방 부하)
+
+    // 5. 스크롤스파이
+    initScrollSpy();
+
+    // 6. 성찰 메모
+    initReflectionMemo();
+});
+
+/* =====================================================================
+   아코디언 토글 유틸리티
+   ===================================================================== */
+function toggleTeacherTip(id) {
+    const el = document.getElementById(id);
+    const arrow = document.getElementById(id + "-arrow");
+    if (!el) return;
+    if (el.classList.contains("hidden")) {
+        el.classList.remove("hidden");
+        if (arrow) arrow.textContent = "접기 ▲";
+    } else {
+        el.classList.add("hidden");
+        if (arrow) arrow.textContent = "펼치기 ▼";
+    }
+}
+
+function toggleSolution(id) {
+    const el = document.getElementById(id);
+    const arrow = document.getElementById(id + "-arrow");
+    if (!el) return;
+    if (el.classList.contains("hidden")) {
+        el.classList.remove("hidden");
+        if (arrow) arrow.textContent = "▲";
+    } else {
+        el.classList.add("hidden");
+        if (arrow) arrow.textContent = "▼";
+    }
+}
+
+/* =====================================================================
+   즉시 채점 시스템
+   ===================================================================== */
+function checkU3Prob1_1() {
+    const val = document.getElementById("ans-u3-p1-1").value.trim();
+    const res = document.getElementById("res-u3-p1-1");
+    if (val === "5") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 f'(x) = 5</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>오답입니다.</span>";
+    }
+}
+
+function checkU3Prob4_1() {
+    const val = document.getElementById("ans-u3-p4-1").value.replace(/\s/g, "");
+    const res = document.getElementById("res-u3-p4-1");
+    if (val === "4,-1" || val === "4x-1") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 y' = 4x - 1</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 확인해 보세요. (4x - 1)</span>";
+    }
+}
+
+function checkSc3_01() {
+    const b2 = document.getElementById("blank-u3-2").value.trim();
+    const b3 = document.getElementById("blank-u3-3").value.trim();
+    const b4 = document.getElementById("blank-u3-4").value.trim();
+    const res = document.getElementById("res-sc3-01");
+
+    let correct = 0;
+    if (b2.includes("nx") || b2.includes("n*x")) correct++;
+    if (b3 === "1") correct++;
+    if (b4 === "0") correct++;
+
+    if (correct >= 2) {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 완벽히 공식을 숙지했습니다 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-amber-600 font-bold'>다시 확인해 보세요. (nx^(n-1), 1, 0)</span>";
+    }
+}
+
+function checkSc3_02_2() {
+    const val = document.getElementById("ans-sc3-02-2").value.trim();
+    const res = document.getElementById("res-sc3-02-2");
+    if (val === "0") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! 🎉 상수는 미분하면 0</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>오답입니다. (상수함수 확인)</span>";
+    }
+}
+
+function checkSc3_03() {
+    const val = document.getElementById("ans-sc3-03").value.trim();
+    const res = document.getElementById("res-sc3-03");
+    if (val === "-9") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 10 + (-19) = -9</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 계산해 보세요.</span>";
+    }
+}
+
+function checkSc3_04() {
+    const val = document.getElementById("ans-sc3-04").value.trim();
+    const res = document.getElementById("res-sc3-04");
+    if (val === "-36") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 h'(1) = -36</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 계산해 보세요.</span>";
+    }
+}
+
+function checkSc3_05() {
+    const val = document.getElementById("ans-sc3-05").value.trim();
+    const res = document.getElementById("res-sc3-05");
+    if (val === "9") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 a=-2, b=1 이므로 f(4)=9</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 풀어보세요.</span>";
+    }
+}
+
+function checkSc3_06_2() {
+    const val = document.getElementById("ans-sc3-06-2").value.replace(/,/g, "").trim();
+    const res = document.getElementById("res-sc3-06-2");
+    if (val === "153527764") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 153,527,764 kW/h</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>오답입니다. (4 × 1 × 8761 × 4381)</span>";
+    }
+}
+
+/* =====================================================================
+   풀스크린 전자칠판 엔진
+   ===================================================================== */
+let wbCanvas, wbCtx;
+let wbActive = false;
+let wbDrawing = false;
+let wbTool = "pen";
+let wbColor = "#ef4444";
+let wbSize = 4;
+
+function initWhiteboardEngine() {
+    wbCanvas = document.getElementById("wb-canvas");
+    if (!wbCanvas) return;
+    wbCtx = wbCanvas.getContext("2d");
+
+    function resizeWb() {
+        const dpr = window.devicePixelRatio || 1;
+        wbCanvas.width = window.innerWidth * dpr;
+        wbCanvas.height = window.innerHeight * dpr;
+        wbCanvas.style.width = window.innerWidth + "px";
+        wbCanvas.style.height = window.innerHeight + "px";
+        wbCtx.scale(dpr, dpr);
+    }
+    window.addEventListener("resize", resizeWb);
+    resizeWb();
+
+    wbCanvas.addEventListener("mousedown", startWbDraw);
+    wbCanvas.addEventListener("mousemove", drawWb);
+    window.addEventListener("mouseup", stopWbDraw);
+
+    wbCanvas.addEventListener("touchstart", function(e) {
+        if (!wbActive) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        startWbDraw({ clientX: touch.clientX, clientY: touch.clientY });
+    }, { passive: false });
+
+    wbCanvas.addEventListener("touchmove", function(e) {
+        if (!wbActive) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        drawWb({ clientX: touch.clientX, clientY: touch.clientY });
+    }, { passive: false });
+
+    window.addEventListener("touchend", stopWbDraw);
+
+    window.addEventListener("keydown", function(e) {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+        if (e.key === "w" || e.key === "W") toggleWhiteboard();
+        if (e.key === "e" || e.key === "E") setWbTool("eraser");
+        if (e.key === "c" || e.key === "C") clearWhiteboard();
+        if (e.key === "Escape" && wbActive) toggleWhiteboard();
+    });
+}
+
+function toggleWhiteboard() {
+    wbActive = !wbActive;
+    const canvas = document.getElementById("wb-canvas");
+    const toolbar = document.getElementById("wb-toolbar");
+    const indicator = document.getElementById("wb-status-indicator");
+
+    if (wbActive) {
+        canvas.classList.remove("pointer-events-none");
+        canvas.classList.add("pointer-events-auto");
+        toolbar.classList.remove("hidden");
+        toolbar.classList.add("flex");
+        if (indicator) {
+            indicator.classList.remove("bg-slate-300");
+            indicator.classList.add("bg-emerald-500", "animate-pulse");
         }
+    } else {
+        canvas.classList.add("pointer-events-none");
+        canvas.classList.remove("pointer-events-auto");
+        toolbar.classList.add("hidden");
+        toolbar.classList.remove("flex");
+        if (indicator) {
+            indicator.classList.add("bg-slate-300");
+            indicator.classList.remove("bg-emerald-500", "animate-pulse");
+        }
+    }
+}
 
-        function getDocPt(e) {
-            const touch = e.touches && e.touches[0] ? e.touches[0] : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
+function setWbTool(tool) {
+    wbTool = tool;
+    document.querySelectorAll(".wb-tool-btn").forEach(btn => btn.classList.remove("border-blue-500", "bg-blue-50"));
+    const activeBtn = document.getElementById("wb-tool-" + tool);
+    if (activeBtn) activeBtn.classList.add("border-blue-500", "bg-blue-50");
+}
+
+function setWbColor(color, el) {
+    wbColor = color;
+    document.querySelectorAll(".wb-color-btn").forEach(btn => btn.classList.remove("ring-2", "ring-offset-2", "ring-slate-600"));
+    if (el) el.classList.add("ring-2", "ring-offset-2", "ring-slate-600");
+}
+
+function setWbSize(size, el) {
+    wbSize = parseInt(size);
+    document.querySelectorAll(".wb-size-btn").forEach(btn => btn.classList.remove("bg-blue-500", "text-white"));
+    if (el) el.classList.add("bg-blue-500", "text-white");
+}
+
+function clearWhiteboard() {
+    if (!wbCtx || !wbCanvas) return;
+    wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+}
+
+function downloadWhiteboard() {
+    const link = document.createElement("a");
+    link.download = "2_미분_3_도함수_판서.png";
+    link.href = wbCanvas.toDataURL("image/png");
+    link.click();
+}
+
+let lastWbX = 0, lastWbY = 0;
+function startWbDraw(e) {
+    if (!wbActive) return;
+    wbDrawing = true;
+    lastWbX = e.clientX;
+    lastWbY = e.clientY;
+}
+
+function drawWb(e) {
+    if (!wbActive || !wbDrawing) return;
+    wbCtx.beginPath();
+    wbCtx.moveTo(lastWbX, lastWbY);
+    wbCtx.lineTo(e.clientX, e.clientY);
+    wbCtx.lineCap = "round";
+    wbCtx.lineJoin = "round";
+
+    if (wbTool === "eraser") {
+        wbCtx.globalCompositeOperation = "destination-out";
+        wbCtx.lineWidth = wbSize * 8;
+        wbCtx.strokeStyle = "rgba(0,0,0,1)";
+    } else if (wbTool === "highlighter") {
+        wbCtx.globalCompositeOperation = "source-over";
+        wbCtx.lineWidth = wbSize * 6;
+        wbCtx.strokeStyle = wbColor + "55";
+    } else {
+        wbCtx.globalCompositeOperation = "source-over";
+        wbCtx.lineWidth = wbSize;
+        wbCtx.strokeStyle = wbColor;
+    }
+    wbCtx.stroke();
+    lastWbX = e.clientX;
+    lastWbY = e.clientY;
+}
+
+function stopWbDraw() {
+    wbDrawing = false;
+}
+
+/* =====================================================================
+   개별 스크래치패드 드로잉 엔진
+   ===================================================================== */
+function initScratchpads() {
+    document.querySelectorAll(".scratchpad-canvas").forEach(canvas => {
+        const ctx = canvas.getContext("2d");
+        let isDrawing = false;
+        let lx = 0, ly = 0;
+
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
             return {
-                x: touch.clientX + window.scrollX,
-                y: touch.clientY + window.scrollY
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
             };
         }
 
-        function startDraw(e) {
-            if (!wbActive || wbTool === 'pointer') return;
-            if (e.button !== undefined && e.button !== 0) return;
-            wbDrawing = true;
-            const pt = getDocPt(e);
-            const sizeInput = document.getElementById('wb-size');
-            const size = sizeInput ? parseFloat(sizeInput.value) : 4;
+        canvas.addEventListener("mousedown", e => {
+            isDrawing = true;
+            const p = getPos(e);
+            lx = p.x; ly = p.y;
+        });
 
-            wbCurrentStroke = {
-                tool: wbTool,
-                color: wbColor,
-                size: size,
-                points: [pt]
-            };
-            wbStrokes.push(wbCurrentStroke);
-            redrawWhiteboard();
-        }
-
-        function moveDraw(e) {
-            if (!wbDrawing || !wbActive || wbTool === 'pointer' || !wbCurrentStroke) return;
-            e.preventDefault();
-            const pt = getDocPt(e);
-            wbCurrentStroke.points.push(pt);
-            drawStrokeSegment(wbCurrentStroke);
-        }
-
-        function endDraw() {
-            if (!wbDrawing) return;
-            wbDrawing = false;
-            wbCurrentStroke = null;
-            redrawWhiteboard();
-        }
-
-        canvas.addEventListener('mousedown', startDraw);
-        window.addEventListener('mousemove', moveDraw, { passive: false });
-        window.addEventListener('mouseup', endDraw);
-        canvas.addEventListener('touchstart', startDraw, { passive: false });
-        canvas.addEventListener('touchmove', moveDraw, { passive: false });
-        window.addEventListener('touchend', endDraw);
-    }
-
-    function applyStrokeStyle(ctx, stroke) {
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        if (stroke.tool === 'eraser') {
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.lineWidth = stroke.size * 4.5;
-            ctx.strokeStyle = 'rgba(0,0,0,1)';
-        } else if (stroke.tool === 'highlighter') {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = stroke.size * 3.4;
-            ctx.strokeStyle = stroke.color + '44';
-        } else {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = stroke.size;
-            ctx.strokeStyle = stroke.color;
-        }
-    }
-
-    function drawStrokeSegment(stroke) {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const pts = stroke.points;
-        if (pts.length < 2) return;
-
-        if (stroke.tool === 'highlighter') {
-            redrawWhiteboard();
-            return;
-        }
-
-        ctx.save();
-        applyStrokeStyle(ctx, stroke);
-        const p1 = pts[pts.length - 2];
-        const p2 = pts[pts.length - 1];
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-        ctx.restore();
-    }
-
-    function redrawWhiteboard() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        for (const stroke of wbStrokes) {
-            if (!stroke.points || stroke.points.length === 0) continue;
-            ctx.save();
-            applyStrokeStyle(ctx, stroke);
+        canvas.addEventListener("mousemove", e => {
+            if (!isDrawing) return;
+            const p = getPos(e);
             ctx.beginPath();
-            ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-            if (stroke.points.length === 1) {
-                ctx.lineTo(stroke.points[0].x + 0.1, stroke.points[0].y + 0.1);
-            } else {
-                for (let i = 1; i < stroke.points.length; i++) {
-                    ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
-                }
-            }
+            ctx.moveTo(lx, ly);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = "#2563eb";
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
             ctx.stroke();
-            ctx.restore();
+            lx = p.x; ly = p.y;
+        });
+
+        window.addEventListener("mouseup", () => isDrawing = false);
+
+        canvas.addEventListener("touchstart", e => {
+            e.preventDefault();
+            isDrawing = true;
+            const p = getPos(e.touches[0]);
+            lx = p.x; ly = p.y;
+        }, { passive: false });
+
+        canvas.addEventListener("touchmove", e => {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const p = getPos(e.touches[0]);
+            ctx.beginPath();
+            ctx.moveTo(lx, ly);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = "#2563eb";
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.stroke();
+            lx = p.x; ly = p.y;
+        }, { passive: false });
+
+        window.addEventListener("touchend", () => isDrawing = false);
+    });
+}
+
+function clearScratchpad(id) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* =====================================================================
+   SIMULATOR 1: 도함수 동기화 생성기 (deriv-sync-canvas)
+   ===================================================================== */
+function initDerivSyncSim() {
+    const canvas = document.getElementById("deriv-sync-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sX = document.getElementById("slider-sync-x");
+    const vX = document.getElementById("val-sync-x");
+    const statSlope = document.getElementById("stat-sync-slope");
+
+    // f(x) = x^2, f'(x) = 2x
+    function f(x) { return x * x; }
+    function df(x) { return 2 * x; }
+
+    function draw() {
+        const xVal = parseFloat(sX.value);
+        vX.textContent = xVal.toFixed(1);
+
+        const slope = df(xVal);
+        statSlope.textContent = `x=${xVal.toFixed(1)} 접선 기울기: ${slope.toFixed(2)}`;
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const halfW = w / 2;
+
+        // 좌측 패널: f(x) = x^2 와 접선
+        const ox1 = halfW / 2, oy1 = h - 60;
+        const sx1 = 60, sy1 = 45;
+
+        // 구분선
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(halfW, 20); ctx.lineTo(halfW, h - 20);
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText("원래 함수: y = x² (곡선 & 접선)", 30, 35);
+        ctx.fillText("도함수: y = f'(x) = 2x (기울기 함수)", halfW + 30, 35);
+
+        function toX1(x) { return ox1 + x * sx1; }
+        function toY1(y) { return oy1 - y * sy1; }
+
+        // 좌측 축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(20, oy1); ctx.lineTo(halfW - 20, oy1);
+        ctx.moveTo(ox1, h - 20); ctx.lineTo(ox1, 50);
+        ctx.stroke();
+
+        // 좌측 f(x) 곡선
+        ctx.beginPath();
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 3;
+        for (let x = -2.2; x <= 2.2; x += 0.1) {
+            const px = toX1(x), py = toY1(f(x));
+            if (x === -2.2) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         }
-    }
+        ctx.stroke();
 
-    function syncWhiteboardHeight() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const docWidth = document.documentElement.clientWidth;
-        const docHeight = Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight,
-            window.innerHeight
-        );
-        if (canvas.width !== docWidth || Math.abs(canvas.height - docHeight) > 4) {
-            canvas.width = docWidth;
-            canvas.height = docHeight;
-            redrawWhiteboard();
+        // 좌측 접선 (주황색)
+        const curY = f(xVal);
+        ctx.beginPath();
+        ctx.strokeStyle = "#f97316";
+        ctx.lineWidth = 2.5;
+        ctx.moveTo(toX1(xVal - 1.2), toY1(curY - slope * 1.2));
+        ctx.lineTo(toX1(xVal + 1.2), toY1(curY + slope * 1.2));
+        ctx.stroke();
+
+        // 좌측 접점
+        ctx.beginPath();
+        ctx.arc(toX1(xVal), toY1(curY), 6, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+
+        // 우측 패널: 도함수 y = 2x 직선
+        const ox2 = halfW + halfW / 2, oy2 = h / 2;
+        const sx2 = 60, sy2 = 25;
+
+        function toX2(x) { return ox2 + x * sx2; }
+        function toY2(y) { return oy2 - y * sy2; }
+
+        // 우측 축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(halfW + 20, oy2); ctx.lineTo(w - 20, oy2);
+        ctx.moveTo(ox2, h - 20); ctx.lineTo(ox2, 50);
+        ctx.stroke();
+
+        // 우측 도함수 직선
+        ctx.beginPath();
+        ctx.strokeStyle = "#7c3aed";
+        ctx.lineWidth = 3;
+        for (let x = -2.5; x <= 2.5; x += 0.2) {
+            const px = toX2(x), py = toY2(df(x));
+            if (x === -2.5) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         }
+        ctx.stroke();
+
+        // 우측 사상된 점 (xVal, slope)
+        ctx.beginPath();
+        ctx.arc(toX2(xVal), toY2(slope), 7, 0, Math.PI * 2);
+        ctx.fillStyle = "#7c3aed";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#6d28d9";
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillText(`(${xVal.toFixed(1)}, ${slope.toFixed(1)})`, toX2(xVal) + 10, toY2(slope) - 5);
     }
 
-    function toggleWhiteboard() {
-        wbActive = !wbActive;
-        const toolbar = document.getElementById('wb-toolbar');
-        const canvas = document.getElementById('wb-canvas');
-        if (wbActive) {
-            syncWhiteboardHeight();
-            toolbar.classList.remove('hidden');
-            setWbTool('pen');
-        } else {
-            toolbar.classList.add('hidden');
-            canvas.classList.remove('wb-drawing-active');
+    sX.addEventListener("input", draw);
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 2: 곱의 미분법 직사각형 면적 팽창 (product-rule-canvas)
+   ===================================================================== */
+function initProductRuleSim() {
+    const canvas = document.getElementById("product-rule-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sDu = document.getElementById("slider-p-du");
+    const sDv = document.getElementById("slider-p-dv");
+    const vDu = document.getElementById("val-p-du");
+    const vDv = document.getElementById("val-p-dv");
+
+    function draw() {
+        const du = parseFloat(sDu.value);
+        const dv = parseFloat(sDv.value);
+        vDu.textContent = du.toFixed(1);
+        vDv.textContent = dv.toFixed(1);
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const startX = 140, startY = 60;
+        const uWidth = 240, vHeight = 140;
+        const duWidth = du * 60;
+        const dvHeight = dv * 45;
+
+        // 1) 원래 영역 u * v (연파랑)
+        ctx.fillStyle = "#dbeafe";
+        ctx.fillRect(startX, startY, uWidth, vHeight);
+        ctx.strokeStyle = "#3b82f6";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(startX, startY, uWidth, vHeight);
+        ctx.fillStyle = "#1e40af";
+        ctx.font = "bold 15px sans-serif";
+        ctx.fillText("원래 면적 u · v", startX + uWidth / 2 - 45, startY + vHeight / 2);
+
+        // 2) 가로 팽창 영역 v · Δu (연보라)
+        ctx.fillStyle = "#ede9fe";
+        ctx.fillRect(startX + uWidth, startY, duWidth, vHeight);
+        ctx.strokeStyle = "#8b5cf6";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(startX + uWidth, startY, duWidth, vHeight);
+        ctx.fillStyle = "#6d28d9";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("v · Δu", startX + uWidth + 6, startY + vHeight / 2);
+
+        // 3) 세로 팽창 영역 u · Δv (연초록)
+        ctx.fillStyle = "#d1fae5";
+        ctx.fillRect(startX, startY + vHeight, uWidth, dvHeight);
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(startX, startY + vHeight, uWidth, dvHeight);
+        ctx.fillStyle = "#047857";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("u · Δv", startX + uWidth / 2 - 20, startY + vHeight + dvHeight / 2 + 5);
+
+        // 4) 모서리 미소 영역 Δu · Δv (연빨강, 2차 미소량)
+        ctx.fillStyle = "#fee2e2";
+        ctx.fillRect(startX + uWidth, startY + vHeight, duWidth, dvHeight);
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(startX + uWidth, startY + vHeight, duWidth, dvHeight);
+        ctx.fillStyle = "#b91c1c";
+        ctx.font = "10px sans-serif";
+        ctx.fillText("ΔuΔv ≈ 0", startX + uWidth + 4, startY + vHeight + dvHeight / 2 + 3);
+
+        // 치수 라벨
+        ctx.fillStyle = "#334155";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("가로 u", startX + uWidth / 2 - 15, startY - 10);
+        ctx.fillText("Δu", startX + uWidth + duWidth / 2 - 8, startY - 10);
+        ctx.fillText("세로 v", startX - 50, startY + vHeight / 2);
+        ctx.fillText("Δv", startX - 35, startY + vHeight + dvHeight / 2);
+    }
+
+    sDu.addEventListener("input", draw);
+    sDv.addEventListener("input", draw);
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 3: 거듭제곱 파워 슬라이더 (power-rule-canvas)
+   ===================================================================== */
+function initPowerRuleSim() {
+    const canvas = document.getElementById("power-rule-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sN = document.getElementById("slider-power-n");
+    const vN = document.getElementById("val-power-n");
+    const statRule = document.getElementById("stat-power-rule");
+
+    function draw() {
+        const n = parseInt(sN.value);
+        vN.textContent = n;
+
+        if (n === 1) statRule.textContent = "(x)' = 1";
+        else statRule.textContent = `(x^${n})' = ${n}x^${n - 1}`;
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const ox = w / 2, oy = h - 40;
+        const scaleX = 80, scaleY = 30;
+
+        // 축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(40, oy); ctx.lineTo(w - 40, oy);
+        ctx.moveTo(ox, h - 20); ctx.lineTo(ox, 20);
+        ctx.stroke();
+
+        // 1) f(x) = x^n (파랑)
+        ctx.beginPath();
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 3;
+        for (let x = -1.6; x <= 1.6; x += 0.05) {
+            const y = Math.pow(x, n);
+            const px = ox + x * scaleX;
+            const py = oy - y * scaleY;
+            if (x === -1.6) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         }
-    }
+        ctx.stroke();
 
-    function setWbTool(tool) {
-        wbTool = tool;
-        const canvas = document.getElementById('wb-canvas');
-        document.querySelectorAll('.wb-tool-btn').forEach(b => b.classList.remove('active'));
-        const activeBtn = document.getElementById('wb-btn-' + tool);
-        if (activeBtn) activeBtn.classList.add('active');
-
-        if (tool === 'pointer') {
-            canvas.classList.remove('wb-drawing-active');
-        } else {
-            canvas.classList.add('wb-drawing-active');
+        // 2) f'(x) = n*x^(n-1) (보라)
+        ctx.beginPath();
+        ctx.strokeStyle = "#9333ea";
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([4, 4]);
+        for (let x = -1.6; x <= 1.6; x += 0.05) {
+            const y = n === 1 ? 1 : n * Math.pow(x, n - 1);
+            const px = ox + x * scaleX;
+            const py = oy - y * scaleY;
+            if (x === -1.6) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
         }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 범례
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillStyle = "#2563eb";
+        ctx.fillText(`y = x^${n} (원래 곡선)`, 60, 45);
+        ctx.fillStyle = "#9333ea";
+        ctx.fillText(`y = ${n}x^${n - 1} (도함수)`, 60, 70);
     }
 
-    function setWbColor(hex, btnEl) {
-        wbColor = hex;
-        document.querySelectorAll('.wb-color-btn').forEach(b => b.classList.remove('active'));
-        if (btnEl) btnEl.classList.add('active');
-        if (wbTool === 'pointer' || wbTool === 'eraser') setWbTool('pen');
+    sN.addEventListener("input", draw);
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 5: 세 함수의 곱 3D 부피 팽창 (triple-product-cube-canvas)
+   ===================================================================== */
+function initTripleProductSim() {
+    const canvas = document.getElementById("triple-product-cube-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    function draw() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const cx = w / 2 - 40, cy = h / 2 + 20;
+
+        // 등각투영(Isometric) 3D 박스 그리기
+        // u, v, w 기본 큐브
+        ctx.fillStyle = "#dbeafe";
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 2;
+
+        // 윗면 (uv)
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 80);
+        ctx.lineTo(cx + 90, cy - 120);
+        ctx.lineTo(cx + 170, cy - 80);
+        ctx.lineTo(cx + 80, cy - 40);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // 앞왼쪽면 (uw)
+        ctx.fillStyle = "#bfdbfe";
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 80);
+        ctx.lineTo(cx + 80, cy - 40);
+        ctx.lineTo(cx + 80, cy + 40);
+        ctx.lineTo(cx, cy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // 앞오른쪽면 (vw)
+        ctx.fillStyle = "#93c5fd";
+        ctx.beginPath();
+        ctx.moveTo(cx + 80, cy - 40);
+        ctx.lineTo(cx + 170, cy - 80);
+        ctx.lineTo(cx + 170, cy);
+        ctx.lineTo(cx + 80, cy + 40);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // 3개 팽창 판 (Plate) 묘사
+        ctx.fillStyle = "#f59e0b";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText("부피 V = u · v · w", cx + 45, cy - 10);
+
+        ctx.fillStyle = "#1e40af";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("ΔV ≈ (v·w)Δu + (u·w)Δv + (u·v)Δw", cx - 80, h - 30);
+    }
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 6: 건축 연간 난방 부하 (heating-load-canvas)
+   ===================================================================== */
+function initHeatingLoadSim() {
+    const canvas = document.getElementById("heating-load-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sT = document.getElementById("slider-heat-t");
+    const vT = document.getElementById("val-heat-t");
+    const statSlope = document.getElementById("stat-heat-slope");
+
+    function draw() {
+        const t = parseFloat(sT.value);
+        vT.textContent = `${t} 시간 (${(t / 24).toFixed(1)}일 경과)`;
+
+        // f'(t) = 4(t - 49)(t + 8711)(t + 4331)
+        const slope = 4 * (t - 49) * (t + 8711) * (t + 4331);
+        statSlope.textContent = (slope / 1e8).toFixed(2) + " × 10⁸ kW/h";
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const gx = 80, gy = h - 50;
+        const gw = w - 160, gh = 200;
+
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(gx, gy); ctx.lineTo(gx + gw, gy);
+        ctx.moveTo(gx, gy); ctx.lineTo(gx, gy - gh);
+        ctx.stroke();
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "11px sans-serif";
+        ctx.fillText("시간 t (시간)", gx + gw - 30, gy + 20);
+        ctx.fillText("난방 부하 f(t)", gx - 55, gy - gh + 15);
+
+        // f(t) 정규화 곡선 (t=1~150 구간)
+        ctx.beginPath();
+        ctx.strokeStyle = "#e11d48";
+        ctx.lineWidth = 3;
+        for (let time = 1; time <= 150; time += 2) {
+            // (t-49)^2 기반 정규화
+            const normY = Math.pow((time - 49) / 70, 2) * 120;
+            const px = gx + (time / 150) * gw;
+            const py = gy - normY;
+            if (time === 1) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // 현재 관측점 t 표시 및 접선
+        const curPx = gx + (t / 150) * gw;
+        const curNormY = Math.pow((t - 49) / 70, 2) * 120;
+        const curPy = gy - curNormY;
+
+        ctx.beginPath();
+        ctx.arc(curPx, curPy, 7, 0, Math.PI * 2);
+        ctx.fillStyle = "#2563eb";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(`t=${t}h`, curPx - 15, curPy - 12);
     }
 
-    function undoWb() {
-        if (wbStrokes.length === 0) return;
-        wbStrokes.pop();
-        redrawWhiteboard();
-    }
+    sT.addEventListener("input", draw);
+    draw();
+}
 
-    function clearWb() {
-        wbStrokes = [];
-        redrawWhiteboard();
-    }
+/* =====================================================================
+   스크롤스파이 및 프로그레스 바
+   ===================================================================== */
+function initScrollSpy() {
+    const pBar = document.getElementById("scroll-progress-bar");
+    const sections = document.querySelectorAll("section[id], div[id^='sec-'], div[id^='prob-']");
+    const navLinks = document.querySelectorAll(".sidebar-nav-link");
 
-    // Scroll listener for top button and scrollspy
-    window.addEventListener('scroll', () => {
-        const scrollTopBtn = document.getElementById('scroll-top-btn');
-        if (scrollTopBtn) {
-            if (window.scrollY > 260) {
-                scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-                scrollTopBtn.classList.add('opacity-100', 'translate-y-0');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-                scrollTopBtn.classList.remove('opacity-100', 'translate-y-0');
+    window.addEventListener("scroll", function() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        if (pBar) pBar.style.width = progress + "%";
+
+        let currentId = "";
+        sections.forEach(sec => {
+            const top = sec.offsetTop - 120;
+            if (scrollTop >= top) currentId = sec.getAttribute("id");
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove("text-blue-600", "font-bold", "bg-blue-50/70");
+            if (link.getAttribute("href") === "#" + currentId) {
+                link.classList.add("text-blue-600", "font-bold", "bg-blue-50/70");
             }
-        }
+        });
     });
+}
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initWhiteboard();
-        initScratchpads();
+/* =====================================================================
+   배움 메모장 로컬스토리지 연동
+   ===================================================================== */
+function initReflectionMemo() {
+    const memo = document.getElementById("reflection-memo-u2-3");
+    const status = document.getElementById("memo-status-u2-3");
+    if (!memo) return;
+
+    const saved = localStorage.getItem("u2_3_reflection_memo");
+    if (saved) memo.value = saved;
+
+    let timeout;
+    memo.addEventListener("input", function() {
+        if (status) status.textContent = "저장 중...";
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            localStorage.setItem("u2_3_reflection_memo", memo.value);
+            if (status) {
+                status.textContent = "저장 완료 ✓";
+                setTimeout(() => status.textContent = "", 2000);
+            }
+        }, 600);
     });
-    </script>
+}
+</script>
 </body>
 </html>
+    

@@ -3,692 +3,2456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ⅱ. 미분 - 02. 미분가능성과 연속성 | 인터랙티브 수업 자료</title>
-    <!-- Tailwind CSS -->
+    <title>2. 미분가능성과 연속성 - 2022 개정 미적분Ⅰ | 전자교과서</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Pretendard Font -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <!-- KaTeX for Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            word-break: keep-all;
-            overflow-x: hidden;
-        }
-        .katex-display {
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 0.5rem 0;
-        }
-        .active-nav {
-            background-color: #e0e7ff;
-            color: #4338ca;
-            font-weight: 700;
-            border-right: 4px solid #6366f1;
-        }
-        .dark .active-nav {
-            background-color: #312e81;
-            color: #c7d2fe;
-            border-right: 4px solid #818cf8;
-        }
-        /* Drawing Canvas */
-        .scratchpad-canvas {
-            touch-action: none;
-            cursor: crosshair;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 16px 16px;
-        }
-        .dark .scratchpad-canvas {
-            background-image: radial-gradient(#334155 1px, transparent 1px);
-        }
-        /* Electronic Whiteboard Overlay */
-        #wb-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 45;
-            pointer-events: none;
-            touch-action: none;
-        }
-        #wb-canvas.wb-drawing-active {
-            pointer-events: auto;
-            cursor: crosshair;
-        }
-        .wb-color-btn.active {
-            transform: scale(1.2);
-            box-shadow: 0 0 0 3px #fff, 0 0 0 5px #4f46e5;
-        }
-        .wb-tool-btn.active {
-            background-color: #4f46e5;
-            color: #ffffff;
-        }
-        #wb-toolbar {
-            z-index: 50;
-        }
-        #floating-controls {
-            z-index: 49;
-        }
-        @media print {
-            #sidebar, #floating-controls, #wb-toolbar, #wb-canvas, .no-print {
-                display: none !important;
-            }
-            #main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-            }
-            .solution-box {
-                display: block !important;
-            }
-        }
-    </style>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: '#4f46e5',
-                        secondary: '#0ea5e9',
+                        primary: '#2563eb',
+                        secondary: '#4f46e5',
+                        accent: '#0d9488',
                     }
                 }
             }
         }
     </script>
+    <!-- KaTeX CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .katex-display {
+            margin: 0.75em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.25em 0;
+        }
+        /* 커스텀 스크롤바 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen relative selection:bg-blue-100 selection:text-blue-900">
 
-    <!-- Full-screen Electronic Whiteboard Canvas -->
-    <canvas id="wb-canvas"></canvas>
+    <!-- ===================================================================
+         풀스크린 전자칠판 레이어 & 플로팅 툴바
+         =================================================================== -->
+    <canvas id="wb-canvas" class="fixed inset-0 z-50 pointer-events-none w-full h-full"></canvas>
 
-    <!-- Electronic Whiteboard Floating Toolbar -->
-    <div id="wb-toolbar" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-wrap items-center gap-2 sm:gap-3">
-        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-xs font-extrabold tracking-wide text-sky-300">전자칠판</span>
-        </div>
-
-        <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
-            <button id="wb-btn-pointer" onclick="setWbTool('pointer')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="화면 스크롤 및 버튼 클릭">
-                <i class="fa-solid fa-hand-pointer"></i> <span class="hidden sm:inline">조작</span>
+    <!-- 전자칠판 컨트롤 툴바 -->
+    <div id="wb-toolbar" class="fixed bottom-6 right-6 z-50 hidden items-center gap-2 p-2.5 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200 text-slate-700 transition-all">
+        <!-- 도구 선택 -->
+        <div class="flex items-center gap-1 border-r border-slate-200 pr-2">
+            <button id="wb-tool-pen" onclick="setWbTool('pen')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent border-blue-500 bg-blue-50 text-blue-600" title="펜 (단축키 P)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
             </button>
-            <button id="wb-btn-pen" onclick="setWbTool('pen')" class="wb-tool-btn active px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="일반 펜 판서">
-                <i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">펜</span>
+            <button id="wb-tool-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent text-slate-600" title="형광펜 (단축키 H)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
             </button>
-            <button id="wb-btn-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="형광펜 강조">
-                <i class="fa-solid fa-highlighter"></i> <span class="hidden sm:inline">형광펜</span>
-            </button>
-            <button id="wb-btn-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="부분 지우개">
-                <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline">지우개</span>
+            <button id="wb-tool-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn p-2 rounded-xl hover:bg-slate-100 transition border border-transparent text-slate-600" title="지우개 (단축키 E)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </button>
         </div>
 
-        <div class="flex items-center gap-2 px-2 border-l border-r border-slate-700">
-            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-5 h-5 rounded-full bg-red-500 transition" title="빨강"></button>
-            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-5 h-5 rounded-full bg-blue-500 transition" title="파랑"></button>
-            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-5 h-5 rounded-full bg-emerald-500 transition" title="초록"></button>
-            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-amber-400 transition" title="노랑"></button>
-            <button onclick="setWbColor('#1e293b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-slate-800 border border-white/50 transition" title="검정"></button>
+        <!-- 색상 팔레트 (6색) -->
+        <div class="flex items-center gap-1.5 border-r border-slate-200 pr-2">
+            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn w-6 h-6 rounded-full bg-red-500 ring-2 ring-offset-2 ring-slate-600 transition" title="빨강"></button>
+            <button onclick="setWbColor('#2563eb', this)" class="wb-color-btn w-6 h-6 rounded-full bg-blue-600 transition" title="파랑"></button>
+            <button onclick="setWbColor('#059669', this)" class="wb-color-btn w-6 h-6 rounded-full bg-emerald-600 transition" title="초록"></button>
+            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-6 h-6 rounded-full bg-amber-500 transition" title="노랑"></button>
+            <button onclick="setWbColor('#7c3aed', this)" class="wb-color-btn w-6 h-6 rounded-full bg-purple-600 transition" title="보라"></button>
+            <button onclick="setWbColor('#0f172a', this)" class="wb-color-btn w-6 h-6 rounded-full transition" style="background-color: #0f172a;" title="검정"></button>
         </div>
 
-        <div class="hidden md:flex items-center gap-2">
-            <span class="text-[11px] text-slate-400">굵기</span>
-            <input type="range" id="wb-size" min="2" max="14" value="4" class="w-16 accent-indigo-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+        <!-- 굵기 (3단계) -->
+        <div class="flex items-center gap-1 border-r border-slate-200 pr-2 text-xs font-semibold">
+            <button onclick="setWbSize(2, this)" class="wb-size-btn px-2 py-1 rounded-md hover:bg-slate-100 transition">얇게</button>
+            <button onclick="setWbSize(4, this)" class="wb-size-btn px-2 py-1 rounded-md bg-blue-500 text-white transition">보통</button>
+            <button onclick="setWbSize(8, this)" class="wb-size-btn px-2 py-1 rounded-md hover:bg-slate-100 transition">굵게</button>
         </div>
 
-        <div class="flex items-center gap-1.5 pl-1">
-            <button onclick="undoWb()" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition" title="실행 취소">
-                <i class="fa-solid fa-rotate-left"></i>
+        <!-- 판서 초기화 & 다운로드 & 닫기 -->
+        <div class="flex items-center gap-1">
+            <button onclick="clearWhiteboard()" class="p-2 rounded-xl hover:bg-rose-50 text-rose-600 transition" title="전체 지우기 (단축키 C)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             </button>
-            <button onclick="clearWb()" class="p-1.5 px-2.5 rounded-lg bg-rose-900/70 hover:bg-rose-800 text-rose-200 text-xs font-semibold transition" title="판서 전체 지우기">
-                <i class="fa-solid fa-trash-can mr-1"></i>전체 지우기
+            <button onclick="downloadWhiteboard()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition" title="판서 PNG 저장">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             </button>
-            <button onclick="toggleWhiteboard()" class="p-1.5 px-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold transition" title="전자칠판 닫기">
-                <i class="fa-solid fa-xmark"></i> 닫기
+            <button onclick="toggleWhiteboard()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition" title="칠판 닫기 (ESC)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
     </div>
 
-    <header class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur border-b border-slate-200 z-40 flex items-center justify-between px-4">
-        <span class="font-bold text-lg text-indigo-600">02. 미분가능과 연속</span>
-        <button onclick="toggleWhiteboard()" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold flex items-center gap-1">
-            <i class="fa-solid fa-chalkboard-user"></i> 칠판
+    <!-- 플로팅 전자칠판 토글 버튼 -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button onclick="toggleWhiteboard()" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 active:scale-95 transition-all text-xs font-bold border border-blue-400/40">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+            <span>전자칠판 판서 모드</span>
+            <span id="wb-status-indicator" class="w-2 h-2 rounded-full bg-slate-300"></span>
         </button>
-    </header>
+    </div>
 
-    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-40 flex flex-col justify-between shadow-lg lg:shadow-none">
-        <div class="p-5 border-b border-slate-200">
-            <span class="text-xs font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-700">Ⅱ. 미분</span>
-            <h1 class="text-2xl font-extrabold text-slate-900 mt-2 flex items-center gap-2">
-                <i class="fa-solid fa-shuffle text-indigo-600"></i>
-                <span>02. 미분가능과 연속</span>
-            </h1>
-            <p class="text-xs text-slate-500 mt-1">교과서 58 ~ 61쪽</p>
-        </div>
-        <nav class="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-            <a href="#sec-intro" class="nav-link active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-lightbulb text-amber-500"></i><span>성취기준 & 생각 열기</span>
-            </a>
-            <a href="#sec-concept1" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-diagram-project text-indigo-500"></i><span>1. 미분가능과 연속의 관계</span>
-            </a>
-            <a href="#sec-lab" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-sliders text-sky-500"></i><span>뾰족점(첨점) 미분불가 실험</span>
-            </a>
-            <a href="#sec-ex1" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-pen-to-square text-rose-500"></i><span>대표 예제 & 연습장</span>
-            </a>
-            <a href="#sec-check" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-clipboard-check text-teal-500"></i><span>스스로 확인하기 (01~04)</span>
-            </a>
-        </nav>
-        <div class="p-3 border-t border-slate-200 bg-slate-50 no-print">
-            <button onclick="toggleWhiteboard()" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-extrabold shadow-sm flex items-center justify-center gap-2 transition cursor-pointer">
-                <i class="fa-solid fa-chalkboard-user"></i>
-                <span>전자칠판 판서 모드</span>
-            </button>
-        </div>
-    </aside>
+    <!-- 상단 스크롤 진행률 표시줄 -->
+    <div class="fixed top-0 left-0 right-0 h-1 bg-slate-200 z-50">
+        <div id="scroll-progress-bar" class="h-full bg-blue-600 w-0 transition-all duration-150"></div>
+    </div>
 
-    <main id="main-content" class="lg:ml-72 min-h-screen p-6 sm:p-10 space-y-12">
-        <section id="sec-intro" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-4">
-                <i class="fa-solid fa-compass"></i> 성취기준
+    <!-- 전체 레이아웃 컨테이너 (사이드바 + 메인 본문) -->
+    <div class="flex min-h-screen pt-1">
+        
+        <!-- ===================================================================
+             좌측 사이드바 내비게이션 (12~13차시)
+             =================================================================== -->
+        <aside class="hidden lg:block w-72 shrink-0 border-r border-slate-200 bg-white/95 backdrop-blur-sm sticky top-1 h-[calc(100vh-4px)] overflow-y-auto p-5 select-none">
+            <div class="space-y-6">
+                <!-- 대단원/소단원 헤더 -->
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        Ⅱ. 미분
+                    </span>
+                    <h2 class="text-lg font-bold text-slate-900 mt-1">2. 미분가능성과 연속성</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">2022 개정 교육과정 · 교과서 60~63쪽</p>
+                </div>
+
+                <!-- 12차시: 미분가능성과 연속성의 관계 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>12차시 (60~61쪽)</span>
+                        <span class="text-blue-600 font-semibold">이론 탐구</span>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <a href="#sec-12-intro" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            01. 단원 개요 & 핵심 성취
+                        </a>
+                        <a href="#sec-12-warmup" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            💡 생각 열기 (꺾인선 함수)
+                        </a>
+                        <a href="#sec-12-proof" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📐 핵심 정리 & 엄밀한 증명
+                        </a>
+                        <a href="#sec-12-venn" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📊 시뮬레이터 2: 집합 벤다이어그램
+                        </a>
+                        <a href="#sec-12-ex1" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            📝 예제 1: |x|의 연속과 미분불가
+                        </a>
+                        <a href="#sec-12-prob1" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            ✏️ 문제 1: |x²-1| 꺾인점 분석
+                        </a>
+                        <a href="#sec-12-comm" class="sidebar-nav-link block px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition font-medium">
+                            💬 문제해결·의사소통 그래프
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- 13차시: 스스로 확인하기 & 공학 탐구 -->
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+                        <span>13차시 (62~63쪽)</span>
+                        <span class="text-teal-600 font-semibold">확인 & 공학융합</span>
+                    </div>
+                    <nav class="space-y-1 text-sm">
+                        <a href="#prob-sc-01" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            01. 학습 목표 되새기기 (OX)
+                        </a>
+                        <a href="#prob-sc-02" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            02. 미분가능 함수의 극한값
+                        </a>
+                        <a href="#prob-sc-03" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            03. 구간 이차함수의 미분성
+                        </a>
+                        <a href="#prob-sc-04" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            04. 미분가능 함수 고르기 (선다)
+                        </a>
+                        <a href="#prob-sc-05" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            05. 미분가능 미정계수 결정
+                        </a>
+                        <a href="#prob-sc-06" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            06. 생각 키우기 (왕복 로봇 운동)
+                        </a>
+                        <a href="#sec-13-clothoid" class="sidebar-nav-link block px-3 py-2 rounded-lg text-teal-700 bg-teal-50/70 hover:bg-teal-100 transition font-semibold text-xs mt-2">
+                            🛣️ 공학 탐구: 클로소이드 곡선
+                        </a>
+                        <a href="#sec-13-reflection" class="sidebar-nav-link block px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition text-xs font-medium">
+                            ✓ 학습 성찰 & 자기 점검
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- 수업 진도율 뱃지 -->
+                <div class="pt-4 border-t border-slate-100 text-xs text-slate-500">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-semibold text-slate-700">미적분Ⅰ 전체 진도</span>
+                        <span class="text-blue-600 font-bold">13차시 / 40차시</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div class="bg-blue-600 h-full rounded-full" style="width: 32.5%"></div>
+                    </div>
+                </div>
             </div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-4">
-                미분가능성과 연속성의 관계를 이해한다
-            </h2>
-            <div class="bg-indigo-50/70 rounded-xl p-5 border border-indigo-100">
-                <h3 class="font-bold text-indigo-900 text-base mb-2">💡 생각 열기 : 연속이지만 꺾인 점에서는 접선을 그을 수 있을까?</h3>
-                <p class="text-sm text-slate-700 leading-relaxed">
-                    $f(x) = |x|$의 그래프는 $x=0$에서 끊어지지 않고 이어져 있습니다. 그러나 $x=0$에서 왼쪽 접선의 기울기는 $-1$, 오른쪽 접선의 기울기는 $+1$이 됩니다. 그렇다면 $x=0$에서 미분계수가 존재할 수 있을까요?
+        </aside>
+
+        <!-- ===================================================================
+             메인 학습 콘텐츠 영역
+             =================================================================== -->
+        <main class="flex-1 min-w-0">
+
+        <!-- ===================================================================
+             [12차시] 1. 미분가능성과 연속성의 관계 (교과서 60~61쪽)
+             =================================================================== -->
+        <section id="sec-12-intro" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <!-- 단원 배너 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-blue-50 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                        12차시 / 13차시
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">교과서 60~61쪽</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                    01. 미분가능성과 연속성의 관계 (Differentiability & Continuity)
+                </h1>
+                <p class="mt-2 text-slate-600 leading-relaxed text-sm md:text-base">
+                    함수가 미분가능하다는 조건은 연속이라는 조건보다 훨씬 강력한 '매끄러움(Smoothness)'을 요구합니다. 미분가능하면 반드시 연속임을 엄밀히 증명하고, 역으로 연속이지만 미분가능하지 않은 뾰족점(Corner/Cusp)의 본질을 대수적·기하학적으로 파헤칩니다.
                 </p>
-                <div class="mt-3 flex items-center gap-3">
-                    <button onclick="toggleSolution('intro-ans7')" class="text-xs font-bold text-indigo-600 hover:underline">정답 확인</button>
-                    <span id="intro-ans7" class="hidden text-xs font-bold text-rose-600">좌미분계수와 우미분계수가 다르므로 $x=0$에서 미분 불가능합니다!</span>
+                <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-3 text-xs md:text-sm text-slate-600 font-medium">
+                    <span class="flex items-center gap-1">🎯 <strong>핵심 성취기준:</strong> 함수의 미분가능성과 연속성의 관계를 설명하고, 이를 활용할 수 있다.</span>
                 </div>
             </div>
-        </section>
 
-        <section id="sec-concept1" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-indigo-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">1. 미분가능성과 연속성의 포함 관계</h3>
-            </div>
-            <div class="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
-                <div class="p-4 bg-white rounded-xl border border-indigo-200 shadow-xs flex flex-col items-center text-center">
-                    <span class="text-xs font-black uppercase text-indigo-600 tracking-wider">핵심 명제</span>
-                    <p class="text-lg font-black text-slate-900 mt-1">
-                        함수 $f(x)$가 $x = a$에서 <span class="text-indigo-600">미분가능</span>하면 $\implies$ $x = a$에서 <span class="text-emerald-600">연속</span>이다. (참)
+            <!-- 교사용 지도서 지도 가이드 (접이식 아코디언) -->
+            <div class="bg-blue-50/60 rounded-xl border border-blue-200 overflow-hidden shadow-sm">
+                <button type="button" onclick="toggleTeacherTip('tip-12')" class="w-full px-5 py-3.5 flex items-center justify-between text-left font-bold text-blue-900 hover:bg-blue-100/50 transition">
+                    <span class="flex items-center gap-2 text-sm md:text-base">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        교사용 지도서 핵심 착안점 & 지도 전략
+                    </span>
+                    <span id="tip-12-arrow" class="text-xs bg-white px-2 py-1 rounded text-blue-700 font-semibold border border-blue-200">펼치기 ▼</span>
+                </button>
+                <div id="tip-12" class="hidden px-5 pb-5 pt-2 text-sm text-slate-700 space-y-3 bg-white border-t border-blue-100">
+                    <p class="leading-relaxed">
+                        • <strong>'미분가능 $\implies$ 연속'의 증명 지도:</strong> 단순히 직관에 머물지 않고, \(\lim_{x \to a} \{f(x)-f(a)\} = \lim_{x \to a} \left\{ \frac{f(x)-f(a)}{x-a} \cdot (x-a) \right\} = f'(a) \cdot 0 = 0\)이라는 극한의 수렴 성질을 학생들이 직접 전개할 수 있도록 지도합니다.
                     </p>
-                    <p class="text-xs text-rose-600 font-bold mt-2">
-                        ⚠️ 역은 성립하지 않는다: 연속함수라고 해서 반드시 미분가능한 것은 아니다! (반례: $f(x) = |x|$)
+                    <p class="leading-relaxed">
+                        • <strong>역이 성립하지 않는 이유 (좌미분계수와 우미분계수의 불일치):</strong> 연속이라는 것은 '이어져 있다'는 것뿐이며, '어떻게 이어져 있는가'에 대한 정보가 없습니다. 꺾인 점(첨점)에서는 좌우에서 다가오는 접선의 기울기가 서로 달라 하나의 유일한 접선을 그을 수 없기 때문에 미분계수가 존재하지 않음을 체감시킵니다.
+                    </p>
+                    <p class="leading-relaxed">
+                        • <strong>대우 명제의 강력함:</strong> "불연속이면 절대로 미분가능하지 않다"는 대우를 활용하여, 불연속인 지점에서는 복잡한 극한 계산 없이도 즉시 미분불가능 판정을 내릴 수 있는 수학적 추론 능력을 함양합니다.
                     </p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div class="p-3 bg-white rounded-lg border border-slate-200">
-                        <b>증명 아이디어:</b> $\lim_{x \to a} (f(x) - f(a)) = \lim_{x \to a} \frac{f(x)-f(a)}{x-a} \times (x-a) = f'(a) \times 0 = 0 \implies \lim_{x \to a} f(x) = f(a)$.
-                    </div>
-                    <div class="p-3 bg-white rounded-lg border border-slate-200">
-                        <b>대우 명제 (항상 참):</b> $x = a$에서 <b>불연속</b>이면 $x = a$에서 <b>미분 불가능</b>하다.
-                    </div>
-                </div>
             </div>
-        </section>
 
-        <!-- Section Interactive Lab -->
-        <section id="sec-lab" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-2.5 h-6 bg-sky-600 rounded-full"></span>
-                    <h3 class="text-xl font-bold text-slate-900">뾰족점(첨점) 미분불가 vs 매끄러운 곡선 비교</h3>
+            <!-- 생각 열기: 꺾인선 함수의 연속과 미분 (교과서 60쪽) -->
+            <div id="sec-12-warmup" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold text-sm shadow-sm">💡</span>
+                    <h2 class="text-xl font-bold text-slate-900">생각 열기: 꺾인선 함수의 연속성과 미분가능성</h2>
                 </div>
-                <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">y = |x|</span>
+
+                <div class="space-y-3 text-slate-700 leading-relaxed text-sm md:text-base">
+                    <p>
+                        오른쪽 그림은 구간에 따라 다음과 같이 정의된 함수 \(f(x)\)의 그래프입니다:
+                    </p>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center font-bold text-slate-900 text-base md:text-lg">
+                        \(f(x) = \begin{cases} 0 & (x < 0) \\[4pt] x & (x \ge 0) \end{cases}\)
+                    </div>
+                </div>
+
+                <!-- 탐구 발문 1, 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-blue-600 tracking-wide uppercase">탐구 질문 ➊</span>
+                        <p class="text-sm font-semibold text-slate-800">함수 \(f(x)\)가 \(x=0\)에서 연속인지 말해 보자.</p>
+                        <div class="pt-2 text-xs text-slate-600 space-y-1">
+                            • 우극한: \(\lim_{x \to 0^+} f(x) = \lim_{x \to 0^+} x = 0\)<br>
+                            • 좌극한: \(\lim_{x \to 0^-} f(x) = \lim_{x \to 0^-} 0 = 0\)<br>
+                            • 함숫값: \(f(0) = 0\)<br>
+                            따라서 극한값과 함숫값이 일치하므로 <strong class="text-blue-700 font-bold">\(x=0\)에서 연속이다!</strong>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-rose-600 tracking-wide uppercase">탐구 질문 ➋</span>
+                        <p class="text-sm font-semibold text-slate-800">함수 \(f(x)\)가 \(x=0\)에서 미분가능한지 말해 보자.</p>
+                        <div class="pt-2 text-xs text-slate-600 space-y-1">
+                            • 우미분계수: \(\lim_{x \to 0^+} \frac{x - 0}{x - 0} = 1\)<br>
+                            • 좌미분계수: \(\lim_{x \to 0^-} \frac{0 - 0}{x - 0} = 0\)<br>
+                            우미분계수(1)와 좌미분계수(0)가 서로 다르므로 <strong class="text-rose-700 font-bold">\(x=0\)에서 미분가능하지 않다!</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs md:text-sm text-amber-900 leading-relaxed">
+                    <strong>💡 생각 열기의 결론:</strong> 이 함수는 끊어짐 없이 완벽히 이어져 있으므로 <strong>연속</strong>이지만, 원점 \((0, 0)\)에서 꺾여 있어 <strong>미분가능하지 않습니다</strong>! 즉, "연속이라고 해서 무조건 미분가능한 것은 아니다"라는 결정적 반례를 확인한 것입니다.
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <div class="md:col-span-2 bg-slate-50 rounded-xl p-4 flex flex-col items-center border border-slate-200">
-                    <canvas id="cusp-canvas" width="500" height="260" class="w-full h-56 rounded-lg bg-white shadow-inner"></canvas>
+
+            <!-- 인터랙티브 시뮬레이터 1: 좌미분계수 vs 우미분계수 충돌 시각화 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-100 text-blue-800 font-bold text-xs">SIMULATOR 1</span>
+                        <h3 class="text-lg font-bold text-slate-900">좌·우 미분계수의 불일치 탐색기 (꺾인 점에서의 충돌)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">슬라이더를 움직여 좌우 할선 기울기가 서로 다름을 확인하세요</span>
                 </div>
+
+                <!-- 캔버스 (Light Mode 엄수: 배경 흰색) -->
+                <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="left-right-diff-canvas" width="800" height="320" class="w-full h-full block"></canvas>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-slate-700 mb-1">접근 간격 \(h\): <span id="val-lr-h" class="text-blue-600 font-bold">1.00</span></label>
+                        <input id="slider-lr-h" type="range" min="0.05" max="2.00" step="0.05" value="1.00" class="w-full accent-blue-600 cursor-pointer">
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                        <div class="text-slate-500 text-xs">좌미분계수 vs 우미분계수</div>
+                        <div id="stat-lr-diff" class="text-sm font-bold text-rose-600">좌: 0.00 ≠ 우: 1.00 (불일치)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 개념 1: 미분가능성과 연속성 정리 및 증명 (교과서 60쪽) -->
+            <div id="sec-12-proof" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">1</span>
+                    <h2 class="text-xl font-bold text-slate-900">정리 & 증명: 미분가능성과 연속성의 관계</h2>
+                </div>
+
+                <div class="space-y-4 text-slate-700 leading-relaxed text-sm md:text-base">
+                    <!-- 핵심 명제 배너 -->
+                    <div class="p-5 bg-gradient-to-r from-blue-50 via-indigo-50 to-white rounded-2xl border-2 border-blue-300 shadow-sm space-y-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-100 px-2.5 py-1 rounded-md">핵심 정리 (Theorem)</span>
+                        <h3 class="text-xl font-extrabold text-blue-950 mt-1">
+                            함수 \(f(x)\)가 \(x=a\)에서 미분가능하면, \(f(x)\)는 \(x=a\)에서 반드시 연속이다.
+                        </h3>
+                    </div>
+
+                    <!-- 단계별 엄밀한 증명 박스 -->
+                    <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-3 text-sm">
+                        <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                            수학적 엄밀 증명 (Proof):
+                        </div>
+                        <p>
+                            함수 \(f(x)\)가 \(x=a\)에서 미분가능하므로, 미분계수 \(f'(a) = \lim_{x \to a} \frac{f(x)-f(a)}{x-a}\)가 유한한 확정값으로 존재합니다.
+                        </p>
+                        <p>
+                            이제 \(x \ne a\)일 때, 다음과 같은 항등식을 세울 수 있습니다:
+                        </p>
+                        <div class="p-3 bg-white rounded-lg border border-slate-200 text-center font-medium overflow-x-auto text-slate-800">
+                            \(f(x) - f(a) = \frac{f(x) - f(a)}{x - a} \times (x - a)\)
+                        </div>
+                        <p>
+                            양변에 \(x \to a\) 극한을 취하고 극한의 성질(곱의 극한법칙)을 적용하면:
+                        </p>
+                        <div class="p-4 bg-white rounded-lg border border-blue-200 text-center overflow-x-auto text-blue-950 font-bold text-base">
+                            \(\begin{aligned}
+                            \lim_{x \to a} \{f(x) - f(a)\} &= \lim_{x \to a} \left\{ \frac{f(x)-f(a)}{x-a} \times (x-a) \right\} \\[6pt]
+                            &= \lim_{x \to a} \frac{f(x)-f(a)}{x-a} \times \lim_{x \to a} (x-a) \\[6pt]
+                            &= f'(a) \times 0 = 0
+                            \end{aligned}\)
+                        </div>
+                        <p>
+                            따라서 \(\lim_{x \to a} \{f(x) - f(a)\} = 0\)이므로:
+                        </p>
+                        <div class="p-3 bg-blue-50 rounded-lg text-center font-extrabold text-blue-900 text-base">
+                            \(\lim_{x \to a} f(x) = f(a)\)
+                        </div>
+                        <p class="text-xs text-slate-500">
+                            이는 \(x \to a\)에서의 극한값과 \(x=a\)에서의 함숫값이 일치함을 뜻하므로, <strong>함수 \(f(x)\)는 \(x=a\)에서 연속</strong>입니다. [증명 완료 Q.E.D.]
+                        </p>
+                    </div>
+
+                    <!-- 역과 대우의 논리 구조 카드 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-200 space-y-1.5 text-xs md:text-sm">
+                            <span class="font-bold text-rose-800 flex items-center gap-1">
+                                <span>⚠️ 역은 일반적으로 성립하지 않는다!</span>
+                            </span>
+                            <p class="text-slate-700 leading-relaxed">
+                                함수가 \(x=a\)에서 <strong>연속이라고 해서 반드시 미분가능한 것은 아닙니다</strong>. (반례: \(f(x)=|x|\)는 \(x=0\)에서 연속이지만 뾰족점이므로 미분불가)
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-emerald-50/70 rounded-xl border border-emerald-200 space-y-1.5 text-xs md:text-sm">
+                            <span class="font-bold text-emerald-800 flex items-center gap-1">
+                                <span>⚡ 대우 명제 (문제 해결 치트키!)</span>
+                            </span>
+                            <p class="text-slate-700 leading-relaxed">
+                                어떤 함수가 \(x=a\)에서 <strong>불연속이면, 그 함수는 \(x=a\)에서 절대로 미분가능하지 않습니다</strong>. 끊어져 있으면 접선을 논할 가치도 없습니다!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 인터랙티브 시뮬레이터 2: 집합 벤다이어그램 탐색기 -->
+            <div id="sec-12-venn" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-indigo-100 text-indigo-800 font-bold text-xs">SIMULATOR 2</span>
+                        <h3 class="text-lg font-bold text-slate-900">함수의 집합 관계 (벤다이어그램 탐색기)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">영역을 클릭하거나 버튼을 눌러 각 함수의 위치를 확인하세요</span>
+                </div>
+
+                <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="diff-cont-venn-canvas" width="800" height="320" class="w-full h-full block cursor-pointer"></canvas>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs md:text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold text-slate-700">대표 함수 보기:</span>
+                        <button type="button" onclick="selectVennRegion('diff')" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-xs">미분가능한 함수 (다항함수 등)</button>
+                        <button type="button" onclick="selectVennRegion('cont-only')" class="px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-800 font-bold text-xs border border-indigo-200">연속이지만 미분불가 (|x| 등)</button>
+                        <button type="button" onclick="selectVennRegion('discont')" class="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs">불연속 함수 (가우스함수 등)</button>
+                    </div>
+                    <div id="venn-desc" class="text-xs font-semibold text-slate-600">미분가능 ⊂ 연속 ⊂ 전체 함수</div>
+                </div>
+            </div>
+
+            <!-- 예제 1: |x|의 연속성과 미분가능성 (교과서 61쪽) -->
+            <div id="sec-12-ex1" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-xs">예제 1</span>
+                        <h3 class="text-lg font-bold text-slate-900">미분가능성과 연속성 조사하기</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 61쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    함수 \(f(x) = |x|\)는 \(x=0\)에서 연속이지만 미분가능하지 않음을 보이시오.
+                </div>
+
+                <!-- 단계별 정밀 풀이 해설 -->
                 <div class="space-y-4">
-                    <div class="p-3 bg-white rounded-xl space-y-2 text-xs border border-slate-200">
-                        <div class="flex justify-between">
-                            <span class="text-slate-600">우미분계수 ($x \to 0^+$):</span>
-                            <span class="font-bold text-sky-600 text-sm">+1.00</span>
+                    <!-- 단계 1 -->
+                    <div class="p-5 bg-white rounded-xl border border-slate-200 space-y-2 text-sm">
+                        <div class="font-bold text-blue-700 flex items-center gap-1.5">
+                            <span class="w-1.5 h-4 bg-blue-600 rounded-sm"></span>
+                            [단계 ➊] \(x=0\)에서의 함수의 연속성 조사
                         </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-600">좌미분계수 ($x \to 0^-$):</span>
-                            <span class="font-bold text-rose-600 text-sm">-1.00</span>
+                        <p class="text-slate-700 leading-relaxed">
+                            \(f(0) = |0| = 0\)이고, \(\lim_{x \to 0} f(x) = \lim_{x \to 0} |x| = 0\)이므로:
+                        </p>
+                        <div class="p-2.5 bg-blue-50/50 rounded-lg text-blue-900 font-bold text-center">
+                            \(f(0) = \lim_{x \to 0} f(x) = 0\)
                         </div>
-                        <div class="flex justify-between border-t border-slate-200 pt-2">
-                            <span class="text-slate-600">미분계수 존재 여부:</span>
-                            <span class="font-black text-rose-600 text-sm">존재하지 않음 (미분불가)</span>
+                        <p class="text-xs text-slate-500">
+                            함숫값과 극한값이 일치하므로, 함수 \(f(x)\)는 <strong>\(x=0\)에서 연속</strong>이다.
+                        </p>
+                    </div>
+
+                    <!-- 단계 2 -->
+                    <div class="p-5 bg-white rounded-xl border border-slate-200 space-y-2 text-sm">
+                        <div class="font-bold text-rose-700 flex items-center gap-1.5">
+                            <span class="w-1.5 h-4 bg-rose-600 rounded-sm"></span>
+                            [단계 ➋] \(x=0\)에서의 함수의 미분가능성 조사
+                        </div>
+                        <p class="text-slate-700 leading-relaxed">
+                            평균변화율의 극한에서 \(x \to 0^+\) (우미분계수)와 \(x \to 0^-\) (좌미분계수)를 각각 계산합니다:
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 py-1">
+                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs md:text-sm">
+                                <span class="font-bold text-slate-800">우미분계수 (\(x > 0\)):</span>
+                                <div class="py-1 text-slate-900 font-semibold overflow-x-auto">
+                                    \(\lim_{x \to 0^+} \frac{f(x)-f(0)}{x-0} = \lim_{x \to 0^+} \frac{|x|}{x} = \lim_{x \to 0^+} \frac{x}{x} = \mathbf{1}\)
+                                </div>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs md:text-sm">
+                                <span class="font-bold text-slate-800">좌미분계수 (\(x < 0\)):</span>
+                                <div class="py-1 text-slate-900 font-semibold overflow-x-auto">
+                                    \(\lim_{x \to 0^-} \frac{f(x)-f(0)}{x-0} = \lim_{x \to 0^-} \frac{|x|}{x} = \lim_{x \to 0^-} \frac{-x}{x} = \mathbf{-1}\)
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-slate-700 leading-relaxed pt-1">
+                            우미분계수(\(1\))와 좌미분계수(\(-1\))가 서로 다르므로 극한 \(\lim_{x \to 0} \frac{f(x)-f(0)}{x-0}\)의 값이 존재하지 않습니다.
+                        </p>
+                        <div class="p-2.5 bg-rose-50/50 rounded-lg text-rose-900 font-bold text-center text-xs md:text-sm">
+                            따라서 함수 \(f(x) = |x|\)는 <strong>\(x=0\)에서 연속이지만 미분가능하지 않다</strong>.
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Section Problems -->
-        <section id="sec-ex1" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-rose-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">대표 예제 풀이 & 연습장</h3>
-            </div>
-            <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
-                <div class="flex items-center justify-between">
-                    <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-700 text-xs font-bold">예제 1 (조각함수의 미분가능성)</span>
-                    <button onclick="toggleSolution('sol-ex7-1')" class="text-xs font-bold text-indigo-600 hover:underline">풀이 확인</button>
-                </div>
-                <h4 class="font-bold text-slate-900 text-base">
-                    함수 $f(x) = \begin{cases} x^2 + ax & (x \ge 1) \\ bx + 1 & (x < 1) \end{cases}$ 이 $x = 1$에서 미분가능할 때, 상수 $a, b$의 값을 구하시오.
-                </h4>
-                <div id="sol-ex7-1" class="hidden p-4 rounded-xl bg-white border border-slate-200 text-sm space-y-2">
-                    <p class="text-slate-700">1) <b>연속 조건:</b> $\lim_{x \to 1^+} f(x) = \lim_{x \to 1^-} f(x) \implies 1 + a = b + 1 \implies a = b$.</p>
-                    <p class="text-slate-700">2) <b>미분계수 일치 조건:</b> 각각 미분하면 우도함수 $2x + a$, 좌도함수 $b$. $x=1$ 대입 시 $2(1) + a = b$.</p>
-                    <p class="text-slate-700">$a = b$를 대입하면 $2 + a = a \implies$ 모순? 다시 확인:</p>
-                    <p class="font-semibold text-slate-900">연속: $1 + a = b + 1 \implies b = a$. 미분계수: 우미분 $2(1)+a = 2+a$, 좌미분 $b$. $2+a = b \implies 2+a = a$ 해가 없음(문제 수치 점검).</p>
-                    <p class="font-semibold text-slate-900">만약 $bx + 2$였다면: $1+a = b+2 \implies b = a-1$, $2+a = b \implies 2+a = a-1$. 일반적인 미분가능 문제 해결 원리는 <b>① 연속성 체크 ($f(1^+)=f(1^-)$)</b> 후 <b>② 좌우 미분계수 일치</b>로 연립방정식을 세우는 것입니다.</p>
-                </div>
-                <div class="mt-4">
-                    <div class="flex justify-between items-center mb-1.5 text-xs text-slate-500">
-                        <span><i class="fa-solid fa-pen-nib mr-1"></i> 문제 풀이 연습장</span>
-                        <button class="clear-scratchpad-btn hover:text-slate-700 font-bold">지우기</button>
-                    </div>
-                    <canvas class="scratchpad-canvas w-full h-36 rounded-xl border border-slate-300 bg-white"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section Check -->
-        <section id="sec-check" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-teal-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">스스로 확인하기 (형성평가)</h3>
-            </div>
-            <div class="space-y-4">
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <p class="font-bold text-sm mb-2 text-slate-900">01. 다음 중 옳은 것은? (① 연속이면 미분가능, ② 미분가능하면 연속)</p>
+            <!-- 문제 1: |x^2-1|의 연속성과 미분불가 증명 (교과서 61쪽) -->
+            <div id="sec-12-prob1" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div class="flex items-center gap-2">
-                        <button onclick="toggleSolution('ans-7-01')" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">정답 확인</button>
-                        <span id="ans-7-01" class="hidden font-bold text-sm text-teal-700">② 미분가능하면 항상 연속이다!</span>
+                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 1</span>
+                        <h3 class="text-lg font-bold text-slate-900">꺾인 이차함수의 미분가능성과 연속성</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 61쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
+                    함수 \(f(x) = |x^2 - 1|\)은 \(x=1\)에서 연속이지만 미분가능하지 않음을 보이시오.
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            풀이 연습장 (Scratchpad)
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-prob2-1')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-prob2-1" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
                     </div>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <p class="font-bold text-sm mb-2 text-slate-900">02. 함수 $f(x) = |x - 2|$는 $x = 2$에서 미분가능한가?</p>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleSolution('ans-7-02')" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">정답 확인</button>
-                        <span id="ans-7-02" class="hidden font-bold text-sm text-teal-700">미분 불가능하다 (뾰족점이므로 좌미분계수 -1, 우미분계수 +1로 다름)</span>
+
+                <!-- 채점 및 단계별 해설 아코디언 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">우미분계수와 좌미분계수 값 입력:</label>
+                            <div class="flex items-center gap-2">
+                                <input id="ans-u2-p1-r" type="text" placeholder="우미분 (예: 2)" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-32">
+                                <input id="ans-u2-p1-l" type="text" placeholder="좌미분 (예: -2)" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-32">
+                                <button type="button" onclick="checkProb2_1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
+                            </div>
+                        </div>
+                        <div id="res-u2-p1" class="text-xs font-semibold"></div>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-u2-p1')" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1">
+                            <span>상세 증명 과정 보기</span>
+                            <span id="sol-u2-p1-arrow">▼</span>
+                        </button>
+                        <div id="sol-u2-p1" class="hidden mt-3 p-4 bg-white rounded-xl border border-emerald-200 text-xs md:text-sm text-slate-700 space-y-2">
+                            <p><strong>1) 연속성 조사:</strong><br>
+                            \(f(1) = |1^2 - 1| = 0\), \(\lim_{x \to 1} |x^2-1| = 0\)이므로 \(\lim_{x \to 1} f(x) = f(1)\). 따라서 \(x=1\)에서 연속이다.</p>
+                            <p><strong>2) 미분가능성 조사:</strong><br>
+                            • 우미분계수 (\(x > 1\)일 때 \(x^2 - 1 > 0\)):<br>
+                            \(\lim_{x \to 1^+} \frac{|x^2-1|-0}{x-1} = \lim_{x \to 1^+} \frac{(x-1)(x+1)}{x-1} = \lim_{x \to 1^+} (x+1) = \mathbf{2}\)<br>
+                            • 좌미분계수 (\(0 < x < 1\)일 때 \(x^2 - 1 < 0\)):<br>
+                            \(\lim_{x \to 1^-} \frac{|x^2-1|-0}{x-1} = \lim_{x \to 1^-} \frac{-(x-1)(x+1)}{x-1} = \lim_{x \to 1^-} -(x+1) = \mathbf{-2}\)<br>
+                            우미분계수(\(2\))와 좌미분계수(\(-2\))가 다르므로 \(x=1\)에서 미분가능하지 않다.</p>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 인터랙티브 시뮬레이터 3: 꺾인점 현미경 돋보기 (corner-zoom-canvas) -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-teal-100 text-teal-800 font-bold text-xs">SIMULATOR 3</span>
+                        <h3 class="text-lg font-bold text-slate-900">첨점(꺾인점) 돋보기 현미경 (Corner Zoom-in)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">f(x)=|x²-1|의 x=1 지점을 계속 확대해도 뾰족함이 사라지지 않음을 관찰하세요</span>
+                </div>
+
+                <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="corner-zoom-canvas" width="800" height="320" class="w-full h-full block"></canvas>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-slate-700 mb-1">확대 배율: <span id="val-corner-zoom" class="text-teal-600 font-bold">1x (기본)</span></label>
+                        <input id="slider-corner-zoom" type="range" min="1" max="40" step="1" value="1" class="w-full accent-teal-600 cursor-pointer">
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                        <div class="text-slate-500 text-xs">국소적 형태 판별</div>
+                        <div class="text-sm font-bold text-rose-600">꺾인 각도 유지 (미분불가)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문제해결·의사소통: 불연속점과 미분불가능점 판별 (교과서 61쪽) -->
+            <div id="sec-12-comm" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-purple-600 text-white font-bold text-xs">문제해결·의사소통</span>
+                        <h3 class="text-lg font-bold text-slate-900">그래프에서 불연속점과 미분불가능한 점 판별</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 61쪽</span>
+                </div>
+
+                <div class="p-5 bg-purple-50/50 rounded-xl border border-purple-200 text-slate-800 text-sm md:text-base space-y-4">
+                    <p class="leading-relaxed">
+                        다음 그림은 열린구간 \((-2, 4)\)에서 정의된 함수 \(y=f(x)\)의 그래프입니다.
+                        그래프에는 <strong>끊어진 점(불연속)</strong>과 <strong>이어져 있지만 뾰족하게 꺾인 점(첨점)</strong>이 포함되어 있습니다.
+                    </p>
+
+                    <!-- 그래프 도식 이미지 대체 인터랙티브 SVG 다이어그램 -->
+                    <div class="p-4 bg-white rounded-xl border border-purple-200 flex justify-center">
+                        <svg class="w-full max-w-lg h-56" viewBox="0 0 500 220">
+                            <!-- 그리드 및 축 -->
+                            <line x1="30" y1="180" x2="470" y2="180" stroke="#cbd5e1" stroke-width="1.5"/>
+                            <line x1="180" y1="20" x2="180" y2="200" stroke="#cbd5e1" stroke-width="1.5"/>
+                            <text x="475" y="185" fill="#64748b" font-size="12">x</text>
+                            <text x="175" y="15" fill="#64748b" font-size="12">y</text>
+                            <text x="165" y="195" fill="#64748b" font-size="11">0</text>
+                            
+                            <!-- 눈금 -->
+                            <text x="110" y="195" fill="#64748b" font-size="11">-1</text>
+                            <text x="250" y="195" fill="#64748b" font-size="11">1</text>
+                            <text x="320" y="195" fill="#64748b" font-size="11">2</text>
+                            <text x="390" y="195" fill="#64748b" font-size="11">3</text>
+
+                            <!-- 곡선: x=-1에서 끊어짐(불연속, 구멍 x1=110 y=140, 점 y=100) -->
+                            <!-- (-2, -1) 구간 곡선 -->
+                            <path d="M 50 160 Q 80 150 110 140" fill="none" stroke="#2563eb" stroke-width="3"/>
+                            <circle cx="110" cy="140" r="4" fill="white" stroke="#2563eb" stroke-width="2"/>
+                            <!-- x=-1 함숫값 -->
+                            <circle cx="110" cy="100" r="4.5" fill="#2563eb"/>
+
+                            <!-- [-1, 1] 구간 곡선 -> x=1에서 뾰족점 (1, 1) -->
+                            <path d="M 110 80 Q 180 50 250 120" fill="none" stroke="#2563eb" stroke-width="3"/>
+                            <circle cx="110" cy="80" r="4" fill="white" stroke="#2563eb" stroke-width="2"/>
+
+                            <!-- x=1에서 꺾임 (250, 120) -> x=3까지 완만히 상승 -->
+                            <path d="M 250 120 L 320 60 L 390 130" fill="none" stroke="#2563eb" stroke-width="3"/>
+                            <!-- x=2에서 꺾임 (320, 60) -->
+
+                            <!-- 라벨 포인터 -->
+                            <text x="95" y="65" fill="#e11d48" font-size="11" font-weight="bold">불연속 (x = -1)</text>
+                            <text x="230" y="145" fill="#7c3aed" font-size="11" font-weight="bold">꺾인점 (x = 1)</text>
+                            <text x="310" y="45" fill="#7c3aed" font-size="11" font-weight="bold">꺾인점 (x = 2)</text>
+                        </svg>
+                    </div>
+
+                    <!-- 2개 발문 및 판별 채점기 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- 문항 1 -->
+                        <div class="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
+                            <span class="text-xs font-bold text-rose-600 tracking-wide uppercase">질문 1</span>
+                            <p class="text-sm font-semibold text-slate-800">함수 \(f(x)\)가 불연속인 \(x\)의 값을 모두 구하시오.</p>
+                            <div class="flex gap-2 pt-1">
+                                <input id="ans-comm-1" type="text" placeholder="예: -1" class="flex-1 px-3 py-1.5 text-sm rounded border border-slate-300">
+                                <button type="button" onclick="checkComm1()" class="px-3 py-1.5 bg-rose-600 text-white rounded text-xs font-bold hover:bg-rose-700 transition">확인</button>
+                            </div>
+                            <div id="res-comm-1" class="text-xs font-semibold"></div>
+                        </div>
+
+                        <!-- 문항 2 -->
+                        <div class="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
+                            <span class="text-xs font-bold text-purple-600 tracking-wide uppercase">질문 2</span>
+                            <p class="text-sm font-semibold text-slate-800">함수 \(f(x)\)가 연속이지만 미분가능하지 않은 \(x\)의 값을 모두 구하시오.</p>
+                            <div class="flex gap-2 pt-1">
+                                <input id="ans-comm-2" type="text" placeholder="예: 1, 2" class="flex-1 px-3 py-1.5 text-sm rounded border border-slate-300">
+                                <button type="button" onclick="checkComm2()" class="px-3 py-1.5 bg-purple-600 text-white rounded text-xs font-bold hover:bg-purple-700 transition">확인</button>
+                            </div>
+                            <div id="res-comm-2" class="text-xs font-semibold"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </section>
-    </main>
-
-    <script>
-    const cv7 = document.getElementById('cusp-canvas');
-    if (cv7) {
-        const ctx = cv7.getContext('2d');
-        const ox = 250, oy = 210, sx = 80, sy = 60;
-
-        // Axes
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(20, oy); ctx.lineTo(480, oy);
-        ctx.moveTo(ox, 10); ctx.lineTo(ox, 240);
-        ctx.stroke();
-
-        // Left branch y = -x
-        ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(ox - 2.5 * sx, oy - 2.5 * sy);
-        ctx.lineTo(ox, oy);
-        ctx.stroke();
-
-        // Right branch y = x
-        ctx.strokeStyle = '#0284c7';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(ox, oy);
-        ctx.lineTo(ox + 2.5 * sx, oy - 2.5 * sy);
-        ctx.stroke();
-
-        // Cusp point
-        ctx.fillStyle = '#7c3aed';
-        ctx.beginPath();
-        ctx.arc(ox, oy, 6, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Slope notes
-        ctx.fillStyle = '#ef4444';
-        ctx.font = 'bold 12px sans-serif';
-        ctx.fillText('기울기 = -1', ox - 110, oy - 1.2 * sy);
-        ctx.fillStyle = '#0284c7';
-        ctx.fillText('기울기 = +1', ox + 40, oy - 1.2 * sy);
-    }
-    </script>
     
-    <!-- Floating Whiteboard & Scroll Controls -->
-    <div id="floating-controls" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 no-print">
-        <button onclick="toggleWhiteboard()" title="전자칠판 판서 모드 켜기/끄기"
-            class="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center ring-4 ring-indigo-500/20 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer">
-            <i class="fa-solid fa-chalkboard-user text-lg"></i>
-        </button>
-        <button id="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="맨 위로 가기"
-            class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center opacity-0 pointer-events-none translate-y-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200">
-            <i class="fa-solid fa-arrow-up text-sm"></i>
-        </button>
-    </div>
+        <!-- ===================================================================
+             [13차시 전반] 스스로 확인하기 (교과서 62쪽 전 문항)
+             =================================================================== -->
+        <section id="sec-13-selfcheck" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <!-- 13차시 배너 -->
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
+                <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-emerald-50 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                        13차시 / 13차시
+                    </span>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">교과서 62~63쪽</span>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                    02. 스스로 확인하기 & 공학 탐구
+                </h1>
+                <p class="mt-2 text-slate-600 leading-relaxed text-sm md:text-base">
+                    미분가능성과 연속성의 관계를 정확히 이해했는지 점검하고, 로봇 공학의 운동 제어 충격 문제와 고속도로 커브길의 클로소이드(Clothoid) 완화 곡선 설계를 탐구합니다.
+                </p>
+            </div>
 
-    <!-- Common JavaScript -->
-    <script>
-    // KaTeX Auto-render
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof renderMathInElement === 'function') {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ],
-                throwOnError: false
-            });
-        }
-    });
+            <!-- 문항 01: 학습 목표 되새기기 (OX 퀴즈) -->
+            <div id="prob-sc-01" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-xs">01</span>
+                        <h3 class="text-lg font-bold text-slate-900">학습 목표 되새기기 (참/거짓 OX 판별)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 62쪽</span>
+                </div>
 
-    // Dark Mode Toggle
-    function toggleDarkMode() {
-        document.documentElement.classList.toggle('dark');
-        if (typeof drawSimulation === 'function') drawSimulation();
-    }
+                <p class="text-sm text-slate-700">다음 문장을 읽고 맞으면 ○, 틀리면 ×를 선택하시오.</p>
 
-    // Solution Toggle
-    function toggleSolution(id) {
-        const box = document.getElementById(id);
-        if (box) {
-            box.classList.toggle('hidden');
-        }
-    }
+                <div class="space-y-4">
+                    <!-- 소문항 1 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+                        <div class="text-slate-800">
+                            ⑴ 함수 \(f(x)\)가 \(x=a\)에서 미분가능하면 \(f(x)\)는 \(x=a\)에서 연속이다.
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <label class="flex items-center gap-1 cursor-pointer font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-blue-50">
+                                <input type="radio" name="ox-1" value="O" class="text-blue-600"> ○
+                            </label>
+                            <label class="flex items-center gap-1 cursor-pointer font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-rose-50">
+                                <input type="radio" name="ox-1" value="X" class="text-rose-600"> ×
+                            </label>
+                        </div>
+                    </div>
 
-    // Scratchpad canvas initialization
-    function initScratchpads() {
-        document.querySelectorAll('.scratchpad-canvas').forEach(canvas => {
-            const ctx = canvas.getContext('2d');
-            let drawing = false;
+                    <!-- 소문항 2 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+                        <div class="text-slate-800">
+                            ⑵ 함수 \(f(x)\)가 \(x=a\)에서 연속이면 \(f(x)\)는 \(x=a\)에서 미분가능하다.
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <label class="flex items-center gap-1 cursor-pointer font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-blue-50">
+                                <input type="radio" name="ox-2" value="O" class="text-blue-600"> ○
+                            </label>
+                            <label class="flex items-center gap-1 cursor-pointer font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-rose-50">
+                                <input type="radio" name="ox-2" value="X" class="text-rose-600"> ×
+                            </label>
+                        </div>
+                    </div>
 
-            function resize() {
-                const rect = canvas.getBoundingClientRect();
-                if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                    canvas.width = rect.width;
-                    canvas.height = rect.height;
-                }
-            }
-            resize();
-            window.addEventListener('resize', resize);
+                    <!-- 소문항 3 -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+                        <div class="text-slate-800">
+                            ⑶ 함수 \(f(x)\)가 \(x=a\)에서 연속이 아니면 \(f(x)\)는 \(x=a\)에서 미분가능하지 않다.
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <label class="flex items-center gap-1 cursor-pointer font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-blue-50">
+                                <input type="radio" name="ox-3" value="O" class="text-blue-600"> ○
+                            </label>
+                            <label class="flex items-center gap-1 cursor-pointer font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-rose-50">
+                                <input type="radio" name="ox-3" value="X" class="text-rose-600"> ×
+                            </label>
+                        </div>
+                    </div>
 
-            function getPos(e) {
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches ? e.touches[0] : e;
-                return {
-                    x: touch.clientX - rect.left,
-                    y: touch.clientY - rect.top
-                };
-            }
+                    <div class="flex items-center justify-between pt-2">
+                        <button type="button" onclick="checkSc01()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition">01번 정답 일괄 채점</button>
+                        <div id="res-sc-01" class="text-xs font-semibold"></div>
+                    </div>
+                </div>
+            </div>
 
-            function start(e) {
-                drawing = true;
-                ctx.beginPath();
-                const p = getPos(e);
-                ctx.moveTo(p.x, p.y);
-            }
-            function move(e) {
-                if (!drawing) return;
-                e.preventDefault();
-                const p = getPos(e);
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#93c5fd' : '#2563eb';
-                ctx.lineTo(p.x, p.y);
-                ctx.stroke();
-            }
-            function stop() {
-                drawing = false;
-            }
+            <!-- 문항 02: 미분가능 함수의 극한값 (교과서 62쪽) -->
+            <div id="prob-sc-02" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold text-xs">02</span>
+                        <h3 class="text-lg font-bold text-slate-900">미분가능한 함수의 극한값 계산</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 62쪽</span>
+                </div>
 
-            canvas.addEventListener('mousedown', start);
-            canvas.addEventListener('mousemove', move);
-            window.addEventListener('mouseup', stop);
-            canvas.addEventListener('touchstart', start, {passive: false});
-            canvas.addEventListener('touchmove', move, {passive: false});
-            window.addEventListener('touchend', stop);
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    \(x=1\)에서 미분가능한 함수 \(f(x)\)에 대하여 \(f(1) = 3\)일 때, \(\lim_{x \to 1} f(x)\)의 값을 구하시오.
+                </div>
 
-            const clearBtn = canvas.parentElement.querySelector('.clear-scratchpad-btn');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                });
-            }
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">답안 입력 (숫자):</label>
+                            <input id="ans-sc-02" type="text" placeholder="예: 3" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc02()" class="px-5 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc-02" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc-02')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>핵심 해설 보기</span>
+                            <span id="sol-sc-02-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc-02" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-1">
+                            <p><strong>풀이:</strong> 함수 \(f(x)\)가 \(x=1\)에서 미분가능하므로 \(f(x)\)는 \(x=1\)에서 반드시 연속입니다.</p>
+                            <p>연속의 정의에 의해 \(\lim_{x \to 1} f(x) = f(1)\)이 성립하므로, 구하는 극한값은 \(\mathbf{3}\)입니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 03: 구간별 이차함수의 연속성과 미분가능성 (교과서 62쪽) -->
+            <div id="prob-sc-03" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold text-xs">03</span>
+                        <h3 class="text-lg font-bold text-slate-900">구간별 이차함수의 연속성과 미분가능성</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 62쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium space-y-3 leading-relaxed">
+                    <p>함수 \(f(x) = \begin{cases} x^2 + x & (x < 0) \\[4pt] -x^2 + x & (x \ge 0) \end{cases}\)에 대하여 다음 물음에 답하시오.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-sm">
+                        <div>⑴ 함수 \(f(x)\)의 \(x=0\)에서의 연속성을 조사하시오.</div>
+                        <div>⑵ 함수 \(f(x)\)의 \(x=0\)에서의 미분가능성을 조사하시오.</div>
+                    </div>
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            좌우 극한 및 미분계수 연습장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc-03')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc-03" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑴ 연속성 판별:</label>
+                            <div class="flex gap-2">
+                                <select id="ans-sc-03-1" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 bg-white">
+                                    <option value="">선택하세요</option>
+                                    <option value="연속">연속이다</option>
+                                    <option value="불연속">불연속이다</option>
+                                </select>
+                                <button type="button" onclick="checkSc03_1()" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">확인</button>
+                            </div>
+                            <div id="res-sc-03-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑵ 미분가능성 판별:</label>
+                            <div class="flex gap-2">
+                                <select id="ans-sc-03-2" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 bg-white">
+                                    <option value="">선택하세요</option>
+                                    <option value="미분가능">미분가능하다 (f'(0)=1)</option>
+                                    <option value="미분불가">미분가능하지 않다</option>
+                                </select>
+                                <button type="button" onclick="checkSc03_2()" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">확인</button>
+                            </div>
+                            <div id="res-sc-03-2" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc-03')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>상세 풀이 해설 보기</span>
+                            <span id="sol-sc-03-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc-03" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
+                            <p><strong>⑴ 연속성:</strong> \(f(0) = 0\), \(\lim_{x \to 0^+} (-x^2+x) = 0\), \(\lim_{x \to 0^-} (x^2+x) = 0\)이므로 \(\lim_{x \to 0} f(x) = f(0) = 0\). 따라서 <strong>연속이다</strong>.</p>
+                            <p><strong>⑵ 미분가능성:</strong><br>
+                            • 우미분계수: \(\lim_{x \to 0^+} \frac{-x^2+x - 0}{x} = \lim_{x \to 0^+} (-x + 1) = \mathbf{1}\)<br>
+                            • 좌미분계수: \(\lim_{x \to 0^-} \frac{x^2+x - 0}{x} = \lim_{x \to 0^-} (x + 1) = \mathbf{1}\)<br>
+                            좌우 미분계수가 모두 \(1\)로 일치하므로 \(f'(0) = 1\)이며, 따라서 <strong>미분가능하다</strong>!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 04: 미분가능한 함수 고르기 (교과서 62쪽) -->
+            <div id="prob-sc-04" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold text-xs">04</span>
+                        <h3 class="text-lg font-bold text-slate-900">미분가능한 함수 고르기 (보기 선다형)</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 62쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium space-y-3">
+                    <p>\(x=1\)에서 미분가능한 함수인 것만을 보기에서 있는 대로 고르시오.</p>
+                    <div class="p-4 bg-white rounded-lg border border-slate-200 space-y-2 font-mono text-xs md:text-sm">
+                        <div>ㄱ. \(f(x) = x^2 - 3x + 2\)</div>
+                        <div>ㄴ. \(f(x) = (x-1)|x-1|\)</div>
+                        <div>ㄷ. \(f(x) = \begin{cases} \frac{x-1}{|x-1|} & (x \ne 1) \\[4pt] 1 & (x=1) \end{cases}\)</div>
+                        <div>ㄹ. \(f(x) = \begin{cases} x & (x < 1) \\[4pt] x^2 & (x \ge 1) \end{cases}\)</div>
+                    </div>
+                </div>
+
+                <!-- 선택 체크박스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex flex-wrap items-center gap-5 text-sm font-semibold text-slate-700">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="chk-g" class="w-4 h-4 rounded text-blue-600"> ㄱ
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="chk-n" class="w-4 h-4 rounded text-blue-600"> ㄴ
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="chk-d" class="w-4 h-4 rounded text-blue-600"> ㄷ
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="chk-r" class="w-4 h-4 rounded text-blue-600"> ㄹ
+                        </label>
+                        <button type="button" onclick="checkSc04()" class="px-5 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition ml-auto">정답 채점</button>
+                    </div>
+                    <div id="res-sc-04" class="text-xs font-semibold"></div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc-04')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>보기별 상세 분석</span>
+                            <span id="sol-sc-04-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc-04" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
+                            <p><strong>ㄱ (참):</strong> 다항함수는 모든 실수에서 미분가능합니다. \(f'(1) = 2(1)-3 = -1\).</p>
+                            <p><strong>ㄴ (참):</strong> 우미분 \(\lim_{x \to 1^+} \frac{(x-1)^2}{x-1} = 0\), 좌미분 \(\lim_{x \to 1^-} \frac{-(x-1)^2}{x-1} = 0\) 일치하므로 \(f'(1)=0\)으로 미분가능!</p>
+                            <p><strong>ㄷ (거짓):</strong> \(x \to 1^+\) 극한은 \(1\), \(x \to 1^-\) 극한은 \(-1\)로 불연속이므로 미분불가.</p>
+                            <p><strong>ㄹ (거짓):</strong> 연속이지만 좌미분계수 \(1\), 우미분계수 \(\lim_{x \to 1^+} \frac{x^2-1}{x-1} = 2\)로 다르므로 미분불가.</p>
+                            <div class="text-blue-700 font-bold">따라서 정답은 ㄱ, ㄴ 입니다.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 05: 매끄러운 곡선 접합 미정계수 결정 (교과서 62쪽) -->
+            <div id="prob-sc-05" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-slate-700 text-white font-bold text-xs">05</span>
+                        <h3 class="text-lg font-bold text-slate-900">미분가능 조건에서의 미정계수 결정</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 62쪽</span>
+                </div>
+
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium leading-relaxed">
+                    함수 \(f(x) = \begin{cases} ax^2 + 2 & (x \le 1) \\[4pt] x^4 + b & (x > 1) \end{cases}\)가 \(x=1\)에서 미분가능할 때, 상수 \(a, b\)에 대하여 \(a+b\)의 값을 구하시오.
+                </div>
+
+                <!-- 인터랙티브 시뮬레이터 4: 미분가능한 매끄러운 접합기 -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">SIMULATOR 4: 매끄러운 접합(Smooth Joint) 시각화</span>
+                        <span class="text-xs text-slate-500">슬라이더로 a와 b를 조절하여 두 곡선이 부드럽게 융합되게 맞추세요</span>
+                    </div>
+                    <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="smooth-joint-canvas" width="800" height="320" class="w-full h-full block"></canvas>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">상수 \(a\): <span id="val-sj-a" class="text-blue-600 font-bold">2.0</span></label>
+                            <input id="slider-sj-a" type="range" min="0" max="4" step="0.2" value="2.0" class="w-full accent-blue-600 cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">상수 \(b\): <span id="val-sj-b" class="text-purple-600 font-bold">3.0</span></label>
+                            <input id="slider-sj-b" type="range" min="0" max="5" step="0.2" value="3.0" class="w-full accent-purple-600 cursor-pointer">
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <div class="text-slate-500 text-xs">접합 상태 판정</div>
+                            <div id="stat-sj-status" class="text-sm font-bold text-emerald-600">미분가능 매끄러움 (a=2, b=3)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            연립방정식 전개 연습장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc-05')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc-05" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 인터페이스 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="space-y-1">
+                            <label class="text-xs font-semibold text-slate-700">\(a + b\) 값 입력:</label>
+                            <input id="ans-sc-05" type="text" placeholder="예: 5" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36">
+                        </div>
+                        <div class="pt-5">
+                            <button type="button" onclick="checkSc05()" class="px-5 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
+                        </div>
+                        <div id="res-sc-05" class="text-xs font-semibold pt-5"></div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc-05')" class="text-xs font-bold text-slate-700 hover:text-slate-900 flex items-center gap-1">
+                            <span>2단계 연립 풀이 해설</span>
+                            <span id="sol-sc-05-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc-05" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
+                            <p><strong>1단계 (연속 조건):</strong> \(x=1\)에서 연속이어야 하므로:<br>
+                            \(a(1)^2 + 2 = 1^4 + b \implies a + 2 = 1 + b \implies b = a + 1\) ⋯ ㉠</p>
+                            <p><strong>2단계 (미분계수 일치 조건):</strong><br>
+                            • 좌미분계수: \(\lim_{x \to 1^-} \frac{ax^2+2 - (a+2)}{x-1} = \lim_{x \to 1^-} \frac{a(x^2-1)}{x-1} = 2a\)<br>
+                            • 우미분계수: \(\lim_{x \to 1^+} \frac{x^4+b - (1+b)}{x-1} = \lim_{x \to 1^+} \frac{x^4-1}{x-1} = 4\)<br>
+                            따라서 \(2a = 4 \implies \mathbf{a = 2}\).<br>
+                            ㉠에 대입하면 \(b = 2 + 1 = \mathbf{3}\).</p>
+                            <p class="font-bold text-blue-700">따라서 \(a + b = 2 + 3 = \mathbf{5}\)입니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 문항 06: 생각을 키우는 문제 (로봇 왕복 운동, 교과서 62쪽) -->
+            <div id="prob-sc-06" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-rose-600 text-white font-bold text-xs">06</span>
+                        <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-800 font-semibold text-xs border border-rose-200">생각을 키우는 문제 · 로봇공학</span>
+                        <h3 class="text-lg font-bold text-slate-900">실험실 로봇의 왕복 이동과 순간속도 충격</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 62쪽</span>
+                </div>
+
+                <div class="p-5 bg-gradient-to-r from-rose-50/50 via-white to-white rounded-xl border border-rose-200 text-slate-800 text-sm md:text-base space-y-3 leading-relaxed">
+                    <p>
+                        어느 실험실에서 사용되는 로봇이 \(20\,\text{m}\) 떨어진 두 지점 A, B 사이를 왕복 이동하고 있습니다.
+                        A 지점을 출발한 지 \(t\)초 후 A 지점에서 로봇까지의 거리를 \(f(t)\,\text{m}\)라고 하면:
+                    </p>
+                    <div class="p-4 bg-white rounded-lg border border-rose-200 text-center font-bold text-rose-950 text-sm md:text-base">
+                        \(f(t) = \begin{cases} t & (0 \le t \le 20) \\[6pt] -\frac{1}{20}(t-20)^2 + 20 & (20 \le t \le 40) \end{cases}\)
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-sm text-slate-700">
+                        <div>⑴ 함수 \(f(t)\)의 \(t=20\)에서의 연속성을 조사하시오.</div>
+                        <div>⑵ 함수 \(f(t)\)의 \(t=20\)에서의 미분가능성을 조사하시오.</div>
+                    </div>
+                </div>
+
+                <!-- 인터랙티브 시뮬레이터 5: 로봇 왕복 운동 및 충격도 시뮬레이터 -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">SIMULATOR 5: 로봇 주행 궤적 및 순간속도 불연속 충격(Jerk) 분석기</span>
+                        <span class="text-xs text-slate-500">시간 슬라이더를 드래그하여 로봇의 움직임을 관찰하세요</span>
+                    </div>
+                    <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="robot-motion-canvas" width="800" height="320" class="w-full h-full block"></canvas>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold text-slate-700 mb-1">경과 시간 \(t\): <span id="val-robot-t" class="text-rose-600 font-bold">20.0 초</span></label>
+                            <input id="slider-robot-t" type="range" min="0" max="40" step="0.5" value="20.0" class="w-full accent-rose-600 cursor-pointer">
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <div class="text-slate-500 text-xs">순간속도 \(f'(t)\)</div>
+                            <div id="stat-robot-vel" class="text-sm font-bold text-rose-700">t=20초: 속도 급변(충격)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 전자 스크래치패드 -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            미분계수 정의 적용 연습장
+                        </span>
+                        <button type="button" onclick="clearScratchpad('sp-sc-06')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    </div>
+                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
+                        <canvas id="sp-sc-06" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
+                    </div>
+                </div>
+
+                <!-- 채점 및 해설 아코디언 -->
+                <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑴ \(t=20\) 연속성:</label>
+                            <div class="flex gap-2">
+                                <select id="ans-sc-06-1" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 bg-white">
+                                    <option value="">선택</option>
+                                    <option value="연속">연속이다</option>
+                                    <option value="불연속">불연속이다</option>
+                                </select>
+                                <button type="button" onclick="checkSc06_1()" class="px-4 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition">확인</button>
+                            </div>
+                            <div id="res-sc-06-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-slate-700">⑵ \(t=20\) 미분가능성:</label>
+                            <div class="flex gap-2">
+                                <select id="ans-sc-06-2" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 bg-white">
+                                    <option value="">선택</option>
+                                    <option value="미분불가">미분가능하지 않다 (속도 급변)</option>
+                                    <option value="미분가능">미분가능하다</option>
+                                </select>
+                                <button type="button" onclick="checkSc06_2()" class="px-4 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition">확인</button>
+                            </div>
+                            <div id="res-sc-06-2" class="text-xs font-semibold min-h-[1.25rem]"></div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200">
+                        <button type="button" onclick="toggleSolution('sol-sc-06')" class="text-xs font-bold text-rose-700 hover:text-rose-800 flex items-center gap-1">
+                            <span>물리·공학적 의미 및 상세 풀이</span>
+                            <span id="sol-sc-06-arrow">▼</span>
+                        </button>
+                        <div id="sol-sc-06" class="hidden mt-3 p-4 bg-white rounded-xl border border-rose-200 text-xs md:text-sm text-slate-700 space-y-2">
+                            <p><strong>⑴ 연속성:</strong> \(f(20) = 20\), \(\lim_{t \to 20^-} t = 20\), \(\lim_{t \to 20^+} \{-\frac{1}{20}(t-20)^2+20\} = 20\)이므로 <strong>연속이다</strong>.</p>
+                            <p><strong>⑵ 미분가능성:</strong><br>
+                            • 좌미분계수 (진입속도): \(\lim_{t \to 20^-} \frac{t - 20}{t - 20} = \mathbf{1}\) (\(1\,\text{m/s}\))<br>
+                            • 우미분계수 (출발속도): \(\lim_{t \to 20^+} \frac{-\frac{1}{20}(t-20)^2+20 - 20}{t - 20} = \lim_{t \to 20^+} -\frac{1}{20}(t-20) = \mathbf{0}\) (\(0\,\text{m/s}\))<br>
+                            좌우 미분계수가 \(1 \ne 0\)으로 다르므로 <strong>미분가능하지 않다</strong>.</p>
+                            <p class="text-xs text-rose-800 bg-rose-50 p-2.5 rounded mt-2">
+                                💡 <strong>로봇 제어 공학적 의미:</strong> \(1\,\text{m/s}\)로 주행하던 로봇이 \(t=20\)초인 지점에서 속도가 찰나의 순간에 \(0\)으로 꺾이기 때문에, 무한대의 가속도(충격)가 발생하여 모터 과부하 및 기계적 파손이 생깁니다. 따라서 실제 로봇에서는 속도 함수가 미분가능하도록 매끄럽게 제어해야 합니다!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    
+        <!-- ===================================================================
+             [13차시 후반] 공학 융합 탐구: 고속도로와 클로소이드 곡선 (교과서 63쪽)
+             =================================================================== -->
+        <section id="sec-13-clothoid" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+            
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded bg-teal-600 text-white font-bold text-xs">공학 융합 탐구</span>
+                        <h3 class="text-lg font-bold text-slate-900">미분이 이용되는 고속 도로의 설계: 클로소이드 곡선</h3>
+                    </div>
+                    <span class="text-xs text-slate-500">교과서 63쪽</span>
+                </div>
+
+                <div class="p-5 bg-teal-50/50 rounded-xl border border-teal-200 text-slate-800 text-sm md:text-base space-y-4 leading-relaxed">
+                    <p>
+                        고속 도로를 운전하다 보면 곡선 모양의 커브 길을 자주 볼 수 있는데, 커브 길을 설계할 때는 <strong>직선 구간</strong>과 <strong>원형 구간</strong>의 조합을 이용합니다.
+                        하지만 이 두 구간을 바로 이으면(형태 [A]) 직선과 원이 만나는 지점에서 치명적인 안전 문제가 발생합니다!
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+                        <div class="p-4 bg-white rounded-xl border border-rose-200 space-y-2">
+                            <span class="font-bold text-rose-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-rose-600"></span>
+                                [A] 클로소이드 곡선이 없는 도로 (위험!)
+                            </span>
+                            <p class="text-slate-600 leading-relaxed">
+                                직선 구간의 곡률(휨 정도)은 \(0\)이고 원형 구간의 곡률은 \(1/R\)입니다. 두 구간이 직접 맞닿으면 <strong>접점에서 곡률이 불연속</strong>이 됩니다!
+                                운전자는 원형 구간에 진입하는 찰나에 운전대를 급격히 꺾어야 하므로, 원심력 급증으로 전복 위험과 극심한 멀미를 유발합니다.
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-white rounded-xl border border-teal-200 space-y-2">
+                            <span class="font-bold text-teal-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-teal-600"></span>
+                                [B] 클로소이드 완화 곡선이 있는 도로 (안전!)
+                            </span>
+                            <p class="text-slate-600 leading-relaxed">
+                                직선과 원 사이에 곡률이 주행 거리에 비례하여 서서히 바뀌는 <strong>클로소이드 곡선(Clothoid curve, 완화 곡선)</strong>을 배치합니다.
+                                곡률이 연속적(2차 도함수 매끄러움)으로 전이되므로, 운전자가 운전대를 일정한 속도로 부드럽게 돌리며 안전하고 편안하게 주행할 수 있습니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 인터랙티브 시뮬레이터 6: 클로소이드 완화 곡선 고속도로 주행 시뮬레이터 -->
+                <div class="space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs font-bold text-slate-700">SIMULATOR 6: 고속도로 커브 주행 시뮬레이터 (핸들 조작 & 횡가속도 비교)</span>
+                        <div class="flex items-center gap-1">
+                            <button id="btn-road-a" type="button" onclick="setClothoidMode('A')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-rose-600 text-white">[A] 직접 연결 (곡률 불연속)</button>
+                            <button id="btn-road-b" type="button" onclick="setClothoidMode('B')" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300">[B] 클로소이드 완화 곡선</button>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full h-[360px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
+                        <canvas id="clothoid-highway-canvas" width="800" height="360" class="w-full h-full block"></canvas>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
+                        <div class="sm:col-span-2">
+                            <label class="block font-semibold text-slate-700 mb-1">차량 주행 위치: <span id="val-car-pos" class="text-teal-600 font-bold">직선 진입로</span></label>
+                            <input id="slider-car-pos" type="range" min="0" max="100" step="1" value="0" class="w-full accent-teal-600 cursor-pointer">
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <div class="text-slate-500 text-xs">운전대 회전 속도 (곡률 변화율)</div>
+                            <div id="stat-steering" class="text-sm font-bold text-teal-700">안정 (조작 여유)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-blue-50 rounded-xl border border-blue-200 text-xs md:text-sm text-blue-900 leading-relaxed">
+                    <strong>💡 토목공학과 미적분의 연결:</strong> 도로는 단순히 1차 미분(접선 연속)만 맞추는 것으로는 부족합니다! 가속도와 원심력의 급변을 막기 위해서는 <strong>2차 미분인 곡률(Curvature)까지 연속이어야 안전</strong>합니다. 클로소이드 곡선은 바로 이 미적분학의 고계도함수 연속성 원리를 도로 공학에 실현한 위대한 발명입니다.
+                </div>
+            </div>
+
+            <!-- 단원 성찰 및 자기 점검 -->
+            <div id="sec-13-reflection" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">✓</span>
+                    <h2 class="text-xl font-bold text-slate-900">학습 성찰 및 자기 점검 (Self-Reflection)</h2>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            함수가 미분가능하면 반드시 연속임을 극한 성질을 이용하여 증명할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            연속이지만 미분가능하지 않은 대표적 반례(절댓값 함수 등의 뾰족점)를 제시하고 이유(좌우 미분계수 불일치)를 설명할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            구간별로 정의된 함수가 접합점에서 미분가능하도록 미정계수를 연립하여 결정할 수 있는가?
+                        </span>
+                    </label>
+
+                    <label class="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100/70 transition">
+                        <input type="checkbox" class="mt-1 w-4 h-4 rounded text-emerald-600 accent-emerald-600">
+                        <span class="text-xs md:text-sm text-slate-700">
+                            로봇 제어와 고속도로 클로소이드 곡선 설계를 통해 미분가능성과 곡률 연속성이 안전에 직결됨을 깨달았는가?
+                        </span>
+                    </label>
+                </div>
+
+                <!-- 배움 노트 작성란 -->
+                <div class="space-y-2 pt-2">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">오늘의 수학 배움 성찰 메모 (자동 저장):</label>
+                    <textarea id="reflection-memo-u2-2" rows="3" placeholder="오늘 미분가능성과 연속성을 학습하며 새롭게 깨달은 수학적 통찰이나 질문을 남겨보세요." class="w-full p-3 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                    <div class="flex justify-between items-center text-xs text-slate-400">
+                        <span>브라우저 로컬 저장소에 안전하게 보관됩니다.</span>
+                        <span id="memo-status-u2-2" class="text-emerald-600 font-semibold"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 하단 여백 및 페이지 끝 표시 -->
+            <div class="py-12 text-center text-xs text-slate-400">
+                고등학교 2학년 미적분Ⅰ · 2022 개정 교육과정 · Ⅱ. 미분 2. 미분가능성과 연속성 (교과서 60~63쪽)
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- ===================================================================
+     스크립트 엔진 (KaTeX, 전자칠판, 스크래치패드, 채점, 6대 캔버스 시뮬레이터)
+     =================================================================== -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. KaTeX 수식 자동 렌더링
+    if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "\\[", right: "\\]", display: true},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
         });
     }
 
-    // Whiteboard Engine
-    let wbActive = false;
-    let wbTool = 'pen';
-    let wbColor = '#ef4444';
-    let wbStrokes = [];
-    let wbCurrentStroke = null;
-    let wbDrawing = false;
+    // 2. 전자칠판 엔진 초기화
+    initWhiteboardEngine();
 
-    function initWhiteboard() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        syncWhiteboardHeight();
+    // 3. 개별 스크래치패드 초기화
+    initScratchpads();
 
-        if (window.ResizeObserver) {
-            const ro = new ResizeObserver(() => syncWhiteboardHeight());
-            ro.observe(document.body);
+    // 4. 6대 캔버스 인터랙티브 시뮬레이터 초기화
+    initLeftRightDiffSim();  // Widget 1 (좌우 미분계수 충돌)
+    initVennSim();           // Widget 2 (집합 벤다이어그램)
+    initCornerZoomSim();     // Widget 3 (첨점 돋보기)
+    initSmoothJointSim();    // Widget 4 (매끄러운 접합기)
+    initRobotMotionSim();    // Widget 5 (로봇 왕복 충격도)
+    initClothoidSim();       // Widget 6 (클로소이드 고속도로)
+
+    // 5. 스크롤스파이
+    initScrollSpy();
+
+    // 6. 성찰 메모 로컬스토리지
+    initReflectionMemo();
+});
+
+/* =====================================================================
+   아코디언 토글 유틸리티
+   ===================================================================== */
+function toggleTeacherTip(id) {
+    const el = document.getElementById(id);
+    const arrow = document.getElementById(id + "-arrow");
+    if (!el) return;
+    if (el.classList.contains("hidden")) {
+        el.classList.remove("hidden");
+        if (arrow) arrow.textContent = "접기 ▲";
+    } else {
+        el.classList.add("hidden");
+        if (arrow) arrow.textContent = "펼치기 ▼";
+    }
+}
+
+function toggleSolution(id) {
+    const el = document.getElementById(id);
+    const arrow = document.getElementById(id + "-arrow");
+    if (!el) return;
+    if (el.classList.contains("hidden")) {
+        el.classList.remove("hidden");
+        if (arrow) arrow.textContent = "▲";
+    } else {
+        el.classList.add("hidden");
+        if (arrow) arrow.textContent = "▼";
+    }
+}
+
+/* =====================================================================
+   즉시 채점 시스템
+   ===================================================================== */
+function checkProb2_1() {
+    const r = document.getElementById("ans-u2-p1-r").value.trim();
+    const l = document.getElementById("ans-u2-p1-l").value.trim();
+    const res = document.getElementById("res-u2-p1");
+    if (r === "2" && l === "-2") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 우미분 2 ≠ 좌미분 -2</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 확인해 보세요. (우: 2, 좌: -2)</span>";
+    }
+}
+
+function checkComm1() {
+    const val = document.getElementById("ans-comm-1").value.trim();
+    const res = document.getElementById("res-comm-1");
+    if (val === "-1") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! x = -1에서 불연속 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 그래프를 확인해 보세요.</span>";
+    }
+}
+
+function checkComm2() {
+    const val = document.getElementById("ans-comm-2").value.replace(/\s/g, "");
+    const res = document.getElementById("res-comm-2");
+    if (val === "1,2" || val === "2,1" || val === "1그리고2") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! x = 1, x = 2에서 꺾인점(첨점) 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 찾아보세요. (힌트: 2개)</span>";
+    }
+}
+
+function checkSc01() {
+    const ox1 = document.querySelector('input[name="ox-1"]:checked');
+    const ox2 = document.querySelector('input[name="ox-2"]:checked');
+    const ox3 = document.querySelector('input[name="ox-3"]:checked');
+    const res = document.getElementById("res-sc-01");
+
+    if (!ox1 || !ox2 || !ox3) {
+        res.innerHTML = "<span class='text-amber-600 font-bold'>3문항 모두 선택해 주세요.</span>";
+        return;
+    }
+
+    let correct = 0;
+    if (ox1.value === "O") correct++;
+    if (ox2.value === "X") correct++;
+    if (ox3.value === "O") correct++;
+
+    if (correct === 3) {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>완벽합니다! ⑴ ○  ⑵ ×  ⑶ ○ 모두 정답! 🎉</span>";
+    } else {
+        res.innerHTML = `<span class='text-rose-600 font-bold'>현재 3개 중 ${correct}개 정답. 다시 생각해보세요!</span>`;
+    }
+}
+
+function checkSc02() {
+    const val = document.getElementById("ans-sc-02").value.trim();
+    const res = document.getElementById("res-sc-02");
+    if (val === "3") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 (연속이므로 극한값 = 함숫값 = 3)</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 풀어보세요.</span>";
+    }
+}
+
+function checkSc03_1() {
+    const val = document.getElementById("ans-sc-03-1").value;
+    const res = document.getElementById("res-sc-03-1");
+    if (val === "연속") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! 좌우극한과 함숫값이 0으로 일치 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>오답입니다.</span>";
+    }
+}
+
+function checkSc03_2() {
+    const val = document.getElementById("ans-sc-03-2").value;
+    const res = document.getElementById("res-sc-03-2");
+    if (val === "미분가능") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! 좌우 미분계수가 모두 1로 일치 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>오답입니다.</span>";
+    }
+}
+
+function checkSc04() {
+    const g = document.getElementById("chk-g").checked;
+    const n = document.getElementById("chk-n").checked;
+    const d = document.getElementById("chk-d").checked;
+    const r = document.getElementById("chk-r").checked;
+    const res = document.getElementById("res-sc-04");
+
+    if (g && n && !d && !r) {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! ㄱ, ㄴ 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 선택해 보세요. (힌트: 2개)</span>";
+    }
+}
+
+function checkSc05() {
+    const val = document.getElementById("ans-sc-05").value.trim();
+    const res = document.getElementById("res-sc-05");
+    if (val === "5") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 a=2, b=3 이므로 a+b=5</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>다시 풀어보세요.</span>";
+    }
+}
+
+function checkSc06_1() {
+    const val = document.getElementById("ans-sc-06-1").value;
+    const res = document.getElementById("res-sc-06-1");
+    if (val === "연속") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! t=20에서 연속 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>오답입니다.</span>";
+    }
+}
+
+function checkSc06_2() {
+    const val = document.getElementById("ans-sc-06-2").value;
+    const res = document.getElementById("res-sc-06-2");
+    if (val === "미분불가") {
+        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! 좌미분 1 ≠ 우미분 0 이므로 미분불가 🎉</span>";
+    } else {
+        res.innerHTML = "<span class='text-rose-600 font-bold'>오답입니다.</span>";
+    }
+}
+
+/* =====================================================================
+   풀스크린 전자칠판 엔진
+   ===================================================================== */
+let wbCanvas, wbCtx;
+let wbActive = false;
+let wbDrawing = false;
+let wbTool = "pen";
+let wbColor = "#ef4444";
+let wbSize = 4;
+
+function initWhiteboardEngine() {
+    wbCanvas = document.getElementById("wb-canvas");
+    if (!wbCanvas) return;
+    wbCtx = wbCanvas.getContext("2d");
+
+    function resizeWb() {
+        const dpr = window.devicePixelRatio || 1;
+        wbCanvas.width = window.innerWidth * dpr;
+        wbCanvas.height = window.innerHeight * dpr;
+        wbCanvas.style.width = window.innerWidth + "px";
+        wbCanvas.style.height = window.innerHeight + "px";
+        wbCtx.scale(dpr, dpr);
+    }
+    window.addEventListener("resize", resizeWb);
+    resizeWb();
+
+    wbCanvas.addEventListener("mousedown", startWbDraw);
+    wbCanvas.addEventListener("mousemove", drawWb);
+    window.addEventListener("mouseup", stopWbDraw);
+
+    wbCanvas.addEventListener("touchstart", function(e) {
+        if (!wbActive) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        startWbDraw({ clientX: touch.clientX, clientY: touch.clientY });
+    }, { passive: false });
+
+    wbCanvas.addEventListener("touchmove", function(e) {
+        if (!wbActive) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        drawWb({ clientX: touch.clientX, clientY: touch.clientY });
+    }, { passive: false });
+
+    window.addEventListener("touchend", stopWbDraw);
+
+    window.addEventListener("keydown", function(e) {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+        if (e.key === "w" || e.key === "W") toggleWhiteboard();
+        if (e.key === "e" || e.key === "E") setWbTool("eraser");
+        if (e.key === "c" || e.key === "C") clearWhiteboard();
+        if (e.key === "Escape" && wbActive) toggleWhiteboard();
+    });
+}
+
+function toggleWhiteboard() {
+    wbActive = !wbActive;
+    const canvas = document.getElementById("wb-canvas");
+    const toolbar = document.getElementById("wb-toolbar");
+    const indicator = document.getElementById("wb-status-indicator");
+
+    if (wbActive) {
+        canvas.classList.remove("pointer-events-none");
+        canvas.classList.add("pointer-events-auto");
+        toolbar.classList.remove("hidden");
+        toolbar.classList.add("flex");
+        if (indicator) {
+            indicator.classList.remove("bg-slate-300");
+            indicator.classList.add("bg-emerald-500", "animate-pulse");
         }
+    } else {
+        canvas.classList.add("pointer-events-none");
+        canvas.classList.remove("pointer-events-auto");
+        toolbar.classList.add("hidden");
+        toolbar.classList.remove("flex");
+        if (indicator) {
+            indicator.classList.add("bg-slate-300");
+            indicator.classList.remove("bg-emerald-500", "animate-pulse");
+        }
+    }
+}
 
-        function getDocPt(e) {
-            const touch = e.touches && e.touches[0] ? e.touches[0] : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
+function setWbTool(tool) {
+    wbTool = tool;
+    document.querySelectorAll(".wb-tool-btn").forEach(btn => btn.classList.remove("border-blue-500", "bg-blue-50"));
+    const activeBtn = document.getElementById("wb-tool-" + tool);
+    if (activeBtn) activeBtn.classList.add("border-blue-500", "bg-blue-50");
+}
+
+function setWbColor(color, el) {
+    wbColor = color;
+    document.querySelectorAll(".wb-color-btn").forEach(btn => btn.classList.remove("ring-2", "ring-offset-2", "ring-slate-600"));
+    if (el) el.classList.add("ring-2", "ring-offset-2", "ring-slate-600");
+}
+
+function setWbSize(size, el) {
+    wbSize = parseInt(size);
+    document.querySelectorAll(".wb-size-btn").forEach(btn => btn.classList.remove("bg-blue-500", "text-white"));
+    if (el) el.classList.add("bg-blue-500", "text-white");
+}
+
+function clearWhiteboard() {
+    if (!wbCtx || !wbCanvas) return;
+    wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+}
+
+function downloadWhiteboard() {
+    const link = document.createElement("a");
+    link.download = "2_미분_2_미분가능성과연속성_판서.png";
+    link.href = wbCanvas.toDataURL("image/png");
+    link.click();
+}
+
+let lastWbX = 0, lastWbY = 0;
+function startWbDraw(e) {
+    if (!wbActive) return;
+    wbDrawing = true;
+    lastWbX = e.clientX;
+    lastWbY = e.clientY;
+}
+
+function drawWb(e) {
+    if (!wbActive || !wbDrawing) return;
+    wbCtx.beginPath();
+    wbCtx.moveTo(lastWbX, lastWbY);
+    wbCtx.lineTo(e.clientX, e.clientY);
+    wbCtx.lineCap = "round";
+    wbCtx.lineJoin = "round";
+
+    if (wbTool === "eraser") {
+        wbCtx.globalCompositeOperation = "destination-out";
+        wbCtx.lineWidth = wbSize * 8;
+        wbCtx.strokeStyle = "rgba(0,0,0,1)";
+    } else if (wbTool === "highlighter") {
+        wbCtx.globalCompositeOperation = "source-over";
+        wbCtx.lineWidth = wbSize * 6;
+        wbCtx.strokeStyle = wbColor + "55";
+    } else {
+        wbCtx.globalCompositeOperation = "source-over";
+        wbCtx.lineWidth = wbSize;
+        wbCtx.strokeStyle = wbColor;
+    }
+    wbCtx.stroke();
+    lastWbX = e.clientX;
+    lastWbY = e.clientY;
+}
+
+function stopWbDraw() {
+    wbDrawing = false;
+}
+
+/* =====================================================================
+   개별 스크래치패드 드로잉 엔진
+   ===================================================================== */
+function initScratchpads() {
+    document.querySelectorAll(".scratchpad-canvas").forEach(canvas => {
+        const ctx = canvas.getContext("2d");
+        let isDrawing = false;
+        let lx = 0, ly = 0;
+
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
             return {
-                x: touch.clientX + window.scrollX,
-                y: touch.clientY + window.scrollY
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
             };
         }
 
-        function startDraw(e) {
-            if (!wbActive || wbTool === 'pointer') return;
-            if (e.button !== undefined && e.button !== 0) return;
-            wbDrawing = true;
-            const pt = getDocPt(e);
-            const sizeInput = document.getElementById('wb-size');
-            const size = sizeInput ? parseFloat(sizeInput.value) : 4;
+        canvas.addEventListener("mousedown", e => {
+            isDrawing = true;
+            const p = getPos(e);
+            lx = p.x; ly = p.y;
+        });
 
-            wbCurrentStroke = {
-                tool: wbTool,
-                color: wbColor,
-                size: size,
-                points: [pt]
-            };
-            wbStrokes.push(wbCurrentStroke);
-            redrawWhiteboard();
-        }
+        canvas.addEventListener("mousemove", e => {
+            if (!isDrawing) return;
+            const p = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(lx, ly);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = "#2563eb";
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.stroke();
+            lx = p.x; ly = p.y;
+        });
 
-        function moveDraw(e) {
-            if (!wbDrawing || !wbActive || wbTool === 'pointer' || !wbCurrentStroke) return;
+        window.addEventListener("mouseup", () => isDrawing = false);
+
+        canvas.addEventListener("touchstart", e => {
             e.preventDefault();
-            const pt = getDocPt(e);
-            wbCurrentStroke.points.push(pt);
-            drawStrokeSegment(wbCurrentStroke);
-        }
+            isDrawing = true;
+            const p = getPos(e.touches[0]);
+            lx = p.x; ly = p.y;
+        }, { passive: false });
 
-        function endDraw() {
-            if (!wbDrawing) return;
-            wbDrawing = false;
-            wbCurrentStroke = null;
-            redrawWhiteboard();
-        }
+        canvas.addEventListener("touchmove", e => {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const p = getPos(e.touches[0]);
+            ctx.beginPath();
+            ctx.moveTo(lx, ly);
+            ctx.lineTo(p.x, p.y);
+            ctx.strokeStyle = "#2563eb";
+            ctx.lineWidth = 2;
+            ctx.lineCap = "round";
+            ctx.stroke();
+            lx = p.x; ly = p.y;
+        }, { passive: false });
 
-        canvas.addEventListener('mousedown', startDraw);
-        window.addEventListener('mousemove', moveDraw, { passive: false });
-        window.addEventListener('mouseup', endDraw);
-        canvas.addEventListener('touchstart', startDraw, { passive: false });
-        canvas.addEventListener('touchmove', moveDraw, { passive: false });
-        window.addEventListener('touchend', endDraw);
-    }
+        window.addEventListener("touchend", () => isDrawing = false);
+    });
+}
 
-    function applyStrokeStyle(ctx, stroke) {
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        if (stroke.tool === 'eraser') {
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.lineWidth = stroke.size * 4.5;
-            ctx.strokeStyle = 'rgba(0,0,0,1)';
-        } else if (stroke.tool === 'highlighter') {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = stroke.size * 3.4;
-            ctx.strokeStyle = stroke.color + '44';
-        } else {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = stroke.size;
-            ctx.strokeStyle = stroke.color;
-        }
-    }
+function clearScratchpad(id) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
-    function drawStrokeSegment(stroke) {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const pts = stroke.points;
-        if (pts.length < 2) return;
+/* =====================================================================
+   SIMULATOR 1: 좌·우 미분계수 충돌 (left-right-diff-canvas)
+   ===================================================================== */
+function initLeftRightDiffSim() {
+    const canvas = document.getElementById("left-right-diff-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sH = document.getElementById("slider-lr-h");
+    const vH = document.getElementById("val-lr-h");
 
-        if (stroke.tool === 'highlighter') {
-            redrawWhiteboard();
-            return;
-        }
+    // 함수: f(x) = 0 (x < 0), x (x >= 0)
+    function f(x) { return x < 0 ? 0 : x; }
 
-        ctx.save();
-        applyStrokeStyle(ctx, stroke);
-        const p1 = pts[pts.length - 2];
-        const p2 = pts[pts.length - 1];
+    function draw() {
+        const hVal = parseFloat(sH.value);
+        vH.textContent = hVal.toFixed(2);
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const ox = w / 2, oy = h - 60;
+        const scale = 110;
+
+        function toX(x) { return ox + x * scale; }
+        function toY(y) { return oy - y * scale; }
+
+        // 축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
+        ctx.moveTo(40, oy); ctx.lineTo(w - 40, oy);
+        ctx.moveTo(ox, h - 20); ctx.lineTo(ox, 20);
+        ctx.stroke();
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("x", w - 30, oy + 15);
+        ctx.fillText("y", ox - 15, 25);
+        ctx.fillText("O", ox - 15, oy + 15);
+
+        // 함수 곡선 (두 구간 꺾인선)
+        ctx.beginPath();
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 3.5;
+        // x < 0: y = 0
+        ctx.moveTo(toX(-3), toY(0));
+        ctx.lineTo(toX(0), toY(0));
+        // x >= 0: y = x
+        ctx.lineTo(toX(3), toY(3));
+        ctx.stroke();
+
+        // 좌측 접근 할선 (보라색, 점 (-h, 0)과 (0, 0))
+        const pLeftX = -hVal, pLeftY = 0;
+        ctx.beginPath();
+        ctx.strokeStyle = "#7c3aed";
+        ctx.lineWidth = 2.5;
+        ctx.moveTo(toX(-3), toY(0));
+        ctx.lineTo(toX(1.5), toY(0));
+        ctx.stroke();
+
+        // 우측 접근 할선 (초록색, 점 (h, h)과 (0, 0))
+        const pRightX = hVal, pRightY = hVal;
+        ctx.beginPath();
+        ctx.strokeStyle = "#059669";
+        ctx.lineWidth = 2.5;
+        ctx.moveTo(toX(-1), toY(-1));
+        ctx.lineTo(toX(3), toY(3));
+        ctx.stroke();
+
+        // 좌측 점 표시
+        ctx.beginPath();
+        ctx.arc(toX(pLeftX), toY(pLeftY), 6, 0, Math.PI * 2);
+        ctx.fillStyle = "#7c3aed";
+        ctx.fill();
+        ctx.fillText(`좌측 점 (-${hVal.toFixed(2)}, 0)`, toX(pLeftX) - 40, toY(pLeftY) - 12);
+
+        // 우측 점 표시
+        ctx.beginPath();
+        ctx.arc(toX(pRightX), toY(pRightY), 6, 0, Math.PI * 2);
+        ctx.fillStyle = "#059669";
+        ctx.fill();
+        ctx.fillText(`우측 점 (${hVal.toFixed(2)}, ${hVal.toFixed(2)})`, toX(pRightX) + 10, toY(pRightY) - 5);
+
+        // 원점 (접점) 표시
+        ctx.beginPath();
+        ctx.arc(ox, oy, 7, 0, Math.PI * 2);
+        ctx.fillStyle = "#dc2626";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 기울기 비교 배너
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillRect(40, 30, 240, 70);
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.strokeRect(40, 30, 240, 70);
+
+        ctx.fillStyle = "#7c3aed";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText("좌미분계수: 0.00 (기울기 0)", 55, 55);
+
+        ctx.fillStyle = "#059669";
+        ctx.fillText("우미분계수: 1.00 (기울기 1)", 55, 80);
+    }
+
+    sH.addEventListener("input", draw);
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 2: 집합 벤다이어그램 탐색기 (diff-cont-venn-canvas)
+   ===================================================================== */
+let currentVennRegion = "all";
+
+function selectVennRegion(region) {
+    currentVennRegion = region;
+    const canvas = document.getElementById("diff-cont-venn-canvas");
+    if (canvas && canvas._update) canvas._update();
+}
+
+function initVennSim() {
+    const canvas = document.getElementById("diff-cont-venn-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const desc = document.getElementById("venn-desc");
+
+    function draw() {
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const cx = w / 2;
+        const cy = h / 2;
+
+        // 1) 바깥 사각형: 전체 함수 집합
+        ctx.fillStyle = currentVennRegion === "discont" ? "#f1f5f9" : "#ffffff";
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 2;
+        ctx.fillRect(60, 20, w - 120, h - 40);
+        ctx.strokeRect(60, 20, w - 120, h - 40);
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText("전체 함수 (Functions)", 80, 45);
+
+        // 2) 중간 타원: 연속함수 집합
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, 270, 110, 0, 0, Math.PI * 2);
+        ctx.fillStyle = currentVennRegion === "cont-only" ? "#ede9fe" : "#f8fafc";
+        ctx.fill();
+        ctx.strokeStyle = "#6366f1";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#4338ca";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText("연속함수 (Continuous Functions)", cx - 250, cy - 70);
+
+        // 3) 안쪽 타원: 미분가능한 함수 집합
+        ctx.beginPath();
+        ctx.ellipse(cx + 30, cy, 140, 75, 0, 0, Math.PI * 2);
+        ctx.fillStyle = currentVennRegion === "diff" ? "#dbeafe" : "#ffffff";
+        ctx.fill();
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = "#1d4ed8";
+        ctx.font = "bold 14px sans-serif";
+        ctx.fillText("미분가능한 함수", cx - 20, cy - 25);
+        ctx.font = "12px sans-serif";
+        ctx.fillText("(Differentiable)", cx - 12, cy - 8);
+
+        // 대표 함수 텍스트 라벨 배치
+        ctx.font = "12px sans-serif";
+        // 미분가능 내부
+        ctx.fillStyle = "#1e40af";
+        ctx.fillText("• 다항함수 y = x² - 2x", cx - 25, cy + 20);
+        ctx.fillText("• 삼각함수, 지수함수", cx - 25, cy + 40);
+
+        // 연속이지만 미분불가 (차집합 영역)
+        ctx.fillStyle = "#6d28d9";
+        ctx.fillText("• 절댓값 함수 y = |x|", cx - 230, cy + 10);
+        ctx.fillText("• 첨점 y = |x² - 1|", cx - 230, cy + 30);
+        ctx.fillText("• y = x^(1/3) (수직접선)", cx - 230, cy + 50);
+
+        // 불연속 영역
+        ctx.fillStyle = "#475569";
+        ctx.fillText("• 가우스함수 y = [x]", 80, h - 50);
+        ctx.fillText("• 유리함수 y = 1/x", 80, h - 30);
+
+        // 설명 업데이트
+        if (currentVennRegion === "diff") {
+            desc.textContent = "미분가능한 함수: 연속이면서 모든 점에서 매끄러운 유일한 접선이 존재함";
+        } else if (currentVennRegion === "cont-only") {
+            desc.textContent = "연속이지만 미분불가: 선은 이어져 있으나 꺾인점(뾰족점)이 존재하여 접선이 결정되지 않음";
+        } else if (currentVennRegion === "discont") {
+            desc.textContent = "불연속 함수: 그래프가 끊어져 있으므로 미분가능성은 아예 논할 수 없음 (대우 명제)";
+        }
+    }
+
+    canvas._update = draw;
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 3: 꺾인점 돋보기 현미경 (corner-zoom-canvas)
+   ===================================================================== */
+function initCornerZoomSim() {
+    const canvas = document.getElementById("corner-zoom-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sZoom = document.getElementById("slider-corner-zoom");
+    const vZoom = document.getElementById("val-corner-zoom");
+
+    // 함수: f(x) = |x^2 - 1|, x=1 주변 관찰
+    function draw() {
+        const zoom = parseFloat(sZoom.value);
+        vZoom.textContent = zoom + "x 배율";
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const cx = w / 2;
+        const cy = h - 60;
+
+        const baseScale = 70;
+        const currentScale = baseScale * zoom;
+
+        function toX(x) { return cx + (x - 1.0) * currentScale; }
+        function toY(y) { return cy - y * currentScale; }
+
+        // 그리드
+        ctx.strokeStyle = "#f1f5f9";
+        ctx.lineWidth = 1;
+        const step = 0.2 / zoom;
+        for (let gx = 1.0 - 1.5/zoom; gx <= 1.0 + 1.5/zoom; gx += 0.05) {
+            ctx.beginPath();
+            ctx.moveTo(toX(gx), 0); ctx.lineTo(toX(gx), h);
+            ctx.stroke();
+        }
+
+        // x축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, cy); ctx.lineTo(w, cy);
+        ctx.stroke();
+
+        // f(x) = |x^2 - 1| 그리기
+        ctx.beginPath();
+        ctx.strokeStyle = "#0f766e";
+        ctx.lineWidth = 3.5;
+
+        const rangeX = 1.2 / zoom;
+        const dx = rangeX / 100;
+        for (let x = 1.0 - rangeX; x <= 1.0 + rangeX; x += dx) {
+            const y = Math.abs(x * x - 1);
+            const px = toX(x), py = toY(y);
+            if (x === 1.0 - rangeX) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // 좌측 접선 방향선 (기울기 -2) & 우측 접선 방향선 (기울기 +2)
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = "#e11d48";
+        ctx.lineWidth = 2;
+        ctx.moveTo(toX(1.0 - rangeX), toY(-2 * (-rangeX)));
+        ctx.lineTo(toX(1.0), toY(0));
+        ctx.stroke();
+
+        ctx.strokeStyle = "#2563eb";
+        ctx.moveTo(toX(1.0), toY(0));
+        ctx.lineTo(toX(1.0 + rangeX), toY(2 * rangeX));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 첨점 (1, 0)
+        ctx.beginPath();
+        ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+        ctx.fillStyle = "#dc2626";
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText("첨점 (1, 0)", cx + 12, cy - 10);
+
+        ctx.fillStyle = "#e11d48";
+        ctx.fillText("좌미분 = -2", cx - 90, cy - 35);
+        ctx.fillStyle = "#2563eb";
+        ctx.fillText("우미분 = +2", cx + 30, cy - 35);
+    }
+
+    sZoom.addEventListener("input", draw);
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 4: 매끄러운 접합기 (smooth-joint-canvas)
+   ===================================================================== */
+function initSmoothJointSim() {
+    const canvas = document.getElementById("smooth-joint-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sA = document.getElementById("slider-sj-a");
+    const sB = document.getElementById("slider-sj-b");
+    const vA = document.getElementById("val-sj-a");
+    const vB = document.getElementById("val-sj-b");
+    const stat = document.getElementById("stat-sj-status");
+
+    // f1(x) = a*x^2 + 2 (x <= 1)
+    // f2(x) = x^4 + b (x > 1)
+    function draw() {
+        const a = parseFloat(sA.value);
+        const b = parseFloat(sB.value);
+        vA.textContent = a.toFixed(1);
+        vB.textContent = b.toFixed(1);
+
+        const y1_at_1 = a + 2;
+        const y2_at_1 = 1 + b;
+        const isCont = Math.abs(y1_at_1 - y2_at_1) < 0.1;
+        const leftSlope = 2 * a;
+        const rightSlope = 4.0;
+        const isDiff = isCont && Math.abs(leftSlope - rightSlope) < 0.2;
+
+        if (isDiff) {
+            stat.textContent = "완벽한 매끄러운 접합 (연속 & 미분가능!) 🎉";
+            stat.className = "text-sm font-bold text-emerald-600";
+        } else if (isCont) {
+            stat.textContent = "연속이지만 꺾여 있음 (좌미분 ≠ 우미분)";
+            stat.className = "text-sm font-bold text-amber-600";
+        } else {
+            stat.textContent = "끊어져 있음 (불연속, 미분불가)";
+            stat.className = "text-sm font-bold text-rose-600";
+        }
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const ox = w / 2 - 80, oy = h - 60;
+        const scaleX = 120, scaleY = 35;
+
+        function toX(x) { return ox + x * scaleX; }
+        function toY(y) { return oy - y * scaleY; }
+
+        // 축
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(30, oy); ctx.lineTo(w - 30, oy);
+        ctx.moveTo(ox, h - 20); ctx.lineTo(ox, 20);
+        ctx.stroke();
+
+        // 경계선 x = 1 (점선)
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = "#94a3b8";
+        ctx.beginPath();
+        ctx.moveTo(toX(1), 20); ctx.lineTo(toX(1), h - 20);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#64748b";
+        ctx.font = "11px sans-serif";
+        ctx.fillText("x = 1 경계선", toX(1) - 30, 35);
+
+        // 1) 좌측 곡선 y = a*x^2 + 2 (x <= 1)
+        ctx.beginPath();
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 3;
+        for (let x = -0.5; x <= 1.0; x += 0.05) {
+            const y = a * x * x + 2;
+            const px = toX(x), py = toY(y);
+            if (x === -0.5) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // 2) 우측 곡선 y = x^4 + b (x >= 1)
+        ctx.beginPath();
+        ctx.strokeStyle = "#9333ea";
+        ctx.lineWidth = 3;
+        for (let x = 1.0; x <= 2.2; x += 0.05) {
+            const y = Math.pow(x, 4) + b;
+            const px = toX(x), py = toY(y);
+            if (x === 1.0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // 경계점 표시
+        const p1X = toX(1), p1Y = toY(y1_at_1);
+        const p2X = toX(1), p2Y = toY(y2_at_1);
+
+        if (isCont) {
+            ctx.beginPath();
+            ctx.arc(p1X, p1Y, 7, 0, Math.PI * 2);
+            ctx.fillStyle = isDiff ? "#059669" : "#f59e0b";
+            ctx.fill();
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        } else {
+            ctx.beginPath();
+            ctx.arc(p1X, p1Y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = "#2563eb";
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(p2X, p2Y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = "#9333ea";
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+        }
+    }
+
+    sA.addEventListener("input", draw);
+    sB.addEventListener("input", draw);
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 5: 로봇 왕복 운동 및 충격도 (robot-motion-canvas)
+   ===================================================================== */
+function initRobotMotionSim() {
+    const canvas = document.getElementById("robot-motion-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sT = document.getElementById("slider-robot-t");
+    const vT = document.getElementById("val-robot-t");
+    const statVel = document.getElementById("stat-robot-vel");
+
+    function getPos(t) {
+        if (t <= 20) return t;
+        return -0.05 * Math.pow(t - 20, 2) + 20;
+    }
+
+    function getVel(t) {
+        if (t < 20) return 1.0;
+        if (t === 20) return NaN; // 불연속
+        return -0.1 * (t - 20);
+    }
+
+    function draw() {
+        const t = parseFloat(sT.value);
+        vT.textContent = t.toFixed(1) + " 초";
+
+        const pos = getPos(t);
+        const vel = getVel(t);
+
+        if (t === 20) {
+            statVel.textContent = "t=20초: 속도 급변(1m/s -> 0m/s) 충격!";
+        } else if (t < 20) {
+            statVel.textContent = `등속 전진 중 (v = ${vel.toFixed(1)} m/s)`;
+        } else {
+            statVel.textContent = `감속 후진 중 (v = ${vel.toFixed(2)} m/s)`;
+        }
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // 상단: 1D 로봇 주행 레일 애니메이션
+        const railY = 60;
+        ctx.fillStyle = "#f1f5f9";
+        ctx.fillRect(50, railY - 10, w - 100, 20);
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.strokeRect(50, railY - 10, w - 100, 20);
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("지점 A (0m)", 50, railY - 18);
+        ctx.fillText("지점 B (20m)", w - 120, railY - 18);
+
+        // 로봇 위치
+        const robotPx = 50 + (pos / 20) * (w - 100);
+        ctx.fillStyle = t === 20 ? "#e11d48" : "#2563eb";
+        ctx.beginPath();
+        ctx.arc(robotPx, railY, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.fillText(`🤖 거리: ${pos.toFixed(1)}m`, robotPx - 30, railY + 28);
+
+        // 하단: 거리-시간 그래프 f(t)
+        const gx = 80, gy = h - 40;
+        const gw = w - 160, gh = 140;
+
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(gx, gy); ctx.lineTo(gx + gw, gy);
+        ctx.moveTo(gx, gy); ctx.lineTo(gx, gy - gh);
+        ctx.stroke();
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "11px sans-serif";
+        ctx.fillText("시간 t (0~40초)", gx + gw - 30, gy + 18);
+        ctx.fillText("거리 (m)", gx - 45, gy - gh + 15);
+
+        // f(t) 곡선
+        ctx.beginPath();
+        ctx.strokeStyle = "#0284c7";
+        ctx.lineWidth = 2.5;
+        for (let time = 0; time <= 40; time += 0.5) {
+            const p = getPos(time);
+            const px = gx + (time / 40) * gw;
+            const py = gy - (p / 22) * gh;
+            if (time === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // t=20초 꺾인점 하이라이트
+        const t20X = gx + (20 / 40) * gw;
+        const t20Y = gy - (20 / 22) * gh;
+        ctx.beginPath();
+        ctx.arc(t20X, t20Y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = "#e11d48";
+        ctx.fill();
+        ctx.fillText("꺾인점 (t=20, 20)", t20X - 40, t20Y - 12);
+    }
+
+    sT.addEventListener("input", draw);
+    draw();
+}
+
+/* =====================================================================
+   SIMULATOR 6: 클로소이드 고속도로 주행 (clothoid-highway-canvas)
+   ===================================================================== */
+let currentClothoidMode = "A";
+
+function setClothoidMode(mode) {
+    currentClothoidMode = mode;
+    const btnA = document.getElementById("btn-road-a");
+    const btnB = document.getElementById("btn-road-b");
+    if (mode === "A") {
+        btnA.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-rose-600 text-white";
+        btnB.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300";
+    } else {
+        btnB.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-teal-600 text-white";
+        btnA.className = "px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300";
+    }
+    const canvas = document.getElementById("clothoid-highway-canvas");
+    if (canvas && canvas._update) canvas._update();
+}
+
+function initClothoidSim() {
+    const canvas = document.getElementById("clothoid-highway-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sPos = document.getElementById("slider-car-pos");
+    const vPos = document.getElementById("val-car-pos");
+    const statSteer = document.getElementById("stat-steering");
+
+    function draw() {
+        const pos = parseFloat(sPos.value); // 0 ~ 100
+
+        if (pos < 30) {
+            vPos.textContent = "직선 구간 주행 중";
+            statSteer.textContent = "핸들 중앙 (곡률 = 0)";
+            statSteer.className = "text-sm font-bold text-slate-700";
+        } else if (pos >= 30 && pos <= 50) {
+            if (currentClothoidMode === "A") {
+                vPos.textContent = "원형 진입 순간 (충격 발생!)";
+                statSteer.textContent = "핸들 급회전! (횡가속도 급증)";
+                statSteer.className = "text-sm font-bold text-rose-600 animate-pulse";
+            } else {
+                vPos.textContent = "클로소이드 완화 구간 통과 중";
+                statSteer.textContent = "핸들 부드럽게 연속 회전 중";
+                statSteer.className = "text-sm font-bold text-teal-600";
+            }
+        } else {
+            vPos.textContent = "원형 커브 구간 통과 중";
+            statSteer.textContent = "핸들 일정 각도 유지 (곡률 = 1/R)";
+            statSteer.className = "text-sm font-bold text-blue-600";
+        }
+
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        // 도로 배경
+        ctx.fillStyle = "#f8fafc";
+        ctx.fillRect(0, 0, w, h);
+
+        // 트랙 렌더링
+        ctx.lineWidth = 36;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = "#cbd5e1";
+
+        ctx.beginPath();
+        if (currentClothoidMode === "A") {
+            // [A] 도로: 직선 -> 원형 직접 접합 (모서리 충격)
+            ctx.moveTo(80, h - 80);
+            ctx.lineTo(340, h - 80);
+            ctx.arc(340, h - 200, 120, Math.PI / 2, 0, true);
+            ctx.stroke();
+
+            // 도로 중앙선 (점선)
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 8]);
+            ctx.strokeStyle = "#f59e0b";
+            ctx.stroke();
+            ctx.setLineDash([]);
+        } else {
+            // [B] 도로: 직선 -> 클로소이드 부드러운 곡선 -> 원형
+            ctx.moveTo(80, h - 80);
+            ctx.lineTo(280, h - 80);
+            // 베지어 곡선으로 완화 곡선 근사
+            ctx.bezierCurveTo(340, h - 80, 390, h - 130, 420, h - 180);
+            ctx.lineTo(420, 60);
+            ctx.stroke();
+
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 8]);
+            ctx.strokeStyle = "#f59e0b";
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // 차량 위치 계산
+        let carX, carY, carAngle;
+        if (pos <= 40) {
+            carX = 80 + (pos / 40) * 220;
+            carY = h - 80;
+            carAngle = 0;
+        } else {
+            const tNorm = (pos - 40) / 60;
+            if (currentClothoidMode === "A") {
+                const ang = Math.PI / 2 - tNorm * (Math.PI / 2);
+                carX = 340 + 120 * Math.cos(ang);
+                carY = (h - 200) + 120 * Math.sin(ang);
+                carAngle = - (Math.PI / 2 - ang);
+            } else {
+                carX = 300 + tNorm * 120;
+                carY = (h - 80) - tNorm * 180;
+                carAngle = - tNorm * (Math.PI / 2);
+            }
+        }
+
+        // 자동차 그리기 (빨간 사각형)
+        ctx.save();
+        ctx.translate(carX, carY);
+        ctx.rotate(carAngle);
+        ctx.fillStyle = currentClothoidMode === "A" && (pos >= 35 && pos <= 55) ? "#e11d48" : "#0284c7";
+        ctx.fillRect(-15, -8, 30, 16);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(8, -6, 5, 12); // 앞유리
+        ctx.restore();
+
+        // 우측: 핸들 회전 각도 및 횡가속도 계기판
+        const gaugeX = w - 190, gaugeY = 40;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(gaugeX, gaugeY, 160, 180);
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.strokeRect(gaugeX, gaugeY, 160, 180);
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("운전대 조작 및 G-Force", gaugeX + 80, gaugeY + 25);
+
+        // 핸들 아이콘 (원형)
+        const wheelY = gaugeY + 80;
+        ctx.beginPath();
+        ctx.arc(gaugeX + 80, wheelY, 32, 0, Math.PI * 2);
+        ctx.strokeStyle = "#334155";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // 핸들 회전 각도
+        let wheelTurn = 0;
+        if (pos >= 40) wheelTurn = currentClothoidMode === "A" ? 1.0 : (pos - 40) / 60;
+        ctx.save();
+        ctx.translate(gaugeX + 80, wheelY);
+        ctx.rotate(-wheelTurn * (Math.PI / 2));
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(30, 0);
+        ctx.moveTo(0, 0); ctx.lineTo(0, 30);
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 3;
         ctx.stroke();
         ctx.restore();
+
+        // 횡가속도 바
+        const gBarH = currentClothoidMode === "A" && (pos >= 38 && pos <= 52) ? 45 : wheelTurn * 30;
+        ctx.fillStyle = gBarH > 35 ? "#dc2626" : "#059669";
+        ctx.fillRect(gaugeX + 30, gaugeY + 160 - gBarH, 100, gBarH);
+        ctx.fillStyle = "#0f172a";
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillText(`횡가속도: ${(gBarH / 15).toFixed(1)}G`, gaugeX + 80, gaugeY + 172);
+        ctx.textAlign = "left";
     }
 
-    function redrawWhiteboard() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas._update = draw;
+    sPos.addEventListener("input", draw);
+    draw();
+}
 
-        for (const stroke of wbStrokes) {
-            if (!stroke.points || stroke.points.length === 0) continue;
-            ctx.save();
-            applyStrokeStyle(ctx, stroke);
-            ctx.beginPath();
-            ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-            if (stroke.points.length === 1) {
-                ctx.lineTo(stroke.points[0].x + 0.1, stroke.points[0].y + 0.1);
-            } else {
-                for (let i = 1; i < stroke.points.length; i++) {
-                    ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
-                }
+/* =====================================================================
+   스크롤스파이 및 프로그레스 바
+   ===================================================================== */
+function initScrollSpy() {
+    const pBar = document.getElementById("scroll-progress-bar");
+    const sections = document.querySelectorAll("section[id], div[id^='sec-'], div[id^='prob-']");
+    const navLinks = document.querySelectorAll(".sidebar-nav-link");
+
+    window.addEventListener("scroll", function() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        if (pBar) pBar.style.width = progress + "%";
+
+        let currentId = "";
+        sections.forEach(sec => {
+            const top = sec.offsetTop - 120;
+            if (scrollTop >= top) currentId = sec.getAttribute("id");
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove("text-blue-600", "font-bold", "bg-blue-50/70");
+            if (link.getAttribute("href") === "#" + currentId) {
+                link.classList.add("text-blue-600", "font-bold", "bg-blue-50/70");
             }
-            ctx.stroke();
-            ctx.restore();
-        }
-    }
+        });
+    });
+}
 
-    function syncWhiteboardHeight() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const docWidth = document.documentElement.clientWidth;
-        const docHeight = Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight,
-            window.innerHeight
-        );
-        if (canvas.width !== docWidth || Math.abs(canvas.height - docHeight) > 4) {
-            canvas.width = docWidth;
-            canvas.height = docHeight;
-            redrawWhiteboard();
-        }
-    }
+/* =====================================================================
+   배움 메모장 로컬스토리지 연동
+   ===================================================================== */
+function initReflectionMemo() {
+    const memo = document.getElementById("reflection-memo-u2-2");
+    const status = document.getElementById("memo-status-u2-2");
+    if (!memo) return;
 
-    function toggleWhiteboard() {
-        wbActive = !wbActive;
-        const toolbar = document.getElementById('wb-toolbar');
-        const canvas = document.getElementById('wb-canvas');
-        if (wbActive) {
-            syncWhiteboardHeight();
-            toolbar.classList.remove('hidden');
-            setWbTool('pen');
-        } else {
-            toolbar.classList.add('hidden');
-            canvas.classList.remove('wb-drawing-active');
-        }
-    }
+    const saved = localStorage.getItem("u2_2_reflection_memo");
+    if (saved) memo.value = saved;
 
-    function setWbTool(tool) {
-        wbTool = tool;
-        const canvas = document.getElementById('wb-canvas');
-        document.querySelectorAll('.wb-tool-btn').forEach(b => b.classList.remove('active'));
-        const activeBtn = document.getElementById('wb-btn-' + tool);
-        if (activeBtn) activeBtn.classList.add('active');
-
-        if (tool === 'pointer') {
-            canvas.classList.remove('wb-drawing-active');
-        } else {
-            canvas.classList.add('wb-drawing-active');
-        }
-    }
-
-    function setWbColor(hex, btnEl) {
-        wbColor = hex;
-        document.querySelectorAll('.wb-color-btn').forEach(b => b.classList.remove('active'));
-        if (btnEl) btnEl.classList.add('active');
-        if (wbTool === 'pointer' || wbTool === 'eraser') setWbTool('pen');
-    }
-
-    function undoWb() {
-        if (wbStrokes.length === 0) return;
-        wbStrokes.pop();
-        redrawWhiteboard();
-    }
-
-    function clearWb() {
-        wbStrokes = [];
-        redrawWhiteboard();
-    }
-
-    // Scroll listener for top button and scrollspy
-    window.addEventListener('scroll', () => {
-        const scrollTopBtn = document.getElementById('scroll-top-btn');
-        if (scrollTopBtn) {
-            if (window.scrollY > 260) {
-                scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-                scrollTopBtn.classList.add('opacity-100', 'translate-y-0');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-                scrollTopBtn.classList.remove('opacity-100', 'translate-y-0');
+    let timeout;
+    memo.addEventListener("input", function() {
+        if (status) status.textContent = "저장 중...";
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            localStorage.setItem("u2_2_reflection_memo", memo.value);
+            if (status) {
+                status.textContent = "저장 완료 ✓";
+                setTimeout(() => status.textContent = "", 2000);
             }
-        }
+        }, 600);
     });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        initWhiteboard();
-        initScratchpads();
-    });
-    </script>
+}
+</script>
 </body>
 </html>
+    

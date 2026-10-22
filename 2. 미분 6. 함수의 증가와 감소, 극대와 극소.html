@@ -1,706 +1,2421 @@
 <!DOCTYPE html>
 <html lang="ko" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ⅱ. 미분 - 06. 함수의 증가와 감소, 극대와 극소 | 인터랙티브 수업 자료</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Pretendard Font -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <!-- KaTeX for Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            word-break: keep-all;
-            overflow-x: hidden;
-        }
-        .katex-display {
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 0.5rem 0;
-        }
-        .active-nav {
-            background-color: #e0e7ff;
-            color: #4338ca;
-            font-weight: 700;
-            border-right: 4px solid #6366f1;
-        }
-        .dark .active-nav {
-            background-color: #312e81;
-            color: #c7d2fe;
-            border-right: 4px solid #818cf8;
-        }
-        /* Drawing Canvas */
-        .scratchpad-canvas {
-            touch-action: none;
-            cursor: crosshair;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 16px 16px;
-        }
-        .dark .scratchpad-canvas {
-            background-image: radial-gradient(#334155 1px, transparent 1px);
-        }
-        /* Electronic Whiteboard Overlay */
-        #wb-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 45;
-            pointer-events: none;
-            touch-action: none;
-        }
-        #wb-canvas.wb-drawing-active {
-            pointer-events: auto;
-            cursor: crosshair;
-        }
-        .wb-color-btn.active {
-            transform: scale(1.2);
-            box-shadow: 0 0 0 3px #fff, 0 0 0 5px #4f46e5;
-        }
-        .wb-tool-btn.active {
-            background-color: #4f46e5;
-            color: #ffffff;
-        }
-        #wb-toolbar {
-            z-index: 50;
-        }
-        #floating-controls {
-            z-index: 49;
-        }
-        @media print {
-            #sidebar, #floating-controls, #wb-toolbar, #wb-canvas, .no-print {
-                display: none !important;
-            }
-            #main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-            }
-            .solution-box {
-                display: block !important;
-            }
-        }
-    </style>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#4f46e5',
-                        secondary: '#0ea5e9',
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2. 미분 - 6. 함수의 증가와 감소, 극대와 극소 | 2022 개정 고등학교 미적분Ⅰ</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- MathJax CDN -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .math-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* 전자칠판 오버레이 스타일 */
+    #wb-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9998;
+      pointer-events: none;
+      touch-action: none;
+    }
+    #wb-canvas.active {
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+    #wb-toolbar {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+      border-radius: 9999px;
+      padding: 8px 18px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      user-select: none;
+    }
+    #wb-toolbar.active {
+      display: flex;
+    }
+    .wb-btn {
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .wb-btn:hover {
+      background-color: #f1f5f9;
+    }
+    .wb-btn.active {
+      background-color: #3b82f6;
+      color: #ffffff;
+    }
+    .color-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 9999px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px #cbd5e1;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .color-swatch:hover, .color-swatch.active {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 2px #3b82f6;
+    }
+    .scratchpad-canvas {
+      border: 1px dashed #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    /* 커스텀 스크롤바 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200">
+<body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-100 selection:text-indigo-900 min-h-screen">
 
-    <!-- Full-screen Electronic Whiteboard Canvas -->
-    <canvas id="wb-canvas"></canvas>
-
-    <!-- Electronic Whiteboard Floating Toolbar -->
-    <div id="wb-toolbar" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-wrap items-center gap-2 sm:gap-3">
-        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="text-xs font-extrabold tracking-wide text-sky-300">전자칠판</span>
-        </div>
-
-        <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
-            <button id="wb-btn-pointer" onclick="setWbTool('pointer')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="화면 스크롤 및 버튼 클릭">
-                <i class="fa-solid fa-hand-pointer"></i> <span class="hidden sm:inline">조작</span>
-            </button>
-            <button id="wb-btn-pen" onclick="setWbTool('pen')" class="wb-tool-btn active px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="일반 펜 판서">
-                <i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">펜</span>
-            </button>
-            <button id="wb-btn-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="형광펜 강조">
-                <i class="fa-solid fa-highlighter"></i> <span class="hidden sm:inline">형광펜</span>
-            </button>
-            <button id="wb-btn-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="부분 지우개">
-                <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline">지우개</span>
-            </button>
-        </div>
-
-        <div class="flex items-center gap-2 px-2 border-l border-r border-slate-700">
-            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-5 h-5 rounded-full bg-red-500 transition" title="빨강"></button>
-            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-5 h-5 rounded-full bg-blue-500 transition" title="파랑"></button>
-            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-5 h-5 rounded-full bg-emerald-500 transition" title="초록"></button>
-            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-amber-400 transition" title="노랑"></button>
-            <button onclick="setWbColor('#1e293b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-slate-800 border border-white/50 transition" title="검정"></button>
-        </div>
-
-        <div class="hidden md:flex items-center gap-2">
-            <span class="text-[11px] text-slate-400">굵기</span>
-            <input type="range" id="wb-size" min="2" max="14" value="4" class="w-16 accent-indigo-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
-        </div>
-
-        <div class="flex items-center gap-1.5 pl-1">
-            <button onclick="undoWb()" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition" title="실행 취소">
-                <i class="fa-solid fa-rotate-left"></i>
-            </button>
-            <button onclick="clearWb()" class="p-1.5 px-2.5 rounded-lg bg-rose-900/70 hover:bg-rose-800 text-rose-200 text-xs font-semibold transition" title="판서 전체 지우기">
-                <i class="fa-solid fa-trash-can mr-1"></i>전체 지우기
-            </button>
-            <button onclick="toggleWhiteboard()" class="p-1.5 px-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold transition" title="전자칠판 닫기">
-                <i class="fa-solid fa-xmark"></i> 닫기
-            </button>
-        </div>
+  <!-- 전자칠판 캔버스 및 툴바 -->
+  <canvas id="wb-canvas"></canvas>
+  <div id="wb-toolbar">
+    <div class="flex items-center gap-1 border-r border-slate-200 pr-3">
+      <button type="button" class="wb-btn active" id="wb-tool-pen" onclick="setWbTool('pen')">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        <span>펜</span>
+      </button>
+      <button type="button" class="wb-btn" id="wb-tool-highlighter" onclick="setWbTool('highlighter')">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+        <span>형광펜</span>
+      </button>
+      <button type="button" class="wb-btn" id="wb-tool-eraser" onclick="setWbTool('eraser')">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        <span>지우개</span>
+      </button>
     </div>
+    <!-- 색상 팔레트 -->
+    <div class="flex items-center gap-1.5 border-r border-slate-200 pr-3">
+      <div class="color-swatch active" style="background:#0f172a" onclick="setWbColor('#0f172a', this)" title="검정"></div>
+      <div class="color-swatch" style="background:#ef4444" onclick="setWbColor('#ef4444', this)" title="빨강"></div>
+      <div class="color-swatch" style="background:#2563eb" onclick="setWbColor('#2563eb', this)" title="파랑"></div>
+      <div class="color-swatch" style="background:#059669" onclick="setWbColor('#059669', this)" title="초록"></div>
+      <div class="color-swatch" style="background:#f59e0b" onclick="setWbColor('#f59e0b', this)" title="노랑"></div>
+      <div class="color-swatch" style="background:#7c3aed" onclick="setWbColor('#7c3aed', this)" title="보라"></div>
+    </div>
+    <!-- 굵기 선택 -->
+    <div class="flex items-center gap-1 border-r border-slate-200 pr-3 text-xs font-semibold text-slate-600">
+      <button type="button" class="px-2 py-1 rounded hover:bg-slate-100" onclick="setWbSize(2, this)">가늘게</button>
+      <button type="button" class="px-2 py-1 rounded bg-slate-200 font-bold" onclick="setWbSize(4, this)">보통</button>
+      <button type="button" class="px-2 py-1 rounded hover:bg-slate-100" onclick="setWbSize(8, this)">굵게</button>
+    </div>
+    <!-- 관리 버튼 -->
+    <div class="flex items-center gap-1">
+      <button type="button" class="p-2 text-rose-600 hover:bg-rose-50 rounded-full" onclick="clearWhiteboard()" title="전체 지우기">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      </button>
+      <button type="button" class="p-2 text-slate-600 hover:bg-slate-100 rounded-full" onclick="downloadWhiteboard()" title="필기 다운로드">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+      </button>
+      <button type="button" class="p-2 text-slate-400 hover:text-slate-700 rounded-full ml-1" onclick="toggleWhiteboard()" title="칠판 닫기">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
 
-    <header class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur border-b border-slate-200 z-40 flex items-center justify-between px-4">
-        <span class="font-bold text-lg text-indigo-600">06. 증가·감소, 극대·극소</span>
-        <button onclick="toggleWhiteboard()" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold flex items-center gap-1">
-            <i class="fa-solid fa-chalkboard-user"></i> 칠판
+  <!-- 전체 레이아웃 (좌측 네비게이션 + 우측 본문) -->
+  <div class="flex min-h-screen">
+
+    <!-- 좌측 사이드바 -->
+    <aside class="w-80 bg-white border-r border-slate-200 flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-40 overflow-y-auto">
+      <!-- 헤더 -->
+      <div class="p-5 border-b border-slate-100">
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60">2022 개정 교육과정</span>
+          <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-600">고등학교 미적분Ⅰ</span>
+        </div>
+        <h1 class="text-lg font-bold text-slate-900 tracking-tight">Ⅱ. 미분</h1>
+        <p class="text-xs text-slate-500 mt-0.5">6. 함수의 증가와 감소, 극대와 극소 (81~88쪽)</p>
+      </div>
+
+      <!-- 차시 목록 네비게이션 -->
+      <nav class="flex-1 p-4 space-y-6">
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">단원 차시 구성 (23~26차시)</div>
+          <ul class="space-y-1.5 text-sm">
+            <li>
+              <a href="#sec-23" class="nav-item flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium transition-colors">
+                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">23</span>
+                <div>
+                  <div class="font-semibold text-slate-900 leading-tight">함수의 증가와 감소 판정 (81~83쪽)</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5">엄밀한 정의 · 도함수 부호와 증감 · 예제1 · 문제1~3 · 증감 궤적 시뮬레이터</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#sec-24" class="nav-item flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium transition-colors">
+                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">24</span>
+                <div>
+                  <div class="font-semibold text-slate-900 leading-tight">극대와 극소의 정의 & 정리 (84~85쪽)</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5">열린구간 국소적 정의 · 페르마의 정리(f'=0) 증명 · 역의 반례와 첨점 · 극대극소 돋보기</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#sec-25" class="nav-item flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium transition-colors">
+                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">25</span>
+                <div>
+                  <div class="font-semibold text-slate-900 leading-tight">증감표와 극값·미정계수 (86~87쪽)</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5">도함수 부호변화 판정 · 3·4차 증감표 · 예제2·3 · 문제5·6 · 도함수 오류 토론</div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="#sec-26" class="nav-item flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium transition-colors">
+                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">26</span>
+                <div>
+                  <div class="font-semibold text-slate-900 leading-tight">스스로 확인하기 & 기침 모델 (88쪽)</div>
+                  <div class="text-[11px] text-slate-500 mt-0.5">기본 01~02 · 미정계수 03~05 · 기침 공기속도 극댓값 06 · 기침 속도 시뮬레이터</div>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 4대 인터랙티브 실험실 바로가기 -->
+        <div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">인터랙티브 실험실</div>
+          <div class="space-y-1 text-xs">
+            <a href="#lab-incdec" class="flex items-center justify-between p-2 rounded-md hover:bg-indigo-50/70 text-slate-700 transition">
+              <span class="flex items-center gap-1.5 font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                도함수 부호와 증감 궤적기
+              </span>
+              <span class="text-[10px] text-indigo-600 font-semibold">Sim 1</span>
+            </a>
+            <a href="#lab-magnifier" class="flex items-center justify-between p-2 rounded-md hover:bg-indigo-50/70 text-slate-700 transition">
+              <span class="flex items-center gap-1.5 font-medium">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                극대·극소 국소 돋보기
+              </span>
+              <span class="text-[10px] text-indigo-600 font-semibold">Sim 2</span>
+            </a>
+            <a href="#lab-tablegraph" class="flex items-center justify-between p-2 rounded-md hover:bg-indigo-50/70 text-slate-700 transition">
+              <span class="flex items-center gap-1.5 font-medium">
+                <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                증감표 연동 다항함수 작도기
+              </span>
+              <span class="text-[10px] text-indigo-600 font-semibold">Sim 3</span>
+            </a>
+            <a href="#lab-cough" class="flex items-center justify-between p-2 rounded-md hover:bg-indigo-50/70 text-slate-700 transition">
+              <span class="flex items-center gap-1.5 font-medium">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                기침 공기속도 극댓값 시뮬레이터
+              </span>
+              <span class="text-[10px] text-indigo-600 font-semibold">Sim 4</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- 단원 허브 이동 메뉴 -->
+        <div class="pt-3 border-t border-slate-100">
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">미적분Ⅰ 전체 단원 바로가기</div>
+          <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+            <a href="1. 함수의 극한과 연속 1. 함수의 극한.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">1. 함수의 극한</a>
+            <a href="1. 함수의 극한과 연속 2. 함수의 극한에 대한 성질.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2. 극한의 성질</a>
+            <a href="1. 함수의 극한과 연속 3. 함수의 연속.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">3. 함수의 연속</a>
+            <a href="1. 함수의 극한과 연속 4. 연속함수의 성질.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">4. 연속함수 성질</a>
+            <a href="2. 미분 1. 미분계수.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-1. 미분계수</a>
+            <a href="2. 미분 2. 미분가능성과 연속성.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-2. 미분가능성</a>
+            <a href="2. 미분 3. 도함수.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-3. 도함수</a>
+            <a href="2. 미분 4. 접선의 방정식.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-4. 접선의 방정식</a>
+            <a href="2. 미분 5. 평균값정리.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-5. 평균값 정리</a>
+            <span class="p-1.5 rounded bg-indigo-50 text-indigo-700 font-bold truncate">2-6. 증가감소·극대극소</span>
+            <a href="2. 미분 7. 함수의 그래프.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-7. 함수의 그래프</a>
+            <a href="3. 적분 5. 속도와 거리.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">3-5. 속도와 거리</a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- 사용자 정보 및 칠판 토글 푸터 -->
+      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span class="text-xs font-medium text-slate-600">수업 모드 준비됨</span>
+        </div>
+        <button type="button" onclick="toggleWhiteboard()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5 transition">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+          <span>전자칠판 열기</span>
         </button>
-    </header>
-
-    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-40 flex flex-col justify-between shadow-lg lg:shadow-none">
-        <div class="p-5 border-b border-slate-200">
-            <span class="text-xs font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-700">Ⅱ. 미분</span>
-            <h1 class="text-2xl font-extrabold text-slate-900 mt-2 flex items-center gap-2">
-                <i class="fa-solid fa-chart-area text-indigo-600"></i>
-                <span>06. 증감 & 극대극소</span>
-            </h1>
-            <p class="text-xs text-slate-500 mt-1">교과서 79 ~ 86쪽</p>
-        </div>
-        <nav class="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-            <a href="#sec-intro" class="nav-link active flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-lightbulb text-amber-500"></i><span>성취기준 & 생각 열기</span>
-            </a>
-            <a href="#sec-concept1" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-arrow-trend-up text-indigo-500"></i><span>1. 함수의 증가와 감소 판정</span>
-            </a>
-            <a href="#sec-concept2" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-mountain-sun text-emerald-500"></i><span>2. 극대와 극소의 정의 및 판정</span>
-            </a>
-            <a href="#sec-lab" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-sliders text-sky-500"></i><span>증감표 & 극값 인터랙티브 실험실</span>
-            </a>
-            <a href="#sec-ex1" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-pen-to-square text-rose-500"></i><span>대표 예제 & 연습장</span>
-            </a>
-            <a href="#sec-check" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100">
-                <i class="fa-solid fa-clipboard-check text-teal-500"></i><span>스스로 확인하기 (01~04)</span>
-            </a>
-        </nav>
-        <div class="p-3 border-t border-slate-200 bg-slate-50 no-print">
-            <button onclick="toggleWhiteboard()" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-extrabold shadow-sm flex items-center justify-center gap-2 transition cursor-pointer">
-                <i class="fa-solid fa-chalkboard-user"></i>
-                <span>전자칠판 판서 모드</span>
-            </button>
-        </div>
+      </div>
     </aside>
 
-    <main id="main-content" class="lg:ml-72 min-h-screen p-6 sm:p-10 space-y-12">
-        <section id="sec-intro" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-4">
-                <i class="fa-solid fa-compass"></i> 성취기준
-            </div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-4">
-                함수의 증가와 감소, 극대와 극소를 판정할 수 있다
-            </h2>
-            <div class="bg-indigo-50/70 rounded-xl p-5 border border-indigo-100">
-                <h3 class="font-bold text-indigo-900 text-base mb-2">💡 생각 열기 : 비행기가 최고 고도에 도달했을 때의 수직 속도는?</h3>
-                <p class="text-sm text-slate-700 leading-relaxed">
-                    상승하던 비행기가 하강으로 전환하는 정상 지점에서는 순간적으로 수직 속도가 $0$이 됩니다. 함수의 그래프에서도 증가에서 감소로 바뀌는 정점(극대)에서 도함수의 값은 얼마일까요?
-                </p>
-                <div class="mt-3 flex items-center gap-3">
-                    <button onclick="toggleSolution('intro-ans11')" class="text-xs font-bold text-indigo-600 hover:underline">정답 확인</button>
-                    <span id="intro-ans11" class="hidden text-xs font-bold text-emerald-600">미분가능한 함수라면 $f'(a) = 0$이 되고, 부호가 양수에서 음수로 바뀝니다!</span>
-                </div>
-            </div>
-        </section>
+    <!-- 메인 콘텐츠 영역 -->
+    <main class="flex-1 ml-80 min-w-0">
+      <!-- 상단 스티키 바 -->
+      <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 px-8 py-3.5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">06. 증가·감소, 극대·극소</span>
+          <span class="text-slate-300">|</span>
+          <h2 class="text-sm font-bold text-slate-800">도함수를 이용한 함수의 증감과 극값의 완벽한 판정</h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="toggleWhiteboard()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
+            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            <span>칠판 필기 모드</span>
+          </button>
+          <div class="h-4 w-px bg-slate-200"></div>
+          <span class="text-xs text-slate-500 font-medium">교과서 81~88쪽 (168쪽 해설)</span>
+        </div>
+      </header>
 
-        <section id="sec-concept1" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-indigo-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">1. 도함수의 부호와 함수의 증가·감소</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 bg-emerald-50/70 rounded-xl border border-emerald-200 space-y-2">
-                    <h4 class="font-bold text-emerald-900 text-sm flex items-center gap-1.5">
-                        <i class="fa-solid fa-arrow-trend-up text-emerald-600"></i> 함수 $f(x)$가 증가
-                    </h4>
-                    <p class="text-xs text-slate-700">열린구간의 모든 $x$에서 <b>$f'(x) > 0$</b> 이면 $f(x)$는 그 구간에서 증가한다.</p>
-                </div>
-                <div class="p-4 bg-rose-50/70 rounded-xl border border-rose-200 space-y-2">
-                    <h4 class="font-bold text-rose-900 text-sm flex items-center gap-1.5">
-                        <i class="fa-solid fa-arrow-trend-down text-rose-600"></i> 함수 $f(x)$가 감소
-                    </h4>
-                    <p class="text-xs text-slate-700">열린구간의 모든 $x$에서 <b>$f'(x) < 0$</b> 이면 $f(x)$는 그 구간에서 감소한다.</p>
-                </div>
-            </div>
-        </section>
+      <!-- 본문 스크롤 영역 -->
+      <div class="p-8 max-w-5xl mx-auto space-y-16">
 
-        <section id="sec-concept2" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-emerald-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">2. 극대와 극소의 정의 및 판정</h3>
-            </div>
-            <div class="p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="p-4 bg-white rounded-xl border border-slate-200">
-                        <h4 class="font-bold text-indigo-700 text-sm mb-1">⛰️ 극댓값 (Local Maximum)</h4>
-                        <p class="text-xs text-slate-600">$x=a$의 좌우에서 $f'(x)$의 부호가 <b>양(+)에서 음(-)</b>으로 변할 때 $f(a)$는 극댓값.</p>
-                    </div>
-                    <div class="p-4 bg-white rounded-xl border border-slate-200">
-                        <h4 class="font-bold text-sky-700 text-sm mb-1">🌊 극솟값 (Local Minimum)</h4>
-                        <p class="text-xs text-slate-600">$x=b$의 좌우에서 $f'(x)$의 부호가 <b>음(-)에서 양(+)</b>으로 변할 때 $f(b)$는 극솟값.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Section Interactive Lab -->
-        <section id="sec-lab" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-2.5 h-6 bg-sky-600 rounded-full"></span>
-                    <h3 class="text-xl font-bold text-slate-900">3차함수 극대·극소 실시간 탐색기</h3>
-                </div>
-                <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">f(x) = x³ - 3x</span>
+        <!-- ========================================== -->
+        <!-- 23차시: 함수의 증가와 감소 판정 (81~83쪽) -->
+        <!-- ========================================== -->
+        <section id="sec-23" class="scroll-mt-20 space-y-10">
+          
+          <!-- 차시 타이틀 배너 -->
+          <div class="bg-gradient-to-r from-indigo-500/10 via-indigo-50 to-transparent border-l-4 border-indigo-600 p-6 rounded-r-2xl">
+            <div class="flex items-center gap-2 text-indigo-700 font-bold text-xs tracking-wider uppercase mb-1">
+              <span>23차시</span>
+              <span>·</span>
+              <span>교과서 81~83쪽</span>
             </div>
+            <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight">함수의 증가와 감소는 무엇일까?</h3>
+            <p class="text-slate-600 text-sm mt-1.5 leading-relaxed">
+              그래프가 위로 올라가고 아래로 내려가는 직관적인 현상을 엄밀한 부등식과 도함수의 부호($f'(x) > 0, f'(x) < 0$)로 판정하고 분석합니다.
+            </p>
+          </div>
+
+          <!-- 생각 열기 (교과서 81쪽) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm">
+            <div class="flex items-center gap-2.5 mb-4">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                생각 열기
+              </span>
+              <h4 class="text-base font-bold text-slate-800">등산 고도 변화와 증가·감소</h4>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <div class="md:col-span-2 bg-slate-50 rounded-xl p-4 flex flex-col items-center border border-slate-200">
-                    <canvas id="extrema-canvas" width="500" height="260" class="w-full h-56 rounded-lg bg-white shadow-inner"></canvas>
+              <div class="md:col-span-2 space-y-4 text-sm text-slate-700 leading-relaxed">
+                <p>
+                  려은이는 7시에 등산을 시작하여 12시에 하산을 완료했습니다. 오른쪽 그림은 려은이의 고도 변화를 운동용 앱을 이용하여 대략적으로 나타낸 그래프입니다.
+                </p>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-3 text-xs">
+                  <div>
+                    <span class="font-bold text-indigo-600 mr-2">❶</span>
+                    고도가 <strong>올라가고 있는 시간</strong>은 몇 시부터 몇 시까지인지 찾아보세요.
+                    <div class="mt-2 flex items-center gap-3">
+                      <input type="text" id="open23-q1" placeholder="예: 7~8, 9~10" class="w-48 px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                      <button type="button" onclick="checkOpen23_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">확인</button>
+                      <span id="open23-q1-msg" class="font-medium"></span>
+                    </div>
+                  </div>
+                  <div class="pt-2 border-t border-slate-200">
+                    <span class="font-bold text-indigo-600 mr-2">❷</span>
+                    고도가 <strong>내려가고 있는 시간</strong>은 몇 시부터 몇 시까지인지 찾아보세요.
+                    <div class="mt-2 flex items-center gap-3">
+                      <input type="text" id="open23-q2" placeholder="예: 8~9, 10~12" class="w-48 px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                      <button type="button" onclick="checkOpen23_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">확인</button>
+                      <span id="open23-q2-msg" class="font-medium"></span>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              <!-- 생각열기 등산 고도 SVG 그래프 -->
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-center flex flex-col items-center justify-center">
+                <svg viewBox="0 0 200 150" class="w-48 h-auto">
+                  <line x1="30" y1="120" x2="185" y2="120" stroke="#94a3b8" stroke-width="1.5"/>
+                  <line x1="30" y1="120" x2="30" y2="15" stroke="#94a3b8" stroke-width="1.5"/>
+                  <text x="180" y="132" font-size="8" fill="#64748b">시각</text>
+                  <text x="10" y="15" font-size="8" fill="#64748b">고도(m)</text>
+                  <!-- 시간 눈금 7, 8, 9, 10, 11, 12 -->
+                  <text x="50" y="130" font-size="8" fill="#64748b">7</text>
+                  <text x="75" y="130" font-size="8" fill="#64748b">8</text>
+                  <text x="100" y="130" font-size="8" fill="#64748b">9</text>
+                  <text x="125" y="130" font-size="8" fill="#64748b">10</text>
+                  <text x="150" y="130" font-size="8" fill="#64748b">11</text>
+                  <text x="175" y="130" font-size="8" fill="#64748b">12</text>
+                  <!-- 등산 곡선 (7시: 200m -> 8시: 800m -> 9시: 600m -> 10시: 1200m -> 12시: 0m) -->
+                  <path d="M 50,110 C 65,100 70,55 75,55 C 85,55 95,80 100,80 C 110,80 120,25 125,25 C 135,25 155,75 175,120" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+                  <circle cx="75" cy="55" r="3.5" fill="#ef4444"/>
+                  <circle cx="100" cy="80" r="3.5" fill="#10b981"/>
+                  <circle cx="125" cy="25" r="3.5" fill="#ef4444"/>
+                </svg>
+                <div class="text-[11px] text-slate-500 mt-2 font-medium">봉우리(극대)와 골짜기(극소)의 시각화</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 함수의 증가와 감소의 정의 (교과서 81쪽) -->
+          <div class="bg-indigo-50/70 border-2 border-indigo-300 rounded-2xl p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-md bg-indigo-600 text-white text-xs font-bold tracking-wide">수학적 정의</span>
+                <h4 class="text-lg font-extrabold text-indigo-950">함수의 증가와 감소</h4>
+              </div>
+              <span class="text-xs text-indigo-600 font-semibold bg-white px-2.5 py-1 rounded-full border border-indigo-200">교과서 81쪽</span>
+            </div>
+
+            <div class="p-5 bg-white rounded-xl border border-indigo-100 shadow-inner space-y-4 text-sm text-slate-800">
+              <p>
+                함수 $f(x)$가 어떤 구간에 속하는 임의의 두 실수 $x_1, x_2$에 대하여
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-3.5 bg-emerald-50/60 rounded-xl border border-emerald-200 space-y-1.5">
+                  <span class="px-2 py-0.5 rounded bg-emerald-600 text-white text-xs font-bold">증가 (Increasing)</span>
+                  <div class="text-sm font-mono font-bold text-emerald-900 py-1">
+                    $$x_1 < x_2 \implies f(x_1) < f(x_2)$$
+                  </div>
+                  <p class="text-xs text-emerald-800">
+                    $x$값이 커질수록 함숫값도 함께 커지는 상태
+                  </p>
+                </div>
+
+                <div class="p-3.5 bg-rose-50/60 rounded-xl border border-rose-200 space-y-1.5">
+                  <span class="px-2 py-0.5 rounded bg-rose-600 text-white text-xs font-bold">감소 (Decreasing)</span>
+                  <div class="text-sm font-mono font-bold text-rose-900 py-1">
+                    $$x_1 < x_2 \implies f(x_1) > f(x_2)$$
+                  </div>
+                  <p class="text-xs text-rose-800">
+                    $x$값이 커질수록 함숫값은 반대로 작아지는 상태
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 보기 박스 (교과서 81쪽) -->
+            <div class="p-4 bg-white/80 rounded-xl border border-indigo-100 text-xs text-slate-700 space-y-2">
+              <div class="font-bold text-indigo-900">보기: $f(x) = x^2$의 증감 분석</div>
+              <p>
+                $0 \le x_1 < x_2$일 때 $f(x_2) - f(x_1) = x_2^2 - x_1^2 = (x_2 + x_1)(x_2 - x_1) > 0 \implies f(x_1) < f(x_2)$.
+                따라서 $f(x) = x^2$은 구간 $[0, \infty)$에서 <strong>증가</strong>하고, 마찬가지로 $(-\infty, 0]$에서 <strong>감소</strong>합니다.
+              </p>
+            </div>
+          </div>
+
+          <!-- 문제 1 (교과서 81쪽) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">문제 1</span>
+                <h4 class="text-base font-bold text-slate-800">3차 단조함수 $f(x) = x^3$의 증가 증명</h4>
+              </div>
+              <button type="button" onclick="toggleSolution('sol-u6-p1')" class="text-xs font-bold text-indigo-600 hover:underline">증명 풀이 보기</button>
+            </div>
+
+            <p class="text-sm text-slate-700">
+              함수 $f(x) = x^3$이 구간 $(-\infty, \infty)$에서 증가함을 보이시오.
+            </p>
+
+            <div id="sol-u6-p1" class="hidden p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-slate-800 space-y-2">
+              <div class="font-bold text-indigo-900">대수적 인수분해 증명:</div>
+              <p>임의의 두 실수 $x_1 < x_2$에 대하여 차를 계산하면:</p>
+              <div class="p-2 bg-white rounded border border-indigo-100 font-mono text-center">
+                $$f(x_2) - f(x_1) = x_2^3 - x_1^3 = (x_2 - x_1)\left(x_2^2 + x_1 x_2 + x_1^2ight)$$
+              </div>
+              <p>이때 $x_2 - x_1 > 0$이고, 이차식 부분은 완전제곱꼴로 묶으면 다음과 같습니다:</p>
+              <div class="p-2 bg-white rounded border border-indigo-100 font-mono text-center">
+                $$x_2^2 + x_1 x_2 + x_1^2 = \left(x_2 + rac{x_1}{2}ight)^2 + rac{3}{4}x_1^2 > 0 \quad (	ext{두 실수가 동시에 0이 아닐 때})$$
+              </div>
+              <p>따라서 $f(x_2) - f(x_1) > 0 \iff f(x_1) < f(x_2)$이므로 함수 $f(x) = x^3$은 실수 전체 구간 $(-\infty, \infty)$에서 증가합니다. (증명 완료)</p>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
+                <span>풀이 연습장</span>
+                <button type="button" onclick="clearScratchpad('sp-u6-p1')" class="hover:text-indigo-600">지우기</button>
+              </div>
+              <canvas id="sp-u6-p1" class="scratchpad-canvas w-full h-24"></canvas>
+            </div>
+          </div>
+
+          <!-- 도함수의 부호와 증가·감소 판정 (교과서 82쪽) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-xs">핵심 판정법</span>
+                <h4 class="text-base font-bold text-slate-900">도함수의 부호에 의한 증가와 감소의 판정</h4>
+              </div>
+              <span class="text-xs text-slate-400">교과서 82쪽</span>
+            </div>
+
+            <div class="p-5 bg-blue-50/50 rounded-xl border border-blue-200 space-y-3">
+              <p class="text-sm text-slate-900 font-semibold">
+                함수 $f(x)$가 어떤 열린구간에서 미분가능하고, 이 구간에 속하는 모든 $x$에 대하여
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div class="p-3 bg-white rounded-lg border border-blue-100 flex items-center justify-between">
+                  <span class="font-mono font-bold text-emerald-600 text-base">$$f'(x) > 0$$</span>
+                  <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-xs font-bold">이 구간에서 증가</span>
+                </div>
+                <div class="p-3 bg-white rounded-lg border border-blue-100 flex items-center justify-between">
+                  <span class="font-mono font-bold text-rose-600 text-base">$$f'(x) < 0$$</span>
+                  <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-800 text-xs font-bold">이 구간에서 감소</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 평균값 정리를 이용한 엄밀한 증명 박스 -->
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 space-y-2">
+              <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                평균값 정리를 이용한 판정법의 증명 (교과서 82쪽)
+              </div>
+              <p>
+                임의의 두 실수 $x_1 < x_2$에 대하여 닫힌구간 $[x_1, x_2]$에서 <strong>평균값 정리</strong>를 적용하면:
+              </p>
+              <div class="text-center font-mono py-1 font-bold text-indigo-700">
+                $$rac{f(x_2) - f(x_1)}{x_2 - x_1} = f'(c) \quad (x_1 < c < x_2)$$
+              </div>
+              <p>
+                이때 $x_2 - x_1 > 0$이므로, $f'(c) > 0$이면 분자 $f(x_2) - f(x_1) > 0 \implies f(x_1) < f(x_2)$가 되어 함수 $f(x)$는 증가합니다. $f'(c) < 0$이면 마찬가지로 감소합니다.
+              </p>
+            </div>
+
+            <!-- 주의: 역은 성립하지 않는다 (반례 박스) -->
+            <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 space-y-1.5">
+              <div class="font-bold flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <span>주의: 역은 일반적으로 성립하지 않습니다! (수능 필수 함정)</span>
+              </div>
+              <p>
+                함수 $f(x) = x^3$은 실수 전체에서 항상 증가하지만, $x = 0$에서의 도함수는 $f'(0) = 0$입니다. 즉, <em>"증가한다고 해서 모든 점에서 $f'(x) > 0$인 것은 아니며, $f'(x) \ge 0$이 성립합니다."</em>
+              </p>
+            </div>
+          </div>
+
+          <!-- 예제 1 (증감표 작성법, 교과서 83쪽) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">예제 1</span>
+                <h4 class="text-base font-bold text-slate-800">증감표를 이용한 함수의 증가와 감소 조사</h4>
+              </div>
+              <span class="text-xs text-slate-500 font-medium">교과서 83쪽</span>
+            </div>
+
+            <div class="space-y-4 text-xs text-slate-700">
+              <!-- 예제 1-(1) -->
+              <div class="p-4 bg-indigo-50/40 rounded-xl border border-indigo-100 space-y-2">
+                <div class="font-bold text-indigo-900 text-sm">(1) $f(x) = x^3 - 3x^2$</div>
+                <p>1) 도함수 구하기: $f'(x) = 3x^2 - 6x = 3x(x - 2)$</p>
+                <p>2) $f'(x) = 0$이 되는 기준점: $x = 0$ 또는 $x = 2$</p>
+                <!-- 증감표 HTML -->
+                <div class="overflow-x-auto py-1">
+                  <table class="w-full max-w-md mx-auto text-center border-collapse text-xs bg-white rounded-lg border border-indigo-200 shadow-sm">
+                    <thead>
+                      <tr class="bg-indigo-50 text-indigo-950 font-bold border-b border-indigo-200">
+                        <th class="p-1.5 border-r border-indigo-200">$x$</th>
+                        <th class="p-1.5">$\cdots$</th>
+                        <th class="p-1.5 border-r border-indigo-200 font-bold text-indigo-700">$0$</th>
+                        <th class="p-1.5">$\cdots$</th>
+                        <th class="p-1.5 border-r border-indigo-200 font-bold text-indigo-700">$2$</th>
+                        <th class="p-1.5">$\cdots$</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b border-indigo-100">
+                        <td class="p-1.5 bg-slate-50 font-semibold border-r border-indigo-200">$f'(x)$</td>
+                        <td class="p-1.5 text-emerald-600 font-bold">$+$</td>
+                        <td class="p-1.5 border-r border-indigo-200">$0$</td>
+                        <td class="p-1.5 text-rose-600 font-bold">$-$</td>
+                        <td class="p-1.5 border-r border-indigo-200">$0$</td>
+                        <td class="p-1.5 text-emerald-600 font-bold">$+$</td>
+                      </tr>
+                      <tr>
+                        <td class="p-1.5 bg-slate-50 font-semibold border-r border-indigo-200">$f(x)$</td>
+                        <td class="p-1.5 text-emerald-700 font-bold">$
+earrow$</td>
+                        <td class="p-1.5 border-r border-indigo-200 font-bold">$0$</td>
+                        <td class="p-1.5 text-rose-700 font-bold">$\searrow$</td>
+                        <td class="p-1.5 border-r border-indigo-200 font-bold">$-4$</td>
+                        <td class="p-1.5 text-emerald-700 font-bold">$
+earrow$</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="font-medium text-slate-800">
+                  $\implies$ 함수 $f(x)$는 구간 $(-\infty, 0], [2, \infty)$에서 <strong>증가</strong>하고, 닫힌구간 $[0, 2]$에서 <strong>감소</strong>합니다.
+                </p>
+              </div>
+
+              <!-- 예제 1-(2) -->
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <div class="font-bold text-slate-900 text-sm">(2) $f(x) = -x^3 + 6x^2 - 12x$</div>
+                <p>1) 도함수 구하기: $f'(x) = -3x^2 + 12x - 12 = -3(x - 2)^2$</p>
+                <p>2) $x 
+eq 2$인 모든 실수에서 $f'(x) < 0$이고 $f'(2) = 0$입니다.</p>
+                <p class="font-medium text-slate-800">
+                  $\implies$ 따라서 함수 $f(x)$는 실수 전체 구간 $(-\infty, \infty)$에서 <strong>항상 감소</strong>합니다.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 문제 2 (교과서 83쪽) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">문제 2</span>
+                <h4 class="text-base font-bold text-slate-800">함수의 증가와 감소 조사하기</h4>
+              </div>
+              <span class="text-xs text-slate-500 font-medium">교과서 83쪽</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- 소문항 1 -->
+              <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                <div>
+                  <div class="font-bold text-sm text-indigo-700 mb-1">(1) $f(x) = -x^3 + 12x + 1$</div>
+                  <p class="text-xs text-slate-600 mb-3">
+                    $f'(x) = -3(x^2 - 4) = 0$의 두 근을 구하고 증가하는 구간 $[-a, a]$의 $a$를 구하세요.
+                  </p>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-600">증가 구간: [-</span>
+                    <input type="text" id="q2-1-ans" placeholder="2" class="w-16 px-2.5 py-1.5 text-xs text-center border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                    <span class="text-xs text-slate-600">, </span>
+                    <span class="text-xs text-slate-600">2]</span>
+                    <button type="button" onclick="checkU6Prob2_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+                    <span id="q2-1-msg" class="text-xs font-medium"></span>
+                  </div>
+                </div>
+                <div>
+                  <canvas id="sp-u6-p2-1" class="scratchpad-canvas w-full h-20"></canvas>
+                </div>
+              </div>
+
+              <!-- 소문항 2 -->
+              <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                <div>
+                  <div class="font-bold text-sm text-indigo-700 mb-1">(2) $f(x) = 2x^3 - 6x^2 + 7x + 3$</div>
+                  <p class="text-xs text-slate-600 mb-3">
+                    도함수 $f'(x) = 6x^2 - 12x + 7$의 판별식 $D/4$를 조사하여 전체 증감을 선택하세요.
+                  </p>
+                  <div class="flex items-center gap-2">
+                    <select id="q2-2-sel" class="text-xs p-1.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400">
+                      <option value="">선택하세요</option>
+                      <option value="inc">전 구간 항상 증가</option>
+                      <option value="dec">전 구간 항상 감소</option>
+                      <option value="both">증가와 감소 공존</option>
+                    </select>
+                    <button type="button" onclick="checkU6Prob2_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+                    <span id="q2-2-msg" class="text-xs font-medium"></span>
+                  </div>
+                </div>
+                <div>
+                  <canvas id="sp-u6-p2-2" class="scratchpad-canvas w-full h-20"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 문제 3 (추론, 교과서 83쪽) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-purple-600 text-white font-bold text-xs">문제 3 (추론)</span>
+                <h4 class="text-base font-bold text-slate-800">도함수 $y = f'(x)$의 그래프를 보고 $f(x)$ 증감 판정</h4>
+              </div>
+              <span class="text-xs text-slate-500 font-medium">교과서 83쪽</span>
+            </div>
+
+            <p class="text-xs text-slate-700 leading-relaxed">
+              삼차함수 $y = f(x)$의 도함수 $y = f'(x)$의 그래프가 아래 3가지 형태일 때, $f(x)$의 증가와 감소 특성을 맞춰보세요.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+              <!-- 케이스 1 -->
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2">
+                <span class="font-bold text-xs text-indigo-700">(1) $x$절편 $1, 3$ 통과</span>
+                <div class="h-24 bg-white rounded border border-slate-200 flex items-center justify-center p-1">
+                  <svg viewBox="0 0 120 80" class="w-full h-full">
+                    <line x1="10" y1="50" x2="110" y2="50" stroke="#94a3b8" stroke-width="1.2"/>
+                    <path d="M 15,20 Q 60,85 105,20" fill="none" stroke="#6366f1" stroke-width="2"/>
+                    <text x="35" y="47" font-size="8" fill="#1e293b">1</text>
+                    <text x="80" y="47" font-size="8" fill="#1e293b">3</text>
+                  </svg>
+                </div>
+                <div class="text-[11px] text-slate-600 leading-tight">
+                  $(-\infty, 1], [3, \infty)$ 증가<br>
+                  $[1, 3]$ 감소
+                </div>
+              </div>
+
+              <!-- 케이스 2 -->
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2">
+                <span class="font-bold text-xs text-indigo-700">(2) $x = 2$ 접함 ($D=0$)</span>
+                <div class="h-24 bg-white rounded border border-slate-200 flex items-center justify-center p-1">
+                  <svg viewBox="0 0 120 80" class="w-full h-full">
+                    <line x1="10" y1="60" x2="110" y2="60" stroke="#94a3b8" stroke-width="1.2"/>
+                    <path d="M 20,20 Q 60,60 100,20" fill="none" stroke="#6366f1" stroke-width="2"/>
+                    <circle cx="60" cy="60" r="2.5" fill="#ef4444"/>
+                    <text x="58" y="72" font-size="8" fill="#1e293b">2</text>
+                  </svg>
+                </div>
+                <div class="text-[11px] text-slate-600 leading-tight font-medium text-emerald-700">
+                  전체 구간 $(-\infty, \infty)$에서<br>항상 증가
+                </div>
+              </div>
+
+              <!-- 케이스 3 -->
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between space-y-2">
+                <span class="font-bold text-xs text-indigo-700">(3) $x$축 붕 뜸 ($D<0$)</span>
+                <div class="h-24 bg-white rounded border border-slate-200 flex items-center justify-center p-1">
+                  <svg viewBox="0 0 120 80" class="w-full h-full">
+                    <line x1="10" y1="65" x2="110" y2="65" stroke="#94a3b8" stroke-width="1.2"/>
+                    <path d="M 20,25 Q 60,50 100,25" fill="none" stroke="#6366f1" stroke-width="2"/>
+                    <text x="58" y="74" font-size="8" fill="#1e293b">2</text>
+                  </svg>
+                </div>
+                <div class="text-[11px] text-slate-600 leading-tight font-medium text-emerald-700">
+                  전체 구간 $(-\infty, \infty)$에서<br>항상 증가
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 인터랙티브 실험실 1: 실시간 도함수 부호 & 증감 궤적기 -->
+          <div id="lab-incdec" class="bg-white rounded-2xl border border-emerald-200 p-7 shadow-md space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">Sim 1</span>
+                <h4 class="text-base font-extrabold text-slate-900">도함수 부호와 증감 궤적 시뮬레이터</h4>
+              </div>
+              <span class="text-xs text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full">인터랙티브 캔버스</span>
+            </div>
+
+            <p class="text-xs text-slate-600">
+              슬라이더로 $x$ 좌표를 이동시키면, 원함수 $f(x)$ 위의 접선과 함께 아래쪽 도함수 $f'(x)$의 부호가 실시간 연동됩니다. 도함수가 양수일 때 접선이 우상향(증가), 음수일 때 우하향(감소)함을 눈으로 확인하세요!
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="lg:col-span-2 bg-slate-50 rounded-xl p-3 border border-slate-200">
+                <canvas id="inc-dec-sim-canvas" width="600" height="340" class="w-full h-auto bg-white rounded-lg border border-slate-200"></canvas>
+              </div>
+
+              <!-- 컨트롤 패널 -->
+              <div class="bg-emerald-50/40 rounded-xl p-5 border border-emerald-100 flex flex-col justify-between space-y-4">
                 <div class="space-y-4">
-                    <div class="p-4 bg-white rounded-xl border border-slate-200 space-y-3 text-xs">
-                        <div class="p-2 bg-indigo-50 rounded border border-indigo-100">
-                            <span class="font-bold text-indigo-900">극댓점:</span> (-1, 2) [f'(-1) = 0]
-                        </div>
-                        <div class="p-2 bg-sky-50 rounded border border-sky-100">
-                            <span class="font-bold text-sky-900">극솟점:</span> (1, -2) [f'(1) = 0]
-                        </div>
-                        <p class="text-slate-500">구간 $(-\infty, -1)$ 및 $(1, \infty)$에서는 증가($f'>0$), 구간 $(-1, 1)$에서는 감소($f'<0$).</p>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">함수 선택</label>
+                    <select id="incdec-func-select" onchange="updateIncDecFunc()" class="w-full text-xs p-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 font-medium">
+                      <option value="cubic1">f(x) = x³ - 3x² (예제 1-(1))</option>
+                      <option value="cubic2">f(x) = -x³ + 12x + 1 (문제 2-(1))</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1">
+                      <span>x 위치 조절</span>
+                      <span id="incdec-x-val" class="text-emerald-700 font-mono">x = 1.00</span>
                     </div>
+                    <input type="range" id="incdec-x-slider" min="-1.5" max="3.5" step="0.05" value="1.00" oninput="updateIncDecX(this.value)" class="w-full accent-emerald-600">
+                  </div>
+
+                  <div class="p-3 bg-white rounded-lg border border-emerald-100 space-y-2 text-xs">
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-600">도함수 $f'(x)$:</span>
+                      <span id="incdec-fprime-val" class="font-mono font-bold text-rose-600">-3.00</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-600">함수의 상태:</span>
+                      <span id="incdec-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">감소 상태 (f'<0)</span>
+                    </div>
+                  </div>
                 </div>
+
+                <div class="text-[11px] text-center text-slate-500 bg-white p-2 rounded border border-emerald-100">
+                  💡 녹색 궤적 = 증가 구간, 주황 궤적 = 감소 구간
+                </div>
+              </div>
             </div>
+          </div>
         </section>
 
-        <!-- Section Problems -->
-        <section id="sec-ex1" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-rose-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">대표 예제 풀이 & 연습장</h3>
+
+        <!-- ========================================== -->
+        <!-- 24차시: 극대와 극소의 정의 및 페르마 정리 (84~85쪽) -->
+        <!-- ========================================== -->
+        <section id="sec-24" class="scroll-mt-20 space-y-10">
+          
+          <!-- 차시 타이틀 배너 -->
+          <div class="bg-gradient-to-r from-blue-500/10 via-blue-50 to-transparent border-l-4 border-blue-600 p-6 rounded-r-2xl">
+            <div class="flex items-center gap-2 text-blue-700 font-bold text-xs tracking-wider uppercase mb-1">
+              <span>24차시</span>
+              <span>·</span>
+              <span>교과서 84~85쪽</span>
             </div>
-            <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+            <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight">함수의 극대와 극소는 무엇일까?</h3>
+            <p class="text-slate-600 text-sm mt-1.5 leading-relaxed">
+              어떤 열린구간 안에서 가장 높거나 낮은 상태를 뜻하는 국소적 극대·극소의 정의와, 미분계수와의 관계인 페르마의 정리($f'(a)=0$)를 살펴봅니다.
+            </p>
+          </div>
+
+          <!-- 생각 열기 (교과서 84쪽 - 전력 사용량 곡선) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm">
+            <div class="flex items-center gap-2.5 mb-4">
+              <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                생각 열기
+              </span>
+              <h4 class="text-base font-bold text-slate-800">하루 전력 사용량과 피크 타임</h4>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+              <div class="md:col-span-2 space-y-4 text-xs text-slate-700 leading-relaxed">
+                <p>
+                  오른쪽 그림은 5월 중 어느 하루 동안 우리나라의 전력 사용량을 조사하여 나타낸 그래프입니다.
+                </p>
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-3">
+                  <div>
+                    <span class="font-bold text-blue-600 mr-2">❶</span>
+                    6시에서 12시 사이에 전력 사용량이 가장 많은 시각은 몇 시일까요?
+                    <div class="mt-2 flex items-center gap-2">
+                      <input type="text" id="open24-q1" placeholder="9시" class="w-28 px-2.5 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                      <button type="button" onclick="checkOpen24_1()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">확인</button>
+                      <span id="open24-q1-msg" class="font-medium"></span>
+                    </div>
+                  </div>
+                  <div class="pt-2 border-t border-slate-200">
+                    <span class="font-bold text-blue-600 mr-2">❷</span>
+                    9시에서 15시 사이에 전력 사용량이 가장 적은 시각은 몇 시일까요?
+                    <div class="mt-2 flex items-center gap-2">
+                      <input type="text" id="open24-q2" placeholder="12시" class="w-28 px-2.5 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+                      <button type="button" onclick="checkOpen24_2()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">확인</button>
+                      <span id="open24-q2-msg" class="font-medium"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 전력 사용량 곡선 SVG -->
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-center flex flex-col items-center justify-center">
+                <svg viewBox="0 0 180 130" class="w-44 h-auto">
+                  <line x1="25" y1="105" x2="165" y2="105" stroke="#94a3b8" stroke-width="1.2"/>
+                  <line x1="25" y1="105" x2="25" y2="15" stroke="#94a3b8" stroke-width="1.2"/>
+                  <path d="M 25,85 Q 55,100 70,55 T 100,75 T 135,30 T 165,65" fill="none" stroke="#2563eb" stroke-width="2"/>
+                  <circle cx="70" cy="55" r="3.5" fill="#ef4444"/>
+                  <text x="63" y="45" font-size="7" fill="#ef4444" font-weight="bold">9시 피크</text>
+                  <circle cx="100" cy="75" r="3.5" fill="#10b981"/>
+                  <text x="92" y="90" font-size="7" fill="#10b981" font-weight="bold">12시 저점</text>
+                  <circle cx="135" cy="30" r="3.5" fill="#ef4444"/>
+                  <text x="128" y="22" font-size="7" fill="#ef4444" font-weight="bold">18시 최대</text>
+                </svg>
+                <div class="text-[10px] text-slate-500 mt-1 font-medium">9시(극대), 12시(극소), 18시(극대)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 극대와 극소의 엄밀한 정의 카드 (교과서 84쪽) -->
+          <div class="bg-blue-50/70 border-2 border-blue-300 rounded-2xl p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-1 rounded-md bg-blue-600 text-white text-xs font-bold tracking-wide">핵심 정의</span>
+                <h4 class="text-lg font-extrabold text-blue-950">극대와 극소 (Local Extrema)</h4>
+              </div>
+              <span class="text-xs text-blue-600 font-semibold bg-white px-2.5 py-1 rounded-full border border-blue-200">교과서 84쪽</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- 극대 -->
+              <div class="p-5 bg-white rounded-xl border border-blue-100 shadow-inner space-y-2">
                 <div class="flex items-center justify-between">
-                    <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-700 text-xs font-bold">예제 1 (극값 구하기)</span>
-                    <button onclick="toggleSolution('sol-ex11-1')" class="text-xs font-bold text-indigo-600 hover:underline">풀이 확인</button>
+                  <span class="px-2.5 py-1 rounded bg-rose-100 text-rose-800 text-xs font-bold">극대 (Local Maximum)</span>
+                  <span class="text-xs font-mono font-bold text-rose-600">f(x) ≤ f(a)</span>
                 </div>
-                <h4 class="font-bold text-slate-900 text-base">
-                    함수 $f(x) = 2x^3 - 3x^2 - 12x + 1$ 의 극값을 구하시오.
-                </h4>
-                <div id="sol-ex11-1" class="hidden p-4 rounded-xl bg-white border border-slate-200 text-sm space-y-2">
-                    <p class="text-slate-700">$f'(x) = 6x^2 - 6x - 12 = 6(x^2 - x - 2) = 6(x+1)(x-2)$.</p>
-                    <p class="text-slate-700">$f'(x) = 0$인 $x = -1, 2$.</p>
-                    <p class="font-semibold text-slate-900">• $x = -1$에서 극댓값: $f(-1) = 2(-1) - 3(1) - 12(-1) + 1 = 8$.</p>
-                    <p class="font-semibold text-slate-900">• $x = 2$에서 극솟값: $f(2) = 2(8) - 3(4) - 12(2) + 1 = -19$.</p>
+                <p class="text-xs text-slate-700 leading-relaxed">
+                  $x = a$를 포함하는 어떤 열린구간에 속하는 모든 $x$에 대하여 $f(x) \le f(a)$일 때, $f(x)$는 $x = a$에서 <strong>극대</strong>라 하고, 함숫값 $f(a)$를 <strong>극댓값</strong>이라고 합니다.
+                </p>
+              </div>
+
+              <!-- 극소 -->
+              <div class="p-5 bg-white rounded-xl border border-blue-100 shadow-inner space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-xs font-bold">극소 (Local Minimum)</span>
+                  <span class="text-xs font-mono font-bold text-emerald-600">f(x) ≥ f(b)</span>
                 </div>
-                <div class="mt-4">
-                    <div class="flex justify-between items-center mb-1.5 text-xs text-slate-500">
-                        <span><i class="fa-solid fa-pen-nib mr-1"></i> 문제 풀이 연습장</span>
-                        <button class="clear-scratchpad-btn hover:text-slate-700 font-bold">지우기</button>
-                    </div>
-                    <canvas class="scratchpad-canvas w-full h-36 rounded-xl border border-slate-300 bg-white"></canvas>
-                </div>
+                <p class="text-xs text-slate-700 leading-relaxed">
+                  $x = b$를 포함하는 어떤 열린구간에 속하는 모든 $x$에 대하여 $f(x) \ge f(b)$일 때, $f(x)$는 $x = b$에서 <strong>극소</strong>라 하고, 함숫값 $f(b)$를 <strong>극솟값</strong>이라고 합니다.
+                </p>
+              </div>
             </div>
+
+            <!-- Q&A 말풍선 -->
+            <div class="p-4 bg-white/90 rounded-xl border border-blue-100 flex items-start gap-3 text-xs text-slate-700">
+              <span class="w-5 h-5 rounded-full bg-amber-400 text-white font-bold flex items-center justify-center flex-shrink-0 text-[11px]">Q</span>
+              <div class="space-y-1">
+                <p class="font-bold text-slate-900">극댓값은 항상 극솟값보다 큰가요?</p>
+                <p class="text-slate-600 leading-relaxed">
+                  <strong>아닙니다!</strong> 극값은 그 주변(국소적 열린구간)에서만 비교하는 국소적 성질이므로, 왼쪽의 극댓값이 오른쪽 멀리 있는 극솟값보다 작을 수도 있습니다.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 문제 4 (교과서 84쪽) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">문제 4</span>
+                <h4 class="text-base font-bold text-slate-800">그래프를 보고 극댓값과 극솟값 읽기</h4>
+              </div>
+              <span class="text-xs text-slate-400">교과서 84쪽</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+              <div class="md:col-span-2 space-y-3 text-xs text-slate-700">
+                <p class="text-sm font-medium text-slate-800">
+                  함수 $f(x) = x^3 - 3x^2 + 1$의 그래프에서 $f(x)$의 극댓값과 극솟값을 구하시오.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                    <span class="font-bold text-slate-800">극댓값:</span>
+                    <input type="text" id="q4-max-ans" placeholder="정답 입력" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  </div>
+                  <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                    <span class="font-bold text-slate-800">극솟값:</span>
+                    <input type="text" id="q4-min-ans" placeholder="정답 입력" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  </div>
+                </div>
+                <div class="flex items-center justify-end gap-3 pt-1">
+                  <button type="button" onclick="checkU6Prob4()" class="px-4 py-1.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">채점</button>
+                  <span id="q4-msg" class="font-medium"></span>
+                </div>
+              </div>
+
+              <!-- 그래프 미리보기 SVG -->
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 text-center flex flex-col items-center justify-center">
+                <svg viewBox="0 0 140 120" class="w-36 h-auto">
+                  <line x1="15" y1="70" x2="125" y2="70" stroke="#94a3b8" stroke-width="1.2"/>
+                  <line x1="45" y1="110" x2="45" y2="10" stroke="#94a3b8" stroke-width="1.2"/>
+                  <!-- f(x) = x^3 - 3x^2 + 1 -->
+                  <path d="M 20,105 C 35,40 40,45 45,45 C 55,45 70,100 85,100 C 100,100 115,20 125,10" fill="none" stroke="#2563eb" stroke-width="2"/>
+                  <circle cx="45" cy="45" r="3" fill="#ef4444"/>
+                  <text x="32" y="42" font-size="8" fill="#ef4444" font-weight="bold">(0, 1)</text>
+                  <circle cx="85" cy="100" r="3" fill="#10b981"/>
+                  <text x="75" y="112" font-size="8" fill="#10b981" font-weight="bold">(2, -3)</text>
+                </svg>
+                <div class="text-[10px] text-slate-500 mt-1">극댓점 (0, 1), 극솟점 (2, -3)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 극값과 미분계수 (페르마의 정리 & 증명, 교과서 85쪽) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-slate-100 text-slate-700 font-bold text-xs">페르마의 정리</span>
+                <h4 class="text-base font-bold text-slate-900">극값과 미분계수 ($f'(a) = 0$)</h4>
+              </div>
+              <span class="text-xs text-slate-400">교과서 85쪽</span>
+            </div>
+
+            <div class="p-5 bg-indigo-50/50 rounded-xl border border-indigo-200 space-y-2 text-center">
+              <p class="text-xs text-slate-700">미분가능한 함수 $f(x)$가 $x = a$에서 극값을 가지면</p>
+              <div class="text-xl font-extrabold text-indigo-800 font-mono py-1">
+                $$f'(a) = 0$$
+              </div>
+              <p class="text-[11px] text-slate-500">극점에서는 접선이 완벽히 수평을 이룹니다.</p>
+            </div>
+
+            <!-- 반례와 주의점 2가지 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                <div class="font-bold text-rose-700">⚠️ 역은 성립하지 않는다! ($f'=0$이어도 극값 아님)</div>
+                <p>
+                  $f(x) = x^3$은 $f'(0) = 0$이지만, $x=0$ 좌우에서 계속 증가하므로 극값이 아닙니다.
+                </p>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+                <div class="font-bold text-rose-700">⚠️ 극값이어도 미분불가능할 수 있다! (첨점)</div>
+                <p>
+                  $f(x) = |x|$는 $x=0$에서 극솟값 $0$을 갖지만, 뾰족점이므로 $f'(0)$은 존재하지 않습니다.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- 25차시: 증감표와 다항함수의 극값 및 미정계수 (86~87쪽) -->
+          <!-- ========================================== -->
+          <div id="sec-25" class="scroll-mt-20 space-y-10 pt-6">
+            
+            <!-- 차시 타이틀 배너 -->
+            <div class="bg-gradient-to-r from-purple-500/10 via-purple-50 to-transparent border-l-4 border-purple-600 p-6 rounded-r-2xl">
+              <div class="flex items-center gap-2 text-purple-700 font-bold text-xs tracking-wider uppercase mb-1">
+                <span>25차시</span>
+                <span>·</span>
+                <span>교과서 86~87쪽</span>
+              </div>
+              <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight">증감표와 다항함수의 극값 및 미정계수 결정</h3>
+              <p class="text-slate-600 text-sm mt-1.5 leading-relaxed">
+                도함수 부호 변화($+ 	o -$ 극대, $- 	o +$ 극소)를 증감표에 체계적으로 기록하여 3차·4차 함수의 극값을 구하고 미정계수를 완벽히 결정합니다.
+              </p>
+            </div>
+
+            <!-- 예제 2: 3차함수 극값 (교과서 86쪽) -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded bg-purple-600 text-white font-bold text-xs">예제 2</span>
+                  <h4 class="text-base font-bold text-slate-800">3차함수의 극값 구하기</h4>
+                </div>
+                <span class="text-xs text-slate-500 font-medium">교과서 86쪽</span>
+              </div>
+
+              <div class="p-4 bg-purple-50/40 rounded-xl border border-purple-100 text-xs text-slate-800 space-y-3">
+                <p class="font-medium">함수 $f(x) = x^3 - 6x^2 + 9x + 1$의 극값을 구하시오.</p>
+                <p>1) 도함수: $f'(x) = 3x^2 - 12x + 9 = 3(x - 1)(x - 3) = 0 \implies x = 1$ 또는 $x = 3$</p>
+                
+                <!-- 증감표 -->
+                <div class="overflow-x-auto py-1">
+                  <table class="w-full max-w-md mx-auto text-center border-collapse text-xs bg-white rounded-lg border border-purple-200">
+                    <tr class="bg-purple-100 text-purple-900 font-bold border-b border-purple-200">
+                      <th class="p-1 border-r border-purple-200">$x$</th>
+                      <th class="p-1">$\cdots$</th>
+                      <th class="p-1 border-r border-purple-200 font-bold text-purple-700">$1$</th>
+                      <th class="p-1">$\cdots$</th>
+                      <th class="p-1 border-r border-purple-200 font-bold text-purple-700">$3$</th>
+                      <th class="p-1">$\cdots$</th>
+                    </tr>
+                    <tr class="border-b border-purple-100">
+                      <td class="p-1 bg-slate-50 font-semibold border-r border-purple-200">$f'(x)$</td>
+                      <td class="p-1 text-emerald-600 font-bold">$+$</td>
+                      <td class="p-1 border-r border-purple-200">$0$</td>
+                      <td class="p-1 text-rose-600 font-bold">$-$</td>
+                      <td class="p-1 border-r border-purple-200">$0$</td>
+                      <td class="p-1 text-emerald-600 font-bold">$+$</td>
+                    </tr>
+                    <tr>
+                      <td class="p-1 bg-slate-50 font-semibold border-r border-purple-200">$f(x)$</td>
+                      <td class="p-1 text-emerald-700 font-bold">$
+earrow$</td>
+                      <td class="p-1 border-r border-purple-200 font-bold text-rose-600">5 (극대)</td>
+                      <td class="p-1 text-rose-700 font-bold">$\searrow$</td>
+                      <td class="p-1 border-r border-purple-200 font-bold text-emerald-600">1 (극소)</td>
+                      <td class="p-1 text-emerald-700 font-bold">$
+earrow$</td>
+                    </tr>
+                  </table>
+                </div>
+
+                <div class="pt-2 text-right">
+                  <span class="font-bold text-slate-900 bg-white px-3 py-1 rounded border border-purple-200">정답: 극댓값 5, 극솟값 1</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 문제 5: 3차 및 4차함수 극값 (교과서 87쪽) -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-6">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">문제 5</span>
+                  <h4 class="text-base font-bold text-slate-800">다항함수의 극값 구하기</h4>
+                </div>
+                <span class="text-xs text-slate-500 font-medium">교과서 87쪽</span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 5-(1) 3차 -->
+                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                  <div>
+                    <div class="font-bold text-sm text-indigo-700 mb-1">(1) $f(x) = -x^3 + 3x^2 + 9x - 4$</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                      <div>
+                        <span>극댓값: </span>
+                        <input type="text" id="q5-1-max" placeholder="23" class="w-16 px-2 py-1 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-400">
+                      </div>
+                      <div>
+                        <span>극솟값: </span>
+                        <input type="text" id="q5-1-min" placeholder="-9" class="w-16 px-2 py-1 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-400">
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button type="button" onclick="checkU6Prob5_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+                      <span id="q5-1-msg" class="text-xs font-medium"></span>
+                    </div>
+                  </div>
+                  <div>
+                    <canvas id="sp-u6-p5-1" class="scratchpad-canvas w-full h-20"></canvas>
+                  </div>
+                </div>
+
+                <!-- 5-(2) 4차 -->
+                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                  <div>
+                    <div class="font-bold text-sm text-indigo-700 mb-1">(2) $f(x) = 3x^4 - 4x^3 - 12x^2 + 1$</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                      <div>
+                        <span>극댓값: </span>
+                        <input type="text" id="q5-2-max" placeholder="1" class="w-16 px-2 py-1 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-400">
+                      </div>
+                      <div>
+                        <span>극솟값 2개: </span>
+                        <input type="text" id="q5-2-min" placeholder="-4, -31" class="w-24 px-2 py-1 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-400">
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button type="button" onclick="checkU6Prob5_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+                      <span id="q5-2-msg" class="text-xs font-medium"></span>
+                    </div>
+                  </div>
+                  <div>
+                    <canvas id="sp-u6-p5-2" class="scratchpad-canvas w-full h-20"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 예제 3 및 문제 6: 미정계수 결정 (교과서 87쪽) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- 예제 3 -->
+              <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded bg-purple-600 text-white font-bold text-xs">예제 3</span>
+                    <h4 class="text-base font-bold text-slate-800">극값을 이용한 미정계수 구하기</h4>
+                  </div>
+                  <span class="text-xs text-slate-400">교과서 87쪽</span>
+                </div>
+
+                <div class="text-xs text-slate-700 space-y-2">
+                  <p class="font-medium text-slate-900 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    함수 $f(x) = -2x^3 + ax^2 + bx + 5$가 $x = -2$에서 극솟값 $-3$을 가질 때, 상수 $a, b$의 값과 극댓값을 구하시오.
+                  </p>
+                  <p>1) $f'(-2) = 0 \implies -24 - 4a + b = 0$</p>
+                  <p>2) $f(-2) = -3 \implies 16 + 4a - 2b + 5 = -3$</p>
+                  <p>$\implies a = -6, b = 0$</p>
+                  <p>3) $f'(x) = -6x(x + 2) = 0 \implies x = 0$에서 극대, 극댓값 $f(0) = 5$.</p>
+                  <div class="pt-1 font-bold text-purple-900 text-right">
+                    답: $a = -6, b = 0$, 극댓값: $5$
+                  </div>
+                </div>
+              </div>
+
+              <!-- 문제 6 -->
+              <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">문제 6</span>
+                    <h4 class="text-base font-bold text-slate-800">4차 우함수 미정계수 구하기</h4>
+                  </div>
+                  <button type="button" onclick="toggleSolution('sol-u6-p6')" class="text-xs font-bold text-indigo-600 hover:underline">해설</button>
+                </div>
+
+                <div class="text-xs text-slate-700 space-y-3">
+                  <p class="font-medium text-slate-900 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    함수 $f(x) = x^4 + ax^2 + b$가 $x = -1$에서 극소이다. 함수 $f(x)$의 극댓값이 $4$일 때, 상수 $a, b$의 값을 구하시오.
+                  </p>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <span>a = </span>
+                      <input type="text" id="q6-a" placeholder="-2" class="w-16 px-2 py-1 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-400">
+                    </div>
+                    <div>
+                      <span>b = </span>
+                      <input type="text" id="q6-b" placeholder="4" class="w-16 px-2 py-1 border border-slate-300 rounded focus:ring-2 focus:ring-indigo-400">
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between pt-1">
+                    <button type="button" onclick="checkU6Prob6()" class="px-4 py-1.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">채점</button>
+                    <span id="q6-msg" class="font-medium"></span>
+                  </div>
+
+                  <div id="sol-u6-p6" class="hidden p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-1">
+                    <p><strong>풀이:</strong> $f'(x) = 4x^3 + 2ax = 2x(2x^2 + a)$</p>
+                    <p>$f'(-1) = 0 \implies -4 - 2a = 0 \implies \mathbf{a = -2}$</p>
+                    <p>$f'(x) = 4x(x - 1)(x + 1) = 0 \implies x = 0$에서 극대!</p>
+                    <p>극댓값이 4이므로 $f(0) = b = \mathbf{4}$.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 생각 넓히기: 사차함수 도함수 오류 토론 (교과서 87쪽) -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded bg-amber-500 text-white font-bold text-xs">생각 넓히기</span>
+                  <h4 class="text-base font-bold text-slate-800">도함수 $y = f'(x)$ 그래프와 세 학생의 말 오류 찾기</h4>
+                </div>
+                <span class="text-xs text-slate-400">교과서 87쪽 토론</span>
+              </div>
+
+              <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200 text-xs text-slate-800 space-y-3 leading-relaxed">
+                <p>
+                  사차함수 $y = f(x)$의 도함수 $y = f'(x)$의 그래프가 주어졌을 때, 세 학생의 진술을 평가해 봅시다.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div class="p-3 bg-white rounded-lg border border-amber-100 space-y-1">
+                    <div class="font-bold text-indigo-700">인지: "x = b에서 극솟값을 가져."</div>
+                    <p class="text-[11px] text-slate-600">
+                      $\implies$ <strong>참:</strong> $f'(x)$ 부호가 $- 	o +$로 바뀌므로 극소 맞음!
+                    </p>
+                  </div>
+                  <div class="p-3 bg-white rounded-lg border border-amber-100 space-y-1">
+                    <div class="font-bold text-indigo-700">도빈: "극값을 갖는 x의 개수는 2야."</div>
+                    <p class="text-[11px] text-slate-600">
+                      $\implies$ <strong>참/수정:</strong> $x = b, d$ 두 곳에서 부호가 바뀌므로 극값 개수 2개 맞음!
+                    </p>
+                  </div>
+                  <div class="p-3 bg-white rounded-lg border border-amber-100 space-y-1">
+                    <div class="font-bold text-indigo-700">주연: "f(c) < f(e)가 성립해."</div>
+                    <p class="text-[11px] text-rose-600 font-medium">
+                      $\implies$ <strong>오류:</strong> $[d, e]$에서 $f'(x) < 0$으로 감소하므로 반드시 성립한다고 할 수 없음!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 인터랙티브 실험실 2 & 3 나란히 배치 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <!-- Sim 2: 극대·극소 국소 돋보기 -->
+              <div id="lab-magnifier" class="bg-white rounded-2xl border border-blue-200 p-6 shadow-md space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2 py-0.5 rounded bg-blue-600 text-white font-bold text-xs">Sim 2</span>
+                  <h4 class="text-sm font-bold text-slate-900">극대·극소 국소 돋보기 시뮬레이터</h4>
+                </div>
+                <p class="text-xs text-slate-600">
+                  피크점 주변의 열린구간 $(a-\epsilon, a+\epsilon)$을 확대하여 $f(x) \le f(a)$ 조건을 눈으로 확인합니다.
+                </p>
+                <canvas id="extrema-magnifier-canvas" width="400" height="220" class="w-full h-auto bg-slate-50 rounded-lg border border-slate-200"></canvas>
+                <div class="flex items-center justify-between text-xs pt-1">
+                  <button type="button" onclick="setMagnifierMode('max')" class="px-3 py-1 bg-rose-50 text-rose-700 rounded-lg font-bold border border-rose-200">극대 돋보기</button>
+                  <button type="button" onclick="setMagnifierMode('min')" class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-lg font-bold border border-emerald-200">극소 돋보기</button>
+                </div>
+              </div>
+
+              <!-- Sim 3: 증감표 연동 다항함수 작도기 -->
+              <div id="lab-tablegraph" class="bg-white rounded-2xl border border-purple-200 p-6 shadow-md space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="px-2 py-0.5 rounded bg-purple-600 text-white font-bold text-xs">Sim 3</span>
+                  <h4 class="text-sm font-bold text-slate-900">증감표 연동 다항함수 실시간 작도기</h4>
+                </div>
+                <p class="text-xs text-slate-600">
+                  도함수의 근 $x_1, x_2$를 슬라이더로 움직이면 증감표와 3차곡선의 극값이 실시간으로 동기화됩니다.
+                </p>
+                <canvas id="table-graph-canvas" width="400" height="220" class="w-full h-auto bg-slate-50 rounded-lg border border-slate-200"></canvas>
+                <div class="flex items-center justify-between text-xs pt-1">
+                  <span class="text-slate-600 font-medium">근 간격 조절</span>
+                  <input type="range" id="tablegraph-gap" min="1.0" max="3.0" step="0.2" value="2.0" oninput="updateTableGraphGap(this.value)" class="w-36 accent-purple-600">
+                </div>
+              </div>
+            </div>
+
+          </div>
         </section>
 
-        <!-- Section Check -->
-        <section id="sec-check" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 space-y-6">
-            <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-                <span class="w-2.5 h-6 bg-teal-600 rounded-full"></span>
-                <h3 class="text-xl font-bold text-slate-900">스스로 확인하기 (형성평가)</h3>
+
+        <!-- ========================================== -->
+        <!-- 26차시: 스스로 확인하기 & 기침 속도 모델링 (88쪽) -->
+        <!-- ========================================== -->
+        <section id="sec-26" class="scroll-mt-20 space-y-10">
+          
+          <!-- 차시 타이틀 배너 -->
+          <div class="bg-gradient-to-r from-emerald-500/10 via-emerald-50 to-transparent border-l-4 border-emerald-600 p-6 rounded-r-2xl">
+            <div class="flex items-center gap-2 text-emerald-700 font-bold text-xs tracking-wider uppercase mb-1">
+              <span>26차시</span>
+              <span>·</span>
+              <span>교과서 88쪽 (정답 및 해설 168쪽)</span>
             </div>
-            <div class="space-y-4">
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <p class="font-bold text-sm mb-2 text-slate-900">01. 함수 $f(x) = x^3 - 3x^2$이 감소하는 구간은?</p>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleSolution('ans-11-01')" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">정답 확인</button>
-                        <span id="ans-11-01" class="hidden font-bold text-sm text-teal-700">$f'(x) = 3x(x-2) < 0 \implies (0, 2)$</span>
-                    </div>
-                </div>
-                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
-                    <p class="font-bold text-sm mb-2 text-slate-900">02. 3차함수가 극값을 가질 조건은 도함수 $f'(x)=0$의 판별식 $D$가 어떠해야 하는가?</p>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleSolution('ans-11-02')" class="px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold transition">정답 확인</button>
-                        <span id="ans-11-02" class="hidden font-bold text-sm text-teal-700">$D > 0$ (서로 다른 두 실근을 가져야 부호 변화 발생)</span>
-                    </div>
-                </div>
+            <h3 class="text-2xl font-extrabold text-slate-900 tracking-tight">스스로 확인하기</h3>
+            <p class="text-slate-600 text-sm mt-1.5 leading-relaxed">
+              증가·감소 판정, 극값 계산, 미정계수 결정, 기침할 때 공기의 속도를 극대화하는 생체역학 모델링까지 단원을 최종 점검합니다.
+            </p>
+          </div>
+
+          <!-- 문항 01: 학습 목표 되새기기 -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">01</span>
+                <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">학습 목표 되새기기</span>
+                <h4 class="text-base font-bold text-slate-800">증감과 극대·극소 핵심 개념 빈칸</h4>
+              </div>
+              <span class="text-xs text-slate-400">교과서 88쪽</span>
             </div>
+
+            <div class="space-y-4 text-xs text-slate-800">
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                <span>(1) 열린구간에서 미분가능할 때: $f'(x) > 0$ 이면 이 구간에서 </span>
+                <div class="flex items-center gap-2">
+                  <input type="text" id="sc6-01-1" placeholder="증가" class="w-20 px-2 py-1 text-center border border-slate-300 rounded font-bold">
+                  <span>한다.</span>
+                </div>
+              </div>
+
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                <span>(2) 미분가능한 함수가 $x = a$에서 극값을 가지면 $f'(a) = $ </span>
+                <div class="flex items-center gap-2">
+                  <input type="text" id="sc6-01-2" placeholder="0" class="w-16 px-2 py-1 text-center border border-slate-300 rounded font-bold">
+                </div>
+              </div>
+
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                <span>(3) $f'(a)=0$이고 $x=a$ 좌우에서 $f'(x)$가 $(+) 	o (-)$로 바뀌면 $x=a$에서 </span>
+                <div class="flex items-center gap-2">
+                  <input type="text" id="sc6-01-3" placeholder="극대" class="w-20 px-2 py-1 text-center border border-slate-300 rounded font-bold">
+                  <span>이다.</span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-end gap-3 pt-1">
+                <button type="button" onclick="checkSc6_01()" class="px-4 py-1.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">빈칸 채점</button>
+                <span id="sc6-01-msg" class="font-medium"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 문항 02: 극값 구하기 -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">02</span>
+                <h4 class="text-base font-bold text-slate-800">다음 함수의 극값을 구하시오.</h4>
+              </div>
+              <span class="text-xs text-slate-400">교과서 88쪽</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- 02-(1) -->
+              <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                <div class="font-bold text-sm text-indigo-700">(1) $f(x) = rac{1}{3}x^3 - x^2 - 3x + 5$</div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span>극댓값: </span>
+                    <input type="text" id="sc6-02-1-max" placeholder="20/3" class="w-20 px-2 py-1 border border-slate-300 rounded">
+                  </div>
+                  <div>
+                    <span>극솟값: </span>
+                    <input type="text" id="sc6-02-1-min" placeholder="-4" class="w-20 px-2 py-1 border border-slate-300 rounded">
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="checkSc6_02_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+                  <span id="sc6-02-1-msg" class="text-xs font-medium"></span>
+                </div>
+                <div>
+                  <canvas id="sp-sc6-02-1" class="scratchpad-canvas w-full h-20"></canvas>
+                </div>
+              </div>
+
+              <!-- 02-(2) -->
+              <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                <div class="font-bold text-sm text-indigo-700">(2) $f(x) = x^4 - 8x^2 + 3$</div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span>극댓값: </span>
+                    <input type="text" id="sc6-02-2-max" placeholder="3" class="w-20 px-2 py-1 border border-slate-300 rounded">
+                  </div>
+                  <div>
+                    <span>극솟값: </span>
+                    <input type="text" id="sc6-02-2-min" placeholder="-13" class="w-20 px-2 py-1 border border-slate-300 rounded">
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="checkSc6_02_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+                  <span id="sc6-02-2-msg" class="text-xs font-medium"></span>
+                </div>
+                <div>
+                  <canvas id="sp-sc6-02-2" class="scratchpad-canvas w-full h-20"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 문항 03 & 04: 미정계수 결정 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 03번 -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">03</span>
+                  <h4 class="text-base font-bold text-slate-800">구간 증감과 미정계수</h4>
+                </div>
+                <button type="button" onclick="toggleSolution('sol-sc6-03')" class="text-xs font-bold text-indigo-600 hover:underline">해설</button>
+              </div>
+              <p class="text-xs text-slate-700 leading-relaxed">
+                함수 $f(x) = 2x^3 + ax^2 + bx$가 구간 $(-\infty, -1], [1, \infty)$에서 증가하고 닫힌구간 $[-1, 1]$에서 감소할 때, 상수 $a, b$의 값을 구하시오.
+              </p>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span>a = </span>
+                  <input type="text" id="sc6-03-a" placeholder="0" class="w-16 px-2 py-1 border border-slate-300 rounded">
+                </div>
+                <div>
+                  <span>b = </span>
+                  <input type="text" id="sc6-03-b" placeholder="-6" class="w-16 px-2 py-1 border border-slate-300 rounded">
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <button type="button" onclick="checkSc6_03()" class="px-3.5 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+                <span id="sc6-03-msg" class="text-xs font-medium"></span>
+              </div>
+              <div id="sol-sc6-03" class="hidden p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 text-xs text-slate-700 space-y-1">
+                <p><strong>해설:</strong> $f'(x) = 6x^2 + 2ax + b = 6(x+1)(x-1) = 6x^2 - 6$</p>
+                <p>$\implies 2a = 0 \implies \mathbf{a = 0}$, $\mathbf{b = -6}$</p>
+              </div>
+            </div>
+
+            <!-- 04번 -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">04</span>
+                  <h4 class="text-base font-bold text-slate-800">그래프 형태와 미정계수</h4>
+                </div>
+                <button type="button" onclick="toggleSolution('sol-sc6-04')" class="text-xs font-bold text-indigo-600 hover:underline">해설</button>
+              </div>
+              <p class="text-xs text-slate-700 leading-relaxed">
+                함수 $f(x) = rac{1}{3}x^3 + ax^2 + bx$의 그래프가 $x = -3$에서 극대, $x = 1$에서 극소일 때 상수 $a, b$의 값을 구하시오.
+              </p>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span>a = </span>
+                  <input type="text" id="sc6-04-a" placeholder="1" class="w-16 px-2 py-1 border border-slate-300 rounded">
+                </div>
+                <div>
+                  <span>b = </span>
+                  <input type="text" id="sc6-04-b" placeholder="-3" class="w-16 px-2 py-1 border border-slate-300 rounded">
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <button type="button" onclick="checkSc6_04()" class="px-3.5 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+                <span id="sc6-04-msg" class="text-xs font-medium"></span>
+              </div>
+              <div id="sol-sc6-04" class="hidden p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 text-xs text-slate-700 space-y-1">
+                <p><strong>해설:</strong> $f'(x) = x^2 + 2ax + b = (x+3)(x-1) = x^2 + 2x - 3$</p>
+                <p>$\implies 2a = 2 \implies \mathbf{a = 1}$, $\mathbf{b = -3}$</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 문항 05: 극댓값과 극솟값의 차 -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">05</span>
+                <h4 class="text-base font-bold text-slate-800">극댓값과 극솟값의 차이 조건</h4>
+              </div>
+              <button type="button" onclick="toggleSolution('sol-sc6-05')" class="text-xs font-bold text-indigo-600 hover:underline">해설</button>
+            </div>
+
+            <p class="text-xs text-slate-700 leading-relaxed">
+              함수 $f(x) = x^3 - 3a^2 x + 1$의 극댓값과 극솟값의 차가 $108$일 때, 양수 $a$의 값을 구하시오.
+            </p>
+
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-medium text-slate-600">a = </span>
+              <input type="text" id="sc6-05-ans" placeholder="정답 입력" class="w-28 px-3 py-1.5 text-xs border border-slate-300 rounded-lg">
+              <button type="button" onclick="checkSc6_05()" class="px-4 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
+              <span id="sc6-05-msg" class="text-xs font-medium"></span>
+            </div>
+
+            <div id="sol-sc6-05" class="hidden p-3.5 bg-indigo-50/50 rounded-xl border border-indigo-100 text-xs text-slate-700 space-y-1">
+              <p><strong>풀이:</strong> $f'(x) = 3(x^2 - a^2) = 0 \implies x = \pm a$</p>
+              <p>극댓값 $f(-a) = 2a^3 + 1$, 극솟값 $f(a) = -2a^3 + 1$</p>
+              <p>차이: $f(-a) - f(a) = 4a^3 = 108 \implies a^3 = 27 \implies \mathbf{a = 3}$</p>
+            </div>
+          </div>
+
+          <!-- 문항 06: 생각을 키우는 문제 (기침 속도 모델링) -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-rose-600 text-white font-bold text-xs">06</span>
+                <span class="text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded">생각을 키우는 문제</span>
+                <h4 class="text-base font-bold text-slate-800">기침할 때 빠져나가는 공기의 속도 극댓값</h4>
+              </div>
+              <button type="button" onclick="toggleSolution('sol-sc6-06')" class="text-xs font-bold text-indigo-600 hover:underline">상세 해설</button>
+            </div>
+
+            <div class="text-xs text-slate-700 space-y-3 leading-relaxed">
+              <p>
+                목구멍의 최대 반지름의 길이가 $1	ext{ cm}$인 사람이 기침을 할 때, 목구멍의 반지름의 길이가 $r	ext{ cm}$인 순간 빠져나가는 공기의 속도 $v	ext{ cm/s}$가
+              </p>
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center font-mono text-sm font-bold text-indigo-700">
+                $$v = -cr^3 + cr^2 \quad \left(rac{1}{2} \le r \le 1ight)$$
+              </div>
+              <p>
+                이라고 한다. 이 사람이 기침을 할 때 빠져나가는 공기의 속도의 극댓값을 구하시오. (단, $c$는 양수이다.)
+              </p>
+
+              <div class="flex items-center gap-3 pt-1">
+                <span class="font-bold text-slate-700">극댓값 = </span>
+                <input type="text" id="sc6-06-ans" placeholder="4/27 c" class="w-32 px-3 py-1.5 border border-slate-300 rounded-lg">
+                <button type="button" onclick="checkSc6_06()" class="px-4 py-1.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">채점</button>
+                <span id="sc6-06-msg" class="font-medium"></span>
+              </div>
+
+              <div id="sol-sc6-06" class="hidden p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-slate-800 space-y-1.5">
+                <div class="font-bold text-indigo-900">의학·수학 모델링 해설:</div>
+                <p>1) $v'(r) = -3cr^2 + 2cr = -cr(3r - 2) = 0$</p>
+                <p>2) $c > 0$이고 구간이 $[rac{1}{2}, 1]$이므로 극점은 $\mathbf{r = rac{2}{3}}$ 입니다.</p>
+                <p>3) $r = rac{2}{3}$에서 부호가 $+ 	o -$로 바뀌므로 극대이자 최댓값입니다.</p>
+                <div class="p-2 bg-white rounded border border-indigo-100 font-mono text-center font-bold text-indigo-800">
+                  $$v\left(rac{2}{3}ight) = -c\left(rac{2}{3}ight)^3 + c\left(rac{2}{3}ight)^2 = \mathbf{rac{4}{27}c}$$
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 인터랙티브 실험실 4: 기침 공기속도 극댓값 시뮬레이터 -->
+          <div id="lab-cough" class="bg-white rounded-2xl border border-amber-200 p-7 shadow-md space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded bg-amber-500 text-white font-bold text-xs">Sim 4</span>
+                <h4 class="text-base font-extrabold text-slate-900">기침할 때 목구멍 수축과 공기 속도 극대화 시뮬레이터</h4>
+              </div>
+              <span class="text-xs text-amber-800 font-semibold bg-amber-50 px-2.5 py-1 rounded-full">생각을 키우는 문제 연동</span>
+            </div>
+
+            <p class="text-xs text-slate-600">
+              목구멍 반지름 $r$을 조절해 보세요. 왼쪽 목구멍 단면의 수축 정도와 함께 오른쪽 공기 속도 곡선 $v(r)$에서 $r = 2/3 pprox 0.67	ext{ cm}$일 때 왜 기침 속도가 가장 빨라지는지 직접 확인하세요!
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="lg:col-span-2 bg-slate-50 rounded-xl p-3 border border-slate-200">
+                <canvas id="cough-velocity-canvas" width="600" height="300" class="w-full h-auto bg-white rounded-lg border border-slate-200"></canvas>
+              </div>
+
+              <!-- 컨트롤 패널 -->
+              <div class="bg-amber-50/40 rounded-xl p-5 border border-amber-100 flex flex-col justify-between space-y-4">
+                <div class="space-y-3">
+                  <div>
+                    <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1">
+                      <span>목구멍 반지름 $r$</span>
+                      <span id="cough-r-val" class="text-amber-800 font-mono">r = 0.67 cm</span>
+                    </div>
+                    <input type="range" id="cough-r-slider" min="0.5" max="1.0" step="0.01" value="0.67" oninput="updateCoughSim(this.value)" class="w-full accent-amber-500">
+                  </div>
+
+                  <div class="p-3 bg-white rounded-lg border border-amber-100 space-y-1.5 text-xs">
+                    <div class="flex items-center justify-between text-slate-600">
+                      <span>공기 속도 계수 $v/c$:</span>
+                      <span id="cough-v-val" class="font-mono font-bold text-indigo-700">0.148</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+                      <span class="font-semibold text-slate-700">기침 효율:</span>
+                      <span id="cough-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">최대 기침 속도 달성!</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="button" onclick="snapCoughToOptimal()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition">
+                  최적 반지름 ($r = 2/3$) 점프
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 단원 학습 성찰 및 메타인지 메모 -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+            <h4 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>단원 성취도 자가 진단 및 학습 메모</span>
+            </h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-center gap-2.5 cursor-pointer hover:bg-slate-100">
+                <input type="checkbox" checked class="w-4 h-4 rounded text-indigo-600 accent-indigo-600">
+                <span>도함수 부호로 증감 판정 가능</span>
+              </label>
+              <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-center gap-2.5 cursor-pointer hover:bg-slate-100">
+                <input type="checkbox" checked class="w-4 h-4 rounded text-indigo-600 accent-indigo-600">
+                <span>증감표 작성 후 극대·극소 계산 가능</span>
+              </label>
+              <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-center gap-2.5 cursor-pointer hover:bg-slate-100">
+                <input type="checkbox" checked class="w-4 h-4 rounded text-indigo-600 accent-indigo-600">
+                <span>역의 반례와 첨점의 개념 이해</span>
+              </label>
+            </div>
+            <textarea id="reflection-memo" rows="3" placeholder="오늘 학습한 함수의 증가와 감소, 극대와 극소에 대해 메모하세요 (자동 저장)..." class="w-full text-xs p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea>
+          </div>
         </section>
+
+      </div><!-- // .p-8 max-w-5xl mx-auto space-y-16 -->
     </main>
+  </div><!-- // .flex min-h-screen -->
 
-    <script>
-    const cv11 = document.getElementById('extrema-canvas');
-    if (cv11) {
-        const ctx = cv11.getContext('2d');
-        const ox = 250, oy = 130, sx = 80, sy = 40;
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT 엔진 및 채점 로직 모음 -->
+  <!-- ========================================== -->
+  <script>
+    // ------------------------------------------
+    // 1. 전자칠판 (Whiteboard) 엔진
+    // ------------------------------------------
+    const wbCanvas = document.getElementById('wb-canvas');
+    const wbCtx = wbCanvas ? wbCanvas.getContext('2d') : null;
+    const wbToolbar = document.getElementById('wb-toolbar');
 
-        function f(x) { return x * x * x - 3 * x; }
-
-        // Axes
-        ctx.strokeStyle = '#94a3b8';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(20, oy); ctx.lineTo(480, oy);
-        ctx.moveTo(ox, 10); ctx.lineTo(ox, 240);
-        ctx.stroke();
-
-        // Cubic Curve
-        ctx.strokeStyle = '#0284c7';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        for(let px = -2.2; px <= 2.2; px += 0.05) {
-            const py = f(px);
-            const cx = ox + px * sx;
-            const cy = oy - py * sy;
-            if(px === -2.2) ctx.moveTo(cx, cy);
-            else ctx.lineTo(cx, cy);
-        }
-        ctx.stroke();
-
-        // Local max at (-1, 2)
-        ctx.fillStyle = '#6366f1';
-        ctx.beginPath();
-        ctx.arc(ox - 1 * sx, oy - 2 * sy, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.font = 'bold 11px sans-serif';
-        ctx.fillText('극대 (-1, 2)', ox - 1 * sx - 30, oy - 2 * sy - 10);
-
-        // Local min at (1, -2)
-        ctx.fillStyle = '#0ea5e9';
-        ctx.beginPath();
-        ctx.arc(ox + 1 * sx, oy - (-2) * sy, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillText('극소 (1, -2)', ox + 1 * sx - 10, oy - (-2) * sy + 18);
-    }
-    </script>
-    
-    <!-- Floating Whiteboard & Scroll Controls -->
-    <div id="floating-controls" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3 no-print">
-        <button onclick="toggleWhiteboard()" title="전자칠판 판서 모드 켜기/끄기"
-            class="w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center ring-4 ring-indigo-500/20 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer">
-            <i class="fa-solid fa-chalkboard-user text-lg"></i>
-        </button>
-        <button id="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="맨 위로 가기"
-            class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center opacity-0 pointer-events-none translate-y-4 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200">
-            <i class="fa-solid fa-arrow-up text-sm"></i>
-        </button>
-    </div>
-
-    <!-- Common JavaScript -->
-    <script>
-    // KaTeX Auto-render
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof renderMathInElement === 'function') {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ],
-                throwOnError: false
-            });
-        }
-    });
-
-    // Dark Mode Toggle
-    function toggleDarkMode() {
-        document.documentElement.classList.toggle('dark');
-        if (typeof drawSimulation === 'function') drawSimulation();
-    }
-
-    // Solution Toggle
-    function toggleSolution(id) {
-        const box = document.getElementById(id);
-        if (box) {
-            box.classList.toggle('hidden');
-        }
-    }
-
-    // Scratchpad canvas initialization
-    function initScratchpads() {
-        document.querySelectorAll('.scratchpad-canvas').forEach(canvas => {
-            const ctx = canvas.getContext('2d');
-            let drawing = false;
-
-            function resize() {
-                const rect = canvas.getBoundingClientRect();
-                if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                    canvas.width = rect.width;
-                    canvas.height = rect.height;
-                }
-            }
-            resize();
-            window.addEventListener('resize', resize);
-
-            function getPos(e) {
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches ? e.touches[0] : e;
-                return {
-                    x: touch.clientX - rect.left,
-                    y: touch.clientY - rect.top
-                };
-            }
-
-            function start(e) {
-                drawing = true;
-                ctx.beginPath();
-                const p = getPos(e);
-                ctx.moveTo(p.x, p.y);
-            }
-            function move(e) {
-                if (!drawing) return;
-                e.preventDefault();
-                const p = getPos(e);
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = document.documentElement.classList.contains('dark') ? '#93c5fd' : '#2563eb';
-                ctx.lineTo(p.x, p.y);
-                ctx.stroke();
-            }
-            function stop() {
-                drawing = false;
-            }
-
-            canvas.addEventListener('mousedown', start);
-            canvas.addEventListener('mousemove', move);
-            window.addEventListener('mouseup', stop);
-            canvas.addEventListener('touchstart', start, {passive: false});
-            canvas.addEventListener('touchmove', move, {passive: false});
-            window.addEventListener('touchend', stop);
-
-            const clearBtn = canvas.parentElement.querySelector('.clear-scratchpad-btn');
-            if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                });
-            }
-        });
-    }
-
-    // Whiteboard Engine
     let wbActive = false;
-    let wbTool = 'pen';
-    let wbColor = '#ef4444';
-    let wbStrokes = [];
-    let wbCurrentStroke = null;
     let wbDrawing = false;
+    let wbTool = 'pen';
+    let wbColor = '#0f172a';
+    let wbSize = 4;
+    let wbLastX = 0;
+    let wbLastY = 0;
 
-    function initWhiteboard() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        syncWhiteboardHeight();
-
-        if (window.ResizeObserver) {
-            const ro = new ResizeObserver(() => syncWhiteboardHeight());
-            ro.observe(document.body);
-        }
-
-        function getDocPt(e) {
-            const touch = e.touches && e.touches[0] ? e.touches[0] : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
-            return {
-                x: touch.clientX + window.scrollX,
-                y: touch.clientY + window.scrollY
-            };
-        }
-
-        function startDraw(e) {
-            if (!wbActive || wbTool === 'pointer') return;
-            if (e.button !== undefined && e.button !== 0) return;
-            wbDrawing = true;
-            const pt = getDocPt(e);
-            const sizeInput = document.getElementById('wb-size');
-            const size = sizeInput ? parseFloat(sizeInput.value) : 4;
-
-            wbCurrentStroke = {
-                tool: wbTool,
-                color: wbColor,
-                size: size,
-                points: [pt]
-            };
-            wbStrokes.push(wbCurrentStroke);
-            redrawWhiteboard();
-        }
-
-        function moveDraw(e) {
-            if (!wbDrawing || !wbActive || wbTool === 'pointer' || !wbCurrentStroke) return;
-            e.preventDefault();
-            const pt = getDocPt(e);
-            wbCurrentStroke.points.push(pt);
-            drawStrokeSegment(wbCurrentStroke);
-        }
-
-        function endDraw() {
-            if (!wbDrawing) return;
-            wbDrawing = false;
-            wbCurrentStroke = null;
-            redrawWhiteboard();
-        }
-
-        canvas.addEventListener('mousedown', startDraw);
-        window.addEventListener('mousemove', moveDraw, { passive: false });
-        window.addEventListener('mouseup', endDraw);
-        canvas.addEventListener('touchstart', startDraw, { passive: false });
-        canvas.addEventListener('touchmove', moveDraw, { passive: false });
-        window.addEventListener('touchend', endDraw);
-    }
-
-    function applyStrokeStyle(ctx, stroke) {
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        if (stroke.tool === 'eraser') {
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.lineWidth = stroke.size * 4.5;
-            ctx.strokeStyle = 'rgba(0,0,0,1)';
-        } else if (stroke.tool === 'highlighter') {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = stroke.size * 3.4;
-            ctx.strokeStyle = stroke.color + '44';
-        } else {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineWidth = stroke.size;
-            ctx.strokeStyle = stroke.color;
-        }
-    }
-
-    function drawStrokeSegment(stroke) {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const pts = stroke.points;
-        if (pts.length < 2) return;
-
-        if (stroke.tool === 'highlighter') {
-            redrawWhiteboard();
-            return;
-        }
-
-        ctx.save();
-        applyStrokeStyle(ctx, stroke);
-        const p1 = pts[pts.length - 2];
-        const p2 = pts[pts.length - 1];
-        ctx.beginPath();
-        ctx.moveTo(p1.x, p1.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.stroke();
-        ctx.restore();
-    }
-
-    function redrawWhiteboard() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        for (const stroke of wbStrokes) {
-            if (!stroke.points || stroke.points.length === 0) continue;
-            ctx.save();
-            applyStrokeStyle(ctx, stroke);
-            ctx.beginPath();
-            ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-            if (stroke.points.length === 1) {
-                ctx.lineTo(stroke.points[0].x + 0.1, stroke.points[0].y + 0.1);
-            } else {
-                for (let i = 1; i < stroke.points.length; i++) {
-                    ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
-                }
-            }
-            ctx.stroke();
-            ctx.restore();
-        }
-    }
-
-    function syncWhiteboardHeight() {
-        const canvas = document.getElementById('wb-canvas');
-        if (!canvas) return;
-        const docWidth = document.documentElement.clientWidth;
-        const docHeight = Math.max(
-            document.body.scrollHeight,
-            document.documentElement.scrollHeight,
-            window.innerHeight
-        );
-        if (canvas.width !== docWidth || Math.abs(canvas.height - docHeight) > 4) {
-            canvas.width = docWidth;
-            canvas.height = docHeight;
-            redrawWhiteboard();
-        }
+    function resizeWb() {
+      if (!wbCanvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      wbCanvas.width = window.innerWidth * dpr;
+      wbCanvas.height = window.innerHeight * dpr;
+      wbCtx.scale(dpr, dpr);
     }
 
     function toggleWhiteboard() {
-        wbActive = !wbActive;
-        const toolbar = document.getElementById('wb-toolbar');
-        const canvas = document.getElementById('wb-canvas');
-        if (wbActive) {
-            syncWhiteboardHeight();
-            toolbar.classList.remove('hidden');
-            setWbTool('pen');
-        } else {
-            toolbar.classList.add('hidden');
-            canvas.classList.remove('wb-drawing-active');
-        }
+      wbActive = !wbActive;
+      if (wbActive) {
+        resizeWb();
+        wbCanvas.classList.add('active');
+        wbToolbar.classList.add('active');
+      } else {
+        wbCanvas.classList.remove('active');
+        wbToolbar.classList.remove('active');
+      }
     }
 
     function setWbTool(tool) {
-        wbTool = tool;
-        const canvas = document.getElementById('wb-canvas');
-        document.querySelectorAll('.wb-tool-btn').forEach(b => b.classList.remove('active'));
-        const activeBtn = document.getElementById('wb-btn-' + tool);
-        if (activeBtn) activeBtn.classList.add('active');
+      wbTool = tool;
+      document.querySelectorAll('#wb-toolbar .wb-btn').forEach(btn => btn.classList.remove('active'));
+      const target = document.getElementById('wb-tool-' + tool);
+      if (target) target.classList.add('active');
+    }
 
-        if (tool === 'pointer') {
-            canvas.classList.remove('wb-drawing-active');
-        } else {
-            canvas.classList.add('wb-drawing-active');
+    function setWbColor(color, el) {
+      wbColor = color;
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      if (el) el.classList.add('active');
+    }
+
+    function setWbSize(size, el) {
+      wbSize = size;
+      if (el && el.parentElement) {
+        Array.from(el.parentElement.children).forEach(b => {
+          b.classList.remove('bg-slate-200', 'font-bold');
+          b.classList.add('hover:bg-slate-100');
+        });
+        el.classList.add('bg-slate-200', 'font-bold');
+      }
+    }
+
+    function clearWhiteboard() {
+      if (!wbCtx || !wbCanvas) return;
+      wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+    }
+
+    function downloadWhiteboard() {
+      if (!wbCanvas) return;
+      const link = document.createElement('a');
+      link.download = '증가감소_극대극소_판서.png';
+      link.href = wbCanvas.toDataURL();
+      link.click();
+    }
+
+    function startWbDraw(e) {
+      if (!wbActive) return;
+      wbDrawing = true;
+      const rect = wbCanvas.getBoundingClientRect();
+      wbLastX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+      wbLastY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+    }
+
+    function drawWb(e) {
+      if (!wbActive || !wbDrawing || !wbCtx) return;
+      e.preventDefault();
+      const rect = wbCanvas.getBoundingClientRect();
+      const clientX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+      const clientY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+      wbCtx.beginPath();
+      wbCtx.moveTo(wbLastX, wbLastY);
+      wbCtx.lineTo(clientX, clientY);
+
+      if (wbTool === 'pen') {
+        wbCtx.globalCompositeOperation = 'source-over';
+        wbCtx.strokeStyle = wbColor;
+        wbCtx.lineWidth = wbSize;
+        wbCtx.lineCap = 'round';
+        wbCtx.lineJoin = 'round';
+        wbCtx.globalAlpha = 1.0;
+      } else if (wbTool === 'highlighter') {
+        wbCtx.globalCompositeOperation = 'source-over';
+        wbCtx.strokeStyle = wbColor;
+        wbCtx.lineWidth = wbSize * 3;
+        wbCtx.lineCap = 'square';
+        wbCtx.lineJoin = 'miter';
+        wbCtx.globalAlpha = 0.35;
+      } else if (wbTool === 'eraser') {
+        wbCtx.globalCompositeOperation = 'destination-out';
+        wbCtx.lineWidth = wbSize * 5;
+        wbCtx.lineCap = 'round';
+        wbCtx.lineJoin = 'round';
+        wbCtx.globalAlpha = 1.0;
+      }
+
+      wbCtx.stroke();
+      wbLastX = clientX;
+      wbLastY = clientY;
+    }
+
+    function stopWbDraw() {
+      wbDrawing = false;
+    }
+
+    if (wbCanvas) {
+      wbCanvas.addEventListener('mousedown', startWbDraw);
+      wbCanvas.addEventListener('mousemove', drawWb);
+      wbCanvas.addEventListener('mouseup', stopWbDraw);
+      wbCanvas.addEventListener('mouseleave', stopWbDraw);
+      wbCanvas.addEventListener('touchstart', startWbDraw, { passive: false });
+      wbCanvas.addEventListener('touchmove', drawWb, { passive: false });
+      wbCanvas.addEventListener('touchend', stopWbDraw);
+    }
+    window.addEventListener('resize', resizeWb);
+
+    // ------------------------------------------
+    // 2. 스크래치패드 (수식 연습장) 엔진
+    // ------------------------------------------
+    function initScratchpads() {
+      document.querySelectorAll('.scratchpad-canvas').forEach(canvas => {
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+        let lastX = 0, lastY = 0;
+
+        function resize() {
+          const rect = canvas.getBoundingClientRect();
+          canvas.width = rect.width * (window.devicePixelRatio || 1);
+          canvas.height = rect.height * (window.devicePixelRatio || 1);
+          ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
         }
-    }
+        resize();
 
-    function setWbColor(hex, btnEl) {
-        wbColor = hex;
-        document.querySelectorAll('.wb-color-btn').forEach(b => b.classList.remove('active'));
-        if (btnEl) btnEl.classList.add('active');
-        if (wbTool === 'pointer' || wbTool === 'eraser') setWbTool('pen');
-    }
-
-    function undoWb() {
-        if (wbStrokes.length === 0) return;
-        wbStrokes.pop();
-        redrawWhiteboard();
-    }
-
-    function clearWb() {
-        wbStrokes = [];
-        redrawWhiteboard();
-    }
-
-    // Scroll listener for top button and scrollspy
-    window.addEventListener('scroll', () => {
-        const scrollTopBtn = document.getElementById('scroll-top-btn');
-        if (scrollTopBtn) {
-            if (window.scrollY > 260) {
-                scrollTopBtn.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-                scrollTopBtn.classList.add('opacity-100', 'translate-y-0');
-            } else {
-                scrollTopBtn.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-                scrollTopBtn.classList.remove('opacity-100', 'translate-y-0');
-            }
+        function getPos(e) {
+          const rect = canvas.getBoundingClientRect();
+          return {
+            x: (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left,
+            y: (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top
+          };
         }
-    });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initWhiteboard();
-        initScratchpads();
+        canvas.addEventListener('mousedown', e => {
+          drawing = true;
+          const pos = getPos(e);
+          lastX = pos.x; lastY = pos.y;
+        });
+        canvas.addEventListener('mousemove', e => {
+          if (!drawing) return;
+          const pos = getPos(e);
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(pos.x, pos.y);
+          ctx.strokeStyle = '#475569';
+          ctx.lineWidth = 1.8;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+          lastX = pos.x; lastY = pos.y;
+        });
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mouseleave', () => drawing = false);
+
+        canvas.addEventListener('touchstart', e => {
+          drawing = true;
+          const pos = getPos(e);
+          lastX = pos.x; lastY = pos.y;
+        }, { passive: true });
+        canvas.addEventListener('touchmove', e => {
+          if (!drawing) return;
+          const pos = getPos(e);
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(pos.x, pos.y);
+          ctx.strokeStyle = '#475569';
+          ctx.lineWidth = 1.8;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+          lastX = pos.x; lastY = pos.y;
+        }, { passive: true });
+        canvas.addEventListener('touchend', () => drawing = false);
+      });
+    }
+
+    function clearScratchpad(id) {
+      const canvas = document.getElementById(id);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function toggleSolution(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    // ------------------------------------------
+    // 3. Sim 1: 실시간 도함수 부호 & 증감 궤적기
+    // ------------------------------------------
+    let incDecFunc = 'cubic1';
+    let incDecX = 1.0;
+
+    function initIncDecSim() {
+      drawIncDecSim();
+    }
+
+    function updateIncDecFunc() {
+      incDecFunc = document.getElementById('incdec-func-select').value;
+      const slider = document.getElementById('incdec-x-slider');
+      if (incDecFunc === 'cubic1') {
+        slider.min = -1.5; slider.max = 3.5; slider.value = 1.0;
+      } else {
+        slider.min = -3.5; slider.max = 3.5; slider.value = 0.0;
+      }
+      updateIncDecX(slider.value);
+    }
+
+    function updateIncDecX(val) {
+      incDecX = parseFloat(val);
+      document.getElementById('incdec-x-val').textContent = 'x = ' + incDecX.toFixed(2);
+
+      let fp;
+      if (incDecFunc === 'cubic1') {
+        // f(x) = x^3 - 3x^2 -> f'(x) = 3x^2 - 6x
+        fp = 3 * incDecX * incDecX - 6 * incDecX;
+      } else {
+        // f(x) = -x^3 + 12x + 1 -> f'(x) = -3x^2 + 12
+        fp = -3 * incDecX * incDecX + 12;
+      }
+
+      document.getElementById('incdec-fprime-val').textContent = fp.toFixed(2);
+      const badge = document.getElementById('incdec-status-badge');
+      if (Math.abs(fp) < 0.2) {
+        badge.textContent = "접선 수평 (f'=0)";
+        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800";
+      } else if (fp > 0) {
+        badge.textContent = "증가 상태 (f'>0)";
+        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800";
+      } else {
+        badge.textContent = "감소 상태 (f'<0)";
+        badge.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800";
+      }
+
+      drawIncDecSim();
+    }
+
+    function drawIncDecSim() {
+      const canvas = document.getElementById('inc-dec-sim-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      function f(x) {
+        if (incDecFunc === 'cubic1') return x * x * x - 3 * x * x;
+        return -x * x * x + 12 * x + 1;
+      }
+      function df(x) {
+        if (incDecFunc === 'cubic1') return 3 * x * x - 6 * x;
+        return -3 * x * x + 12;
+      }
+
+      let xMin, xMax, yMin, yMax;
+      if (incDecFunc === 'cubic1') {
+        xMin = -1.5; xMax = 3.5; yMin = -6; yMax = 4;
+      } else {
+        xMin = -4; xMax = 4; yMin = -20; yMax = 20;
+      }
+
+      function toX(x) { return 40 + ((x - xMin) / (xMax - xMin)) * (w - 80); }
+      function toY(y) { return (h - 40) - ((y - yMin) / (yMax - yMin)) * (h - 80); }
+
+      // Grid & Axes
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, toY(0)); ctx.lineTo(w - 40, toY(0));
+      ctx.moveTo(toX(0), 40); ctx.lineTo(toX(0), h - 40);
+      ctx.stroke();
+
+      // Draw Curve with Colored segments (Green = increasing, Red = decreasing)
+      ctx.lineWidth = 2.5;
+      for (let px = 40; px < w - 40; px += 2) {
+        const x1 = xMin + ((px - 40) / (w - 80)) * (xMax - xMin);
+        const x2 = xMin + ((px + 2 - 40) / (w - 80)) * (xMax - xMin);
+        const y1 = f(x1), y2 = f(x2);
+        const slope = df((x1 + x2) / 2);
+
+        ctx.strokeStyle = (slope >= 0) ? '#10b981' : '#f43f5e';
+        ctx.beginPath();
+        ctx.moveTo(px, toY(y1));
+        ctx.lineTo(px + 2, toY(y2));
+        ctx.stroke();
+      }
+
+      // Current Tangent Line at incDecX
+      const curY = f(incDecX);
+      const curFp = df(incDecX);
+      const span = (xMax - xMin) * 0.2;
+
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(toX(incDecX - span), toY(curY - curFp * span));
+      ctx.lineTo(toX(incDecX + span), toY(curY + curFp * span));
+      ctx.stroke();
+
+      // Current Point
+      ctx.fillStyle = '#2563eb';
+      ctx.beginPath();
+      ctx.arc(toX(incDecX), toY(curY), 5.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Status text on canvas
+      ctx.fillStyle = '#1e293b';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText("f'(" + incDecX.toFixed(1) + ") = " + curFp.toFixed(2), toX(incDecX) + 8, toY(curY) - 8);
+    }
+
+    // ------------------------------------------
+    // 4. Sim 2: 극대·극소 국소 돋보기 시뮬레이터
+    // ------------------------------------------
+    let magMode = 'max';
+
+    function initMagnifierSim() {
+      drawMagnifierSim();
+    }
+
+    function setMagnifierMode(mode) {
+      magMode = mode;
+      drawMagnifierSim();
+    }
+
+    function drawMagnifierSim() {
+      const canvas = document.getElementById('extrema-magnifier-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Parabola: max -> y = -x^2 + 1, min -> y = x^2 - 1
+      function f(x) { return (magMode === 'max') ? (-x * x + 1) : (x * x - 1); }
+
+      const xMin = -1.2, xMax = 1.2;
+      const yMin = -1.5, yMax = 1.5;
+      function toX(x) { return 30 + ((x - xMin) / (xMax - xMin)) * (w - 60); }
+      function toY(y) { return (h - 30) - ((y - yMin) / (yMax - yMin)) * (h - 60); }
+
+      // Axes
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(30, toY(0)); ctx.lineTo(w - 30, toY(0));
+      ctx.moveTo(toX(0), 30); ctx.lineTo(toX(0), h - 30);
+      ctx.stroke();
+
+      // Shaded open interval around x = 0 (epsilon = 0.5)
+      ctx.fillStyle = (magMode === 'max') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)';
+      ctx.fillRect(toX(-0.5), 30, toX(0.5) - toX(-0.5), h - 60);
+
+      // Curve
+      ctx.strokeStyle = (magMode === 'max') ? '#ef4444' : '#10b981';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let px = 30; px <= w - 30; px += 2) {
+        const x = xMin + ((px - 30) / (w - 60)) * (xMax - xMin);
+        const y = f(x);
+        if (px === 30) ctx.moveTo(px, toY(y));
+        else ctx.lineTo(px, toY(y));
+      }
+      ctx.stroke();
+
+      // Extrema Point (0, f(0))
+      const ey = f(0);
+      ctx.fillStyle = (magMode === 'max') ? '#dc2626' : '#059669';
+      ctx.beginPath(); ctx.arc(toX(0), toY(ey), 5.5, 0, Math.PI * 2); ctx.fill();
+
+      // Horizontal Tangent (f'(0) = 0)
+      ctx.strokeStyle = '#475569';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(toX(-0.8), toY(ey));
+      ctx.lineTo(toX(0.8), toY(ey));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 11px sans-serif';
+      const label = (magMode === 'max') ? '극댓값 (열린구간 내 최댓값)' : '극솟값 (열린구간 내 최솟값)';
+      ctx.fillText(label, toX(0) - 60, toY(ey) + (magMode === 'max' ? -12 : 20));
+    }
+
+    // ------------------------------------------
+    // 5. Sim 3: 증감표 연동 다항함수 작도기
+    // ------------------------------------------
+    let tableGap = 2.0;
+
+    function initTableGraphSim() {
+      drawTableGraphSim();
+    }
+
+    function updateTableGraphGap(val) {
+      tableGap = parseFloat(val);
+      drawTableGraphSim();
+    }
+
+    function drawTableGraphSim() {
+      const canvas = document.getElementById('table-graph-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Roots of derivative at x = -tableGap/2 and x = tableGap/2
+      // f'(x) = 3(x^2 - (gap/2)^2) -> f(x) = x^3 - 3*(gap/2)^2 * x
+      const r = tableGap / 2;
+      function f(x) { return x * x * x - 3 * r * r * x; }
+
+      const xMin = -3, xMax = 3;
+      const yMin = -8, yMax = 8;
+      function toX(x) { return 30 + ((x - xMin) / (xMax - xMin)) * (w - 60); }
+      function toY(y) { return (h - 30) - ((y - yMin) / (yMax - yMin)) * (h - 60); }
+
+      // Axes
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.beginPath();
+      ctx.moveTo(30, toY(0)); ctx.lineTo(w - 30, toY(0));
+      ctx.moveTo(toX(0), 30); ctx.lineTo(toX(0), h - 30);
+      ctx.stroke();
+
+      // Curve
+      ctx.strokeStyle = '#7c3aed';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      for (let px = 30; px <= w - 30; px += 2) {
+        const x = xMin + ((px - 30) / (w - 60)) * (xMax - xMin);
+        const y = f(x);
+        if (px === 30) ctx.moveTo(px, toY(y));
+        else ctx.lineTo(px, toY(y));
+      }
+      ctx.stroke();
+
+      // Max and Min points
+      const maxPt = { x: -r, y: f(-r) };
+      const minPt = { x: r, y: f(r) };
+
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath(); ctx.arc(toX(maxPt.x), toY(maxPt.y), 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath(); ctx.arc(toX(minPt.x), toY(minPt.y), 5, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#1e293b';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('극대 x=' + (-r).toFixed(1), toX(maxPt.x) - 25, toY(maxPt.y) - 8);
+      ctx.fillText('극소 x=' + r.toFixed(1), toX(minPt.x) - 10, toY(minPt.y) + 16);
+    }
+
+    // ------------------------------------------
+    // 6. Sim 4: 기침 공기속도 극댓값 시뮬레이터
+    // ------------------------------------------
+    let coughR = 0.67;
+
+    function initCoughSim() {
+      drawCoughSim();
+    }
+
+    function updateCoughSim(val) {
+      coughR = parseFloat(val);
+      document.getElementById('cough-r-val').textContent = 'r = ' + coughR.toFixed(2) + ' cm';
+      // v/c = -r^3 + r^2
+      const vc = -Math.pow(coughR, 3) + Math.pow(coughR, 2);
+      document.getElementById('cough-v-val').textContent = vc.toFixed(4);
+
+      const badge = document.getElementById('cough-status-badge');
+      if (Math.abs(coughR - 0.67) < 0.03) {
+        badge.textContent = '★ 최대 기침 속도 달성! (r=2/3)';
+        badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 animate-pulse';
+      } else {
+        badge.textContent = '일반 속도';
+        badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600';
+      }
+
+      drawCoughSim();
+    }
+
+    function snapCoughToOptimal() {
+      document.getElementById('cough-r-slider').value = 0.67;
+      updateCoughSim(0.67);
+    }
+
+    function drawCoughSim() {
+      const canvas = document.getElementById('cough-velocity-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Split view: Left Throat Cross-section, Right Velocity Curve v(r)
+      // 1. Left: Throat Cross-section Circle
+      ctx.strokeStyle = '#94a3b8';
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.arc(100, h / 2, 70, 0, Math.PI * 2); // r = 1.0 cm full size
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('최대 반지름 1cm', 65, 30);
+
+      // Contracted throat circle (radius proportional to coughR)
+      const curRadius = coughR * 70;
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.2)';
+      ctx.beginPath();
+      ctx.arc(100, h / 2, curRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      ctx.fillStyle = '#92400e';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('r = ' + coughR.toFixed(2) + 'cm', 80, h / 2 + 4);
+
+      // 2. Right: Graph v(r) = -cr^3 + cr^2 for r in [0.5, 1.0]
+      const gxStart = 230, gxEnd = w - 40;
+      const gyBottom = h - 40, gyTop = 40;
+
+      function toRx(r) { return gxStart + ((r - 0.45) / (1.05 - 0.45)) * (gxEnd - gxStart); }
+      function toVy(v) { return gyBottom - (v / 0.18) * (gyBottom - gyTop); }
+
+      // Axes
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(gxStart, gyBottom); ctx.lineTo(gxEnd, gyBottom);
+      ctx.moveTo(gxStart, gyTop); ctx.lineTo(gxStart, gyBottom);
+      ctx.stroke();
+
+      ctx.fillStyle = '#64748b';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('0.5', toRx(0.5) - 8, gyBottom + 14);
+      ctx.fillText('2/3', toRx(2/3) - 8, gyBottom + 14);
+      ctx.fillText('1.0', toRx(1.0) - 8, gyBottom + 14);
+      ctx.fillText('반지름 r', gxEnd - 20, gyBottom + 14);
+      ctx.fillText('공기속도 v/c', gxStart - 10, gyTop - 8);
+
+      // Curve
+      ctx.strokeStyle = '#d97706';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let r = 0.5; r <= 1.0; r += 0.01) {
+        const v = -Math.pow(r, 3) + Math.pow(r, 2);
+        if (r === 0.5) ctx.moveTo(toRx(r), toVy(v));
+        else ctx.lineTo(toRx(r), toVy(v));
+      }
+      ctx.stroke();
+
+      // Optimal Peak Marker (r = 2/3, v = 4/27 ≈ 0.1481)
+      const optV = 4 / 27;
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(toRx(2/3), toVy(optV), 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Current Point Marker
+      const curV = -Math.pow(coughR, 3) + Math.pow(coughR, 2);
+      ctx.fillStyle = '#b45309';
+      ctx.beginPath();
+      ctx.arc(toRx(coughR), toVy(curV), 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // ------------------------------------------
+    // 7. 채점 로직 함수들
+    // ------------------------------------------
+    function checkOpen23_1() {
+      const val = document.getElementById('open23-q1').value.replace(/\s+/g, '');
+      const msg = document.getElementById('open23-q1-msg');
+      if (val.includes('7') && val.includes('8') && val.includes('9') && val.includes('10')) {
+        msg.textContent = '정답입니다! (7~8시, 9~10시)';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '그래프가 올라가는 두 구간을 찾아보세요.';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkOpen23_2() {
+      const val = document.getElementById('open23-q2').value.replace(/\s+/g, '');
+      const msg = document.getElementById('open23-q2-msg');
+      if (val.includes('8') && val.includes('9') && val.includes('10') && val.includes('12')) {
+        msg.textContent = '정답입니다! (8~9시, 10~12시)';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '그래프가 내려가는 두 구간을 찾아보세요.';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkU6Prob2_1() {
+      const val = document.getElementById('q2-1-ans').value.trim();
+      const msg = document.getElementById('q2-1-msg');
+      if (val === '2') {
+        msg.textContent = '정답! [-2, 2]에서 증가';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답 (-3x² + 12 ≥ 0)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkU6Prob2_2() {
+      const val = document.getElementById('q2-2-sel').value;
+      const msg = document.getElementById('q2-2-msg');
+      if (val === 'inc') {
+        msg.textContent = '정답! D/4 = 36 - 42 < 0 이므로 항상 증가';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답 (판별식을 조사해 보세요)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkOpen24_1() {
+      const val = document.getElementById('open24-q1').value.trim();
+      const msg = document.getElementById('open24-q1-msg');
+      if (val.includes('9')) {
+        msg.textContent = '정답! 9시 피크';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '6시~12시 사이 가장 높은 시각을 보세요.';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkOpen24_2() {
+      const val = document.getElementById('open24-q2').value.trim();
+      const msg = document.getElementById('open24-q2-msg');
+      if (val.includes('12')) {
+        msg.textContent = '정답! 12시 저점';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '9시~15시 사이 가장 낮은 시각을 보세요.';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkU6Prob4() {
+      const maxVal = document.getElementById('q4-max-ans').value.trim();
+      const minVal = document.getElementById('q4-min-ans').value.trim();
+      const msg = document.getElementById('q4-msg');
+      if (maxVal === '1' && minVal === '-3') {
+        msg.textContent = '정답입니다! 극댓값 1, 극솟값 -3';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답입니다. (극댓값 1, 극솟값 -3)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkU6Prob5_1() {
+      const maxV = document.getElementById('q5-1-max').value.trim();
+      const minV = document.getElementById('q5-1-min').value.trim();
+      const msg = document.getElementById('q5-1-msg');
+      if (maxV === '23' && minV === '-9') {
+        msg.textContent = '정답입니다!';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답 (x=-1에서 극소 -9, x=3에서 극대 23)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkU6Prob5_2() {
+      const maxV = document.getElementById('q5-2-max').value.trim();
+      const minV = document.getElementById('q5-2-min').value.replace(/\s+/g, '');
+      const msg = document.getElementById('q5-2-msg');
+      const minOk = (minV === '-4,-31' || minV === '-31,-4');
+      if (maxV === '1' && minOk) {
+        msg.textContent = '정답입니다!';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답 (x=0 극대 1, x=-1 극소 -4, x=2 극소 -31)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkU6Prob6() {
+      const a = document.getElementById('q6-a').value.trim();
+      const b = document.getElementById('q6-b').value.trim();
+      const msg = document.getElementById('q6-msg');
+      if (a === '-2' && b === '4') {
+        msg.textContent = '정답입니다! a = -2, b = 4';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = "오답입니다. (f'(-1)=0, f(0)=4)";
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkSc6_01() {
+      const v1 = document.getElementById('sc6-01-1').value.trim();
+      const v2 = document.getElementById('sc6-01-2').value.trim();
+      const v3 = document.getElementById('sc6-01-3').value.trim();
+      const msg = document.getElementById('sc6-01-msg');
+
+      if (v1 === '증가' && v2 === '0' && v3 === '극대') {
+        msg.textContent = '모두 정답입니다!';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '다시 확인해 보세요. (증가, 0, 극대)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkSc6_02_1() {
+      const maxV = document.getElementById('sc6-02-1-max').value.replace(/\s+/g, '');
+      const minV = document.getElementById('sc6-02-1-min').value.trim();
+      const msg = document.getElementById('sc6-02-1-msg');
+      if ((maxV === '20/3' || maxV === '6.67') && minV === '-4') {
+        msg.textContent = '정답! 극대 20/3, 극소 -4';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답 (x=-1 극대, x=3 극소)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkSc6_02_2() {
+      const maxV = document.getElementById('sc6-02-2-max').value.trim();
+      const minV = document.getElementById('sc6-02-2-min').value.trim();
+      const msg = document.getElementById('sc6-02-2-msg');
+      if (maxV === '3' && minV === '-13') {
+        msg.textContent = '정답! 극대 3, 극소 -13';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답 (x=0 극대 3, x=±2 극소 -13)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkSc6_03() {
+      const a = document.getElementById('sc6-03-a').value.trim();
+      const b = document.getElementById('sc6-03-b').value.trim();
+      const msg = document.getElementById('sc6-03-msg');
+      if (a === '0' && b === '-6') {
+        msg.textContent = '정답입니다! a = 0, b = -6';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = "오답 (f'(x)의 두 근이 ±1)";
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkSc6_04() {
+      const a = document.getElementById('sc6-04-a').value.trim();
+      const b = document.getElementById('sc6-04-b').value.trim();
+      const msg = document.getElementById('sc6-04-msg');
+      if (a === '1' && b === '-3') {
+        msg.textContent = '정답입니다! a = 1, b = -3';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답 (두 근이 -3과 1)';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkSc6_05() {
+      const a = document.getElementById('sc6-05-ans').value.trim();
+      const msg = document.getElementById('sc6-05-msg');
+      if (a === '3') {
+        msg.textContent = '정답입니다! (a = 3)';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = '오답입니다. 4a³ = 108 -> a³ = 27';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    function checkSc6_06() {
+      const val = document.getElementById('sc6-06-ans').value.replace(/\s+/g, '');
+      const msg = document.getElementById('sc6-06-msg');
+      if (val === '4/27c' || val === '4/27*c' || val === '(4/27)c') {
+        msg.textContent = '정답입니다! (4/27 c)';
+        msg.className = 'text-xs font-bold text-emerald-600';
+      } else {
+        msg.textContent = 'r = 2/3 대입: 4/27 c 를 입력하세요.';
+        msg.className = 'text-xs font-bold text-rose-500';
+      }
+    }
+
+    // ------------------------------------------
+    // 8. 초기화 실행
+    // ------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      initScratchpads();
+      initIncDecSim();
+      initMagnifierSim();
+      initTableGraphSim();
+      initCoughSim();
+
+      const memo = document.getElementById('reflection-memo');
+      if (memo) {
+        const saved = localStorage.getItem('u2_6_reflection_memo');
+        if (saved) memo.value = saved;
+        memo.addEventListener('input', () => {
+          localStorage.setItem('u2_6_reflection_memo', memo.value);
+        });
+      }
     });
-    </script>
+  </script>
 </body>
 </html>
