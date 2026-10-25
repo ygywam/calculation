@@ -8,29 +8,56 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- KaTeX CSS & JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Pretendard Official CDN -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        body, button, input, select, textarea {
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+            word-break: keep-all;
             background-color: #f8fafc;
             color: #0f172a;
         }
         .font-mono {
             font-family: 'JetBrains Mono', monospace;
         }
-        /* 스크래치패드 캔버스 기본 스타일 */
-        .scratchpad-canvas {
+        /* KaTeX Math Styling & Protection */
+        .katex, .katex * {
+            font-family: KaTeX_Main, KaTeX_Math, serif !important;
+        }
+        .katex-display {
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.5em 0;
+        }
+
+        /* 1.4 Benchmark Whiteboard Active Styles */
+        #wb-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 35;
+            pointer-events: none;
             touch-action: none;
-            background-color: #ffffff;
+        }
+        #wb-canvas.wb-drawing-active {
+            pointer-events: auto !important;
             cursor: crosshair;
         }
-        /* 전자칠판 캔버스 */
-        #wb-canvas {
-            touch-action: none;
+        .wb-color-btn.active {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 3px #fff, 0 0 0 5px #4f46e5;
         }
-        /* 커스텀 스크롤바 */
+        .wb-tool-btn.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -45,190 +72,234 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        /* Impeccable Nordic Edu-Chic Additions (Chapter 2 Signature Indigo) */
+        .edu-accent-bar-indigo {
+            height: 3.5px;
+            background: linear-gradient(90deg, #4f46e5 0%, #818cf8 50%, #c084fc 100%);
+            border-radius: 9999px 9999px 0 0;
+        }
+        .edu-badge-soft {
+            background-color: #eef2ff;
+            color: #4338ca;
+            border: 1px solid #c7d2fe;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen relative antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen selection:bg-indigo-100 selection:text-indigo-900">
 
-    <!-- ===================================================================
-         전체 화면 전자칠판 레이어 (#wb-canvas)
-         =================================================================== -->
-    <canvas id="wb-canvas" class="fixed inset-0 z-40 pointer-events-auto hidden w-full h-full cursor-crosshair"></canvas>
 
-    <!-- ===================================================================
-         전자칠판 플로팅 제어 툴바 (#wb-toolbar)
-         =================================================================== -->
-    <div id="wb-toolbar" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-200/80 flex items-center gap-3 transition-all duration-300 hidden select-none">
-        <!-- 모드/도구 선택 -->
-        <div class="flex items-center gap-1 border-r border-slate-200 pr-3">
-            <button id="wb-tool-pen" class="wb-tool-btn px-2.5 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition-all" title="일반 펜 (P)">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                <span>펜</span>
+    <!-- ========================================== -->
+    <!-- GLOBAL WHITEBOARD CANVAS & TOOLBAR OVERLAY -->
+    <!-- ========================================== -->
+    <canvas id="wb-canvas"></canvas>
+
+    <!-- Floating Whiteboard Toolbar -->
+    
+    <!-- Electronic Whiteboard Canvas Overlay -->
+    
+
+    <!-- Standardized Electronic Whiteboard Toolbar -->
+    <div id="wb-toolbar" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-wrap items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-extrabold tracking-wide text-sky-300">전자칠판</span>
+        </div>
+
+        <!-- Mode Switch: Pointer vs Pen vs Highlighter vs Eraser -->
+        <div class="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/80">
+            <button id="wb-btn-pointer" onclick="setWbTool('pointer')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-1" title="조작/스크롤 모드 (클릭 가능)">
+                <i class="fa-solid fa-arrow-pointer"></i>
+                <span class="hidden sm:inline">조작</span>
             </button>
-            <button id="wb-tool-highlighter" class="wb-tool-btn px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-all" title="형광펜 (H)">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
-                <span>형광펜</span>
+            <button id="wb-btn-pen" onclick="setWbTool('pen')" class="wb-tool-btn active px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-1" title="일반 펜 (판서)">
+                <i class="fa-solid fa-pen"></i>
+                <span class="hidden sm:inline">펜</span>
             </button>
-            <button id="wb-tool-eraser" class="wb-tool-btn px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 transition-all" title="지우개 (E)">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                <span>지우개</span>
+            <button id="wb-btn-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-1" title="형광펜 (반투명 강조)">
+                <i class="fa-solid fa-highlighter"></i>
+                <span class="hidden sm:inline">형광펜</span>
+            </button>
+            <button id="wb-btn-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-1" title="지우개 (획 삭제)">
+                <i class="fa-solid fa-eraser"></i>
+                <span class="hidden sm:inline">지우개</span>
             </button>
         </div>
 
-        <!-- 색상 팔레트 -->
-        <div class="flex items-center gap-1.5 border-r border-slate-200 pr-3">
-            <button class="wb-color-btn w-6 h-6 rounded-full ring-2 ring-offset-2 ring-indigo-600 transition-transform active:scale-90" style="background-color: #0f172a;" data-color="#0f172a" title="검정색"></button>
-            <button class="wb-color-btn w-6 h-6 rounded-full bg-red-500 transition-transform active:scale-90" data-color="#ef4444" title="빨간색"></button>
-            <button class="wb-color-btn w-6 h-6 rounded-full bg-blue-600 transition-transform active:scale-90" data-color="#2563eb" title="파란색"></button>
-            <button class="wb-color-btn w-6 h-6 rounded-full bg-emerald-500 transition-transform active:scale-90" data-color="#10b981" title="초록색"></button>
-            <button class="wb-color-btn w-6 h-6 rounded-full bg-amber-400 transition-transform active:scale-90" data-color="#fbbf24" title="형광노랑"></button>
-            <button class="wb-color-btn w-6 h-6 rounded-full bg-purple-500 transition-transform active:scale-90" data-color="#a855f7" title="보라색"></button>
+        <!-- Stroke Thickness -->
+        <div class="flex items-center gap-1.5 pl-1 pr-2 border-r border-slate-700">
+            <i class="fa-solid fa-minus text-[10px] text-slate-400"></i>
+            <input id="wb-size" type="range" min="1" max="18" value="3" class="w-16 sm:w-20 accent-indigo-500 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+            <i class="fa-solid fa-plus text-[10px] text-slate-400"></i>
         </div>
 
-        <!-- 굵기 선택 -->
-        <div class="flex items-center gap-1 border-r border-slate-200 pr-3">
-            <button class="wb-size-btn px-2 py-1 rounded-lg bg-indigo-100 text-indigo-800 font-bold text-xs" data-size="2">얇게</button>
-            <button class="wb-size-btn px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs" data-size="5">중간</button>
-            <button class="wb-size-btn px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs" data-size="10">두껍게</button>
+        <!-- Colors -->
+        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
+            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-5 h-5 rounded-full bg-red-500 transition-transform" title="빨간색"></button>
+            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-5 h-5 rounded-full bg-blue-500 transition-transform" title="파란색"></button>
+            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-5 h-5 rounded-full bg-emerald-500 transition-transform" title="초록색"></button>
+            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-amber-500 transition-transform" title="노란색/주황색"></button>
+            <button onclick="setWbColor('#0f172a', this)" class="wb-color-btn w-5 h-5 rounded-full bg-slate-900 border border-slate-500 transition-transform" title="검정색"></button>
         </div>
 
-        <!-- 액션 버튼 -->
-        <div class="flex items-center gap-1.5">
-            <button id="wb-tool-clear" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 font-bold text-xs flex items-center gap-1 transition-all" title="칠판 판서 모두 지우기">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                <span>초기화</span>
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-1">
+            <button onclick="undoWb()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition text-xs" title="실행 취소 (Ctrl+Z)">
+                <i class="fa-solid fa-rotate-left"></i>
             </button>
-            <button id="wb-tool-download" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 font-bold text-xs flex items-center gap-1 transition-all" title="판서 화면 이미지로 저장">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <span>PNG</span>
+            <button onclick="clearWb()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-rose-900/60 text-rose-300 flex items-center justify-center transition text-xs" title="판서 전체 지우기">
+                <i class="fa-solid fa-trash-can"></i>
             </button>
-            <button id="btn-wb-close" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-all ml-1" title="칠판 닫기">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            <button onclick="saveWbImage()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-indigo-900/60 text-indigo-300 flex items-center justify-center transition text-xs" title="판서 화면 이미지로 저장">
+                <i class="fa-solid fa-download"></i>
+            </button>
+            <button onclick="toggleWhiteboard()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition text-xs" title="전자칠판 닫기">
+                <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
     </div>
 
-    <!-- ===================================================================
-         최상단 고정 헤더 & 네비게이션
-         =================================================================== -->
-    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="index.html" class="p-2 -ml-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors" title="수업 대시보드로 돌아가기">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                </a>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-100 text-indigo-700">미적분Ⅰ</span>
-                        <span class="text-xs text-slate-500">Ⅱ. 미분 &gt; 1. 미분계수와 도함수</span>
-                    </div>
-                    <h1 class="text-lg font-extrabold text-slate-900 tracking-tight">1. 미분계수 (교과서 52~59쪽)</h1>
-                </div>
-            </div>
 
-            <!-- 우측 액션 툴스 -->
-            <div class="flex items-center gap-2">
-                <!-- 전자칠판 토글 버튼 -->
-                <button id="btn-toggle-whiteboard" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 shadow-xs hover:border-indigo-400 hover:bg-indigo-50/50 text-slate-700 font-bold text-xs flex items-center gap-2 transition-all">
-                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                    <span>전자칠판 모드</span>
-                </button>
-                <!-- 모바일 목차 토글 버튼 -->
-                <button id="btn-open-sidebar" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
+
+    <!-- ========================================== -->
+    <!-- FIXED LEFT SIDEBAR (Gold Benchmark Layout) -->
+    <!-- ========================================== -->
+    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between shadow-lg lg:shadow-none" style="font-size: 14px;">
+        
+        <!-- Sidebar Header -->
+        <div class="p-5 border-b border-slate-200 bg-slate-50/50">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-700">Ⅱ. 미분</span>
+                <span class="text-xs text-slate-400 font-medium">09~11차시</span>
+            </div>
+            <h1 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-arrow-trend-up text-indigo-600"></i>
+                <span>01. 미분계수</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-1 font-medium">교과서 54 ~ 59쪽</p>
+
+            <!-- Learning Progress Bar -->
+            <div class="mt-4 bg-slate-100 p-3 rounded-xl">
+                <div class="flex justify-between items-center text-xs font-semibold mb-1.5">
+                    <span class="text-slate-600">미적분Ⅰ 전체 진도</span>
+                    <span class="text-indigo-600 font-bold">11차시 / 40차시</span>
+                </div>
+                <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-indigo-500 to-sky-500 transition-all duration-500" style="width: 27.5%"></div>
+                </div>
             </div>
         </div>
-    </header>
 
-    <!-- ===================================================================
-         메인 2-컬럼 레이아웃 (좌측 네비게이션 + 본문)
-         =================================================================== -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
-        <!-- 좌측 사이드바 네비게이션 -->
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-slate-200 p-6 flex flex-col justify-between transform -translate-x-full transition-transform duration-300 lg:translate-x-0 lg:static lg:w-64 lg:p-0 lg:bg-transparent lg:border-none">
-            <div class="space-y-6">
-                <!-- 닫기 버튼 (모바일용) -->
-                <div class="flex items-center justify-between lg:hidden pb-4 border-b border-slate-200">
-                    <span class="font-bold text-slate-900">학습 목차 네비게이션</span>
-                    <button id="btn-close-sidebar" class="p-1 rounded-lg text-slate-400 hover:text-slate-700">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <!-- Navigation Menu Links -->
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1 text-xs sm:text-sm font-semibold">
+            <a href="#sec-9-intro" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-800 transition">
+                <i class="fa-solid fa-lightbulb w-5 text-center text-amber-500"></i>
+                <span>생각 열기 (모래 온도 변화율)</span>
+            </a>
+            <a href="#avg-rate-canvas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-sky-50 text-slate-700 hover:text-sky-800 transition pl-6 text-xs">
+                <i class="fa-solid fa-sliders w-4 text-center text-sky-500"></i>
+                <span>시뮬레이터 1: 평균변화율 할선</span>
+            </a>
+            <a href="#sec-10-intro" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-800 transition">
+                <i class="fa-solid fa-book-open w-5 text-center text-blue-500"></i>
+                <span>개념 정립 (미분계수 정의)</span>
+            </a>
+            <a href="#diff-struct-canvas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-800 transition pl-6 text-xs">
+                <i class="fa-solid fa-cube w-4 text-center text-indigo-500"></i>
+                <span>시뮬레이터 2: 미분계수 형태 맞추기</span>
+            </a>
+            <a href="#secant-tangent-canvas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-800 transition pl-6 text-xs">
+                <i class="fa-solid fa-arrow-pointer w-4 text-center text-purple-500"></i>
+                <span>시뮬레이터 3: 할선→접선 수렴 관찰기</span>
+            </a>
+            <a href="#concave-compare-canvas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition pl-6 text-xs">
+                <i class="fa-solid fa-scale-balanced w-4 text-center text-emerald-500"></i>
+                <span>시뮬레이터 4: 세 기울기 대소 비교</span>
+            </a>
+            <a href="#sec-11-selfcheck" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition">
+                <i class="fa-solid fa-clipboard-check w-5 text-center text-emerald-500"></i>
+                <span>스스로 확인하기 (01~06)</span>
+            </a>
+            <a href="#poiseuille-canvas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-rose-50 text-slate-700 hover:text-rose-800 transition pl-6 text-xs">
+                <i class="fa-solid fa-heart-pulse w-4 text-center text-rose-500"></i>
+                <span>시뮬레이터 5: 푸아죄유 혈류 속도</span>
+            </a>
+            <a href="#sec-11-tool" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-teal-50 text-slate-700 hover:text-teal-800 transition">
+                <i class="fa-solid fa-laptop-code w-5 text-center text-teal-600"></i>
+                <span>공학 도구 탐구 (국소적 선형성)</span>
+            </a>
+            <a href="#local-linear-canvas" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-amber-50 text-slate-700 hover:text-amber-800 transition pl-6 text-xs">
+                <i class="fa-solid fa-microscope w-4 text-center text-amber-500"></i>
+                <span>시뮬레이터 6: 국소적 선형성(돋보기)</span>
+            </a>
+            <a href="#sec-reflection" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 text-slate-700 transition">
+                <i class="fa-solid fa-pen-to-square w-5 text-center text-slate-500"></i>
+                <span>학습 성찰 및 자기 점검</span>
+            </a>
+        </nav>
+
+        <!-- Sidebar Footer Quick Actions (Standard Benchmark Suite) -->
+        <div class="p-4 border-t border-slate-200 space-y-2 bg-slate-50/50">
+            <button onclick="toggleWhiteboard()" id="sidebar-wb-btn" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-extrabold shadow-md transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-chalkboard-user text-sm"></i>
+                <span>전자칠판 (화면 판서 모드) 켜기</span>
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="toggleAllSolutions(true)" class="px-3 py-2 text-xs font-bold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 shadow-sm text-slate-700">
+                    <i class="fa-solid fa-eye text-indigo-500"></i> 해설 모두 열기
+                </button>
+                <button onclick="toggleAllSolutions(false)" class="px-3 py-2 text-xs font-bold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 shadow-sm text-slate-700">
+                    <i class="fa-solid fa-eye-slash text-slate-400"></i> 해설 모두 닫기
+                </button>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="resetAllInputs()" class="px-3 py-2 text-xs font-bold rounded-lg bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition flex items-center justify-center gap-1.5 shadow-xs">
+                    <i class="fa-solid fa-rotate-left"></i> 답안 초기화
+                </button>
+                <button onclick="resetFontSize()" class="px-3 py-2 text-xs font-bold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 text-slate-700 shadow-xs" title="기본 크기(115%)로 복원">
+                    <i class="fa-solid fa-text-height text-indigo-500"></i> 글자 초기화
+                </button>
+            </div>
+            <!-- 실시간 글자 크기 조절 컨트롤 (교실 맨 뒷자리 시야 확보용) -->
+            <div class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 shadow-sm text-xs">
+                <span class="text-slate-700 font-bold flex items-center gap-1.5 pl-1">
+                    <i class="fa-solid fa-font text-indigo-500"></i> 글자 크기
+                </span>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="changeFontSize(-1)" title="글자 작게" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition">
+                        <i class="fa-solid fa-minus text-[11px]"></i>
+                    </button>
+                    <span id="font-size-label" class="w-11 text-center font-mono font-extrabold text-indigo-700 text-xs">115%</span>
+                    <button onclick="changeFontSize(1)" title="글자 크게 (맨 뒷자리 학생용)" class="w-7 h-7 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center transition border border-indigo-200">
+                        <i class="fa-solid fa-plus text-[11px]"></i>
                     </button>
                 </div>
+            </div>
+            <a href="index.html" class="block text-center py-2 text-xs font-bold text-slate-500 hover:text-indigo-600 transition">
+                <i class="fa-solid fa-arrow-left"></i> 수업 대시보드로 돌아가기
+            </a>
+        </div>
+    </aside>
 
-                <!-- 9차시 목차 그룹 -->
-                <div>
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3">
-                        <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
-                        9차시 : 평균변화율
-                    </div>
-                    <nav class="space-y-1">
-                        <a href="#sec-avg-rate" class="nav-link block px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-white hover:text-indigo-600 hover:shadow-xs transition-all">
-                            1. 평균변화율의 뜻과 증분
-                        </a>
-                        <a href="#sec-secant-slope" class="nav-link block px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-white hover:text-indigo-600 hover:shadow-xs transition-all">
-                            2. 할선의 기울기와 경제 응용
-                        </a>
-                    </nav>
-                </div>
 
-                <!-- 10차시 목차 그룹 -->
-                <div>
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-blue-700 uppercase tracking-wider mb-3">
-                        <span class="w-2 h-2 rounded-full bg-blue-600"></span>
-                        10차시 : 미분계수 & 기하학적 의미
-                    </div>
-                    <nav class="space-y-1">
-                        <a href="#sec-diff-coef" class="nav-link block px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-white hover:text-blue-600 hover:shadow-xs transition-all">
-                            3. 순간변화율과 미분계수 정의
-                        </a>
-                        <a href="#sec-tangent-slope" class="nav-link block px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-white hover:text-blue-600 hover:shadow-xs transition-all">
-                            4. 접선의 기울기 & 수렴 캔버스
-                        </a>
-                    </nav>
-                </div>
+    <!-- ========================================== -->
+    <!-- MAIN WORKSPACE CONTENT (Generous max-w-7xl) -->
+    <!-- ========================================== -->
+    <main id="main-content" class="lg:ml-72 min-h-screen pt-16 lg:pt-0 pb-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-8 space-y-12">
 
-                <!-- 11차시 목차 그룹 -->
+            <!-- Mobile Sticky Header -->
+            <div class="lg:hidden flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm mb-4">
                 <div>
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3">
-                        <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
-                        11차시 : 공학도구 & 평가
-                    </div>
-                    <nav class="space-y-1">
-                        <a href="#sec-self-check" class="nav-link block px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-white hover:text-emerald-600 hover:shadow-xs transition-all">
-                            스스로 확인하기 (01~06번)
-                        </a>
-                        <a href="#sec-local-linearity" class="nav-link block px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-white hover:text-emerald-600 hover:shadow-xs transition-all">
-                            공학도구 : 국소적 선형성 돋보기
-                        </a>
-                    </nav>
+                    <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 font-black text-[11px] rounded">미적분Ⅰ</span>
+                    <h2 class="text-sm font-black text-slate-900 mt-0.5">01. 미분계수</h2>
                 </div>
+                <button type="button" onclick="toggleWhiteboard()" class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow">
+                    <i class="fa-solid fa-pen"></i> 전자칠판
+                </button>
             </div>
 
-            <!-- 사이드바 하단 정보 카드 -->
-            <div class="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs text-xs space-y-2 mt-6">
-                <div class="flex items-center justify-between text-slate-500">
-                    <span>학습 차시</span>
-                    <strong class="text-indigo-600">9~11 / 40 차시</strong>
-                </div>
-                <div class="flex items-center justify-between text-slate-500">
-                    <span>교과서 쪽수</span>
-                    <strong class="text-slate-800">52 ~ 59 쪽</strong>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                    <div class="bg-indigo-600 h-1.5 rounded-full" style="width: 27.5%"></div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- ===================================================================
-             본문 학습 영역
-             =================================================================== -->
-        <main class="flex-1 min-w-0">
-
-        <!-- ===================================================================
-             [9차시] 1. 평균변화율 (교과서 52~53쪽)
-             =================================================================== -->
-        <section id="sec-9-intro" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+<section id="sec-9-intro" class="p-6 md:p-10 w-full space-y-8">
             
             <!-- 단원 타이틀 배너 -->
             <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
@@ -268,7 +339,7 @@
                         • <strong>직관과 기하의 결합:</strong> 1차시 생각 열기의 모래 온도 실험 자료를 통해 비(ratio)로서의 평균변화율을 먼저 체감하게 한 후, 좌표평면 위의 곡선에서 두 점 \(A, B\)를 잇는 할선(Secant Line)의 기울기와 완전히 일치함을 시각적으로 증명합니다.
                     </p>
                     <p class="leading-relaxed">
-                        • <strong>오개념 방지 팁:</strong> \(\Delta x\)가 음수일 수도 있는지 묻는 질문이 많습니다. \(b &lt; a\)인 경우에도 \(\Delta x = b - a &lt; 0\)이며 평균변화율의 공식은 부호와 무관하게 동일하게 성립함을 환기합니다.
+                        • <strong>오개념 방지 팁:</strong> \(\Delta x\)가 음수일 수도 있는지 묻는 질문이 많습니다. \(b < a\)인 경우에도 \(\Delta x = b - a < 0\)이며 평균변화율의 공식은 부호와 무관하게 동일하게 성립함을 환기합니다.
                     </p>
                 </div>
             </div>
@@ -347,24 +418,52 @@
                 </div>
 
                 <!-- 캔버스 컨테이너 (Light Mode 엄수: 배경 흰색) -->
-                <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
-                    <canvas id="avg-rate-canvas" width="800" height="320" class="w-full h-full block"></canvas>
-                </div>
+                <div class="max-w-2xl mx-auto space-y-3">
+     <div class="relative w-full h-64 sm:h-72 bg-slate-50/50 rounded-2xl border border-slate-200 shadow-inner flex items-center justify-center overflow-hidden">
+       <canvas id="avg-rate-canvas" width="600" height="320" class="w-full h-full block"></canvas>
+     </div>
+   </div>
 
-                <!-- 시뮬레이터 컨트롤 바 -->
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1">시작 시각 \(a\): <span id="val-t1" class="text-blue-600 font-bold">8시</span></label>
-                        <input id="slider-t1" type="range" min="8" max="12" step="1" value="8" class="w-full accent-blue-600 cursor-pointer">
+                <!-- 시뮬레이터 1 컨트롤 및 실시간 분석 패널 -->
+                <div class="space-y-3">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs md:text-sm">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="font-semibold text-slate-700">시작 시각 \(a\): <span id="val-t1" class="text-blue-600 font-bold">8시</span></label>
+                                <span class="text-xs text-slate-400">교과서 실측 데이터</span>
+                            </div>
+                            <input id="slider-t1" type="range" min="8" max="12" step="1" value="8" class="w-full accent-blue-600 cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="font-semibold text-slate-700">종료 시각 \(b\): <span id="val-t2" class="text-red-600 font-bold">13시</span></label>
+                                <span class="text-xs text-slate-400">\(a < b\) 유지</span>
+                            </div>
+                            <input id="slider-t2" type="range" min="9" max="13" step="1" value="13" class="w-full accent-red-600 cursor-pointer">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1">종료 시각 \(b\): <span id="val-t2" class="text-red-600 font-bold">13시</span></label>
-                        <input id="slider-t2" type="range" min="9" max="13" step="1" value="13" class="w-full accent-red-600 cursor-pointer">
+
+                    <!-- 실시간 3대 핵심 수치 카드 (외부 패널) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center text-xs md:text-sm">
+                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-slate-500 text-xs mb-1 font-medium">시간 증분 \(\Delta t = b - a\)</div>
+                            <div id="stat-dt" class="text-base font-bold text-blue-700">5.0 h</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-slate-500 text-xs mb-1 font-medium">온도 증분 \(\Delta T = T(b) - T(a)\)</div>
+                            <div id="stat-dT" class="text-base font-bold text-red-700">25.5 ℃</div>
+                        </div>
+                        <div class="bg-indigo-50/60 p-3.5 rounded-xl border border-indigo-200 shadow-sm">
+                            <div class="text-indigo-900 text-xs mb-1 font-bold">구간 평균변화율 (할선 기울기)</div>
+                            <div id="stat-avg-rate" class="text-lg font-extrabold text-indigo-700">5.10 ℃/h</div>
+                        </div>
                     </div>
-                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                        <div class="text-slate-500 text-xs">구간 평균변화율 (할선의 기울기)</div>
-                        <div id="stat-avg-rate" class="text-lg font-extrabold text-blue-700">5.10 ℃/h</div>
+
+                    <div class="px-4 py-2.5 bg-sky-50 rounded-lg border border-sky-200 text-xs text-sky-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-sky-600"></i>
+                        <span><strong>기하학적 해석:</strong> 평균변화율은 모래 온도 곡선 위의 두 점 \((a, T(a))\)와 \((b, T(b))\)를 잇는 <strong>파란색 할선(Secant Line)의 기울기</strong>와 정확히 같습니다.</span>
                     </div>
+                </div>v>
                 </div>
             </div>
 
@@ -380,7 +479,7 @@
                         함수 \(y=f(x)\)에서 \(x\)의 값이 \(a\)에서 \(b\)까지 변할 때, \(y\)의 값은 \(f(a)\)에서 \(f(b)\)까지 변합니다.
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-2">
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between h-full">
                             <h4 class="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                                 \(x\)의 증분 (Increment of \(x\))
@@ -388,7 +487,7 @@
                             <p class="text-xs md:text-sm text-slate-600">\(x\)의 값의 변화량: \(\Delta x = b - a\)</p>
                             <p class="text-xs text-slate-500 mt-1">따라서 \(b = a + \Delta x\)로 나타낼 수 있습니다.</p>
                         </div>
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col justify-between h-full">
                             <h4 class="font-bold text-slate-900 mb-1 flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                 \(y\)의 증분 (Increment of \(y\))
@@ -472,39 +571,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 문제 1: 기본 연습 (교과서 53쪽) + 전자 스크래치패드 + 즉시 채점기 -->
-            <div id="sec-9-prob1" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 1</span>
-                        <h3 class="text-lg font-bold text-slate-900">다항함수의 평균변화율</h3>
-                    </div>
-                    <span class="text-xs text-slate-500">교과서 53쪽</span>
-                </div>
-
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
-                    함수 \(f(x) = 3x^2 - 2\)에서 \(x\)의 값이 다음과 같이 변할 때의 평균변화율을 구하시오.
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-200 text-sm">
-                        <div>⑴ \(-1\)에서 \(3\)까지</div>
-                        <div>⑵ \(a\)에서 \(a + \Delta x\)까지</div>
-                    </div>
-                </div>
-
-                <!-- 개별 문제 전용 전자 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            풀이 연습장 (Scratchpad)
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-prob1')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
-                    </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-prob1" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
-                </div>
 
                 <!-- 즉시 인터랙티브 채점 시스템 -->
                 <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
@@ -515,7 +581,7 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑴ 답안 입력 (숫자):</label>
                             <div class="flex gap-2">
-                                <input id="ans-p1-1" type="text" placeholder="예: 6" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <input id="ans-p1-1" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <button type="button" onclick="checkProb1_1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
                             </div>
                             <div id="res-p1-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -528,7 +594,7 @@
                                 <span>정답 및 단계별 풀이 보기</span>
                                 <span id="sol-p1-2-arrow">▼</span>
                             </button>
-                            <div id="sol-p1-2" class="hidden p-3 bg-white rounded-lg border border-emerald-200 text-xs text-slate-700 mt-2 space-y-1 shadow-xs">
+                            <div id="sol-p1-2" class="solution-box hidden p-3 bg-white rounded-lg border border-emerald-200 text-xs text-slate-700 mt-2 space-y-1 shadow-xs">
                                 <div><strong>정답:</strong> \(6a + 3\Delta x\)</div>
                                 <div class="text-slate-600 leading-relaxed">
                                     \(\frac{f(a+\Delta x)-f(a)}{\Delta x} = \frac{\{3(a+\Delta x)^2-2\} - (3a^2-2)}{\Delta x} = \frac{6a\Delta x + 3(\Delta x)^2}{\Delta x} = 6a + 3\Delta x\)
@@ -562,27 +628,13 @@
                     </p>
                 </div>
 
-                <!-- 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            수식 전개 및 계산 연습장
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-prob2')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
-                    </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-prob2" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
-                </div>
-
                 <!-- 채점 및 해설 아코디언 -->
                 <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="space-y-1">
                             <label class="text-xs font-semibold text-slate-700">답안 입력 (숫자만, 단위: 원/장):</label>
                             <div class="flex items-center gap-2">
-                                <input id="ans-p2" type="text" placeholder="예: 260000" class="px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 w-44">
+                                <input id="ans-p2" type="text" placeholder="" class="px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 w-44">
                                 <span class="text-xs text-slate-500 font-medium">원/장</span>
                                 <button type="button" onclick="checkProb2()" class="px-4 py-2 bg-amber-600 text-white rounded-lg text-xs font-bold hover:bg-amber-700 transition">정답 확인</button>
                             </div>
@@ -595,7 +647,7 @@
                             <span>상세 풀이 과정 보기</span>
                             <span id="sol-p2-arrow">▼</span>
                         </button>
-                        <div id="sol-p2" class="hidden mt-3 p-4 bg-white rounded-xl border border-amber-200 text-xs md:text-sm text-slate-700 space-y-2">
+                        <div id="sol-p2" class="solution-box hidden mt-3 p-4 bg-white rounded-xl border border-amber-200 text-xs md:text-sm text-slate-700 space-y-2">
                             <div class="font-bold text-slate-900">단계별 계산 과정:</div>
                             <p class="leading-relaxed">
                                 • \(\Delta x = 60 - 50 = 10\) (장)<br>
@@ -613,14 +665,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
         </section>
     
         <!-- ===================================================================
              [10차시] 2. 미분계수와 기하학적 의미 (교과서 54~57쪽)
              =================================================================== -->
-        <section id="sec-10-intro" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+        <section id="sec-10-intro" class="p-6 md:p-10 w-full space-y-8">
             
             <!-- 10차시 단원 타이틀 배너 -->
             <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
@@ -798,23 +849,50 @@
                     <span class="text-xs text-slate-500">분자·분모의 \(\Delta x\) 계수를 조절하여 극한 배율을 확인하세요</span>
                 </div>
 
-                <div class="relative w-full h-[300px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
-                    <canvas id="diff-struct-canvas" width="800" height="300" class="w-full h-full block"></canvas>
-                </div>
+                <div class="max-w-2xl mx-auto space-y-3">
+     <div class="relative w-full h-64 sm:h-72 bg-slate-50/50 rounded-2xl border border-slate-200 shadow-inner flex items-center justify-center overflow-hidden">
+       <canvas id="diff-struct-canvas" width="600" height="320" class="w-full h-full block"></canvas>
+     </div>
+   </div>
 
-                <!-- 컨트롤 바 -->
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1">분자 증분 계수 \(m\): <span id="val-struct-m" class="text-purple-600 font-bold">2</span></label>
-                        <input id="slider-struct-m" type="range" min="1" max="5" step="1" value="2" class="w-full accent-purple-600 cursor-pointer">
+                <!-- 시뮬레이터 2 컨트롤 및 실시간 형태 맞추기 해석 패널 -->
+                <div class="space-y-3">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs md:text-sm">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="font-semibold text-slate-700">분자 증분 계수 \(m\): <span id="val-struct-m" class="text-purple-600 font-bold">2</span></label>
+                                <span class="text-xs text-slate-400">\(f(a + m\Delta x)\)</span>
+                            </div>
+                            <input id="slider-struct-m" type="range" min="1" max="5" step="1" value="2" class="w-full accent-purple-600 cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="font-semibold text-slate-700">분모 증분 계수 \(k\): <span id="val-struct-k" class="text-blue-600 font-bold">1</span></label>
+                                <span class="text-xs text-slate-400">\(k\Delta x\)</span>
+                            </div>
+                            <input id="slider-struct-k" type="range" min="1" max="5" step="1" value="1" class="w-full accent-blue-600 cursor-pointer">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1">분모 증분 계수 \(k\): <span id="val-struct-k" class="text-blue-600 font-bold">1</span></label>
-                        <input id="slider-struct-k" type="range" min="1" max="5" step="1" value="1" class="w-full accent-blue-600 cursor-pointer">
+
+                    <!-- 실시간 형태 맞추기 공식 분해 카드 -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-arrows-split-up-and-left text-purple-600"></i>
+                                미분계수 극한 분해 계산
+                            </span>
+                            <span id="stat-struct-res" class="text-sm md:text-base font-extrabold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded border border-purple-200">
+                                2/1 · f'(a) = 2 f'(a)
+                            </span>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 text-xs md:text-sm text-center font-mono text-slate-800">
+                            \(\lim_{\Delta x \to 0} \frac{f(a + m\Delta x) - f(a)}{k\Delta x} = \frac{m}{k} \cdot \lim_{m\Delta x \to 0} \frac{f(a + m\Delta x) - f(a)}{m\Delta x} = \mathbf{\frac{m}{k} f'(a)}\)
+                        </div>
                     </div>
-                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                        <div class="text-slate-500 text-xs">극한 결과 계수</div>
-                        <div id="stat-struct-res" class="text-lg font-extrabold text-purple-700">\(\frac{2}{1} f'(a) = 2 f'(a)\)</div>
+
+                    <div class="px-4 py-2.5 bg-purple-50 rounded-lg border border-purple-200 text-xs text-purple-900 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-purple-600"></i>
+                        <span><strong>형태 맞추기 원리:</strong> 분자의 증분 \(m\Delta x\)와 분모의 증분이 같아야만 \(f'(a)\)의 정의가 적용됩니다. 따라서 분모를 \(m\Delta x\)로 변형한 뒤 보정 계수 \(\frac{m}{k}\)를 곱합니다.</span>
                     </div>
                 </div>
             </div>
@@ -869,38 +947,6 @@
                 </div>
             </div>
 
-            <!-- 문제 3: 기본 미분계수 계산 (교과서 55쪽) + 스크래치패드 + 채점기 -->
-            <div id="sec-10-prob3" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 3</span>
-                        <h3 class="text-lg font-bold text-slate-900">미분계수 구하기 (기본)</h3>
-                    </div>
-                    <span class="text-xs text-slate-500">교과서 55쪽</span>
-                </div>
-
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
-                    다음 함수의 \(x=-1\)에서의 미분계수를 구하시오.
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-200 text-sm">
-                        <div>⑴ \(f(x) = 2x - 3\)</div>
-                        <div>⑵ \(f(x) = -x^2 + x + 2\)</div>
-                    </div>
-                </div>
-
-                <!-- 전자 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            미분계수 전개 연습장 (Scratchpad)
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-prob3')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
-                    </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-prob3" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
-                </div>
-
                 <!-- 즉시 인터랙티브 채점 시스템 -->
                 <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
                     <h5 class="font-bold text-xs uppercase tracking-wider text-slate-600">즉시 정답 확인 & 자동 채점</h5>
@@ -910,7 +956,7 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑴ 답안 입력 (숫자):</label>
                             <div class="flex gap-2">
-                                <input id="ans-p3-1" type="text" placeholder="예: 2" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <input id="ans-p3-1" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <button type="button" onclick="checkProb3_1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
                             </div>
                             <div id="res-p3-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -920,7 +966,7 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑵ 답안 입력 (숫자):</label>
                             <div class="flex gap-2">
-                                <input id="ans-p3-2" type="text" placeholder="예: 3" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <input id="ans-p3-2" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <button type="button" onclick="checkProb3_2()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
                             </div>
                             <div id="res-p3-2" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -933,7 +979,7 @@
                             <span>상세 풀이 과정 보기</span>
                             <span id="sol-p3-arrow">▼</span>
                         </button>
-                        <div id="sol-p3" class="hidden mt-3 p-4 bg-white rounded-xl border border-emerald-200 text-xs md:text-sm text-slate-700 space-y-3">
+                        <div id="sol-p3" class="solution-box hidden mt-3 p-4 bg-white rounded-xl border border-emerald-200 text-xs md:text-sm text-slate-700 space-y-3">
                             <div>
                                 <strong>⑴ 풀이:</strong> \(f'(-1) = \lim_{x \to -1} \frac{(2x-3)-(-5)}{x - (-1)} = \lim_{x \to -1} \frac{2x+2}{x+1} = \lim_{x \to -1} 2 = \mathbf{2}\)<br>
                                 <span class="text-slate-500 text-xs">💡 직선 \(y=2x-3\)의 기울기는 항상 2이므로 미분계수 역시 2입니다.</span>
@@ -945,7 +991,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- 개념 3: 미분계수의 기하학적 의미 (접선의 기울기, 교과서 56~57쪽) -->
             <div id="sec-10-concept-geom" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
@@ -995,22 +1040,41 @@
                     <span class="text-xs text-slate-500">슬라이더를 움직여 이동점 Q를 고정점 P로 접근시키세요</span>
                 </div>
 
-                <div class="relative w-full h-[360px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
-                    <canvas id="secant-tangent-canvas" width="800" height="360" class="w-full h-full block"></canvas>
-                </div>
+                <div class="max-w-2xl mx-auto space-y-3">
+     <div class="relative w-full h-64 sm:h-72 bg-slate-50/50 rounded-2xl border border-slate-200 shadow-inner flex items-center justify-center overflow-hidden">
+       <canvas id="secant-tangent-canvas" width="600" height="320" class="w-full h-full block"></canvas>
+     </div>
+   </div>
 
-                <!-- 컨트롤 바 -->
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
-                    <div class="sm:col-span-2">
+                <!-- 시뮬레이터 3 컨트롤 및 실시간 수렴 해석 패널 -->
+                <div class="space-y-3">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs md:text-sm">
                         <div class="flex justify-between items-center mb-1">
                             <label class="font-semibold text-slate-700">이동 간격 \(\Delta x\): <span id="val-dx" class="text-blue-600 font-bold">1.50</span></label>
-                            <span class="text-xs text-slate-500">고정점 P(1, 2)</span>
+                            <span class="text-xs text-slate-500">고정점 \(P(1, 2)\), 접선 기울기 \(f'(1) = 1.00\)</span>
                         </div>
                         <input id="slider-dx" type="range" min="0.02" max="2.00" step="0.02" value="1.50" class="w-full accent-blue-600 cursor-pointer">
                     </div>
-                    <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                        <div class="text-slate-500 text-xs">현재 할선 기울기 vs 접선 기울기</div>
-                        <div id="stat-secant-slope" class="text-sm font-bold text-slate-800">할선: 2.75 / 접선: 2.00</div>
+
+                    <!-- 3개 수렴 측정 카드 (외부 패널) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center text-xs md:text-sm">
+                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-slate-500 text-xs mb-1 font-medium">할선 \(PQ\)의 기울기</div>
+                            <div id="stat-sec-slope-val" class="text-base font-bold text-blue-700">1.75</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-slate-500 text-xs mb-1 font-medium">점 \(P\)에서의 접선 기울기</div>
+                            <div class="text-base font-bold text-emerald-700">1.00 (일정)</div>
+                        </div>
+                        <div class="bg-indigo-50/60 p-3.5 rounded-xl border border-indigo-200 shadow-sm">
+                            <div class="text-indigo-900 text-xs mb-1 font-bold">기울기 오차 \(|\text{할선} - \text{접선}|\)</div>
+                            <div id="stat-sec-err" class="text-base font-extrabold text-indigo-700">0.75</div>
+                        </div>
+                    </div>
+
+                    <div id="stat-secant-slope" class="p-3 bg-purple-50 rounded-xl border border-purple-200 text-xs md:text-sm text-purple-900 font-semibold flex items-center justify-between">
+                        <span>수렴 상태: 이동점 \(Q\)가 고정점 \(P\)로 점진적 접근 중</span>
+                        <span class="text-xs font-normal text-purple-700">\(\Delta x \to 0 \implies \text{할선} \to \text{접선}\)</span>
                     </div>
                 </div>
             </div>
@@ -1027,7 +1091,7 @@
                 </div>
 
                 <p class="text-slate-700 text-sm md:text-base leading-relaxed">
-                    다음 그림은 모든 실수에서 미분가능하며 위로 볼록한 함수 \(y=f(x)\)의 그래프와 그 위의 두 점 \(A(a, f(a))\), \(B(b, f(b))\)를 나타낸 것입니다 (단, \(a &lt; b\)).
+                    다음 그림은 모든 실수에서 미분가능하며 위로 볼록한 함수 \(y=f(x)\)의 그래프와 그 위의 두 점 \(A(a, f(a))\), \(B(b, f(b))\)를 나타낸 것입니다 (단, \(a < b\)).
                 </p>
 
                 <!-- 발문 탐구 1, 2 -->
@@ -1058,32 +1122,68 @@
                         <span class="text-xs font-bold text-slate-700">SIMULATOR 4: 위로 볼록 곡선 세 기울기 실시간 측정기</span>
                         <span class="text-xs text-slate-500">두 점 A, B의 위치를 슬라이더로 옮겨보세요</span>
                     </div>
-                    <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
-                        <canvas id="concave-compare-canvas" width="800" height="320" class="w-full h-full block"></canvas>
-                    </div>
+                    <div class="max-w-2xl mx-auto space-y-3">
+     <div class="relative w-full h-64 sm:h-72 bg-slate-50/50 rounded-2xl border border-slate-200 shadow-inner flex items-center justify-center overflow-hidden">
+       <canvas id="concave-compare-canvas" width="600" height="320" class="w-full h-full block"></canvas>
+     </div>
+   </div>
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs md:text-sm">
                         <div>
-                            <label class="block font-semibold text-slate-700 mb-1">점 A의 위치 \(a\): <span id="val-ca" class="text-blue-600 font-bold">1.0</span></label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block font-semibold text-slate-700">점 A의 위치 \(a\): <span id="val-ca" class="text-blue-600 font-bold">1.0</span></label>
+                                <span class="text-xs text-slate-400">\(a < b\) 유지</span>
+                            </div>
                             <input id="slider-ca" type="range" min="0.5" max="2.5" step="0.1" value="1.0" class="w-full accent-blue-600 cursor-pointer">
                         </div>
                         <div>
-                            <label class="block font-semibold text-slate-700 mb-1">점 B의 위치 \(b\): <span id="val-cb" class="text-red-600 font-bold">3.5</span></label>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block font-semibold text-slate-700">점 B의 위치 \(b\): <span id="val-cb" class="text-red-600 font-bold">3.5</span></label>
+                                <span class="text-xs text-slate-400">\(b > a\)</span>
+                            </div>
                             <input id="slider-cb" type="range" min="2.6" max="5.0" step="0.1" value="3.5" class="w-full accent-red-600 cursor-pointer">
                         </div>
                     </div>
+
+                    <!-- 실시간 3개 기울기 대소 비교 패널 (외부 HTML 카드) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center text-xs md:text-sm">
+                        <div class="bg-white p-3.5 rounded-xl border border-blue-200 shadow-sm">
+                            <div class="text-blue-800 text-xs mb-1 font-bold">① 점 A 접선 기울기</div>
+                            <div id="stat-slope-a" class="text-base font-extrabold text-blue-600">f'(a) = 0.90</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-purple-200 shadow-sm">
+                            <div class="text-purple-800 text-xs mb-1 font-bold">② 할선 AB 기울기</div>
+                            <div id="stat-slope-sec" class="text-base font-extrabold text-purple-600">할선 = 0.53</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-rose-200 shadow-sm">
+                            <div class="text-rose-800 text-xs mb-1 font-bold">③ 점 B 접선 기울기</div>
+                            <div id="stat-slope-b" class="text-base font-extrabold text-rose-600">f'(b) = 0.15</div>
+                        </div>
+                    </div>
+
+                    <!-- 실시간 부등식 증명 배너 -->
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 flex flex-wrap items-center justify-between gap-2 text-xs md:text-sm font-bold text-amber-950">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-amber-600"></i>
+                            <span>실시간 대소 관계:</span>
+                            <span class="text-blue-700">f'(a)</span> &gt;
+                            <span class="text-purple-700">\(\frac{f(b)-f(a)}{b-a}\)</span> &gt;
+                            <span class="text-rose-700">f'(b)</span>
+                        </div>
+                        <span class="text-xs font-normal text-amber-800 bg-amber-100 px-2 py-0.5 rounded">위로 볼록(\(\cap\)) 곡선의 고유 성질</span>
+                    </div>v>
                 </div>
 
                 <!-- 엄밀한 대소 비교 증명 박스 -->
                 <div class="p-5 bg-gradient-to-r from-amber-50 to-white rounded-xl border-2 border-amber-300 space-y-2 text-sm">
                     <div class="font-bold text-amber-900 text-base">✨ 기하학적 대소 결론 (위로 볼록 곡선)</div>
                     <p class="text-slate-700 leading-relaxed">
-                        위로 볼록한 곡선에서는 \(x\)가 증가할수록 곡선의 접선 기울기가 계속 감소합니다. 따라서 \(a &lt; b\)일 때 점 \(A\)에서의 접선 기울기가 가장 가파르고, 그 다음이 두 점을 잇는 할선, 점 \(B\)에서의 접선 기울기가 가장 완만합니다:
+                        위로 볼록한 곡선에서는 \(x\)가 증가할수록 곡선의 접선 기울기가 계속 감소합니다. 따라서 \(a < b\)일 때 점 \(A\)에서의 접선 기울기가 가장 가파르고, 그 다음이 두 점을 잇는 할선, 점 \(B\)에서의 접선 기울기가 가장 완만합니다:
                     </p>
                     <div class="p-3 bg-white rounded-lg border border-amber-200 font-extrabold text-center text-amber-900 text-base md:text-lg">
                         \(f'(a) > \frac{f(b) - f(a)}{b - a} > f'(b)\)
                     </div>
                     <p class="text-xs text-slate-500">
-                        💡 팁: 아래로 볼록한 곡선에서는 반대로 \(f'(a) &lt; \frac{f(b)-f(a)}{b-a} &lt; f'(b)\)가 성립합니다.
+                        💡 팁: 아래로 볼록한 곡선에서는 반대로 \(f'(a) < \frac{f(b)-f(a)}{b-a} < f'(b)\)가 성립합니다.
                     </p>
                 </div>
             </div>
@@ -1121,38 +1221,6 @@
                 </div>
             </div>
 
-            <!-- 문제 4: 접선의 기울기 구하기 (교과서 57쪽) + 스크래치패드 + 즉시 채점기 -->
-            <div id="sec-10-prob4" class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 4</span>
-                        <h3 class="text-lg font-bold text-slate-900">곡선 위의 점에서의 접선의 기울기</h3>
-                    </div>
-                    <span class="text-xs text-slate-500">교과서 57쪽</span>
-                </div>
-
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 text-sm md:text-base font-medium">
-                    다음 곡선 위의 주어진 점에서의 접선의 기울기를 구하시오.
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-200 text-sm">
-                        <div>⑴ \(y = 3x^2 + 4x\) 위의 점 \((-1, -1)\)</div>
-                        <div>⑵ \(y = -x^3\) 위의 점 \((2, -8)\)</div>
-                    </div>
-                </div>
-
-                <!-- 전자 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            접선의 기울기 계산 연습장
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-prob4')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
-                    </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-prob4" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
-                </div>
-
                 <!-- 즉시 인터랙티브 채점 시스템 -->
                 <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
                     <h5 class="font-bold text-xs uppercase tracking-wider text-slate-600">즉시 정답 확인 & 자동 채점</h5>
@@ -1162,7 +1230,7 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑴ 답안 입력 (정수):</label>
                             <div class="flex gap-2">
-                                <input id="ans-p4-1" type="text" placeholder="예: -2" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <input id="ans-p4-1" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <button type="button" onclick="checkProb4_1()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
                             </div>
                             <div id="res-p4-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -1172,7 +1240,7 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑵ 답안 입력 (정수):</label>
                             <div class="flex gap-2">
-                                <input id="ans-p4-2" type="text" placeholder="예: -12" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <input id="ans-p4-2" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <button type="button" onclick="checkProb4_2()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">확인</button>
                             </div>
                             <div id="res-p4-2" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -1185,7 +1253,7 @@
                             <span>상세 풀이 과정 보기</span>
                             <span id="sol-p4-arrow">▼</span>
                         </button>
-                        <div id="sol-p4" class="hidden mt-3 p-4 bg-white rounded-xl border border-emerald-200 text-xs md:text-sm text-slate-700 space-y-3">
+                        <div id="sol-p4" class="solution-box hidden mt-3 p-4 bg-white rounded-xl border border-emerald-200 text-xs md:text-sm text-slate-700 space-y-3">
                             <div>
                                 <strong>⑴ 풀이:</strong> \(f(x) = 3x^2 + 4x\)라 하면 \((-1, -1)\)에서의 접선 기울기는 \(f'(-1)\)입니다:<br>
                                 \(f'(-1) = \lim_{x \to -1} \frac{(3x^2+4x) - (-1)}{x - (-1)} = \lim_{x \to -1} \frac{3x^2+4x+1}{x+1} = \lim_{x \to -1} \frac{(x+1)(3x+1)}{x+1} = 3(-1)+1 = \mathbf{-2}\)
@@ -1197,14 +1265,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
         </section>
     
         <!-- ===================================================================
              [11차시 전반] 스스로 확인하기 (교과서 58쪽 전 문항)
              =================================================================== -->
-        <section id="sec-11-selfcheck" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+        <section id="sec-11-selfcheck" class="p-6 md:p-10 w-full space-y-8">
             
             <!-- 11차시 배너 -->
             <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 relative overflow-hidden">
@@ -1248,15 +1315,15 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
                             <div>
                                 <label class="block text-slate-600 font-medium mb-1">【가】 빈칸:</label>
-                                <input id="blank-1-1" type="text" placeholder="예: a" class="w-full px-3 py-1.5 rounded border border-slate-300">
+                                <input id="blank-1-1" type="text" placeholder="" class="w-full px-3 py-1.5 rounded border border-slate-300">
                             </div>
                             <div>
                                 <label class="block text-slate-600 font-medium mb-1">【나】 빈칸:</label>
-                                <input id="blank-1-2" type="text" placeholder="예: b" class="w-full px-3 py-1.5 rounded border border-slate-300">
+                                <input id="blank-1-2" type="text" placeholder="" class="w-full px-3 py-1.5 rounded border border-slate-300">
                             </div>
                             <div>
                                 <label class="block text-slate-600 font-medium mb-1">【다】 빈칸:</label>
-                                <input id="blank-1-3" type="text" placeholder="예: Δx 또는 dx" class="w-full px-3 py-1.5 rounded border border-slate-300">
+                                <input id="blank-1-3" type="text" placeholder="" class="w-full px-3 py-1.5 rounded border border-slate-300">
                             </div>
                         </div>
                     </div>
@@ -1264,7 +1331,7 @@
                     <!-- 소문항 2 -->
                     <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-3 text-sm">
                         <div class="font-bold text-slate-900">
-                            ⑵ 함수 \(y=f(x)\)가 \(x=a\)에서 미분가능할 때, \(x=a\)에서의 미분계수 \(f'(a)\)는 곡선 \(y=f(x)\) 위의 점 \((a, f(a))\)에서의 접선의 <input id="blank-1-4" type="text" placeholder="용어 입력" class="inline-block px-2 py-1 text-xs w-28 rounded border border-slate-300">과/와 같고
+                            ⑵ 함수 \(y=f(x)\)가 \(x=a\)에서 미분가능할 때, \(x=a\)에서의 미분계수 \(f'(a)\)는 곡선 \(y=f(x)\) 위의 점 \((a, f(a))\)에서의 접선의 <input id="blank-1-4" type="text" placeholder="" class="inline-block px-2 py-1 text-xs w-28 rounded border border-slate-300">과/와 같고
                         </div>
                         <div class="p-4 bg-white rounded-lg border border-slate-200 overflow-x-auto text-center font-semibold text-slate-800">
                             \(f'(a) = \lim_{\Delta x \to 0} \frac{f(a + \Delta x) - f(a)}{\Delta x} = \lim_{x \to \fbox{\text{라}}} \frac{f(x) - \fbox{\text{마}}}{x - a}\)
@@ -1272,11 +1339,11 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
                             <div>
                                 <label class="block text-slate-600 font-medium mb-1">【라】 극한 목표점:</label>
-                                <input id="blank-1-5" type="text" placeholder="예: a" class="w-full px-3 py-1.5 rounded border border-slate-300">
+                                <input id="blank-1-5" type="text" placeholder="" class="w-full px-3 py-1.5 rounded border border-slate-300">
                             </div>
                             <div>
                                 <label class="block text-slate-600 font-medium mb-1">【마】 함수값:</label>
-                                <input id="blank-1-6" type="text" placeholder="예: f(a)" class="w-full px-3 py-1.5 rounded border border-slate-300">
+                                <input id="blank-1-6" type="text" placeholder="" class="w-full px-3 py-1.5 rounded border border-slate-300">
                             </div>
                         </div>
                     </div>
@@ -1306,27 +1373,13 @@
                     </div>
                 </div>
 
-                <!-- 전자 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            풀이 연습장
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-self02')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
-                    </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-self02" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
-                </div>
-
                 <!-- 채점 인터페이스 -->
                 <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑴ 답안 입력 (숫자):</label>
                             <div class="flex gap-2">
-                                <input id="ans-s2-1" type="text" placeholder="예: 1" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
+                                <input id="ans-s2-1" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
                                 <button type="button" onclick="checkSelf02_1()" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">확인</button>
                             </div>
                             <div id="res-s2-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -1338,7 +1391,7 @@
                                 <span>정답 및 전개 과정 확인</span>
                                 <span id="sol-s2-2-arrow">▼</span>
                             </button>
-                            <div id="sol-s2-2" class="hidden p-3 bg-white rounded-lg border border-slate-300 text-xs text-slate-700 mt-2 space-y-1">
+                            <div id="sol-s2-2" class="solution-box hidden p-3 bg-white rounded-lg border border-slate-300 text-xs text-slate-700 mt-2 space-y-1">
                                 <div><strong>정답:</strong> \(-1 - \Delta x\) (또는 \(-\Delta x - 1\))</div>
                                 <div class="text-slate-600 leading-relaxed">
                                     \(f(1) = 1\), \(f(1+\Delta x) = -(1+\Delta x)^2 + (1+\Delta x) + 1 = 1 - \Delta x - (\Delta x)^2\)<br>
@@ -1368,27 +1421,13 @@
                     </div>
                 </div>
 
-                <!-- 전자 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            정의 적용 연습장
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-self03')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
-                    </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-self03" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
-                </div>
-
                 <!-- 채점 인터페이스 -->
                 <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑴ 답안 입력 (숫자):</label>
                             <div class="flex gap-2">
-                                <input id="ans-s3-1" type="text" placeholder="예: 4" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
+                                <input id="ans-s3-1" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
                                 <button type="button" onclick="checkSelf03_1()" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">확인</button>
                             </div>
                             <div id="res-s3-1" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -1397,7 +1436,7 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑵ 답안 입력 (숫자):</label>
                             <div class="flex gap-2">
-                                <input id="ans-s3-2" type="text" placeholder="예: 2" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
+                                <input id="ans-s3-2" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
                                 <button type="button" onclick="checkSelf03_2()" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">확인</button>
                             </div>
                             <div id="res-s3-2" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -1409,7 +1448,7 @@
                             <span>정의 기반 극한 풀이 보기</span>
                             <span id="sol-s3-arrow">▼</span>
                         </button>
-                        <div id="sol-s3" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
+                        <div id="sol-s3" class="solution-box hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
                             <div>⑴ \(f'(2) = \lim_{x \to 2} \frac{(4x+9) - 17}{x - 2} = \lim_{x \to 2} \frac{4(x-2)}{x-2} = \mathbf{4}\)</div>
                             <div>⑵ \(f'(2) = \lim_{x \to 2} \frac{(x^2-2x) - 0}{x - 2} = \lim_{x \to 2} \frac{x(x-2)}{x-2} = \lim_{x \to 2} x = \mathbf{2}\)</div>
                         </div>
@@ -1431,30 +1470,16 @@
                     곡선 \(y = 2x^2 + ax + b\) 위의 점 \((1, 6)\)에서의 접선의 기울기가 \(7\)일 때, 상수 \(a, b\)의 값을 구하시오.
                 </div>
 
-                <!-- 전자 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            연립방정식 전개 연습장
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-self04')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
-                    </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-self04" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
-                </div>
-
                 <!-- 채점 인터페이스 -->
                 <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
                     <div class="flex flex-wrap items-center gap-4">
                         <div class="space-y-1">
                             <label class="text-xs font-semibold text-slate-700">\(a\)의 값:</label>
-                            <input id="ans-s4-a" type="text" placeholder="예: 3" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-28">
+                            <input id="ans-s4-a" type="text" placeholder="" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-28">
                         </div>
                         <div class="space-y-1">
                             <label class="text-xs font-semibold text-slate-700">\(b\)의 값:</label>
-                            <input id="ans-s4-b" type="text" placeholder="예: 1" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-28">
+                            <input id="ans-s4-b" type="text" placeholder="" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-28">
                         </div>
                         <div class="pt-5">
                             <button type="button" onclick="checkSelf04()" class="px-5 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
@@ -1467,7 +1492,7 @@
                             <span>상세 풀이 해설 보기</span>
                             <span id="sol-s4-arrow">▼</span>
                         </button>
-                        <div id="sol-s4" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
+                        <div id="sol-s4" class="solution-box hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
                             <p><strong>조건 1 (곡선 위의 점):</strong> 점 \((1, 6)\)을 지나므로 \(2(1)^2 + a(1) + b = 6 \implies a + b = 4\) ⋯ ㉠</p>
                             <p><strong>조건 2 (접선 기울기):</strong> \(x=1\)에서의 미분계수가 7이므로:<br>
                             \(f'(1) = \lim_{x \to 1} \frac{(2x^2+ax+b) - 6}{x - 1}\)<br>
@@ -1493,26 +1518,12 @@
                     다항함수 \(f(x)\)에 대하여 \(f(0) = 2\)이고 \(x\)의 값이 \(0\)에서 \(a\)까지 변할 때의 평균변화율이 \(a + 3\)일 때, \(x=1\)에서의 순간변화율을 구하시오. (단, \(a > 0\))
                 </div>
 
-                <!-- 전자 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            식 유도 및 극한 계산
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-self05')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
-                    </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-self05" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
-                </div>
-
                 <!-- 채점 인터페이스 -->
                 <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-4">
                     <div class="flex items-center gap-3">
                         <div class="space-y-1">
                             <label class="text-xs font-semibold text-slate-700">순간변화율 \(f'(1)\) 답안 입력:</label>
-                            <input id="ans-s5" type="text" placeholder="예: 5" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36">
+                            <input id="ans-s5" type="text" placeholder="" class="px-3 py-2 text-sm rounded-lg border border-slate-300 w-36">
                         </div>
                         <div class="pt-5">
                             <button type="button" onclick="checkSelf05()" class="px-5 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold hover:bg-slate-700 transition">정답 확인</button>
@@ -1525,7 +1536,7 @@
                             <span>상세 풀이 과정 보기</span>
                             <span id="sol-s5-arrow">▼</span>
                         </button>
-                        <div id="sol-s5" class="hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
+                        <div id="sol-s5" class="solution-box hidden mt-3 p-4 bg-white rounded-xl border border-slate-300 text-xs md:text-sm text-slate-700 space-y-2">
                             <p>\(0\)에서 \(a\)까지의 평균변화율은 \(\frac{f(a) - f(0)}{a - 0} = a + 3\)입니다.<br>
                             \(f(0) = 2\)이므로 \(\frac{f(a) - 2}{a} = a + 3 \implies f(a) - 2 = a^2 + 3a \implies f(a) = a^2 + 3a + 2\)입니다.</p>
                             <p>모든 양수 \(a\)에 대해 성립하므로 함수식은 \(f(x) = x^2 + 3x + 2\)입니다.<br>
@@ -1570,33 +1581,40 @@
                         <span class="text-xs font-bold text-slate-700">SIMULATOR 6: 혈관 단면 유속 포물선 및 전단율(Shear Rate) 시각화</span>
                         <span class="text-xs text-slate-500">거리 r을 조절하여 유속과 속도 변화율을 관찰하세요</span>
                     </div>
-                    <div class="relative w-full h-[320px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
-                        <canvas id="poiseuille-canvas" width="800" height="320" class="w-full h-full block"></canvas>
-                    </div>
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
-                        <div class="sm:col-span-2">
-                            <label class="block font-semibold text-slate-700 mb-1">중심축으로부터의 거리 \(r\): <span id="val-pr" class="text-rose-600 font-bold">0.010 cm</span></label>
-                            <input id="slider-pr" type="range" min="0" max="0.100" step="0.005" value="0.010" class="w-full accent-rose-600 cursor-pointer">
+                    <div class="max-w-2xl mx-auto space-y-3">
+     <div class="relative w-full h-64 sm:h-72 bg-slate-50/50 rounded-2xl border border-slate-200 shadow-inner flex items-center justify-center overflow-hidden">
+       <canvas id="poiseuille-canvas" width="600" height="320" class="w-full h-full block"></canvas>
+     </div>
+   </div>
+                    <div class="space-y-3">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs md:text-sm">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block font-semibold text-slate-700">중심축으로부터의 거리 \(r\): <span id="val-pr" class="text-rose-600 font-bold">0.010 cm</span></label>
+                            <span class="text-xs text-slate-400">동맥 반경 \(R = 0.1\,\text{cm}\)</span>
                         </div>
-                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                            <div class="text-slate-500 text-xs">순간속도 변화율 \(v'(r)\)</div>
+                        <input id="slider-pr" type="range" min="0" max="0.100" step="0.005" value="0.010" class="w-full accent-rose-600 cursor-pointer">
+                    </div>
+
+                    <!-- 실시간 혈류 물리량 3대 카드 -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center text-xs md:text-sm">
+                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-slate-500 text-xs mb-1 font-medium">관측 위치 비율 \(r / R\)</div>
+                            <div id="stat-poiseuille-ratio" class="text-base font-bold text-slate-700">10.0 % (중심 부근)</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="text-slate-500 text-xs mb-1 font-medium">혈류 속도 \(v(r)\)</div>
+                            <div id="stat-poiseuille-vel" class="text-base font-bold text-blue-700">99.0 cm/s</div>
+                        </div>
+                        <div class="bg-rose-50/70 p-3.5 rounded-xl border border-rose-200 shadow-sm">
+                            <div class="text-rose-900 text-xs mb-1 font-bold">순간속도 변화율 \(v'(r)\) (전단율)</div>
                             <div id="stat-shear-rate" class="text-base font-extrabold text-rose-700">-200 cm/s/cm</div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 전자 스크래치패드 -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            푸아죄유 수식 유도 연습장
-                        </span>
-                        <button type="button" onclick="clearScratchpad('sp-self06')" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">지우기 ↺</button>
+                    <div class="px-4 py-2 bg-slate-100 rounded-lg text-xs text-slate-600 flex items-center justify-between">
+                        <span><strong>의학적 의의:</strong> 중심축(\(\mathbf{r=0}\))에서 속도 최고, 변화율 \(0\)이며, 혈관 벽(\(\mathbf{r=0.1}\))에 닿을수록 마찰로 인해 속도가 급감하고 변화율의 크기(전단율)가 최대가 됩니다.</span>
                     </div>
-                    <div class="relative w-full h-40 bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner">
-                        <canvas id="sp-self06" class="scratchpad-canvas w-full h-full block cursor-crosshair"></canvas>
-                    </div>
+                </div>v>
                 </div>
 
                 <!-- 채점 인터페이스 -->
@@ -1605,7 +1623,7 @@
                         <div class="space-y-1.5">
                             <label class="text-xs font-semibold text-slate-700">⑵ 순간변화율 \(v'(0.01)\) 답안 입력 (정수):</label>
                             <div class="flex gap-2">
-                                <input id="ans-s6-2" type="text" placeholder="예: -200" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
+                                <input id="ans-s6-2" type="text" placeholder="" class="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300">
                                 <button type="button" onclick="checkSelf06_2()" class="px-4 py-2 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition">확인</button>
                             </div>
                             <div id="res-s6-2" class="text-xs font-semibold min-h-[1.25rem]"></div>
@@ -1620,7 +1638,7 @@
                         </div>
                     </div>
 
-                    <div id="sol-s6" class="hidden mt-3 p-4 bg-white rounded-xl border border-rose-200 text-xs md:text-sm text-slate-700 space-y-2">
+                    <div id="sol-s6" class="solution-box hidden mt-3 p-4 bg-white rounded-xl border border-rose-200 text-xs md:text-sm text-slate-700 space-y-2">
                         <p class="leading-relaxed">
                             \(v(r) = 10000(0.1^2 - r^2) = 10000(0.01 - r^2) = 100 - 10000r^2\)<br>
                             \(v(0.01) = 100 - 10000(0.0001) = 99\)<br>
@@ -1640,7 +1658,7 @@
         <!-- ===================================================================
              [11차시 후반] 공학 도구 탐구 (교과서 59쪽)
              =================================================================== -->
-        <section id="sec-11-tool" class="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
+        <section id="sec-11-tool" class="p-6 md:p-10 w-full space-y-8">
             
             <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-200 space-y-6">
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
@@ -1676,9 +1694,11 @@
                         </div>
                     </div>
 
-                    <div class="relative w-full h-[360px] bg-white rounded-xl border border-slate-300 overflow-hidden shadow-inner flex items-center justify-center">
-                        <canvas id="local-linear-canvas" width="800" height="360" class="w-full h-full block"></canvas>
-                    </div>
+                    <div class="max-w-2xl mx-auto space-y-3">
+     <div class="relative w-full h-64 sm:h-72 bg-slate-50/50 rounded-2xl border border-slate-200 shadow-inner flex items-center justify-center overflow-hidden">
+       <canvas id="local-linear-canvas" width="600" height="320" class="w-full h-full block"></canvas>
+     </div>
+   </div>
 
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center text-xs md:text-sm">
                         <div class="sm:col-span-2">
@@ -1752,51 +1772,312 @@
 
         </section>
 
+        </div>
     </main>
-</div>
 
-<!-- ===================================================================
-     스크립트 엔진 (KaTeX, 전자칠판, 스크래치패드, 채점, 6대 캔버스 시뮬레이터)
-     =================================================================== -->
+    <!-- Core Interactive Scripts -->
+    
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    // 1. KaTeX 수식 자동 렌더링
-    if (window.renderMathInElement) {
-        renderMathInElement(document.body, {
-            delimiters: [
-                {left: "$$", right: "$$", display: true},
-                {left: "\\[", right: "\\]", display: true},
-                {left: "\\(", right: "\\)", display: false},
-                {left: "$", right: "$", display: false}
-            ],
-            throwOnError: false
+
+// =====================================================================
+// UNIFIED ELECTRONIC WHITEBOARD ENGINE (Scroll-Synchronized Overlay)
+// =====================================================================
+let wbActive = false;
+let wbTool = 'pen';
+let wbColor = '#ef4444';
+let wbStrokes = [];
+let wbCurrentStroke = null;
+let wbDrawing = false;
+
+function initWhiteboard() {
+    const canvas = document.getElementById('wb-canvas');
+    if (!canvas) return;
+    syncWhiteboardHeight();
+
+    if (window.ResizeObserver) {
+        const ro = new window.ResizeObserver(() => {
+            syncWhiteboardHeight();
         });
+        ro.observe(document.body);
     }
 
-    // 2. 전자칠판 엔진 초기화
-    initWhiteboardEngine();
+    function getDocPt(e) {
+        const touch = e.touches && e.touches[0] ? e.touches[0] : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0] : e);
+        return {
+            x: touch.clientX + window.scrollX,
+            y: touch.clientY + window.scrollY
+        };
+    }
 
-    // 3. 개별 스크래치패드 엔진 초기화
-    initScratchpads();
+    function startDraw(e) {
+        if (!wbActive || wbTool === 'pointer') return;
+        if (e.button !== undefined && e.button !== 0) return;
+        wbDrawing = true;
+        const pt = getDocPt(e);
+        const sizeInput = document.getElementById('wb-size');
+        const size = sizeInput ? parseFloat(sizeInput.value) : 3;
 
-    // 4. 6대 캔버스 인터랙티브 시뮬레이터 초기화
-    initAvgRateSim();       // Widget 2 (모래 온도 변화율)
-    initDiffStructSim();    // Widget 3 (구조 변형 계수 매칭)
-    initSecantSim();        // Widget 1 (할선 -> 접선 수렴)
-    initConcaveSim();       // Widget 4 (위로 볼록 3선 비교)
-    initPoiseuilleSim();    // Widget 6 (푸아죄유 혈류 속도 & 전단율)
-    initLocalLinearSim();   // Widget 5 (국소적 선형성 돋보기)
+        wbCurrentStroke = {
+            tool: wbTool,
+            color: wbColor,
+            size: size,
+            points: [pt]
+        };
+        wbStrokes.push(wbCurrentStroke);
+        redrawWhiteboard();
+    }
 
-    // 5. 스크롤스파이 및 프로그레스 바
-    initScrollSpy();
+    function moveDraw(e) {
+        if (!wbDrawing || !wbActive || wbTool === 'pointer' || !wbCurrentStroke) return;
+        e.preventDefault();
+        const pt = getDocPt(e);
+        wbCurrentStroke.points.push(pt);
+        drawStrokeSegment(wbCurrentStroke);
+    }
 
-    // 6. 성찰 메모 로컬스토리지 연동
-    initReflectionMemo();
+    function endDraw() {
+        if (!wbDrawing) return;
+        wbDrawing = false;
+        wbCurrentStroke = null;
+        redrawWhiteboard();
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    window.addEventListener('mousemove', moveDraw, { passive: false });
+    window.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', moveDraw, { passive: false });
+    window.addEventListener('touchend', endDraw);
+}
+
+function applyStrokeStyle(ctx, stroke) {
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    if (stroke.tool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = stroke.size * 5;
+        ctx.strokeStyle = 'rgba(0,0,0,1)';
+    } else if (stroke.tool === 'highlighter') {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.lineWidth = stroke.size * 3.5;
+        ctx.strokeStyle = stroke.color + '44';
+    } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.lineWidth = stroke.size;
+        ctx.strokeStyle = stroke.color;
+    }
+}
+
+function drawStrokeSegment(stroke) {
+    const canvas = document.getElementById('wb-canvas');
+    if (!canvas || !stroke.points || stroke.points.length < 2) return;
+    const ctx = canvas.getContext('2d');
+    const pts = stroke.points;
+    const len = pts.length;
+
+    if (len === 2) {
+        ctx.save();
+        applyStrokeStyle(ctx, stroke);
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        ctx.lineTo(pts[1].x, pts[1].y);
+        ctx.stroke();
+        ctx.restore();
+        return;
+    }
+
+    const pPrev = pts[len - 3];
+    const pMidPrev = { x: (pPrev.x + pts[len - 2].x) / 2, y: (pPrev.y + pts[len - 2].y) / 2 };
+    const pMidCurr = { x: (pts[len - 2].x + pts[len - 1].x) / 2, y: (pts[len - 2].y + pts[len - 1].y) / 2 };
+
+    ctx.save();
+    applyStrokeStyle(ctx, stroke);
+    ctx.beginPath();
+    ctx.moveTo(pMidPrev.x, pMidPrev.y);
+    ctx.quadraticCurveTo(pts[len - 2].x, pts[len - 2].y, pMidCurr.x, pMidCurr.y);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function drawSmoothStroke(ctx, st) {
+    const pts = st.points;
+    if (!pts || pts.length === 0) return;
+    ctx.save();
+    applyStrokeStyle(ctx, st);
+
+    if (pts.length === 1) {
+        ctx.beginPath();
+        ctx.arc(pts[0].x, pts[0].y, st.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        return;
+    }
+
+    if (pts.length === 2) {
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        ctx.lineTo(pts[1].x, pts[1].y);
+        ctx.stroke();
+        ctx.restore();
+        return;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length - 1; i++) {
+        const mid = {
+            x: (pts[i].x + pts[i + 1].x) / 2,
+            y: (pts[i].y + pts[i + 1].y) / 2
+        };
+        ctx.quadraticCurveTo(pts[i].x, pts[i].y, mid.x, mid.y);
+    }
+    const last = pts[pts.length - 1];
+    ctx.lineTo(last.x, last.y);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function redrawWhiteboard() {
+    const canvas = document.getElementById('wb-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const stroke of wbStrokes) {
+        drawSmoothStroke(ctx, stroke);
+    }
+}
+
+function syncWhiteboardHeight() {
+    const canvas = document.getElementById('wb-canvas');
+    if (!canvas) return;
+    const docWidth = document.documentElement.clientWidth || window.innerWidth || 1200;
+    const docHeight = Math.max(
+        document.body ? document.body.scrollHeight : 0,
+        document.documentElement ? document.documentElement.scrollHeight : 0,
+        window.innerHeight || 0
+    );
+    if (canvas.width !== docWidth || Math.abs(canvas.height - docHeight) > 4) {
+        canvas.width = docWidth;
+        canvas.height = docHeight;
+        redrawWhiteboard();
+    }
+}
+
+function toggleWhiteboard() {
+    wbActive = !wbActive;
+    const toolbar = document.getElementById('wb-toolbar');
+    const canvas = document.getElementById('wb-canvas');
+    const sidebarBtn = document.getElementById('sidebar-wb-btn');
+    if (wbActive) {
+        syncWhiteboardHeight();
+        if (toolbar) toolbar.classList.remove('hidden');
+        if (canvas) canvas.classList.add('wb-drawing-active');
+        setWbTool('pen');
+        if (sidebarBtn) {
+            sidebarBtn.classList.remove('from-indigo-600', 'to-sky-600');
+            sidebarBtn.classList.add('from-emerald-600', 'to-teal-600');
+        }
+    } else {
+        if (toolbar) toolbar.classList.add('hidden');
+        if (canvas) canvas.classList.remove('wb-drawing-active');
+        if (sidebarBtn) {
+            sidebarBtn.classList.remove('from-emerald-600', 'to-teal-600');
+            sidebarBtn.classList.add('from-indigo-600', 'to-sky-600');
+        }
+    }
+}
+
+function setWbTool(tool) {
+    wbTool = tool;
+    const canvas = document.getElementById('wb-canvas');
+    document.querySelectorAll('.wb-tool-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.getElementById('wb-btn-' + tool);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    if (canvas) {
+        if (tool === 'pointer') {
+            canvas.classList.remove('wb-drawing-active');
+        } else {
+            canvas.classList.add('wb-drawing-active');
+        }
+    }
+}
+
+function setWbColor(hex, btnEl) {
+    wbColor = hex;
+    document.querySelectorAll('.wb-color-btn').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    if (wbTool === 'pointer' || wbTool === 'eraser') setWbTool('pen');
+}
+
+function undoWb() {
+    if (wbStrokes.length === 0) return;
+    wbStrokes.pop();
+    redrawWhiteboard();
+}
+
+function clearWb() {
+    wbStrokes = [];
+    redrawWhiteboard();
+}
+
+function saveWbImage() {
+    const canvas = document.getElementById('wb-canvas');
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = '수업판서_' + new Date().toISOString().slice(0, 10) + '.png';
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+// Global Aliases for Compatibility
+window.toggleWhiteboard = toggleWhiteboard;
+window.setWbTool = setWbTool;
+window.setWbColor = setWbColor;
+window.clearWb = clearWb;
+window.clearWhiteboard = clearWb;
+window.undoWb = undoWb;
+window.undoWhiteboard = undoWb;
+window.downloadWhiteboard = saveWbImage;
+
+
+// =====================================================================
+// MAIN DOMContentLoaded INITIALIZER
+// =====================================================================
+document.addEventListener("DOMContentLoaded", function() {
+    try { initWhiteboard(); } catch(e) { console.error('initWhiteboard error:', e); }
+
+    // 1. KaTeX 수식 자동 렌더링
+    if (window.renderMathInElement) {
+        try {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "\\[", right: "\\]", display: true },
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "$", right: "$", display: false }
+                ],
+                throwOnError: false
+            });
+        } catch(e) { console.error('KaTeX error:', e); }
+    }
+
+    // 2. 6대 캔버스 인터랙티브 시뮬레이터 초기화
+    try { if (typeof initAvgRateSim === 'function') initAvgRateSim(); } catch(e){ console.error('initAvgRateSim error:', e); }
+    try { if (typeof initDiffStructSim === 'function') initDiffStructSim(); } catch(e){ console.error('initDiffStructSim error:', e); }
+    try { if (typeof initSecantSim === 'function') initSecantSim(); } catch(e){ console.error('initSecantSim error:', e); }
+    try { if (typeof initConcaveSim === 'function') initConcaveSim(); } catch(e){ console.error('initConcaveSim error:', e); }
+    try { if (typeof initPoiseuilleSim === 'function') initPoiseuilleSim(); } catch(e){ console.error('initPoiseuilleSim error:', e); }
+    try { if (typeof initLocalLinearSim === 'function') initLocalLinearSim(); } catch(e){ console.error('initLocalLinearSim error:', e); }
+
+    // 3. 스크롤스파이 및 프로그레스 바
+    try { if (typeof initScrollSpy === 'function') initScrollSpy(); } catch(e){ console.error('initScrollSpy error:', e); }
+
+    // 4. 성찰 메모 로컬스토리지 연동
+    try { if (typeof initReflectionMemo === 'function') initReflectionMemo(); } catch(e){ console.error('initReflectionMemo error:', e); }
 });
 
-/* =====================================================================
-   아코디언 토글 유틸리티
-   ===================================================================== */
 function toggleTeacherTip(id) {
     const el = document.getElementById(id);
     const arrow = document.getElementById(id + "-arrow");
@@ -1823,6 +2104,23 @@ function toggleSolution(id) {
     }
 }
 
+function toggleAllSolutions(show) {
+    document.querySelectorAll('.solution-box, [id^="sol-"]').forEach(box => {
+        if (box.id && box.id.endsWith('-arrow')) {
+            box.textContent = show ? '▲' : '▼';
+            return;
+        }
+        if (show) {
+            box.classList.remove('hidden');
+        } else {
+            box.classList.add('hidden');
+        }
+    });
+    document.querySelectorAll('[id$="-arrow"]').forEach(arrow => {
+        arrow.textContent = show ? '▲' : '▼';
+    });
+}
+
 /* =====================================================================
    즉시 채점 시스템
    ===================================================================== */
@@ -1830,7 +2128,7 @@ function checkProb1_1() {
     const val = document.getElementById("ans-p1-1").value.trim();
     const res = document.getElementById("res-p1-1");
     if (val === "6") {
-        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 (3(3)^2-2 - (3(-1)^2-2) = 25 - 1 = 24, 24/4 = 6)</span>";
+        res.innerHTML = "<i class='fa-solid fa-circle-check'></i> 정답입니다! (3(3)^2-2 - (3(-1)^2-2) = 24, 24/4 = 6)"; autoOpenSolutionForInput("ans-p1-1");
     } else {
         res.innerHTML = "<span class='text-rose-600 font-bold'>다시 시도해 보세요. (힌트: 4분의 24)</span>";
     }
@@ -1840,7 +2138,7 @@ function checkProb2() {
     const val = document.getElementById("ans-p2").value.replace(/,/g, "").trim();
     const res = document.getElementById("res-p2");
     if (val === "260000") {
-        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 (260,000원/장)</span>";
+        res.innerHTML = "<i class='fa-solid fa-circle-check'></i> 정답입니다! (260,000원/장)"; autoOpenSolutionForInput("ans-p2");
     } else {
         res.innerHTML = "<span class='text-rose-600 font-bold'>다시 확인해 보세요. (힌트: R(60)-R(50)=2,600,000)</span>";
     }
@@ -1850,7 +2148,7 @@ function checkProb3_1() {
     const val = document.getElementById("ans-p3-1").value.trim();
     const res = document.getElementById("res-p3-1");
     if (val === "2") {
-        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! 🎉 (일차함수의 기울기 2와 일치)</span>";
+        res.innerHTML = "<i class='fa-solid fa-circle-check'></i> 정답입니다! (일차함수의 기울기 2와 일치)"; autoOpenSolutionForInput("ans-p3-1");
     } else {
         res.innerHTML = "<span class='text-rose-600 font-bold'>다시 풀어보세요.</span>";
     }
@@ -1860,7 +2158,7 @@ function checkProb3_2() {
     const val = document.getElementById("ans-p3-2").value.trim();
     const res = document.getElementById("res-p3-2");
     if (val === "3") {
-        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! 🎉 (f'(-1) = 3)</span>";
+        res.innerHTML = "<i class='fa-solid fa-circle-check'></i> 정답입니다! (f'(-1) = 3)"; autoOpenSolutionForInput("ans-p3-2");
     } else {
         res.innerHTML = "<span class='text-rose-600 font-bold'>다시 풀어보세요.</span>";
     }
@@ -1870,7 +2168,7 @@ function checkProb4_1() {
     const val = document.getElementById("ans-p4-1").value.trim();
     const res = document.getElementById("res-p4-1");
     if (val === "-2") {
-        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! 🎉 (접선 기울기 -2)</span>";
+        res.innerHTML = "<i class='fa-solid fa-circle-check'></i> 정답입니다! (접선 기울기 -2)"; autoOpenSolutionForInput("ans-p4-1");
     } else {
         res.innerHTML = "<span class='text-rose-600 font-bold'>다시 계산해 보세요.</span>";
     }
@@ -1880,7 +2178,7 @@ function checkProb4_2() {
     const val = document.getElementById("ans-p4-2").value.trim();
     const res = document.getElementById("res-p4-2");
     if (val === "-12") {
-        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답! 🎉 (접선 기울기 -12)</span>";
+        res.innerHTML = "<i class='fa-solid fa-circle-check'></i> 정답입니다! (접선 기울기 -12)"; autoOpenSolutionForInput("ans-p4-2");
     } else {
         res.innerHTML = "<span class='text-rose-600 font-bold'>다시 계산해 보세요.</span>";
     }
@@ -1965,7 +2263,7 @@ function checkSelf06_2() {
     const val = document.getElementById("ans-s6-2").value.trim();
     const res = document.getElementById("res-s6-2");
     if (val === "-200") {
-        res.innerHTML = "<span class='text-emerald-600 font-bold'>정답입니다! 🎉 v'(0.01) = -200 cm/s/cm</span>";
+        res.innerHTML = "<i class='fa-solid fa-circle-check'></i> 정답입니다!"; autoOpenSolutionForInput("ans-s6-2");
     } else {
         res.innerHTML = "<span class='text-rose-600 font-bold'>다시 확인해 보세요. (음수 부호 확인)</span>";
     }
@@ -1974,238 +2272,17 @@ function checkSelf06_2() {
 /* =====================================================================
    풀화면 전자칠판(Whiteboard) 엔진
    ===================================================================== */
-let wbCanvas, wbCtx;
-let wbActive = false;
-let wbDrawing = false;
-let wbTool = "pen";
-let wbColor = "#ef4444";
-let wbSize = 3;
 
-function initWhiteboardEngine() {
-    wbCanvas = document.getElementById("wb-canvas");
-    if (!wbCanvas) return;
-    wbCtx = wbCanvas.getContext("2d");
 
-    function resizeWb() {
-        const dpr = window.devicePixelRatio || 1;
-        wbCanvas.width = window.innerWidth * dpr;
-        wbCanvas.height = window.innerHeight * dpr;
-        wbCanvas.style.width = window.innerWidth + "px";
-        wbCanvas.style.height = window.innerHeight + "px";
-        wbCtx.scale(dpr, dpr);
-    }
-    window.addEventListener("resize", resizeWb);
-    resizeWb();
 
-    wbCanvas.addEventListener("mousedown", startWbDraw);
-    wbCanvas.addEventListener("mousemove", drawWb);
-    window.addEventListener("mouseup", stopWbDraw);
 
-    wbCanvas.addEventListener("touchstart", function(e) {
-        if (!wbActive) return;
-        e.preventDefault();
-        const touch = e.touches[0];
-        startWbDraw({ clientX: touch.clientX, clientY: touch.clientY });
-    }, { passive: false });
 
-    wbCanvas.addEventListener("touchmove", function(e) {
-        if (!wbActive) return;
-        e.preventDefault();
-        const touch = e.touches[0];
-        drawWb({ clientX: touch.clientX, clientY: touch.clientY });
-    }, { passive: false });
 
-    window.addEventListener("touchend", stopWbDraw);
 
-    // 단축키 연동
-    window.addEventListener("keydown", function(e) {
-        if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-        if (e.key === "w" || e.key === "W") toggleWhiteboard();
-        if (e.key === "e" || e.key === "E") setWbTool("eraser");
-        if (e.key === "c" || e.key === "C") clearWhiteboard();
-        if (e.key === "Escape" && wbActive) toggleWhiteboard();
-    });
-}
 
-function toggleWhiteboard() {
-    wbActive = !wbActive;
-    const canvas = document.getElementById("wb-canvas");
-    const toolbar = document.getElementById("wb-toolbar");
-    const indicator = document.getElementById("wb-status-indicator");
-
-    if (wbActive) {
-        canvas.classList.remove("pointer-events-none");
-        canvas.classList.add("pointer-events-auto");
-        toolbar.classList.remove("hidden");
-        toolbar.classList.add("flex");
-        if (indicator) {
-            indicator.classList.remove("bg-slate-400");
-            indicator.classList.add("bg-emerald-500", "animate-pulse");
-        }
-    } else {
-        canvas.classList.add("pointer-events-none");
-        canvas.classList.remove("pointer-events-auto");
-        toolbar.classList.add("hidden");
-        toolbar.classList.remove("flex");
-        if (indicator) {
-            indicator.classList.add("bg-slate-400");
-            indicator.classList.remove("bg-emerald-500", "animate-pulse");
-        }
-    }
-}
-
-function setWbTool(tool) {
-    wbTool = tool;
-    document.querySelectorAll(".wb-tool-btn").forEach(btn => btn.classList.remove("border-blue-500", "bg-blue-50"));
-    const activeBtn = document.getElementById("wb-tool-" + tool);
-    if (activeBtn) activeBtn.classList.add("border-blue-500", "bg-blue-50");
-}
-
-function setWbColor(color, el) {
-    wbColor = color;
-    document.querySelectorAll(".wb-color-btn").forEach(btn => btn.classList.remove("ring-2", "ring-offset-2", "ring-slate-600"));
-    if (el) el.classList.add("ring-2", "ring-offset-2", "ring-slate-600");
-}
-
-function setWbSize(size, el) {
-    wbSize = parseInt(size);
-    document.querySelectorAll(".wb-size-btn").forEach(btn => btn.classList.remove("bg-blue-500", "text-white"));
-    if (el) el.classList.add("bg-blue-500", "text-white");
-}
-
-function clearWhiteboard() {
-    if (!wbCtx || !wbCanvas) return;
-    wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
-}
-
-function downloadWhiteboard() {
-    const link = document.createElement("a");
-    link.download = "2_미분_1_미분계수_판서.png";
-    link.href = wbCanvas.toDataURL("image/png");
-    link.click();
-}
-
-let lastWbX = 0, lastWbY = 0;
-function startWbDraw(e) {
-    if (!wbActive) return;
-    wbDrawing = true;
-    lastWbX = e.clientX;
-    lastWbY = e.clientY;
-}
-
-function drawWb(e) {
-    if (!wbActive || !wbDrawing) return;
-    wbCtx.beginPath();
-    wbCtx.moveTo(lastWbX, lastWbY);
-    wbCtx.lineTo(e.clientX, e.clientY);
-    wbCtx.lineCap = "round";
-    wbCtx.lineJoin = "round";
-
-    if (wbTool === "eraser") {
-        wbCtx.globalCompositeOperation = "destination-out";
-        wbCtx.lineWidth = wbSize * 8;
-        wbCtx.strokeStyle = "rgba(0,0,0,1)";
-    } else if (wbTool === "highlighter") {
-        wbCtx.globalCompositeOperation = "source-over";
-        wbCtx.lineWidth = wbSize * 6;
-        wbCtx.strokeStyle = wbColor + "55"; // 반투명
-    } else {
-        wbCtx.globalCompositeOperation = "source-over";
-        wbCtx.lineWidth = wbSize;
-        wbCtx.strokeStyle = wbColor;
-    }
-    wbCtx.stroke();
-    lastWbX = e.clientX;
-    lastWbY = e.clientY;
-}
-
-function stopWbDraw() {
-    wbDrawing = false;
-}
-
-/* =====================================================================
-   개별 스크래치패드 드로잉 엔진
-   ===================================================================== */
-function initScratchpads() {
-    document.querySelectorAll(".scratchpad-canvas").forEach(canvas => {
-        const ctx = canvas.getContext("2d");
-        let isDrawing = false;
-        let lx = 0, ly = 0;
-
-        function resize() {
-            const rect = canvas.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
-        }
-        window.addEventListener("resize", resize);
-        resize();
-
-        function getPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            return {
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top
-            };
-        }
-
-        canvas.addEventListener("mousedown", e => {
-            isDrawing = true;
-            const p = getPos(e);
-            lx = p.x; ly = p.y;
-        });
-
-        canvas.addEventListener("mousemove", e => {
-            if (!isDrawing) return;
-            const p = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(lx, ly);
-            ctx.lineTo(p.x, p.y);
-            ctx.strokeStyle = "#2563eb";
-            ctx.lineWidth = 2;
-            ctx.lineCap = "round";
-            ctx.stroke();
-            lx = p.x; ly = p.y;
-        });
-
-        window.addEventListener("mouseup", () => isDrawing = false);
-
-        canvas.addEventListener("touchstart", e => {
-            e.preventDefault();
-            isDrawing = true;
-            const p = getPos(e.touches[0]);
-            lx = p.x; ly = p.y;
-        }, { passive: false });
-
-        canvas.addEventListener("touchmove", e => {
-            if (!isDrawing) return;
-            e.preventDefault();
-            const p = getPos(e.touches[0]);
-            ctx.beginPath();
-            ctx.moveTo(lx, ly);
-            ctx.lineTo(p.x, p.y);
-            ctx.strokeStyle = "#2563eb";
-            ctx.lineWidth = 2;
-            ctx.lineCap = "round";
-            ctx.stroke();
-            lx = p.x; ly = p.y;
-        }, { passive: false });
-
-        window.addEventListener("touchend", () => isDrawing = false);
-    });
-}
-
-function clearScratchpad(id) {
-    const canvas = document.getElementById(id);
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-/* =====================================================================
-   SIMULATOR 2: 모래 온도 변화의 평균변화율 (avg-rate-canvas)
-   ===================================================================== */
+// =====================================================================
+// SIMULATOR 1: 모래 온도 변화의 평균변화율 (avg-rate-canvas)
+// =====================================================================
 function initAvgRateSim() {
     const canvas = document.getElementById("avg-rate-canvas");
     if (!canvas) return;
@@ -2214,6 +2291,8 @@ function initAvgRateSim() {
     const sT2 = document.getElementById("slider-t2");
     const vT1 = document.getElementById("val-t1");
     const vT2 = document.getElementById("val-t2");
+    const statDt = document.getElementById("stat-dt");
+    const statDT = document.getElementById("stat-dT");
     const statRate = document.getElementById("stat-avg-rate");
 
     // 교과서 관측 데이터 표: 8시(19.5), 9시(24.9), 10시(38.0), 11시(42.7), 12시(44.0), 13시(45.0)
@@ -2225,6 +2304,13 @@ function initAvgRateSim() {
         12: 44.0,
         13: 45.0
     };
+
+    function resize() {
+        canvas.width = canvas.offsetWidth || 560;
+        canvas.height = 260;
+    }
+    window.addEventListener("resize", () => { resize(); draw(); });
+    resize();
 
     function draw() {
         let t1 = parseInt(sT1.value);
@@ -2239,47 +2325,51 @@ function initAvgRateSim() {
 
         const temp1 = dataPoints[t1];
         const temp2 = dataPoints[t2];
-        const rate = (temp2 - temp1) / (t2 - t1);
-        statRate.textContent = rate.toFixed(2) + " ℃/h";
+        const dt = t2 - t1;
+        const dT = temp2 - temp1;
+        const rate = dT / dt;
+
+        if (statDt) statDt.textContent = dt.toFixed(1) + " h";
+        if (statDT) statDT.textContent = dT.toFixed(1) + " ℃";
+        if (statRate) statRate.textContent = rate.toFixed(2) + " ℃/h";
 
         const w = canvas.width;
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        // 여백 및 좌표축 설정 (Light Mode: 흰 배경, 연회색 격자)
-        const padX = 70, padY = 40;
-        const graphW = w - padX * 2;
-        const graphH = h - padY * 2;
+        const padLeft = 55, padRight = 35, padTop = 30, padBottom = 35;
+        const graphW = w - padLeft - padRight;
+        const graphH = h - padTop - padBottom;
 
-        function toX(t) { return padX + ((t - 8) / 5) * graphW; }
-        function toY(temp) { return padY + graphH - ((temp - 15) / 35) * graphH; }
+        function toX(t) { return padLeft + ((t - 8) / 5) * graphW; }
+        function toY(temp) { return padTop + graphH - ((temp - 15) / 35) * graphH; }
 
         // 그리드 & 축
-        ctx.strokeStyle = "#e2e8f0";
+        ctx.strokeStyle = "#f1f5f9";
         ctx.lineWidth = 1;
         for (let t = 8; t <= 13; t++) {
             ctx.beginPath();
-            ctx.moveTo(toX(t), padY);
-            ctx.lineTo(toX(t), padY + graphH);
+            ctx.moveTo(toX(t), padTop);
+            ctx.lineTo(toX(t), padTop + graphH);
             ctx.stroke();
             ctx.fillStyle = "#64748b";
             ctx.font = "11px sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText(t + "시", toX(t), padY + graphH + 18);
+            ctx.fillText(t + "시", toX(t), padTop + graphH + 18);
         }
 
         for (let temp = 20; temp <= 50; temp += 10) {
             ctx.beginPath();
-            ctx.moveTo(padX, toY(temp));
-            ctx.lineTo(padX + graphW, toY(temp));
+            ctx.moveTo(padLeft, toY(temp));
+            ctx.lineTo(padLeft + graphW, toY(temp));
             ctx.stroke();
             ctx.fillStyle = "#64748b";
             ctx.font = "11px sans-serif";
             ctx.textAlign = "right";
-            ctx.fillText(temp + "℃", padX - 8, toY(temp) + 4);
+            ctx.fillText(temp + "℃", padLeft - 8, toY(temp) + 4);
         }
 
-        // 실제 온도 변화 부드러운 곡선
+        // 실제 모래 온도 변화 부드러운 곡선
         ctx.beginPath();
         ctx.strokeStyle = "#94a3b8";
         ctx.lineWidth = 2.5;
@@ -2297,37 +2387,28 @@ function initAvgRateSim() {
             ctx.fill();
         }
 
-        // 선택된 구간의 할선 (Secant Line)
         const x1 = toX(t1), y1 = toY(temp1);
         const x2 = toX(t2), y2 = toY(temp2);
 
-        // 연장된 할선
+        // 연장된 할선 (Secant Line)
         const slope = (y2 - y1) / (x2 - x1);
         ctx.beginPath();
         ctx.strokeStyle = "#2563eb";
-        ctx.lineWidth = 3;
-        ctx.moveTo(padX, y1 - slope * (x1 - padX));
-        ctx.lineTo(padX + graphW, y2 + slope * (padX + graphW - x2));
+        ctx.lineWidth = 2.5;
+        ctx.moveTo(padLeft, y1 - slope * (x1 - padLeft));
+        ctx.lineTo(padLeft + graphW, y2 + slope * (padLeft + graphW - x2));
         ctx.stroke();
 
-        // 직각 삼각형 (증분 Δx, Δy)
+        // 직각 삼각형 (증분 Δt, ΔT)
         ctx.beginPath();
         ctx.setLineDash([4, 4]);
         ctx.strokeStyle = "#f59e0b";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.8;
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y1);
         ctx.lineTo(x2, y2);
         ctx.stroke();
         ctx.setLineDash([]);
-
-        // 증분 라벨
-        ctx.fillStyle = "#b45309";
-        ctx.font = "bold 12px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(`Δx = ${t2 - t1}h`, (x1 + x2) / 2, y1 + 16);
-        ctx.textAlign = "left";
-        ctx.fillText(`Δy = ${(temp2 - temp1).toFixed(1)}℃`, x2 + 8, (y1 + y2) / 2);
 
         // 두 점 하이라이트
         ctx.beginPath();
@@ -2345,6 +2426,14 @@ function initAvgRateSim() {
         ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 2;
         ctx.stroke();
+
+        // 점 라벨
+        ctx.font = "bold 11px sans-serif";
+        ctx.fillStyle = "#1e40af";
+        ctx.textAlign = "center";
+        ctx.fillText("A(" + t1 + "시)", x1, y1 - 10);
+        ctx.fillStyle = "#991b1b";
+        ctx.fillText("B(" + t2 + "시)", x2, y2 - 10);
     }
 
     sT1.addEventListener("input", draw);
@@ -2352,9 +2441,9 @@ function initAvgRateSim() {
     draw();
 }
 
-/* =====================================================================
-   SIMULATOR 3: 미분계수 형태 맞추기 (diff-struct-canvas)
-   ===================================================================== */
+// =====================================================================
+// SIMULATOR 2: 미분계수 형태 맞추기 (diff-struct-canvas)
+// =====================================================================
 function initDiffStructSim() {
     const canvas = document.getElementById("diff-struct-canvas");
     if (!canvas) return;
@@ -2365,6 +2454,13 @@ function initDiffStructSim() {
     const vK = document.getElementById("val-struct-k");
     const statRes = document.getElementById("stat-struct-res");
 
+    function resize() {
+        canvas.width = canvas.offsetWidth || 560;
+        canvas.height = 220;
+    }
+    window.addEventListener("resize", () => { resize(); draw(); });
+    resize();
+
     function draw() {
         const m = parseInt(sM.value);
         const k = parseInt(sK.value);
@@ -2374,58 +2470,83 @@ function initDiffStructSim() {
         const ratio = m / k;
         let ratioStr = ratio % 1 === 0 ? ratio.toString() : ratio.toFixed(2);
         if (k === 1 && m === 1) ratioStr = "1";
-        statRes.textContent = `${m}/${k} f'(a) = ${ratioStr} f'(a)`;
+        if (statRes) statRes.textContent = `${m}/${k} · f'(a) = ${ratioStr} f'(a)`;
 
         const w = canvas.width;
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        // 시각화: 분수 블록 다이어그램 표현
+        const cy = h / 2;
+        const maxBlockW = Math.min(180, (w - 180) / 2);
+
+        // 시각적 블록 다이어그램: 분자 증분 블록 vs 분모 증분 블록
+        const blockW1 = (m / 5) * maxBlockW + 30;
+        const blockW2 = (k / 5) * maxBlockW + 30;
+
+        const boxX1 = w * 0.28;
+        const boxX2 = w * 0.72;
+
+        // 배경 카드
         ctx.fillStyle = "#f8fafc";
-        ctx.fillRect(40, 30, w - 80, h - 60);
+        ctx.fillRect(15, 15, w - 30, h - 30);
         ctx.strokeStyle = "#e2e8f0";
-        ctx.strokeRect(40, 30, w - 80, h - 60);
+        ctx.lineWidth = 1;
+        ctx.strokeRect(15, 15, w - 30, h - 30);
 
-        // 중앙 수식 그래픽스
-        ctx.textAlign = "center";
-        ctx.font = "bold 20px sans-serif";
-        ctx.fillStyle = "#334155";
-        ctx.fillText("lim", 120, h / 2 - 10);
-        ctx.font = "12px sans-serif";
-        ctx.fillText("Δx → 0", 120, h / 2 + 15);
-
-        // 큰 분수선
-        ctx.strokeStyle = "#334155";
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(170, h / 2);
-        ctx.lineTo(470, h / 2);
-        ctx.stroke();
-
-        // 분자
-        ctx.font = "bold 18px sans-serif";
-        ctx.fillStyle = "#7e22ce";
-        ctx.fillText(`f(a + ${m}Δx) - f(a)`, 320, h / 2 - 20);
-
-        // 분모
-        ctx.fillStyle = "#2563eb";
-        ctx.fillText(`${k}Δx`, 320, h / 2 + 35);
-
-        // 변환 화살표 및 매칭 박스
-        ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 26px sans-serif";
-        ctx.fillText("=", 510, h / 2 + 8);
-
-        // 최종 계수 하이라이트 배너
-        ctx.fillStyle = "#ede9fe";
-        ctx.fillRect(540, h / 2 - 35, 180, 70);
+        // 분자 증분 표현
+        ctx.fillStyle = "#f3e8ff";
+        ctx.fillRect(boxX1 - blockW1 / 2, cy - 65, blockW1, 45);
         ctx.strokeStyle = "#a855f7";
         ctx.lineWidth = 2;
-        ctx.strokeRect(540, h / 2 - 35, 180, 70);
+        ctx.strokeRect(boxX1 - blockW1 / 2, cy - 65, blockW1, 45);
 
         ctx.fillStyle = "#6b21a8";
-        ctx.font = "bold 22px sans-serif";
-        ctx.fillText(`${m}/${k} · f'(a)`, 630, h / 2 + 8);
+        ctx.font = "bold 13px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("분자 증분: " + m + " Δx", boxX1, cy - 38);
+
+        // 분모 증분 표현
+        ctx.fillStyle = "#dbeafe";
+        ctx.fillRect(boxX1 - blockW2 / 2, cy + 15, blockW2, 45);
+        ctx.strokeStyle = "#3b82f6";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(boxX1 - blockW2 / 2, cy + 15, blockW2, 45);
+
+        ctx.fillStyle = "#1e40af";
+        ctx.font = "bold 13px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("분모 증분: " + k + " Δx", boxX1, cy + 42);
+
+        // 화살표
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(w * 0.46, cy);
+        ctx.lineTo(w * 0.54, cy);
+        ctx.lineTo(w * 0.52, cy - 6);
+        ctx.moveTo(w * 0.54, cy);
+        ctx.lineTo(w * 0.52, cy + 6);
+        ctx.stroke();
+
+        // 우측 배율 결과 카드
+        const resBoxW = Math.min(160, w * 0.35);
+        ctx.fillStyle = "#ede9fe";
+        ctx.fillRect(boxX2 - resBoxW / 2, cy - 50, resBoxW, 100);
+        ctx.strokeStyle = "#9333ea";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(boxX2 - resBoxW / 2, cy - 50, resBoxW, 100);
+
+        ctx.fillStyle = "#581c87";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("형태 일치 배율", boxX2, cy - 25);
+
+        ctx.fillStyle = "#7e22ce";
+        ctx.font = "bold 20px sans-serif";
+        ctx.fillText(`${m} / ${k}`, boxX2, cy + 5);
+
+        ctx.fillStyle = "#475569";
+        ctx.font = "bold 13px sans-serif";
+        ctx.fillText(`= ${ratioStr} · f'(a)`, boxX2, cy + 32);
     }
 
     sM.addEventListener("input", draw);
@@ -2433,24 +2554,30 @@ function initDiffStructSim() {
     draw();
 }
 
-/* =====================================================================
-   SIMULATOR 1: 할선의 극한으로서의 접선 (secant-tangent-canvas)
-   ===================================================================== */
+// =====================================================================
+// SIMULATOR 3: 할선의 극한으로서의 접선 (secant-tangent-canvas)
+// =====================================================================
 function initSecantSim() {
     const canvas = document.getElementById("secant-tangent-canvas");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const sDx = document.getElementById("slider-dx");
     const vDx = document.getElementById("val-dx");
-    const statSlope = document.getElementById("stat-secant-slope");
+    const statSecSlope = document.getElementById("stat-sec-slope-val");
+    const statSecErr = document.getElementById("stat-sec-err");
+    const statSlopeBanner = document.getElementById("stat-secant-slope");
 
-    // 함수: f(x) = 0.5 * x^2 + 1.5 (교과서 56쪽 탐구 모델)
-    // 고정점 P(1, 2)
-    // f'(1) = 1.0 (접선: y - 2 = 1.0(x - 1) => y = x + 1)
     function f(x) { return 0.5 * x * x + 1.5; }
     const a = 1.0;
     const fa = f(a); // 2.0
     const fPrimeA = 1.0; // 미분계수
+
+    function resize() {
+        canvas.width = canvas.offsetWidth || 560;
+        canvas.height = 260;
+    }
+    window.addEventListener("resize", () => { resize(); draw(); });
+    resize();
 
     function draw() {
         const dx = parseFloat(sDx.value);
@@ -2459,46 +2586,58 @@ function initSecantSim() {
         const b = a + dx;
         const fb = f(b);
         const secSlope = (fb - fa) / dx;
+        const err = Math.abs(secSlope - fPrimeA);
 
-        statSlope.textContent = `할선 기울기: ${secSlope.toFixed(2)} / 접선 기울기: ${fPrimeA.toFixed(2)}`;
+        if (statSecSlope) statSecSlope.textContent = secSlope.toFixed(2);
+        if (statSecErr) statSecErr.textContent = err.toFixed(2);
+        if (statSlopeBanner) {
+            if (dx <= 0.05) {
+                statSlopeBanner.className = "p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs md:text-sm text-emerald-900 font-semibold flex items-center justify-between";
+                statSlopeBanner.innerHTML = "<span>🎯 <strong>수렴 완료!</strong> 할선이 접선과 거의 일치합니다 (오차 < 0.03).</span><span class='text-xs font-mono text-emerald-700'>lim = f'(1) = 1.00</span>";
+            } else {
+                statSlopeBanner.className = "p-3 bg-purple-50 rounded-xl border border-purple-200 text-xs md:text-sm text-purple-900 font-semibold flex items-center justify-between";
+                statSlopeBanner.innerHTML = "<span>수렴 관찰 중: 이동점 Q가 고정점 P로 접근 중</span><span class='text-xs font-mono text-purple-700'>Δx = " + dx.toFixed(2) + "</span>";
+            }
+        }
 
         const w = canvas.width;
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        const ox = 150, oy = 280;
-        const scaleX = 140, scaleY = 70;
+        const padLeft = 45, padBottom = 30;
+        const plotW = w - padLeft - 25;
+        const plotH = h - padBottom - 20;
 
-        function toX(x) { return ox + x * scaleX; }
-        function toY(y) { return oy - y * scaleY; }
+        function toX(x) { return padLeft + (x / 3.8) * plotW; }
+        function toY(y) { return h - padBottom - ((y - 1.0) / 7.0) * plotH; }
 
         // 축
         ctx.strokeStyle = "#cbd5e1";
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(30, oy); ctx.lineTo(w - 30, oy); // x축
-        ctx.moveTo(ox, h - 20); ctx.lineTo(ox, 20); // y축
+        ctx.moveTo(padLeft, h - padBottom);
+        ctx.lineTo(w - 15, h - padBottom);
+        ctx.moveTo(padLeft, h - padBottom);
+        ctx.lineTo(padLeft, 15);
         ctx.stroke();
 
         ctx.fillStyle = "#64748b";
-        ctx.font = "12px sans-serif";
-        ctx.fillText("x", w - 25, oy + 15);
-        ctx.fillText("y", ox - 15, 25);
-        ctx.fillText("O", ox - 15, oy + 15);
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText("x", w - 10, h - padBottom + 16);
+        ctx.textAlign = "center";
+        ctx.fillText("y", padLeft - 12, 22);
 
-        // 곡선 f(x) 그리기
+        // 곡선 f(x)
         ctx.beginPath();
         ctx.strokeStyle = "#0f172a";
         ctx.lineWidth = 2.5;
-        for (let x = 0; x <= 3.5; x += 0.05) {
+        for (let x = 0; x <= 3.6; x += 0.05) {
             const px = toX(x), py = toY(f(x));
             if (x === 0) ctx.moveTo(px, py);
             else ctx.lineTo(px, py);
         }
         ctx.stroke();
-        ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 13px sans-serif";
-        ctx.fillText("y = ½x² + ³⁄₂", toX(2.8), toY(f(2.8)) - 10);
 
         // 고정된 접선 (초록 점선)
         ctx.beginPath();
@@ -2506,19 +2645,16 @@ function initSecantSim() {
         ctx.strokeStyle = "#059669";
         ctx.lineWidth = 2;
         ctx.moveTo(toX(0), toY(1.0 * 0 + 1.0));
-        ctx.lineTo(toX(3.5), toY(1.0 * 3.5 + 1.0));
+        ctx.lineTo(toX(3.6), toY(1.0 * 3.6 + 1.0));
         ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle = "#059669";
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillText("접선 l (기울기 = 1.00)", toX(3.0), toY(1.0 * 3.0 + 1.0) + 15);
 
         // 움직이는 할선 (파란 실선)
         ctx.beginPath();
         ctx.strokeStyle = "#2563eb";
         ctx.lineWidth = 2.5;
         const lineX1 = 0, lineY1 = fa + secSlope * (lineX1 - a);
-        const lineX2 = 3.5, lineY2 = fa + secSlope * (lineX2 - a);
+        const lineX2 = 3.6, lineY2 = fa + secSlope * (lineX2 - a);
         ctx.moveTo(toX(lineX1), toY(lineY1));
         ctx.lineTo(toX(lineX2), toY(lineY2));
         ctx.stroke();
@@ -2536,36 +2672,39 @@ function initSecantSim() {
 
         // 고정점 P(1, 2)
         ctx.beginPath();
-        ctx.arc(toX(a), toY(fa), 7, 0, Math.PI * 2);
+        ctx.arc(toX(a), toY(fa), 6, 0, Math.PI * 2);
         ctx.fillStyle = "#2563eb";
         ctx.fill();
         ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 2;
         ctx.stroke();
+
         ctx.fillStyle = "#1e3a8a";
-        ctx.font = "bold 13px sans-serif";
-        ctx.fillText("P(1, 2)", toX(a) - 45, toY(fa) - 8);
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText("P(1, 2)", toX(a) - 8, toY(fa) - 8);
 
         // 이동점 Q(b, f(b))
         ctx.beginPath();
-        ctx.arc(toX(b), toY(fb), 7, 0, Math.PI * 2);
+        ctx.arc(toX(b), toY(fb), 6, 0, Math.PI * 2);
         ctx.fillStyle = "#dc2626";
         ctx.fill();
         ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 2;
         ctx.stroke();
+
         ctx.fillStyle = "#991b1b";
-        ctx.font = "bold 13px sans-serif";
-        ctx.fillText(`Q(${b.toFixed(2)}, ${fb.toFixed(2)})`, toX(b) + 10, toY(fb) - 5);
+        ctx.textAlign = "left";
+        ctx.fillText("Q(" + b.toFixed(2) + ", " + fb.toFixed(2) + ")", toX(b) + 8, toY(fb) - 6);
     }
 
     sDx.addEventListener("input", draw);
     draw();
 }
 
-/* =====================================================================
-   SIMULATOR 4: 위로 볼록 곡선 3선 비교 (concave-compare-canvas)
-   ===================================================================== */
+// =====================================================================
+// SIMULATOR 4: 위로 볼록 곡선 3선 비교 (concave-compare-canvas)
+// =====================================================================
 function initConcaveSim() {
     const canvas = document.getElementById("concave-compare-canvas");
     if (!canvas) return;
@@ -2574,11 +2713,19 @@ function initConcaveSim() {
     const sB = document.getElementById("slider-cb");
     const vA = document.getElementById("val-ca");
     const vB = document.getElementById("val-cb");
+    const statA = document.getElementById("stat-slope-a");
+    const statSec = document.getElementById("stat-slope-sec");
+    const statB = document.getElementById("stat-slope-b");
 
-    // 위로 볼록 함수 모델: f(x) = -0.15*x^2 + 1.2*x + 1
-    // f'(x) = -0.3*x + 1.2 (감소함수!)
     function f(x) { return -0.15 * x * x + 1.2 * x + 1.0; }
     function df(x) { return -0.3 * x + 1.2; }
+
+    function resize() {
+        canvas.width = canvas.offsetWidth || 560;
+        canvas.height = 260;
+    }
+    window.addEventListener("resize", () => { resize(); draw(); });
+    resize();
 
     function draw() {
         let a = parseFloat(sA.value);
@@ -2595,23 +2742,37 @@ function initConcaveSim() {
         const slopeB = df(b);
         const secSlope = (f(b) - f(a)) / (b - a);
 
+        if (statA) statA.textContent = "f'(a) = " + slopeA.toFixed(2);
+        if (statSec) statSec.textContent = "할선 = " + secSlope.toFixed(2);
+        if (statB) statB.textContent = "f'(b) = " + slopeB.toFixed(2);
+
         const w = canvas.width;
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        const ox = 70, oy = 270;
-        const sx = 100, sy = 60;
+        const padLeft = 45, padRight = 30, padBottom = 30, padTop = 20;
+        const plotW = w - padLeft - padRight;
+        const plotH = h - padBottom - padTop;
 
-        function toX(x) { return ox + x * sx; }
-        function toY(y) { return oy - y * sy; }
+        function toX(x) { return padLeft + (x / 5.5) * plotW; }
+        function toY(y) { return h - padBottom - ((y - 0.5) / 3.5) * plotH; }
 
         // 축
         ctx.strokeStyle = "#e2e8f0";
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(30, oy); ctx.lineTo(w - 240, oy);
-        ctx.moveTo(ox, h - 20); ctx.lineTo(ox, 20);
+        ctx.moveTo(padLeft, h - padBottom);
+        ctx.lineTo(w - 15, h - padBottom);
+        ctx.moveTo(padLeft, h - padBottom);
+        ctx.lineTo(padLeft, 15);
         ctx.stroke();
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText("x", w - 10, h - padBottom + 16);
+        ctx.textAlign = "center";
+        ctx.fillText("y", padLeft - 12, 22);
 
         // 곡선
         ctx.beginPath();
@@ -2627,9 +2788,9 @@ function initConcaveSim() {
         // 1) 점 A에서의 접선 (파란 선)
         ctx.beginPath();
         ctx.strokeStyle = "#2563eb";
-        ctx.lineWidth = 2;
-        ctx.moveTo(toX(a - 0.8), toY(f(a) - slopeA * 0.8));
-        ctx.lineTo(toX(a + 0.8), toY(f(a) + slopeA * 0.8));
+        ctx.lineWidth = 2.2;
+        ctx.moveTo(toX(a - 1.0), toY(f(a) - slopeA * 1.0));
+        ctx.lineTo(toX(a + 1.0), toY(f(a) + slopeA * 1.0));
         ctx.stroke();
 
         // 2) 할선 AB (보라 선)
@@ -2643,9 +2804,9 @@ function initConcaveSim() {
         // 3) 점 B에서의 접선 (빨간 선)
         ctx.beginPath();
         ctx.strokeStyle = "#dc2626";
-        ctx.lineWidth = 2;
-        ctx.moveTo(toX(b - 0.8), toY(f(b) - slopeB * 0.8));
-        ctx.lineTo(toX(b + 0.8), toY(f(b) + slopeB * 0.8));
+        ctx.lineWidth = 2.2;
+        ctx.moveTo(toX(b - 1.0), toY(f(b) - slopeB * 1.0));
+        ctx.lineTo(toX(b + 1.0), toY(f(b) + slopeB * 1.0));
         ctx.stroke();
 
         // 점 A, 점 B 표시
@@ -2653,48 +2814,26 @@ function initConcaveSim() {
         ctx.arc(toX(a), toY(f(a)), 6, 0, Math.PI * 2);
         ctx.fillStyle = "#2563eb";
         ctx.fill();
-        ctx.fillText(`A(${a.toFixed(1)})`, toX(a) - 15, toY(f(a)) - 10);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#1e40af";
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText("A(" + a.toFixed(1) + ")", toX(a) - 8, toY(f(a)) - 8);
 
         ctx.beginPath();
         ctx.arc(toX(b), toY(f(b)), 6, 0, Math.PI * 2);
         ctx.fillStyle = "#dc2626";
         ctx.fill();
-        ctx.fillText(`B(${b.toFixed(1)})`, toX(b) + 8, toY(f(b)) - 10);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
 
-        // 우측 실시간 기울기 막대 비교 패널
-        const panelX = w - 210, panelY = 40;
-        ctx.fillStyle = "#f8fafc";
-        ctx.fillRect(panelX, panelY, 190, 220);
-        ctx.strokeStyle = "#cbd5e1";
-        ctx.strokeRect(panelX, panelY, 190, 220);
-
-        ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 13px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("기울기 대소 실시간 측정", panelX + 95, panelY + 25);
-
-        // 세 막대 그리기
-        const barW = 35;
-        const baseY = panelY + 160;
-
-        function drawBar(x, val, color, label) {
-            const barH = val * 80;
-            ctx.fillStyle = color;
-            ctx.fillRect(x, baseY - barH, barW, barH);
-            ctx.fillStyle = "#0f172a";
-            ctx.font = "bold 11px sans-serif";
-            ctx.fillText(val.toFixed(2), x + barW / 2, baseY - barH - 6);
-            ctx.fillText(label, x + barW / 2, baseY + 18);
-        }
-
-        drawBar(panelX + 20, slopeA, "#2563eb", "f'(a)");
-        drawBar(panelX + 75, secSlope, "#9333ea", "할선");
-        drawBar(panelX + 130, slopeB, "#dc2626", "f'(b)");
-
-        ctx.fillStyle = "#059669";
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillText("f'(a) > 할선 > f'(b)", panelX + 95, panelY + 205);
+        ctx.fillStyle = "#991b1b";
         ctx.textAlign = "left";
+        ctx.fillText("B(" + b.toFixed(1) + ")", toX(b) + 8, toY(f(b)) - 8);
     }
 
     sA.addEventListener("input", draw);
@@ -2702,20 +2841,27 @@ function initConcaveSim() {
     draw();
 }
 
-/* =====================================================================
-   SIMULATOR 6: 푸아죄유 혈류 속도 & 전단율 (poiseuille-canvas)
-   ===================================================================== */
+// =====================================================================
+// SIMULATOR 5: 푸아죄유 혈류 속도 & 전단율 (poiseuille-canvas)
+// =====================================================================
 function initPoiseuilleSim() {
     const canvas = document.getElementById("poiseuille-canvas");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const sPr = document.getElementById("slider-pr");
     const vPr = document.getElementById("val-pr");
+    const statRatio = document.getElementById("stat-poiseuille-ratio");
+    const statVel = document.getElementById("stat-poiseuille-vel");
     const statShear = document.getElementById("stat-shear-rate");
 
-    // R = 0.1, k = 10000 => v(r) = 100 - 10000*r^2
-    // v'(r) = -20000*r
     const R = 0.1;
+
+    function resize() {
+        canvas.width = canvas.offsetWidth || 560;
+        canvas.height = 260;
+    }
+    window.addEventListener("resize", () => { resize(); draw(); });
+    resize();
 
     function draw() {
         const r = parseFloat(sPr.value);
@@ -2723,132 +2869,145 @@ function initPoiseuilleSim() {
 
         const vel = 10000 * (R * R - r * r);
         const shear = -20000 * r;
-        statShear.textContent = `${shear.toFixed(0)} cm/s/cm (유속: ${vel.toFixed(1)} cm/s)`;
+
+        if (statRatio) statRatio.textContent = ((r / R) * 100).toFixed(0) + "% (" + (r < 0.03 ? "중심축 부근" : (r > 0.08 ? "혈관벽 부근" : "중간층")) + ")";
+        if (statVel) statVel.textContent = vel.toFixed(1) + " cm/s";
+        if (statShear) statShear.textContent = shear.toFixed(0) + " cm/s/cm";
 
         const w = canvas.width;
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
 
         // 좌측: 원통 혈관 단면 유속 프로파일 포물선
-        const cx = 200, cy = h / 2;
-        const tubeRadius = 110;
+        const leftW = w * 0.48;
+        const cy = h / 2;
+        const tubeRadius = Math.min(85, h * 0.35);
 
         // 혈관 벽
         ctx.fillStyle = "#fee2e2";
-        ctx.fillRect(50, cy - tubeRadius - 15, 300, 15);
-        ctx.fillRect(50, cy + tubeRadius, 300, 15);
+        ctx.fillRect(20, cy - tubeRadius - 12, leftW - 30, 12);
+        ctx.fillRect(20, cy + tubeRadius, leftW - 30, 12);
         ctx.fillStyle = "#b91c1c";
         ctx.font = "bold 11px sans-serif";
-        ctx.fillText("동맥 혈관 벽 (r = 0.1 cm)", 60, cy - tubeRadius - 3);
+        ctx.textAlign = "left";
+        ctx.fillText("동맥 혈관 벽 (r = 0.1 cm)", 25, cy - tubeRadius - 2);
 
         // 중심축 점선
-        ctx.setLineDash([5, 5]);
+        ctx.setLineDash([4, 4]);
         ctx.strokeStyle = "#94a3b8";
         ctx.beginPath();
-        ctx.moveTo(50, cy); ctx.lineTo(350, cy);
+        ctx.moveTo(20, cy);
+        ctx.lineTo(leftW - 10, cy);
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.fillStyle = "#64748b";
-        ctx.fillText("중심축 (r = 0)", 60, cy - 5);
+        ctx.fillText("중심축 (r = 0)", 25, cy - 4);
 
-        // 혈류 속도 화살표 벡터들 (포물선 분포)
-        for (let rad = -tubeRadius; rad <= tubeRadius; rad += 18) {
-            const normR = Math.abs(rad) / tubeRadius * R;
-            const arrowLen = (1 - (normR / R) * (normR / R)) * 140;
+        // 혈류 속도 화살표 벡터들
+        const maxArrowLen = leftW - 90;
+        for (let rad = -tubeRadius; rad <= tubeRadius; rad += 16) {
+            const normR = (Math.abs(rad) / tubeRadius) * R;
+            const arrowLen = (1 - (normR / R) * (normR / R)) * maxArrowLen;
             const yPos = cy + rad;
 
             ctx.beginPath();
-            ctx.strokeStyle = "#e11d48";
-            ctx.lineWidth = 2;
-            ctx.moveTo(70, yPos);
-            ctx.lineTo(70 + arrowLen, yPos);
+            ctx.strokeStyle = "#fca5a5";
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(40, yPos);
+            ctx.lineTo(40 + arrowLen, yPos);
             ctx.stroke();
-
-            // 화살촉
-            ctx.beginPath();
-            ctx.moveTo(70 + arrowLen, yPos);
-            ctx.lineTo(62 + arrowLen, yPos - 3);
-            ctx.lineTo(62 + arrowLen, yPos + 3);
-            ctx.fillStyle = "#e11d48";
-            ctx.fill();
         }
 
-        // 현재 관측 거리 r 표시 라인
-        const userRadPx = (r / R) * tubeRadius;
-        ctx.strokeStyle = "#2563eb";
-        ctx.lineWidth = 2;
-        ctx.setLineDash([3, 3]);
-        ctx.beginPath();
-        ctx.moveTo(50, cy - userRadPx); ctx.lineTo(350, cy - userRadPx);
-        ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = "#2563eb";
-        ctx.font = "bold 11px sans-serif";
-        ctx.fillText(`관측층 r = ${r.toFixed(3)} cm`, 260, cy - userRadPx - 6);
+        // 현재 관측 반지름 r 위치 하이라이트
+        const curPxR = (r / R) * tubeRadius;
+        const curArrowLen = (1 - (r / R) * (r / R)) * maxArrowLen;
 
-        // 우측: 속도 함수 곡선 v(r) 및 접선 그래프
-        const gx = 450, gy = h - 50;
-        const gw = 300, gh = 230;
+        ctx.beginPath();
+        ctx.strokeStyle = "#e11d48";
+        ctx.lineWidth = 3;
+        ctx.moveTo(40, cy - curPxR);
+        ctx.lineTo(40 + curArrowLen, cy - curPxR);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(40 + curArrowLen, cy - curPxR, 5, 0, Math.PI * 2);
+        ctx.fillStyle = "#e11d48";
+        ctx.fill();
+
+        // 우측: 유속 그래프 v(r)
+        const rightX = w * 0.52;
+        const graphW = w - rightX - 25;
+        const padB = 30, padT = 30;
+        const graphH = h - padB - padT;
 
         ctx.strokeStyle = "#cbd5e1";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(gx, gy - gh, gw, gh);
-
-        ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillText("혈류 속도 곡선 v(r) = 10000(0.01 - r²)", gx + 15, gy - gh + 22);
-
-        function toGx(cr) { return gx + 30 + (cr / R) * (gw - 50); }
-        function toGy(cv) { return gy - 20 - (cv / 100) * (gh - 60); }
-
-        // 곡선 그리기
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.strokeStyle = "#be123c";
+        ctx.moveTo(rightX, h - padB);
+        ctx.lineTo(w - 15, h - padB);
+        ctx.moveTo(rightX, h - padB);
+        ctx.lineTo(rightX, padT);
+        ctx.stroke();
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "11px sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText("r(cm)", w - 10, h - padB + 16);
+        ctx.textAlign = "center";
+        ctx.fillText("v(cm/s)", rightX - 8, padT - 8);
+
+        // 포물선 그래프
+        ctx.beginPath();
+        ctx.strokeStyle = "#0f172a";
         ctx.lineWidth = 2.5;
-        for (let cr = 0; cr <= R; cr += 0.005) {
-            const cv = 10000 * (R * R - cr * cr);
-            const px = toGx(cr), py = toGy(cv);
-            if (cr === 0) ctx.moveTo(px, py);
+        for (let rad = 0; rad <= 0.1; rad += 0.002) {
+            const px = rightX + (rad / 0.1) * graphW;
+            const py = h - padB - (10000 * (0.01 - rad * rad) / 100) * graphH;
+            if (rad === 0) ctx.moveTo(px, py);
             else ctx.lineTo(px, py);
         }
         ctx.stroke();
 
-        // 현재 점 접선 그리기
-        const curPx = toGx(r), curPy = toGy(vel);
-        const tangentSlopePx = -shear * 0.0003; // 스케일 조정
+        // 그래프 위 관측점
+        const curGpx = rightX + (r / 0.1) * graphW;
+        const curGpy = h - padB - (vel / 100) * graphH;
+
+        // 접선 (순간변화율 기울기)
+        const tangentSlopePx = -shear * 0.0003;
         ctx.beginPath();
         ctx.strokeStyle = "#2563eb";
         ctx.lineWidth = 2;
-        ctx.moveTo(curPx - 40, curPy - tangentSlopePx * (-40));
-        ctx.lineTo(curPx + 40, curPy - tangentSlopePx * (40));
+        ctx.moveTo(curGpx - 35, curGpy - tangentSlopePx * (-35));
+        ctx.lineTo(curGpx + 35, curGpy - tangentSlopePx * (35));
         ctx.stroke();
 
-        // 현재 점 표시
         ctx.beginPath();
-        ctx.arc(curPx, curPy, 6, 0, Math.PI * 2);
+        ctx.arc(curGpx, curGpy, 6, 0, Math.PI * 2);
         ctx.fillStyle = "#2563eb";
         ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
     }
 
     sPr.addEventListener("input", draw);
     draw();
 }
 
-/* =====================================================================
-   SIMULATOR 5: 국소적 선형성 줌인 돋보기 (local-linear-canvas)
-   ===================================================================== */
+// =====================================================================
+// SIMULATOR 6: 국소적 선형성 줌인 돋보기 (local-linear-canvas)
+// =====================================================================
 let currentLocalFunc = "parabola";
-
-function setLocalLinearFunc(mode) {
-    currentLocalFunc = mode;
+function setLocalLinearFunc(type) {
+    currentLocalFunc = type;
     const btnP = document.getElementById("btn-func-parabola");
     const btnA = document.getElementById("btn-func-abs");
-    if (mode === "parabola") {
+    if (type === "parabola") {
         btnP.className = "px-2.5 py-1 text-xs font-bold rounded bg-teal-600 text-white";
         btnA.className = "px-2.5 py-1 text-xs font-bold rounded bg-slate-200 text-slate-700 hover:bg-slate-300";
     } else {
-        btnA.className = "px-2.5 py-1 text-xs font-bold rounded bg-rose-600 text-white";
         btnP.className = "px-2.5 py-1 text-xs font-bold rounded bg-slate-200 text-slate-700 hover:bg-slate-300";
+        btnA.className = "px-2.5 py-1 text-xs font-bold rounded bg-rose-600 text-white";
     }
     const canvas = document.getElementById("local-linear-canvas");
     if (canvas && canvas._update) canvas._update();
@@ -2861,6 +3020,13 @@ function initLocalLinearSim() {
     const sZoom = document.getElementById("slider-zoom");
     const vZoom = document.getElementById("val-zoom");
     const statShape = document.getElementById("stat-local-shape");
+
+    function resize() {
+        canvas.width = canvas.offsetWidth || 560;
+        canvas.height = 260;
+    }
+    window.addEventListener("resize", () => { resize(); draw(); });
+    resize();
 
     function draw() {
         const zoom = parseFloat(sZoom.value);
@@ -2886,13 +3052,10 @@ function initLocalLinearSim() {
         const cx = w / 2;
         const cy = h / 2;
 
-        // 원점 및 축 기준
-        // parabola: 점 (2, 2) 기준 중심
-        // abs: 점 (0, 0) 기준 중심
         const centerX = currentLocalFunc === "parabola" ? 2.0 : 0.0;
         const centerY = currentLocalFunc === "parabola" ? 2.0 : 0.0;
 
-        const baseScale = 45;
+        const baseScale = 40;
         const currentScale = baseScale * zoom;
 
         function toX(x) { return cx + (x - centerX) * currentScale; }
@@ -2956,10 +3119,11 @@ function initLocalLinearSim() {
 
         // 라벨
         ctx.fillStyle = "#0f172a";
-        ctx.font = "bold 13px sans-serif";
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "left";
         if (currentLocalFunc === "parabola") {
-            ctx.fillText("확대 관찰점 A(2, 2)", cx + 12, cy - 8);
-            ctx.fillStyle = "#f97316";
+            ctx.fillText("관찰점 A(2, 2)", cx + 12, cy - 8);
+            ctx.fillStyle = "#ea580c";
             ctx.fillText("접선 y = 2x - 2", cx + 12, cy + 18);
         } else {
             ctx.fillText("원점 (0, 0) - 뾰족점", cx + 12, cy - 8);
@@ -3024,7 +3188,52 @@ function initReflectionMemo() {
         }, 600);
     });
 }
+
+
+// =====================================================================
+// DYNAMIC CLASSROOM FONT RESIZER (교실 시야 확보 글자 크기 조절 모듈)
+// =====================================================================
+const FONT_LEVELS = [
+    { label: '90%', px: 14.5 },
+    { label: '100%', px: 16 },
+    { label: '115%', px: 18.5 }, // 기본값 (교실 프로젝터 최적화)
+    { label: '130%', px: 21 },   // 맨 뒷자리 권장
+    { label: '145%', px: 23.5 }  // 초대형 TV/스크린용
+];
+let currentFontIdx = 2; // 기본 115%
+
+function applyFontSize(idx, save = true) {
+    currentFontIdx = Math.max(0, Math.min(FONT_LEVELS.length - 1, idx));
+    const level = FONT_LEVELS[currentFontIdx];
+    document.documentElement.style.fontSize = level.px + 'px';
+    const labelEl = document.getElementById('font-size-label');
+    if (labelEl) labelEl.textContent = level.label;
+    if (save) {
+        try { localStorage.setItem('classroom_font_idx', currentFontIdx); } catch(e){}
+    }
+}
+
+function changeFontSize(delta) {
+    applyFontSize(currentFontIdx + delta, true);
+}
+
+function resetFontSize() {
+    applyFontSize(2, true); // 115% 기본
+}
+
+// 초기화
+(function initFontSize() {
+    let savedIdx = null;
+    try { savedIdx = localStorage.getItem('classroom_font_idx'); } catch(e){}
+    if (savedIdx !== null && !isNaN(parseInt(savedIdx, 10))) {
+        currentFontIdx = parseInt(savedIdx, 10);
+    } else {
+        currentFontIdx = 2; // 기본 115% 큼직하게
+    }
+    applyFontSize(currentFontIdx, false);
+})();
+
 </script>
+
 </body>
 </html>
-    

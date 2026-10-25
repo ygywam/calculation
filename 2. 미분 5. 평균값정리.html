@@ -1,305 +1,318 @@
 <!DOCTYPE html>
 <html lang="ko" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2. 미분 - 5. 평균값 정리 | 2022 개정 고등학교 미적분Ⅰ</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- MathJax CDN -->
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      },
-      svg: { fontCache: 'global' }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
-    body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
-    }
-    .math-font {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    /* 전자칠판 오버레이 스타일 */
-    #wb-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 9998;
-      pointer-events: none;
-      touch-action: none;
-    }
-    #wb-canvas.active {
-      pointer-events: auto;
-      cursor: crosshair;
-    }
-    #wb-toolbar {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
-      border-radius: 9999px;
-      padding: 8px 18px;
-      display: none;
-      align-items: center;
-      gap: 12px;
-      user-select: none;
-    }
-    #wb-toolbar.active {
-      display: flex;
-    }
-    .wb-btn {
-      padding: 6px 12px;
-      border-radius: 9999px;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .wb-btn:hover {
-      background-color: #f1f5f9;
-    }
-    .wb-btn.active {
-      background-color: #3b82f6;
-      color: #ffffff;
-    }
-    .color-swatch {
-      width: 22px;
-      height: 22px;
-      border-radius: 9999px;
-      border: 2px solid #ffffff;
-      box-shadow: 0 0 0 1px #cbd5e1;
-      cursor: pointer;
-      transition: transform 0.15s;
-    }
-    .color-swatch:hover, .color-swatch.active {
-      transform: scale(1.2);
-      box-shadow: 0 0 0 2px #3b82f6;
-    }
-    .scratchpad-canvas {
-      border: 1px dashed #cbd5e1;
-      border-radius: 8px;
-      background: #ffffff;
-      touch-action: none;
-      cursor: crosshair;
-    }
-    /* 커스텀 스크롤바 */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2. 미분 5. 평균값 정리 | 2022 개정 미적분Ⅰ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- KaTeX CDN with Auto-render -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            word-break: keep-all;
+        }
+        button, input, select, textarea {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            overflow-x: hidden;
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-size: 16px;
+        }
+        /* KaTeX math isolation */
+        .katex {
+            font-family: KaTeX_Main, 'Times New Roman', serif !important;
+        }
+        .katex-display {
+            margin: 0.8em 0 !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0.2em 0;
+        }
+        .math-fit .katex {
+            font-size: 1.05em;
+        }
+        /* Impeccable Nordic Edu-Chic Custom Components */
+        .edu-card {
+            background-color: #ffffff;
+            border-radius: 1.25rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .edu-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            border-color: #cbd5e1;
+        }
+        .edu-accent-bar-indigo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #6366f1, #818cf8);
+        }
+        .solution-box {
+            border-left: 4px solid #4f46e5 !important;
+            background: linear-gradient(135deg, rgba(238, 242, 255, 0.8) 0%, rgba(245, 243, 255, 0.5) 100%) !important;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease-in-out;
+        }
+        /* Inputs & Interactive Components */
+        input[type="text"]:focus, select:focus {
+            outline: none !important;
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15) !important;
+        }
+        /* Global Whiteboard Canvas */
+        #wb-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 35;
+            pointer-events: none;
+            touch-action: none;
+        }
+        #wb-canvas.wb-drawing-active {
+            pointer-events: auto !important;
+            cursor: crosshair;
+        }
+        .wb-tool-btn.active {
+            background-color: #4f46e5 !important;
+            color: #ffffff !important;
+        }
+        .wb-color-btn.active {
+            transform: scale(1.25);
+            box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #4f46e5;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased selection:bg-indigo-100 selection:text-indigo-900 min-h-screen">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen selection:bg-indigo-100 selection:text-indigo-900">
+    <!-- ========================================== -->
+    <!-- GLOBAL WHITEBOARD CANVAS & TOOLBAR OVERLAY -->
+    <!-- ========================================== -->
+    <canvas id="wb-canvas"></canvas>
 
-  <!-- 전자칠판 캔버스 및 툴바 -->
-  <canvas id="wb-canvas"></canvas>
-  <div id="wb-toolbar">
-    <div class="flex items-center gap-1 border-r border-slate-200 pr-3">
-      <button type="button" class="wb-btn active" id="wb-tool-pen" onclick="setWbTool('pen')">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-        <span>펜</span>
-      </button>
-      <button type="button" class="wb-btn" id="wb-tool-highlighter" onclick="setWbTool('highlighter')">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
-        <span>형광펜</span>
-      </button>
-      <button type="button" class="wb-btn" id="wb-tool-eraser" onclick="setWbTool('eraser')">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-        <span>지우개</span>
-      </button>
-    </div>
-    <!-- 색상 팔레트 -->
-    <div class="flex items-center gap-1.5 border-r border-slate-200 pr-3">
-      <div class="color-swatch active" style="background:#0f172a" onclick="setWbColor('#0f172a', this)" title="검정"></div>
-      <div class="color-swatch" style="background:#ef4444" onclick="setWbColor('#ef4444', this)" title="빨강"></div>
-      <div class="color-swatch" style="background:#2563eb" onclick="setWbColor('#2563eb', this)" title="파랑"></div>
-      <div class="color-swatch" style="background:#059669" onclick="setWbColor('#059669', this)" title="초록"></div>
-      <div class="color-swatch" style="background:#f59e0b" onclick="setWbColor('#f59e0b', this)" title="노랑"></div>
-      <div class="color-swatch" style="background:#7c3aed" onclick="setWbColor('#7c3aed', this)" title="보라"></div>
-    </div>
-    <!-- 굵기 선택 -->
-    <div class="flex items-center gap-1 border-r border-slate-200 pr-3 text-xs font-semibold text-slate-600">
-      <button type="button" class="px-2 py-1 rounded hover:bg-slate-100" onclick="setWbSize(2, this)">가늘게</button>
-      <button type="button" class="px-2 py-1 rounded bg-slate-200 font-bold" onclick="setWbSize(4, this)">보통</button>
-      <button type="button" class="px-2 py-1 rounded hover:bg-slate-100" onclick="setWbSize(8, this)">굵게</button>
-    </div>
-    <!-- 관리 버튼 -->
-    <div class="flex items-center gap-1">
-      <button type="button" class="p-2 text-rose-600 hover:bg-rose-50 rounded-full" onclick="clearWhiteboard()" title="전체 지우기">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-      </button>
-      <button type="button" class="p-2 text-slate-600 hover:bg-slate-100 rounded-full" onclick="downloadWhiteboard()" title="필기 다운로드">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-      </button>
-      <button type="button" class="p-2 text-slate-400 hover:text-slate-700 rounded-full ml-1" onclick="toggleWhiteboard()" title="칠판 닫기">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- 전체 레이아웃 (좌측 네비게이션 + 우측 본문) -->
-  <div class="flex min-h-screen">
-
-    <!-- 좌측 사이드바 -->
-    <aside class="w-80 bg-white border-r border-slate-200 flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-40 overflow-y-auto">
-      <!-- 헤더 -->
-      <div class="p-5 border-b border-slate-100">
-        <div class="flex items-center gap-2 mb-1.5">
-          <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/60">2022 개정 교육과정</span>
-          <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-600">고등학교 미적분Ⅰ</span>
+    <!-- Standardized Electronic Whiteboard Floating Toolbar (Gold Benchmark) -->
+    <div id="wb-toolbar" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-wrap items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-extrabold tracking-wide text-sky-300">전자칠판</span>
         </div>
-        <h1 class="text-lg font-bold text-slate-900 tracking-tight">Ⅱ. 미분</h1>
-        <p class="text-xs text-slate-500 mt-0.5">5. 평균값 정리 (교과서 75~80쪽)</p>
-      </div>
 
-      <!-- 차시 목록 네비게이션 -->
-      <nav class="flex-1 p-4 space-y-6">
-        <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">단원 차시 구성 (20~22차시)</div>
-          <ul class="space-y-1.5 text-sm">
-            <li>
-              <a href="#sec-20" class="nav-item flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium transition-colors">
-                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">20</span>
-                <div>
-                  <div class="font-semibold text-slate-900 leading-tight">롤의 정리 (75~77쪽)</div>
-                  <div class="text-[11px] text-slate-500 mt-0.5">생각열기 · 정리 정의 · 2단계 증명 · 예제1 · 문제1·2 · 롤 시뮬레이터</div>
+        <!-- Mode Switch: Pointer vs Pen vs Highlighter vs Eraser -->
+        <div class="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/80">
+            <button id="wb-btn-pointer" onclick="setWbTool('pointer')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-1" title="조작/스크롤 모드 (클릭 가능)">
+                <i class="fa-solid fa-arrow-pointer"></i>
+                <span class="hidden sm:inline">조작</span>
+            </button>
+            <button id="wb-btn-pen" onclick="setWbTool('pen')" class="wb-tool-btn active px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-1" title="일반 펜 (판서)">
+                <i class="fa-solid fa-pen"></i>
+                <span class="hidden sm:inline">펜</span>
+            </button>
+            <button id="wb-btn-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-1" title="형광펜 (반투명 강조)">
+                <i class="fa-solid fa-highlighter"></i>
+                <span class="hidden sm:inline">형광펜</span>
+            </button>
+            <button id="wb-btn-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-700/60 transition flex items-center gap-1" title="지우개 (획 삭제)">
+                <i class="fa-solid fa-eraser"></i>
+                <span class="hidden sm:inline">지우개</span>
+            </button>
+        </div>
+
+        <!-- Stroke Thickness -->
+        <div class="flex items-center gap-1.5 pl-1 pr-2 border-r border-slate-700">
+            <i class="fa-solid fa-minus text-[10px] text-slate-400"></i>
+            <input id="wb-size" type="range" min="1" max="18" value="3" class="w-16 sm:w-20 accent-indigo-500 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+            <i class="fa-solid fa-plus text-[10px] text-slate-400"></i>
+        </div>
+
+        <!-- Colors -->
+        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
+            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-5 h-5 rounded-full bg-red-500 transition-transform" title="빨간색"></button>
+            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-5 h-5 rounded-full bg-blue-500 transition-transform" title="파란색"></button>
+            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-5 h-5 rounded-full bg-emerald-500 transition-transform" title="초록색"></button>
+            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-amber-500 transition-transform" title="노란색/주황색"></button>
+            <button onclick="setWbColor('#0f172a', this)" class="wb-color-btn w-5 h-5 rounded-full bg-slate-900 border border-slate-500 transition-transform" title="검정색"></button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-1">
+            <button onclick="undoWb()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition text-xs" title="실행 취소 (Ctrl+Z)">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
+            <button onclick="clearWb()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-rose-900/60 text-rose-300 flex items-center justify-center transition text-xs" title="판서 전체 지우기">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <button onclick="saveWbImage()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-indigo-900/60 text-indigo-300 flex items-center justify-center transition text-xs" title="판서 화면 이미지로 저장">
+                <i class="fa-solid fa-download"></i>
+            </button>
+            <button onclick="toggleWhiteboard()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition text-xs" title="전자칠판 닫기">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col justify-between shadow-lg lg:shadow-none">
+        <!-- Top Brand & Navigation (Scrollable) -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-6">
+            <!-- Mobile Close Header -->
+            <div class="flex items-center justify-between lg:hidden pb-3 border-b border-slate-200">
+                <span class="text-xs font-bold text-slate-400">목차 탐색</span>
+                <button onclick="closeMobileMenu()" class="p-1 text-slate-500 hover:text-slate-800">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Header Info -->
+            <div class="pb-4 border-b border-slate-200">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="px-2.5 py-1 bg-indigo-100 text-indigo-800 text-xs font-extrabold rounded-md">2022 개정</span>
+                    <span class="text-xs text-slate-500 font-medium">고등학교 미적분Ⅰ</span>
                 </div>
-              </a>
-            </li>
-            <li>
-              <a href="#sec-21" class="nav-item flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium transition-colors">
-                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">21</span>
-                <div>
-                  <div class="font-semibold text-slate-900 leading-tight">평균값 정리와 활용 (77~79쪽)</div>
-                  <div class="text-[11px] text-slate-500 mt-0.5">정의와 증명 · 예제2 · 문제3 · 상수함수 증명(예제3·문제4) · 100m 달리기 탐구</div>
+                <h1 class="text-lg font-black text-slate-900 leading-tight">Ⅱ. 미분 5. 평균값 정리</h1>
+                <p class="text-xs text-slate-500 mt-1 font-medium">20~22차시 · 교과서 73~78쪽</p>
+            </div>
+
+            <!-- Quick Navigation Links -->
+            <!-- Detailed Section Navigation (Gold Standard from 2.4) -->
+            <nav class="space-y-1 text-xs font-semibold">
+                <a href="#sec-intro" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-800 transition">
+                    <i class="fa-solid fa-graduation-cap w-4 text-center text-indigo-600"></i>
+                    <span>단원 개요 & 핵심 목표</span>
+                </a>
+                <a href="#sec-open-20" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 text-slate-700 hover:text-amber-800 transition">
+                    <i class="fa-solid fa-lightbulb w-4 text-center text-amber-500"></i>
+                    <span>생각 열기 (포물선과 접선)</span>
+                </a>
+                <a href="#sec-20" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-800 transition">
+                    <i class="fa-solid fa-compass-drafting w-4 text-center text-blue-500"></i>
+                    <span>20차시: 롤의 정리 탐구</span>
+                </a>
+                <a href="#sec-sim-rolle" class="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-sky-50 text-slate-700 hover:text-sky-800 transition pl-6 text-[11px]">
+                    <i class="fa-solid fa-sliders w-3.5 text-center text-sky-500"></i>
+                    <span>시뮬레이터 1: 롤의 정리 c 탐색</span>
+                </a>
+                <a href="#sec-21" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-800 transition">
+                    <i class="fa-solid fa-arrow-trend-up w-4 text-center text-indigo-500"></i>
+                    <span>21차시: 평균값 정리 탐구</span>
+                </a>
+                <a href="#sec-sim-mvt" class="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-indigo-50 text-slate-700 hover:text-indigo-800 transition pl-6 text-[11px]">
+                    <i class="fa-solid fa-chart-line w-3.5 text-center text-indigo-500"></i>
+                    <span>시뮬레이터 2: 평균값 정리 c 탐색</span>
+                </a>
+                <a href="#sec-sim-runner" class="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition pl-6 text-[11px]">
+                    <i class="fa-solid fa-stopwatch w-3.5 text-center text-emerald-500"></i>
+                    <span>시뮬레이터 3: 100m 달리기 순간속도</span>
+                </a>
+                <a href="#sec-22" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 transition">
+                    <i class="fa-solid fa-clipboard-check w-4 text-center text-emerald-500"></i>
+                    <span>22차시: 스스로 확인하기</span>
+                </a>
+                <a href="#sec-sim-bounds" class="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-800 transition pl-6 text-[11px]">
+                    <i class="fa-solid fa-shapes w-3.5 text-center text-purple-500"></i>
+                    <span>시뮬레이터 4: $f'(x)$와 $f(3)$ 허용 영역</span>
+                </a>
+                <a href="#sec-reflection" class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 text-slate-700 transition">
+                    <i class="fa-solid fa-pen-to-square w-4 text-center text-slate-500"></i>
+                    <span>학습 성찰 및 자기 점검</span>
+                </a>
+            </nav>
+
+            <!-- Learning Objective Card -->
+            <div class="p-4 bg-indigo-50/70 rounded-2xl border border-indigo-100 space-y-2">
+                <span class="text-xs font-black text-indigo-900 flex items-center gap-1.5">
+                    <i class="fa-solid fa-bullseye text-indigo-600"></i> 핵심 성취기준
+                </span>
+                <p class="text-xs text-indigo-950 font-medium leading-relaxed">
+                    롤의 정리와 평균값 정리를 이해하고 기하학적으로 설명할 수 있으며, 순간속도와 평균속도의 일치 등 실생활 문제 해결에 활용한다.
+                </p>
+            </div>
+        </div>
+
+        <!-- Sidebar Footer Quick Actions (Standard Benchmark Suite) -->
+        <div class="p-4 border-t border-slate-200 space-y-2 bg-slate-50/50">
+            <button onclick="toggleWhiteboard()" id="sidebar-wb-btn" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-extrabold shadow-md transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-chalkboard-user text-sm"></i>
+                <span>전자칠판 (화면 판서 모드) 켜기</span>
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="toggleAllSolutions(true)" class="px-3 py-2 text-xs font-bold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 shadow-sm text-slate-700">
+                    <i class="fa-solid fa-eye text-indigo-500"></i> 해설 모두 열기
+                </button>
+                <button onclick="toggleAllSolutions(false)" class="px-3 py-2 text-xs font-bold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 shadow-sm text-slate-700">
+                    <i class="fa-solid fa-eye-slash text-slate-400"></i> 해설 모두 닫기
+                </button>
+            </div>
+            <button onclick="resetAllInputs()" class="w-full px-3 py-2 text-xs font-bold rounded-lg bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-rotate-left"></i> 답안 초기화
+            </button>
+
+            <!-- 5단계 실시간 글자 크기 Stepper 조절기 (90% ~ 145%, 기본 115%) -->
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm space-y-1.5">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-600 font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-font text-indigo-500"></i> 글자 크기
+                    </span>
+                    <span id="font-scale-display" class="font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-[11px]">115%</span>
                 </div>
-              </a>
-            </li>
-            <li>
-              <a href="#sec-22" class="nav-item flex items-start gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-100 text-slate-700 font-medium transition-colors">
-                <span class="w-5 h-5 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">22</span>
-                <div>
-                  <div class="font-semibold text-slate-900 leading-tight">스스로 확인하기 (80쪽)</div>
-                  <div class="text-[11px] text-slate-500 mt-0.5">기본 01~03 · 미정계수 04·05 · 심화 부등식 06 · 도함수 범위 시뮬레이터</div>
+                <div class="flex items-center gap-1">
+                    <button type="button" onclick="changeFontSize(-1)" class="flex-1 py-1 px-2 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition" title="글자 축소">
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <button type="button" onclick="resetFontSize()" class="py-1 px-2 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-[11px] transition" title="기본 크기 (115%)">
+                        초기화
+                    </button>
+                    <button type="button" onclick="changeFontSize(1)" class="flex-1 py-1 px-2 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition" title="글자 확대">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
                 </div>
-              </a>
-            </li>
-          </ul>
+            </div>
         </div>
-
-        <!-- 4대 인터랙티브 실험실 바로가기 -->
-        <div>
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">인터랙티브 실험실</div>
-          <div class="space-y-1 text-xs">
-            <a href="#lab-rolle" class="flex items-center justify-between p-2 rounded-md hover:bg-indigo-50/70 text-slate-700 transition">
-              <span class="flex items-center gap-1.5 font-medium">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                롤의 정리 수평접선 탐색기
-              </span>
-              <span class="text-[10px] text-indigo-600 font-semibold">Sim 1</span>
-            </a>
-            <a href="#lab-mvt" class="flex items-center justify-between p-2 rounded-md hover:bg-indigo-50/70 text-slate-700 transition">
-              <span class="flex items-center gap-1.5 font-medium">
-                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                평균값 정리 할선-접선 평행기
-              </span>
-              <span class="text-[10px] text-indigo-600 font-semibold">Sim 2</span>
-            </a>
-            <a href="#lab-runners" class="flex items-center justify-between p-2 rounded-md hover:bg-indigo-50/70 text-slate-700 transition">
-              <span class="flex items-center gap-1.5 font-medium">
-                <span class="w-2 h-2 rounded-full bg-purple-500"></span>
-                100m 달리기 순간속도 일치 시뮬레이터
-              </span>
-              <span class="text-[10px] text-indigo-600 font-semibold">Sim 3</span>
-            </a>
-            <a href="#lab-bounds" class="flex items-center justify-between p-2 rounded-md hover:bg-indigo-50/70 text-slate-700 transition">
-              <span class="flex items-center gap-1.5 font-medium">
-                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                도함수 범위 $f(3)$ 영역 시각화
-              </span>
-              <span class="text-[10px] text-indigo-600 font-semibold">Sim 4</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- 단원 허브 이동 메뉴 -->
-        <div class="pt-3 border-t border-slate-100">
-          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 px-2">미적분Ⅰ 전체 단원 바로가기</div>
-          <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-            <a href="1. 함수의 극한과 연속 1. 함수의 극한.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">1. 함수의 극한</a>
-            <a href="1. 함수의 극한과 연속 2. 함수의 극한에 대한 성질.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2. 극한의 성질</a>
-            <a href="1. 함수의 극한과 연속 3. 함수의 연속.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">3. 함수의 연속</a>
-            <a href="1. 함수의 극한과 연속 4. 연속함수의 성질.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">4. 연속함수 성질</a>
-            <a href="2. 미분 1. 미분계수.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-1. 미분계수</a>
-            <a href="2. 미분 2. 미분가능성과 연속성.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-2. 미분가능성</a>
-            <a href="2. 미분 3. 도함수.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-3. 도함수</a>
-            <a href="2. 미분 4. 접선의 방정식.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-4. 접선의 방정식</a>
-            <span class="p-1.5 rounded bg-indigo-50 text-indigo-700 font-bold truncate">2-5. 평균값 정리</span>
-            <a href="2. 미분 6. 함수의 증가와 감소, 극대와 극소.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-6. 증가/감소/극대극소</a>
-            <a href="2. 미분 7. 함수의 그래프.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">2-7. 함수의 그래프</a>
-            <a href="3. 적분 5. 속도와 거리.html" class="p-1.5 rounded hover:bg-slate-100 text-slate-600 truncate">3-5. 속도와 거리</a>
-          </div>
-        </div>
-      </nav>
-
-      <!-- 사용자 정보 및 칠판 토글 푸터 -->
-      <div class="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span class="text-xs font-medium text-slate-600">수업 모드 준비됨</span>
-        </div>
-        <button type="button" onclick="toggleWhiteboard()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5 transition">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-          <span>전자칠판 열기</span>
-        </button>
-      </div>
     </aside>
 
-    <!-- 메인 콘텐츠 영역 -->
-    <main class="flex-1 ml-80 min-w-0">
-      <!-- 상단 스티키 바 -->
-      <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 px-8 py-3.5 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">05. 평균값 정리</span>
-          <span class="text-slate-300">|</span>
-          <h2 class="text-sm font-bold text-slate-800">롤의 정리와 평균값 정리의 원리 및 실생활 활용</h2>
-        </div>
-        <div class="flex items-center gap-3">
-          <button type="button" onclick="toggleWhiteboard()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
-            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-            <span>칠판 필기 모드</span>
-          </button>
-          <div class="h-4 w-px bg-slate-200"></div>
-          <span class="text-xs text-slate-500 font-medium">교과서 75~80쪽 (167쪽 해설)</span>
-        </div>
-      </header>
+    <!-- Backdrop for mobile sidebar -->
+    <div id="sidebar-backdrop" onclick="closeMobileMenu()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content Area (Unified max-w-7xl for electronic blackboard & widescreen) -->
+    <main id="main-content" class="lg:ml-72 min-h-screen pt-16 lg:pt-0 pb-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-8 space-y-12">
+
+      
+
+            <!-- Unit Banner (Gold Standard Hero - 접선의 방정식 표준 계승) -->
+            <section id="sec-intro" class="scroll-mt-24 space-y-6">
+                <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-700 to-sky-700 text-white p-8 shadow-xl">
+                    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="space-y-3 max-w-3xl">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm text-xs font-semibold tracking-wide">
+                                <span>교과서 73~78쪽</span>
+                                <span>•</span>
+                                <span>20~22차시</span>
+                            </div>
+                            <h1 class="text-3xl sm:text-4xl font-black tracking-tight text-white">
+                                05. 평균값 정리
+                            </h1>
+                            <p class="text-indigo-100 text-sm sm:text-base leading-relaxed">
+                                롤의 정리와 평균값 정리의 기하학적 원리를 동적 시뮬레이터로 탐색하고, 순간속도와 평균속도의 일치 등 실생활 문제 해결에 응용합니다.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
 
       <!-- 본문 스크롤 영역 -->
       <div class="p-8 max-w-5xl mx-auto space-y-16">
@@ -324,7 +337,7 @@
           </div>
 
           <!-- 생각 열기 (교과서 75쪽) -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm">
+          <div id="sec-open-20" class="scroll-mt-24 edu-card p-7 shadow-sm">
             <div class="flex items-center gap-2.5 mb-4">
               <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold flex items-center gap-1">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
@@ -341,18 +354,18 @@
                 <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 space-y-3">
                   <div>
                     <span class="font-bold text-indigo-600 mr-2">❶</span>
-                    두 점 $A(-1, 3)$, $B(3, 3)$을 지나는 직선 $AB$의 기울기를 구해 보세요.
+                    두 점 $A(-1, 3)$, $B(3, 3)$을 지나는 직선 $\mathrm{AB}$의 기울기를 구해 보세요.
                     <div class="mt-2 flex items-center gap-3">
-                      <input type="text" id="open20-q1" placeholder="기울기 입력" class="w-32 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                      <input type="text" id="open20-q1" placeholder="" class="w-32 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
                       <button type="button" onclick="checkOpen20_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">확인</button>
                       <span id="open20-q1-msg" class="text-xs font-medium"></span>
                     </div>
                   </div>
                   <div class="pt-2 border-t border-slate-200">
                     <span class="font-bold text-indigo-600 mr-2">❷</span>
-                    직선 $AB$와 평행하고(기울기가 같고), 곡선 $y = f(x)$에 접하는 직선이 존재하는지 말해 보세요.
+                    직선 $\mathrm{AB}$와 평행하고(기울기가 같고), 곡선 $y = f(x)$에 접하는 접선이 존재하는지 말해 보세요.
                     <div class="mt-2 flex items-center gap-3">
-                      <input type="text" id="open20-q2" placeholder="x 좌표 입력 (예: 1)" class="w-32 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                      <input type="text" id="open20-q2" placeholder="" class="w-32 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
                       <button type="button" onclick="checkOpen20_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">확인</button>
                       <span id="open20-q2-msg" class="text-xs font-medium"></span>
                     </div>
@@ -360,31 +373,64 @@
                 </div>
               </div>
 
-              <!-- 생각열기 기하 카드 -->
-              <div class="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100 text-center flex flex-col items-center justify-center">
-                <svg viewBox="0 0 200 160" class="w-48 h-auto overflow-visible">
-                  <!-- 좌표축 -->
-                  <line x1="20" y1="120" x2="180" y2="120" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
-                  <line x1="60" y1="150" x2="60" y2="20" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/>
-                  <text x="185" y="124" font-size="10" fill="#64748b" font-weight="bold">x</text>
-                  <text x="56" y="15" font-size="10" fill="#64748b" font-weight="bold">y</text>
+              <!-- 생각열기 기하 카드 (교과서 75쪽 원본 1:1 완벽 기하학적 정밀 작도) -->
+              <div class="bg-indigo-50/40 rounded-2xl p-5 border border-indigo-100/80 text-center flex flex-col items-center justify-center shadow-inner">
+                <svg viewBox="0 0 240 220" class="w-56 h-auto overflow-visible select-none">
+                  <!-- 좌표축 (x축, y축) -->
+                  <!-- x축 -->
+                  <line x1="15" y1="160" x2="225" y2="160" stroke="#475569" stroke-width="1.8" stroke-linecap="round"/>
+                  <polygon points="225,157 232,160 225,163" fill="#475569"/>
+                  <text x="228" y="172" font-size="12" fill="#334155" font-family="'Pretendard', sans-serif" font-weight="bold" font-style="italic">x</text>
+
+                  <!-- y축 -->
+                  <line x1="70" y1="210" x2="70" y2="15" stroke="#475569" stroke-width="1.8" stroke-linecap="round"/>
+                  <polygon points="67,15 70,8 73,15" fill="#475569"/>
+                  <text x="56" y="16" font-size="12" fill="#334155" font-family="'Pretendard', sans-serif" font-weight="bold" font-style="italic">y</text>
+
+                  <!-- 원점 O 및 축 눈금 -->
+                  <text x="54" y="176" font-size="11" fill="#475569" font-family="'Pretendard', sans-serif" font-weight="bold">O</text>
+                  <text x="31" y="176" font-size="11" fill="#475569" font-family="'Pretendard', sans-serif" font-weight="bold">-1</text>
+                  <text x="136" y="176" font-size="11" fill="#475569" font-family="'Pretendard', sans-serif" font-weight="bold">2</text>
+                  <text x="171" y="176" font-size="11" fill="#475569" font-family="'Pretendard', sans-serif" font-weight="bold">3</text>
+                  <text x="56" y="59" font-size="11" fill="#475569" font-family="'Pretendard', sans-serif" font-weight="bold">3</text>
+
+                  <!-- 수선 점선 (A, B에서 축으로 내린 점선) -->
+                  <!-- x = -1 점선 -->
+                  <line x1="35" y1="55" x2="35" y2="160" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,3"/>
+                  <!-- x = 3 점선 -->
+                  <line x1="175" y1="55" x2="175" y2="160" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,3"/>
+                  <!-- y = 3 수평 할선 AB 점선 -->
+                  <line x1="35" y1="55" x2="175" y2="55" stroke="#6366f1" stroke-width="1.8" stroke-dasharray="4,3"/>
+
                   <!-- 포물선 y = x^2 - 2x -->
-                  <!-- x = -1 -> y = 3 (svg y = 50), x=1 -> y=-1 (svg y=130), x=3 -> y=3 (svg y=50) -->
-                  <!-- scale: x_svg = 60 + 25*x, y_svg = 120 - 20*y + 10 (approx) -->
-                  <path d="M 30,50 Q 85,150 140,50" fill="none" stroke="#4f46e5" stroke-width="2.5"/>
+                  <path d="M 26.3,17.8 L 35.0,55.0 L 43.8,87.8 L 52.5,116.3 L 61.3,140.3 L 70.0,160.0 L 78.8,175.3 L 87.5,186.3 L 96.3,192.8 L 105.0,195.0 L 113.8,192.8 L 122.5,186.3 L 131.3,175.3 L 140.0,160.0 L 148.8,140.3 L 157.5,116.3 L 166.3,87.8 L 175.0,55.0 L 183.8,17.8" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+
+                  <!-- 포물선 이름 라벨 -->
+                  <text x="145" y="26" font-size="12" fill="#1d4ed8" font-family="'Pretendard', sans-serif" font-weight="bold" font-style="italic">y = f(x)</text>
+
                   <!-- 점 A(-1, 3), 점 B(3, 3) -->
-                  <line x1="30" y1="50" x2="140" y2="50" stroke="#64748b" stroke-dasharray="3,3" stroke-width="1.5"/>
-                  <circle cx="35" cy="50" r="4" fill="#ef4444"/>
-                  <circle cx="135" cy="50" r="4" fill="#ef4444"/>
-                  <text x="18" y="45" font-size="9" fill="#1e293b" font-weight="bold">A(-1,3)</text>
-                  <text x="138" y="45" font-size="9" fill="#1e293b" font-weight="bold">B(3,3)</text>
-                  <!-- 꼭짓점 (1, -1)에서의 수평 접선 -->
-                  <line x1="45" y1="128" x2="125" y2="128" stroke="#059669" stroke-width="2"/>
-                  <circle cx="85" cy="128" r="4" fill="#059669"/>
-                  <text x="88" y="145" font-size="9" fill="#059669" font-weight="bold">c=1 (f'=0)</text>
+                  <circle cx="35" cy="55" r="4.5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+                  <text x="12" y="53" font-size="13" fill="#0f172a" font-family="'Pretendard', sans-serif" font-weight="extrabold">A</text>
+
+                  <circle cx="175" cy="55" r="4.5" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+                  <text x="184" y="53" font-size="13" fill="#0f172a" font-family="'Pretendard', sans-serif" font-weight="extrabold">B</text>
+
+                  <!-- 정답 맞출 시 나타나는 꼭짓점 (1, -1)의 평행 수평 접선 -->
+                  <g id="open20-tangent-line" class="transition-all duration-300 opacity-90">
+                    <line x1="50" y1="195" x2="160" y2="195" stroke="#059669" stroke-width="2.2" stroke-linecap="round"/>
+                    <circle cx="105" cy="195" r="4" fill="#059669" stroke="#ffffff" stroke-width="1.2"/>
+                    <text x="108" y="212" font-size="10" fill="#059669" font-family="'Pretendard', sans-serif" font-weight="bold">꼭짓점 (1, -1) [기울기 0]</text>
+                  </g>
                 </svg>
-                <div class="text-[11px] text-slate-500 mt-2 font-medium">직선 AB(기울기 0)와 꼭짓점 접선(기울기 0)</div>
+                <div class="text-[11px] text-slate-500 mt-2 font-medium flex items-center justify-center gap-1.5">
+                  <span class="inline-block w-2.5 h-0.5 bg-indigo-500"></span>
+                  <span>직선 AB (기울기 0)</span>
+                  <span class="text-slate-300">|</span>
+                  <span class="inline-block w-2.5 h-0.5 bg-emerald-600"></span>
+                  <span>접선 (기울기 0)</span>
+                </div>
               </div>
+            </div>
             </div>
           </div>
 
@@ -481,8 +527,7 @@
                   <div class="bg-white p-3 rounded-lg border border-indigo-100 space-y-2">
                     <div class="font-semibold text-indigo-900">ⓐ $x = c$에서 최댓값을 갖는 경우:</div>
                     <p>
-                      절댓값이 충분히 작은 수 $h 
-eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
+                      절댓값이 충분히 작은 수 $h \neq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                     </p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-center py-1">
                       <div class="bg-slate-50 p-2 rounded border border-slate-100">
@@ -496,7 +541,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                       그런데 $f(x)$는 $x = c$에서 미분가능하므로 좌극한과 우극한이 같습니다. 따라서
                     </p>
                     <div class="text-center font-bold text-indigo-700 py-1">
-                      $$0 \le \lim_{h 	o 0^-} rac{f(c+h)-f(c)}{h} = \lim_{h 	o 0^+} rac{f(c+h)-f(c)}{h} \le 0 \implies f'(c) = 0$$
+                      $$0 \le \lim_{h \to 0^-} \frac{f(c+h)-f(c)}{h} = \lim_{h \to 0^+} \frac{f(c+h)-f(c)}{h} \le 0 \implies f'(c) = 0$$
                     </div>
                   </div>
 
@@ -549,7 +594,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">문제 1</span>
                 <h4 class="text-base font-bold text-slate-800">롤의 정리 만족 상수 구하기</h4>
               </div>
-              <span class="text-xs text-slate-500 font-medium">교과서 77쪽</span>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-500 font-medium">교과서 77쪽</span>
+                <button type="button" onclick="toggleSolution('sol-u5-p1')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                  <i id="sol-u5-p1-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                </button>
+              </div>
             </div>
 
             <p class="text-sm text-slate-700">
@@ -564,25 +614,16 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                     <span class="font-bold text-sm text-indigo-700">(1) $f(x) = x^2 - 6x + 2 \quad [0, 6]$</span>
                     <span class="text-xs text-slate-400">2차 함수</span>
                   </div>
-                  <p class="text-xs text-slate-600 mb-3">
-                    $f(0)=2, f(6)=2$ 확인 후 $f'(c)=0$인 $c$를 구하세요.
-                  </p>
+                  
                   <div class="flex items-center gap-2">
                     <span class="text-xs text-slate-600">c = </span>
-                    <input type="text" id="q1-1-ans" placeholder="정답 입력" class="w-24 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                    <input type="text" id="q1-1-ans" placeholder="" class="w-24 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
                     <button type="button" onclick="checkU5Prob1_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                     <span id="q1-1-msg" class="text-xs font-medium"></span>
                   </div>
                 </div>
 
-                <!-- 연습장 캔버스 -->
-                <div>
-                  <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                    <span>수식 풀이 연습장</span>
-                    <button type="button" onclick="clearScratchpad('sp-u5-p1-1')" class="hover:text-indigo-600">지우기</button>
-                  </div>
-                  <canvas id="sp-u5-p1-1" class="scratchpad-canvas w-full h-24"></canvas>
-                </div>
+                
               </div>
 
               <!-- 소문항 2 -->
@@ -592,24 +633,39 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                     <span class="font-bold text-sm text-indigo-700">(2) $f(x) = x^3 - 3x \quad [-\sqrt{3}, \sqrt{3}]$</span>
                     <span class="text-xs text-slate-400">3차 함수</span>
                   </div>
-                  <p class="text-xs text-slate-600 mb-3">
-                    $f(-\sqrt{3})=0, f(\sqrt{3})=0$ 확인 후 열린구간 속 $c$들을 구하세요.
-                  </p>
+                  
                   <div class="flex items-center gap-2">
                     <span class="text-xs text-slate-600">c = </span>
-                    <input type="text" id="q1-2-ans" placeholder="-1, 1" class="w-32 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                    <input type="text" id="q1-2-ans" placeholder="" class="w-32 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
                     <button type="button" onclick="checkU5Prob1_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                     <span id="q1-2-msg" class="text-xs font-medium"></span>
                   </div>
                 </div>
 
-                <!-- 연습장 캔버스 -->
-                <div>
-                  <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                    <span>수식 풀이 연습장</span>
-                    <button type="button" onclick="clearScratchpad('sp-u5-p1-2')" class="hover:text-indigo-600">지우기</button>
-                  </div>
-                  <canvas id="sp-u5-p1-2" class="scratchpad-canvas w-full h-24"></canvas>
+                
+              </div>
+            </div>
+            <!-- 문제 1 상세 해설 박스 -->
+            <div id="sol-u5-p1" class="hidden solution-box p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 space-y-3 leading-relaxed">
+              <div class="font-bold text-indigo-950 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                <span>[문제 1 단계별 상세 해설]</span>
+              </div>
+              <div class="space-y-1">
+                <div>• <strong>⑴ $f(x) = x^2 - 6x + 2 \quad [0, 6]$:</strong></div>
+                <div class="pl-3 text-slate-700">
+                  $f(0) = 2$, $f(6) = 36 - 36 + 2 = 2$이므로 $f(0) = f(6)$입니다.<br>
+                  함수 $f(x)$는 닫힌구간 $[0, 6]$에서 연속이고 열린구간 $(0, 6)$에서 미분가능하므로 <strong>롤의 정리</strong>에 의하여 $f'(c) = 0$인 $c$가 열린구간 $(0, 6)$에 적어도 하나 존재합니다.<br>
+                  $f'(x) = 2x - 6 = 0 \implies x = 3$. 이때 $3 \in (0, 6)$이므로 $\mathbf{c = 3}$.
+                </div>
+              </div>
+              <div class="pt-2 border-t border-indigo-100/80 space-y-1">
+                <div>• <strong>⑵ $f(x) = x^3 - 3x \quad [-\sqrt{3}, \sqrt{3}]$:</strong></div>
+                <div class="pl-3 text-slate-700">
+                  $f(-\sqrt{3}) = -3\sqrt{3} + 3\sqrt{3} = 0$, $f(\sqrt{3}) = 3\sqrt{3} - 3\sqrt{3} = 0$이므로 $f(-\sqrt{3}) = f(\sqrt{3})$입니다.<br>
+                  함수 $f(x)$는 닫힌구간 $[-\sqrt{3}, \sqrt{3}]$에서 연속이고 열린구간 $(-\sqrt{3}, \sqrt{3})$에서 미분가능하므로 롤의 정리에 의해 $f'(c) = 0$인 $c$가 존재합니다.<br>
+                  $f'(x) = 3x^2 - 3 = 3(x+1)(x-1) = 0 \implies x = -1$ 또는 $x = 1$.<br>
+                  두 값 모두 열린구간 $(-\sqrt{3}, \sqrt{3})$에 속하므로 $\mathbf{c = -1, 1}$.
                 </div>
               </div>
             </div>
@@ -622,7 +678,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <span class="px-2.5 py-1 rounded bg-emerald-600 text-white font-bold text-xs">문제 2 (의사소통)</span>
                 <h4 class="text-base font-bold text-slate-800">절댓값 함수와 롤의 정리 적용 불가 분석</h4>
               </div>
-              <span class="text-xs text-slate-500 font-medium">교과서 77쪽</span>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-500 font-medium">교과서 77쪽</span>
+                <button type="button" onclick="toggleSolution('sol-u5-p2')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-800 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                  <i id="sol-u5-p2-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                </button>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
@@ -633,12 +694,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <div class="space-y-2">
                   <div class="flex items-center justify-between">
                     <span class="text-xs font-semibold text-slate-600">내가 작성한 서술형 이유:</span>
-                    <button type="button" onclick="toggleSolution('sol-u5-p2')" class="text-xs font-bold text-indigo-600 hover:underline">모범 답안 보기</button>
+                    
                   </div>
                   <textarea id="comm-p2-text" rows="2" placeholder="왜 롤의 정리를 쓸 수 없는지 미분가능성과 관련하여 작성해보세요..." class="w-full text-xs p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none"></textarea>
                 </div>
 
-                <div id="sol-u5-p2" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-800 space-y-1.5">
+                <div id="sol-u5-p2" class="hidden solution-box p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-800 space-y-1.5">
                   <div class="font-bold text-emerald-800 flex items-center gap-1.5">
                     <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     모범 서술 답안:
@@ -674,7 +735,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
           </div>
 
           <!-- 인터랙티브 실험실 1: 롤의 정리 수평접선 탐색기 -->
-          <div id="lab-rolle" class="bg-white rounded-2xl border border-indigo-200 p-7 shadow-md space-y-4">
+          <div id="lab-rolle" class="edu-card edu-accent-bar-indigo p-7 shadow-md space-y-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">Sim 1</span>
@@ -708,7 +769,19 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                       <span>접점 위치 탐색 ($c$)</span>
                       <span id="rolle-c-val" class="text-indigo-600 font-mono">c = 2.00</span>
                     </div>
-                    <input type="range" id="rolle-c-slider" min="0" max="4" step="0.05" value="2.00" oninput="updateRolleSimPoint(this.value)" class="w-full accent-indigo-600">
+                    <input type="range" id="rolle-c-slider" min="0" max="4" step="0.01" value="2.00" oninput="updateRolleSimPoint(this.value)" class="w-full accent-indigo-600">
+                  </div>
+                  <!-- 롤의 정리 자동 재생 컨트롤러 -->
+                  <div class="flex items-center justify-center gap-2 pt-2 border-t border-indigo-200/60">
+                    <button type="button" id="btn-rolle-play" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                      <i class="fa-solid fa-play text-[11px]"></i> <span>자동 재생</span>
+                    </button>
+                    <button type="button" id="btn-rolle-pause" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+                      <i class="fa-solid fa-pause text-[11px]"></i> <span>일시정지</span>
+                    </button>
+                    <button type="button" id="btn-rolle-reset" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-lg transition flex items-center gap-1.5 border border-slate-300">
+                      <i class="fa-solid fa-rotate-left text-[11px]"></i> <span>초기화</span>
+                    </button>
                   </div>
 
                   <div class="p-3 bg-white rounded-lg border border-indigo-100 space-y-1.5 text-xs">
@@ -769,7 +842,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 함수 $f(x)$가 <span class="text-blue-600 underline underline-offset-4 decoration-2">닫힌구간 $[a, b]$에서 연속</span>이고 <span class="text-blue-600 underline underline-offset-4 decoration-2">열린구간 $(a, b)$에서 미분가능</span>하면
               </p>
               <div class="text-center py-2 bg-blue-50/50 rounded-lg border border-blue-100">
-                <span class="text-xl font-extrabold text-blue-800 math-font">$$rac{f(b) - f(a)}{b - a} = f'(c)$$</span>
+                <span class="text-xl font-extrabold text-blue-800 math-font">$$\frac{f(b) - f(a)}{b - a} = f'(c)$$</span>
               </div>
               <p class="text-slate-800 text-sm leading-relaxed">
                 인 $c$가 열린구간 $(a, b)$에 <strong class="text-rose-600 font-bold">적어도 하나 존재</strong>한다.
@@ -784,7 +857,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                   기하학적 본질: 할선과 평행한 접선의 존재
                 </div>
                 <p>
-                  곡선 위의 두 점 $A(a, f(a))$와 $B(b, f(b))$를 지나는 할선의 기울기 $rac{f(b)-f(a)}{b-a}$와 같은 기울기를 갖는 접선이 곡선 위에 적어도 하나 반드시 존재함을 뜻합니다.
+                  곡선 위의 두 점 $A(a, f(a))$와 $B(b, f(b))$를 지나는 할선의 기울기 $\frac{f(b)-f(a)}{b-a}$와 같은 기울기를 갖는 접선이 곡선 위에 적어도 하나 반드시 존재함을 뜻합니다.
                 </p>
               </div>
 
@@ -812,7 +885,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 곡선 $y = f(x)$ 위의 두 점 $A(a, f(a))$, $B(b, f(b))$를 지나는 직선을 $y = g(x)$라 하면 직선의 방정식은 다음과 같습니다:
               </p>
               <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-center text-xs font-mono">
-                $$g(x) = rac{f(b) - f(a)}{b - a}(x - a) + f(a)$$
+                $$g(x) = \frac{f(b) - f(a)}{b - a}(x - a) + f(a)$$
               </div>
 
               <div class="p-4 rounded-xl bg-blue-50/50 border border-blue-100 space-y-3 text-xs">
@@ -839,7 +912,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                   따라서 함수 $h(x)$에 <strong>롤의 정리</strong>를 적용하면 $h'(c) = 0$인 $c$가 열린구간 $(a, b)$에 적어도 하나 존재합니다.
                 </p>
                 <div class="bg-white p-3 rounded-lg border border-blue-200 text-center">
-                  $$h'(c) = f'(c) - g'(c) = f'(c) - rac{f(b) - f(a)}{b - a} = 0 \implies \mathbf{f'(c) = rac{f(b) - f(a)}{b - a}}$$
+                  $$h'(c) = f'(c) - g'(c) = f'(c) - \frac{f(b) - f(a)}{b - a} = 0 \implies \mathbf{f'(c) = \frac{f(b) - f(a)}{b - a}}$$
                 </div>
                 <p class="text-right text-indigo-700 font-bold">Q.E.D. (증명 완료)</p>
               </div>
@@ -868,16 +941,16 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 </div>
                 <p>1) 구간 $[1, 4]$에서의 평균변화율 계산:</p>
                 <div class="pl-3 font-mono text-slate-800">
-                  $$rac{f(4) - f(1)}{4 - 1} = rac{(16 - 12) - (1 - 3)}{3} = rac{4 - (-2)}{3} = rac{6}{3} = \mathbf{2}$$
+                  $$\frac{f(4) - f(1)}{4 - 1} = \frac{(16 - 12) - (1 - 3)}{3} = \frac{4 - (-2)}{3} = \frac{6}{3} = \mathbf{2}$$
                 </div>
                 <p>2) 도함수 $f'(x) = 2x - 3$이므로 $f'(c) = 2c - 3$.</p>
                 <p>3) 평균값 정리에 의해 $f'(c) = 2$를 만족해야 하므로:</p>
                 <div class="pl-3 font-mono text-slate-800">
-                  $$2c - 3 = 2 \implies 2c = 5 \implies \mathbf{c = rac{5}{2}}$$
+                  $$2c - 3 = 2 \implies 2c = 5 \implies \mathbf{c = \frac{5}{2}}$$
                 </div>
-                <p>4) $c = rac{5}{2} = 2.5$는 열린구간 $(1, 4)$에 속하므로 적합합니다.</p>
+                <p>4) $c = \frac{5}{2} = 2.5$는 열린구간 $(1, 4)$에 속하므로 적합합니다.</p>
                 <div class="pt-2 text-right">
-                  <span class="font-bold text-slate-900 bg-white px-3 py-1 rounded border border-indigo-200">정답: $c = rac{5}{2}$</span>
+                  <span class="font-bold text-slate-900 bg-white px-3 py-1 rounded border border-indigo-200">정답: $c = \frac{5}{2}$</span>
                 </div>
               </div>
             </div>
@@ -890,7 +963,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">문제 3</span>
                 <h4 class="text-base font-bold text-slate-800">평균값 정리 만족 상수 구하기</h4>
               </div>
-              <span class="text-xs text-slate-500 font-medium">교과서 78쪽</span>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-500 font-medium">교과서 78쪽</span>
+                <button type="button" onclick="toggleSolution('sol-u5-p3')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                  <i id="sol-u5-p3-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                </button>
+              </div>
             </div>
 
             <p class="text-sm text-slate-700">
@@ -905,25 +983,16 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                     <span class="font-bold text-sm text-indigo-700">(1) $f(x) = 2x^2 + x + 1 \quad [-1, 1]$</span>
                     <span class="text-xs text-slate-400">2차 함수</span>
                   </div>
-                  <p class="text-xs text-slate-600 mb-3">
-                    평균변화율 $rac{f(1)-f(-1)}{1-(-1)}$ 계산 후 $f'(c)$와 같아지는 $c$를 구하세요.
-                  </p>
+                  
                   <div class="flex items-center gap-2">
                     <span class="text-xs text-slate-600">c = </span>
-                    <input type="text" id="q3-1-ans" placeholder="정답 입력" class="w-24 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                    <input type="text" id="q3-1-ans" placeholder="" class="w-24 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
                     <button type="button" onclick="checkU5Prob3_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                     <span id="q3-1-msg" class="text-xs font-medium"></span>
                   </div>
                 </div>
 
-                <!-- 연습장 캔버스 -->
-                <div>
-                  <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                    <span>수식 풀이 연습장</span>
-                    <button type="button" onclick="clearScratchpad('sp-u5-p3-1')" class="hover:text-indigo-600">지우기</button>
-                  </div>
-                  <canvas id="sp-u5-p3-1" class="scratchpad-canvas w-full h-24"></canvas>
-                </div>
+                
               </div>
 
               <!-- 소문항 2 -->
@@ -933,24 +1002,38 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                     <span class="font-bold text-sm text-indigo-700">(2) $f(x) = x^3 \quad [0, 3]$</span>
                     <span class="text-xs text-slate-400">3차 함수</span>
                   </div>
-                  <p class="text-xs text-slate-600 mb-3">
-                    평균변화율 $rac{27-0}{3}=9$와 $f'(c)=3c^2$을 연립하여 열린구간 $(0, 3)$ 내의 $c$를 구하세요.
-                  </p>
+                  
                   <div class="flex items-center gap-2">
                     <span class="text-xs text-slate-600">c = </span>
-                    <input type="text" id="q3-2-ans" placeholder="루트3 or sqrt(3)" class="w-32 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                    <input type="text" id="q3-2-ans" placeholder="" class="w-32 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
                     <button type="button" onclick="checkU5Prob3_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                     <span id="q3-2-msg" class="text-xs font-medium"></span>
                   </div>
                 </div>
 
-                <!-- 연습장 캔버스 -->
-                <div>
-                  <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                    <span>수식 풀이 연습장</span>
-                    <button type="button" onclick="clearScratchpad('sp-u5-p3-2')" class="hover:text-indigo-600">지우기</button>
-                  </div>
-                  <canvas id="sp-u5-p3-2" class="scratchpad-canvas w-full h-24"></canvas>
+                
+              </div>
+            </div>
+            <!-- 문제 3 상세 해설 박스 -->
+            <div id="sol-u5-p3" class="hidden solution-box p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 space-y-3 leading-relaxed">
+              <div class="font-bold text-indigo-950 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                <span>[문제 3 단계별 상세 해설]</span>
+              </div>
+              <div class="space-y-1">
+                <div>• <strong>⑴ $f(x) = 2x^2 + x + 1 \quad [-1, 1]$:</strong></div>
+                <div class="pl-3 text-slate-700">
+                  닫힌구간 $[-1, 1]$에서 평균변화율은 $\dfrac{f(1) - f(-1)}{1 - (-1)} = \dfrac{(2 + 1 + 1) - (2 - 1 + 1)}{2} = \dfrac{4 - 2}{2} = 1$입니다.<br>
+                  $f'(x) = 4x + 1$이므로 <strong>평균값 정리</strong>에 의해 $f'(c) = 4c + 1 = 1 \implies 4c = 0 \implies \mathbf{c = 0}$.<br>
+                  이때 $0 \in (-1, 1)$이므로 조건을 만족합니다.
+                </div>
+              </div>
+              <div class="pt-2 border-t border-indigo-100/80 space-y-1">
+                <div>• <strong>⑵ $f(x) = x^3 - 3x \quad [0, 3]$:</strong></div>
+                <div class="pl-3 text-slate-700">
+                  닫힌구간 $[0, 3]$에서 평균변화율은 $\dfrac{f(3) - f(0)}{3 - 0} = \dfrac{(27 - 9) - 0}{3} = \dfrac{18}{3} = 6$입니다.<br>
+                  $f'(x) = 3x^2 - 3$이므로 평균값 정리에 의해 $f'(c) = 3c^2 - 3 = 6 \implies 3c^2 = 9 \implies c^2 = 3$.<br>
+                  열린구간 $(0, 3)$에 속해야 하므로 양수인 $\mathbf{c = \sqrt{3}}$입니다.
                 </div>
               </div>
             </div>
@@ -982,7 +1065,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <p>평균값 정리에 의하여 $\dfrac{f(x) - f(a)}{x - a} = f'(c)$인 $c$가 열린구간 $(a, x)$에 적어도 하나 존재합니다.</p>
                 <p>그런데 모든 $x$에서 $f'(x) = 0$이므로 $f'(c) = 0$입니다. 따라서</p>
                 <div class="text-center font-bold text-purple-800 py-1 font-mono">
-                  $$f(x) - f(a) = 0 \implies \mathbf{f(x) = f(a) = 	ext{상수 } C}$$
+                  $$f(x) - f(a) = 0 \implies \mathbf{f(x) = f(a) = \text{상수 } C}$$
                 </div>
                 <p>따라서 함수 $f(x)$는 닫힌구간 $[a, b]$에서 상수함수입니다.</p>
               </div>
@@ -992,7 +1075,9 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
             <div class="p-5 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
               <div class="flex items-center justify-between">
                 <span class="font-bold text-slate-800 text-xs px-2 py-0.5 rounded bg-slate-200">문제 4 (추론)</span>
-                <button type="button" onclick="toggleSolution('sol-u5-p4')" class="text-xs font-bold text-indigo-600 hover:underline">증명 확인하기</button>
+                <button type="button" onclick="toggleSolution('sol-u5-p4')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                    <i id="sol-u5-p4-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                  </button>
               </div>
               <p class="text-xs text-slate-800 leading-relaxed">
                 두 함수 $f(x), g(x)$가 닫힌구간 $[a, b]$에서 연속이고 열린구간 $(a, b)$에서 미분가능할 때, 열린구간 $(a, b)$에 속하는 모든 $x$에서 $f'(x) = g'(x)$이면 닫힌구간 $[a, b]$에서 $f(x) = g(x) + k$ 임을 보이시오. (단, $k$는 상수이다.)
@@ -1025,7 +1110,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
 
             <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200/80 text-xs text-slate-800 leading-relaxed space-y-2">
               <p>
-                광호와 성철이가 길이가 $100	ext{ m}$인 직선 트랙 위의 같은 지점에서 동시에 출발한 후, 멈추지 않고 달려 <strong>$15$초 후 동시에 결승선을 통과</strong>했다고 합니다.
+                광호와 성철이가 길이가 $100\text{ m}$인 직선 트랙 위의 같은 지점에서 동시에 출발한 후, 멈추지 않고 달려 <strong>$15$초 후 동시에 결승선을 통과</strong>했다고 합니다.
               </p>
             </div>
 
@@ -1102,7 +1187,19 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                       <span>끝점 $b$</span>
                       <span id="mvt-b-val" class="text-blue-600 font-mono">b = 4.0</span>
                     </div>
-                    <input type="range" id="mvt-b-slider" min="2.5" max="4.5" step="0.1" value="4.0" oninput="updateMvtB(this.value)" class="w-full accent-blue-600">
+                    <input type="range" id="mvt-b-slider" min="2.5" max="4.5" step="0.01" value="4.0" oninput="updateMvtB(this.value)" class="w-full accent-blue-600">
+                  </div>
+                  <!-- 평균값 정리 자동 재생 컨트롤러 -->
+                  <div class="flex items-center justify-center gap-2 pt-2 border-t border-blue-200/60">
+                    <button type="button" id="btn-mvt-play" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                      <i class="fa-solid fa-play text-[11px]"></i> <span>자동 재생</span>
+                    </button>
+                    <button type="button" id="btn-mvt-pause" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+                      <i class="fa-solid fa-pause text-[11px]"></i> <span>일시정지</span>
+                    </button>
+                    <button type="button" id="btn-mvt-reset" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-lg transition flex items-center gap-1.5 border border-slate-300">
+                      <i class="fa-solid fa-rotate-left text-[11px]"></i> <span>초기화</span>
+                    </button>
                   </div>
 
                   <div class="p-3 bg-white rounded-lg border border-blue-100 space-y-1.5 text-xs">
@@ -1155,14 +1252,17 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                     <span id="runner-time-display" class="text-sm font-mono font-bold text-purple-700">t = 0.0 s</span>
                   </div>
 
-                  <input type="range" id="runner-time-slider" min="0" max="15" step="0.1" value="0" oninput="setRunnerTime(this.value)" class="w-full accent-purple-600">
+                  <input type="range" id="runner-time-slider" min="0" max="15" step="0.01" value="0" oninput="setRunnerTime(this.value)" class="w-full accent-purple-600">
 
-                  <div class="flex gap-2">
-                    <button type="button" id="runner-play-btn" onclick="toggleRunnerPlay()" class="flex-1 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold shadow-sm transition">
-                      ▶ 레이스 출발
+                  <div class="flex items-center justify-center gap-2 pt-2 border-t border-purple-200/60">
+                    <button type="button" id="btn-runner-play" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                      <i class="fa-solid fa-play text-[11px]"></i> <span>레이스 출발</span>
                     </button>
-                    <button type="button" onclick="resetRunnerRace()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-bold transition">
-                      리셋
+                    <button type="button" id="btn-runner-pause" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+                      <i class="fa-solid fa-pause text-[11px]"></i> <span>일시정지</span>
+                    </button>
+                    <button type="button" id="btn-runner-reset" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-lg transition flex items-center gap-1.5 border border-slate-300">
+                      <i class="fa-solid fa-rotate-left text-[11px]"></i> <span>리셋</span>
                     </button>
                   </div>
 
@@ -1189,7 +1289,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 </div>
 
                 <button type="button" onclick="snapRunnerToMatchPoint()" class="w-full py-2 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition">
-                  순간속도 일치 시점 ($c pprox 7.5	ext{s}$) 점프
+                  순간속도 일치 시점 ($c pprox 7.5\text{s}$) 점프
                 </button>
               </div>
             </div>
@@ -1223,7 +1323,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">학습 목표 되새기기</span>
                 <h4 class="text-base font-bold text-slate-800">평균값 정리의 정의 빈칸</h4>
               </div>
-              <span class="text-xs text-slate-400">교과서 80쪽</span>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-400">교과서 80쪽</span>
+                <button type="button" onclick="toggleSolution('sol-sc5-01')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                  <i id="sol-sc5-01-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                </button>
+              </div>
             </div>
 
             <p class="text-sm text-slate-700">
@@ -1235,8 +1340,8 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 함수 $f(x)$가 닫힌구간 $[a, b]$에서 연속이고 열린구간 $(a, b)$에서 미분가능하면
               </p>
               <div class="flex items-center justify-center gap-3 py-2 text-base font-mono">
-                <span>$$rac{f(b) - f(a)}{b - a} = $$</span>
-                <input type="text" id="sc5-01-ans" placeholder="f'(c)" class="w-28 px-3 py-1.5 text-center border-2 border-dashed border-indigo-400 rounded-lg bg-white font-bold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <span>$$\frac{f(b) - f(a)}{b - a} = $$</span>
+                <input type="text" id="sc5-01-ans" placeholder="" class="w-28 px-3 py-1.5 text-center border-2 border-dashed border-indigo-400 rounded-lg bg-white font-bold text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <span>인 $c$가 열린구간 $(a, b)$에 적어도 하나 존재한다.</span>
               </div>
               <div class="flex items-center justify-center gap-3 pt-2">
@@ -1245,6 +1350,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 </button>
                 <span id="sc5-01-msg" class="text-xs font-medium"></span>
               </div>
+            </div>
+            <!-- 문항 01 상세 해설 박스 -->
+            <div id="sol-sc5-01" class="hidden solution-box p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 space-y-1.5 leading-relaxed">
+              <div class="font-bold text-indigo-950">[01번 정답 및 개념 해설]</div>
+              <p>• <strong>평균값 정리의 정의:</strong> 함수 $f(x)$가 닫힌구간 $[a, b]$에서 연속이고 열린구간 $(a, b)$에서 미분가능하면 $\dfrac{f(b) - f(a)}{b - a} = \mathbf{f'(c)}$인 $c$가 열린구간 $(a, b)$에 적어도 하나 존재합니다.</p>
+              <p class="text-slate-600 text-[11px]">• 기하학적으로는 두 점 $(a, f(a))$, $(b, f(b))$를 잇는 할선의 기울기와 같은 기울기를 갖는 접선이 곡선 위에 적어도 하나 존재함을 뜻합니다.</p>
             </div>
           </div>
 
@@ -1255,7 +1366,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">02</span>
                 <h4 class="text-base font-bold text-slate-800">롤의 정리를 만족시키는 상수 $c$ 구하기</h4>
               </div>
-              <span class="text-xs text-slate-400">교과서 80쪽</span>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-400">교과서 80쪽</span>
+                <button type="button" onclick="toggleSolution('sol-sc5-02')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                  <i id="sol-sc5-02-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                </button>
+              </div>
             </div>
 
             <p class="text-sm text-slate-700">
@@ -1266,40 +1382,48 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
               <!-- 02-(1) -->
               <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
                 <div class="font-bold text-sm text-indigo-700">(1) $f(x) = 2x^2 - 4x + 1 \quad [0, 2]$</div>
-                <div class="text-xs text-slate-600">$f'(x) = 4x - 4 = 0$ 풀기</div>
+                
                 <div class="flex items-center gap-2">
                   <span class="text-xs text-slate-600">c = </span>
-                  <input type="text" id="sc5-02-1-ans" placeholder="정답 입력" class="w-24 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  <input type="text" id="sc5-02-1-ans" placeholder="" class="w-24 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                   <button type="button" onclick="checkSc5_02_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                   <span id="sc5-02-1-msg" class="text-xs font-medium"></span>
                 </div>
-                <!-- 연습장 -->
-                <div>
-                  <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                    <span>풀이 연습장</span>
-                    <button type="button" onclick="clearScratchpad('sp-sc5-02-1')" class="hover:text-indigo-600">지우기</button>
-                  </div>
-                  <canvas id="sp-sc5-02-1" class="scratchpad-canvas w-full h-20"></canvas>
-                </div>
+                
               </div>
 
               <!-- 02-(2) -->
               <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
                 <div class="font-bold text-sm text-indigo-700">(2) $f(x) = -x^3 + 12x \quad [-2\sqrt{3}, 2\sqrt{3}]$</div>
-                <div class="text-xs text-slate-600">$f'(x) = -3x^2 + 12 = 0$ 풀기</div>
+                
                 <div class="flex items-center gap-2">
                   <span class="text-xs text-slate-600">c = </span>
-                  <input type="text" id="sc5-02-2-ans" placeholder="-2, 2" class="w-32 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  <input type="text" id="sc5-02-2-ans" placeholder="" class="w-32 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                   <button type="button" onclick="checkSc5_02_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                   <span id="sc5-02-2-msg" class="text-xs font-medium"></span>
                 </div>
-                <!-- 연습장 -->
-                <div>
-                  <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                    <span>풀이 연습장</span>
-                    <button type="button" onclick="clearScratchpad('sp-sc5-02-2')" class="hover:text-indigo-600">지우기</button>
-                  </div>
-                  <canvas id="sp-sc5-02-2" class="scratchpad-canvas w-full h-20"></canvas>
+                
+              </div>
+            </div>
+            <!-- 문항 02 상세 해설 박스 -->
+            <div id="sol-sc5-02" class="hidden solution-box p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 space-y-3 leading-relaxed">
+              <div class="font-bold text-indigo-950 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                <span>[02번 단계별 상세 해설]</span>
+              </div>
+              <div class="space-y-1">
+                <div>• <strong>⑴ $f(x) = 2x^2 - 4x + 1 \quad [0, 2]$:</strong></div>
+                <div class="pl-3 text-slate-700">
+                  $f(0) = 1, f(2) = 8 - 8 + 1 = 1$로 $f(0) = f(2)$입니다.<br>
+                  $f'(x) = 4x - 4 = 0 \implies x = 1$. 따라서 $1 \in (0, 2)$이므로 $\mathbf{c = 1}$.
+                </div>
+              </div>
+              <div class="pt-2 border-t border-indigo-100/80 space-y-1">
+                <div>• <strong>⑵ $f(x) = -x^3 + 12x \quad [-2\sqrt{3}, 2\sqrt{3}]$:</strong></div>
+                <div class="pl-3 text-slate-700">
+                  $f(-2\sqrt{3}) = 24\sqrt{3} - 24\sqrt{3} = 0$, $f(2\sqrt{3}) = -24\sqrt{3} + 24\sqrt{3} = 0$으로 양 끝점 높이가 같습니다.<br>
+                  $f'(x) = -3x^2 + 12 = -3(x^2 - 4) = 0 \implies x = \pm 2$.<br>
+                  $-2, 2$ 모두 열린구간 $(-2\sqrt{3}, 2\sqrt{3})$에 속하므로 $\mathbf{c = -2, 2}$.
                 </div>
               </div>
             </div>
@@ -1312,7 +1436,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">03</span>
                 <h4 class="text-base font-bold text-slate-800">평균값 정리를 만족시키는 상수 $c$ 구하기</h4>
               </div>
-              <span class="text-xs text-slate-400">교과서 80쪽</span>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-400">교과서 80쪽</span>
+                <button type="button" onclick="toggleSolution('sol-sc5-03')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                  <i id="sol-sc5-03-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                </button>
+              </div>
             </div>
 
             <p class="text-sm text-slate-700">
@@ -1323,40 +1452,48 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
               <!-- 03-(1) -->
               <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
                 <div class="font-bold text-sm text-indigo-700">(1) $f(x) = x^2 - 4x + 5 \quad [2, 4]$</div>
-                <div class="text-xs text-slate-600">평균변화율 = $rac{f(4)-f(2)}{4-2} = 2$</div>
+                
                 <div class="flex items-center gap-2">
                   <span class="text-xs text-slate-600">c = </span>
-                  <input type="text" id="sc5-03-1-ans" placeholder="정답 입력" class="w-24 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  <input type="text" id="sc5-03-1-ans" placeholder="" class="w-24 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                   <button type="button" onclick="checkSc5_03_1()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                   <span id="sc5-03-1-msg" class="text-xs font-medium"></span>
                 </div>
-                <!-- 연습장 -->
-                <div>
-                  <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                    <span>풀이 연습장</span>
-                    <button type="button" onclick="clearScratchpad('sp-sc5-03-1')" class="hover:text-indigo-600">지우기</button>
-                  </div>
-                  <canvas id="sp-sc5-03-1" class="scratchpad-canvas w-full h-20"></canvas>
-                </div>
+                
               </div>
 
               <!-- 03-(2) -->
               <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
                 <div class="font-bold text-sm text-indigo-700">(2) $f(x) = x^3 - 7x \quad [0, 3]$</div>
-                <div class="text-xs text-slate-600">평균변화율 = $rac{6-0}{3} = 2$</div>
+                
                 <div class="flex items-center gap-2">
                   <span class="text-xs text-slate-600">c = </span>
-                  <input type="text" id="sc5-03-2-ans" placeholder="루트3 or sqrt(3)" class="w-32 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  <input type="text" id="sc5-03-2-ans" placeholder="" class="w-32 px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                   <button type="button" onclick="checkSc5_03_2()" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                   <span id="sc5-03-2-msg" class="text-xs font-medium"></span>
                 </div>
-                <!-- 연습장 -->
-                <div>
-                  <div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">
-                    <span>풀이 연습장</span>
-                    <button type="button" onclick="clearScratchpad('sp-sc5-03-2')" class="hover:text-indigo-600">지우기</button>
-                  </div>
-                  <canvas id="sp-sc5-03-2" class="scratchpad-canvas w-full h-20"></canvas>
+                
+              </div>
+            </div>
+            <!-- 문항 03 상세 해설 박스 -->
+            <div id="sol-sc5-03" class="hidden solution-box p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 space-y-3 leading-relaxed">
+              <div class="font-bold text-indigo-950 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                <span>[03번 단계별 상세 해설]</span>
+              </div>
+              <div class="space-y-1">
+                <div>• <strong>⑴ $f(x) = x^2 - 4x + 5 \quad [2, 4]$:</strong></div>
+                <div class="pl-3 text-slate-700">
+                  평균변화율은 $\dfrac{f(4) - f(2)}{4 - 2} = \dfrac{(16-16+5) - (4-8+5)}{2} = \dfrac{5 - 1}{2} = 2$.<br>
+                  $f'(x) = 2x - 4$이므로 $f'(c) = 2c - 4 = 2 \implies 2c = 6 \implies \mathbf{c = 3} \in (2, 4)$.
+                </div>
+              </div>
+              <div class="pt-2 border-t border-indigo-100/80 space-y-1">
+                <div>• <strong>⑵ $f(x) = x^3 - 7x \quad [0, 3]$:</strong></div>
+                <div class="pl-3 text-slate-700">
+                  평균변화율은 $\dfrac{f(3) - f(0)}{3 - 0} = \dfrac{(27 - 21) - 0}{3} = \dfrac{6}{3} = 2$.<br>
+                  $f'(x) = 3x^2 - 7$이므로 $f'(c) = 3c^2 - 7 = 2 \implies 3c^2 = 9 \implies c^2 = 3$.<br>
+                  $c \in (0, 3)$이므로 양수 $\mathbf{c = \sqrt{3}}$입니다.
                 </div>
               </div>
             </div>
@@ -1372,7 +1509,9 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                   <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">04</span>
                   <h4 class="text-base font-bold text-slate-800">4차 함수와 롤의 정리 상수 $a$</h4>
                 </div>
-                <button type="button" onclick="toggleSolution('sol-sc5-04')" class="text-xs font-bold text-indigo-600 hover:underline">해설</button>
+                <button type="button" onclick="toggleSolution('sol-sc5-04')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                  <i id="sol-sc5-04-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                </button>
               </div>
 
               <p class="text-xs text-slate-700 leading-relaxed">
@@ -1381,20 +1520,21 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
 
               <div class="flex items-center gap-3">
                 <span class="text-xs font-medium text-slate-600">a = </span>
-                <input type="text" id="sc5-04-ans" placeholder="정답 입력" class="w-28 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <input type="text" id="sc5-04-ans" placeholder="" class="w-28 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 <button type="button" onclick="checkSc5_04()" class="px-4 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                 <span id="sc5-04-msg" class="text-xs font-medium"></span>
               </div>
 
-              <div id="sol-sc5-04" class="hidden p-3.5 bg-indigo-50/50 rounded-xl border border-indigo-100 text-xs text-slate-700 space-y-1">
-                <p><strong>해설:</strong> $f(x) = x^4 - ax^3$</p>
-                <p>$f'(x) = 4x^3 - 3ax^2 = x^2(4x - 3a) = 0$</p>
-                <p>$0 < c < a$이므로 $c = rac{3}{4}a$.</p>
-                <p>롤의 정리를 만족하는 값이 $3$이므로 $rac{3}{4}a = 3 \implies \mathbf{a = 4}$.</p>
-              </div>
-
-              <div>
-                <canvas id="sp-sc5-04" class="scratchpad-canvas w-full h-20"></canvas>
+              
+              <!-- 04번 상세 해설 박스 -->
+              <div id="sol-sc5-04" class="hidden solution-box p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 space-y-1.5 leading-relaxed">
+                <div class="font-bold text-indigo-950">[04번 단계별 상세 해설]</div>
+                <div>• $f(x) = x^3(x - a) = x^4 - ax^3$.<br>
+                  $f(0) = 0, f(a) = 0$이므로 닫힌구간 $[0, a]$에서 롤의 정리에 의해 $f'(c) = 0$인 $c \in (0, a)$가 존재합니다.</div>
+                <div>• $f'(x) = 4x^3 - 3ax^2 = x^2(4x - 3a) = 0$.<br>
+                  $x \in (0, a)$이므로 $c = \dfrac{3}{4}a$입니다.<br>
+                  주어진 조건에서 $c = 3$이므로 $\dfrac{3}{4}a = 3 \implies \mathbf{a = 4}$.
+                </div>
               </div>
             </div>
 
@@ -1405,7 +1545,9 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                   <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold text-xs">05</span>
                   <h4 class="text-base font-bold text-slate-800">구간 $[-1, 3a]$와 평균값 정리 양수 $a$</h4>
                 </div>
-                <button type="button" onclick="toggleSolution('sol-sc5-05')" class="text-xs font-bold text-indigo-600 hover:underline">해설</button>
+                <button type="button" onclick="toggleSolution('sol-sc5-05')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                  <i id="sol-sc5-05-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+                </button>
               </div>
 
               <p class="text-xs text-slate-700 leading-relaxed">
@@ -1414,20 +1556,20 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
 
               <div class="flex items-center gap-3">
                 <span class="text-xs font-medium text-slate-600">a = </span>
-                <input type="text" id="sc5-05-ans" placeholder="정답 입력" class="w-28 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <input type="text" id="sc5-05-ans" placeholder="" class="w-28 px-3 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 <button type="button" onclick="checkSc5_05()" class="px-4 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition">채점</button>
                 <span id="sc5-05-msg" class="text-xs font-medium"></span>
               </div>
 
-              <div id="sol-sc5-05" class="hidden p-3.5 bg-indigo-50/50 rounded-xl border border-indigo-100 text-xs text-slate-700 space-y-1">
-                <p><strong>해설:</strong> $f(-1) = 3$, $f(3a) = 9a^2 - 6a$</p>
-                <p>평균변화율 $= rac{9a^2 - 6a - 3}{3a + 1} = rac{3(3a+1)(a-1)}{3a+1} = 3a - 3$</p>
-                <p>$f'(a) = 2a - 2$이므로 $3a - 3 = 2a - 2 \implies \mathbf{a = 1}$.</p>
-                <p>$a=1$일 때 구간은 $[-1, 3]$이며 $c = 1 \in (-1, 3)$이므로 조건 만족!</p>
-              </div>
-
-              <div>
-                <canvas id="sp-sc5-05" class="scratchpad-canvas w-full h-20"></canvas>
+              
+              <!-- 05번 상세 해설 박스 -->
+              <div id="sol-sc5-05" class="hidden solution-box p-4 rounded-xl bg-indigo-50/70 border border-indigo-200 text-xs sm:text-sm text-slate-800 space-y-1.5 leading-relaxed">
+                <div class="font-bold text-indigo-950">[05번 단계별 상세 해설]</div>
+                <div>• 닫힌구간 $[-1, 3a]$에서 평균변화율은<br>
+                  $\dfrac{f(3a) - f(-1)}{3a - (-1)} = \dfrac{(9a^2 - 6a) - 3}{3a + 1} = \dfrac{(3a+1)(3a-3)}{3a+1} = 3a - 3$입니다.</div>
+                <div>• $f'(x) = 2x - 2 \implies f'(a) = 2a - 2$.<br>
+                  평균값 정리에 의해 $3a - 3 = 2a - 2 \implies \mathbf{a = 1}$. (양수 조건 만족)
+                </div>
               </div>
             </div>
           </div>
@@ -1440,7 +1582,9 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 <span class="text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded">생각을 키우는 문제</span>
                 <h4 class="text-base font-bold text-slate-800">도함수 범위 $1 \le f'(x) \le 2$와 $f(3)$의 범위 추론</h4>
               </div>
-              <button type="button" onclick="toggleSolution('sol-sc5-06')" class="text-xs font-bold text-indigo-600 hover:underline">상세 해설 보기</button>
+              <button type="button" onclick="toggleSolution('sol-sc5-06')" class="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-xs">
+                <i id="sol-sc5-06-arrow" class="fa-solid fa-chevron-down text-[11px]"></i> <span>해설 보기</span>
+              </button>
             </div>
 
             <p class="text-sm text-slate-700 leading-relaxed">
@@ -1452,12 +1596,12 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                 함수 $f(x)$는 닫힌구간 $[0, 3]$에서 연속이고 열린구간 $(0, 3)$에서 미분가능하므로 평균값 정리에 의하여
               </p>
               <div class="text-center font-mono py-1">
-                $$rac{	ext{(가)}}{3 - 0} = f'(c)$$
+                $$\frac{\text{(가)}}{3 - 0} = f'(c)$$
               </div>
               <p>인 상수 $c$가 열린구간 $(0, 3)$에 적어도 하나 존재한다.</p>
-              <p>이때 $	ext{(가)} = 3f'(c)$이고 $1 \le f'(c) \le 2$이므로</p>
+              <p>이때 $\text{(가)} = 3f'(c)$이고 $1 \le f'(c) \le 2$이므로</p>
               <div class="text-center font-mono font-bold text-indigo-700 py-1">
-                $$	ext{(나)} \le f(3) \le 	ext{(다)}$$
+                $$\text{(나)} \le f(3) \le \text{(다)}$$
               </div>
               <p>이다.</p>
 
@@ -1465,15 +1609,15 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
               <div class="pt-3 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label class="block text-[11px] font-bold text-slate-600 mb-1">(가) 수식</label>
-                  <input type="text" id="sc5-06-ga" placeholder="f(3)-3" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  <input type="text" id="sc5-06-ga" placeholder="" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
                 <div>
                   <label class="block text-[11px] font-bold text-slate-600 mb-1">(나) 최솟값</label>
-                  <input type="text" id="sc5-06-na" placeholder="6" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  <input type="text" id="sc5-06-na" placeholder="" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
                 <div>
                   <label class="block text-[11px] font-bold text-slate-600 mb-1">(다) 최댓값</label>
-                  <input type="text" id="sc5-06-da" placeholder="9" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                  <input type="text" id="sc5-06-da" placeholder="" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
               </div>
 
@@ -1486,7 +1630,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
             </div>
 
             <!-- 해설 박스 -->
-            <div id="sol-sc5-06" class="hidden p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-slate-800 space-y-1.5">
+            <div id="sol-sc5-06" class="hidden solution-box p-5 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-slate-800 space-y-1.5">
               <div class="font-bold text-indigo-900">모범 풀이:</div>
               <p>1) 구간 $[0, 3]$에서 평균값 정리: $\dfrac{f(3) - f(0)}{3 - 0} = f'(c) \implies \dfrac{f(3) - 3}{3} = f'(c)$.</p>
               <p>따라서 <strong>(가) = $f(3) - 3$</strong>.</p>
@@ -1498,7 +1642,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
           </div>
 
           <!-- 인터랙티브 실험실 4: 도함수 범위와 부등식 영역 시각화 -->
-          <div id="lab-bounds" class="bg-white rounded-2xl border border-amber-200 p-7 shadow-md space-y-4">
+          <div id="lab-bounds" class="edu-card edu-accent-bar-indigo p-7 shadow-md space-y-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <span class="px-2.5 py-1 rounded bg-amber-500 text-white font-bold text-xs">Sim 4</span>
@@ -1524,17 +1668,28 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
                       <span>테스트할 $f(3)$의 위치 선택</span>
                       <span id="bounds-f3-val" class="text-amber-800 font-mono">f(3) = 7.5</span>
                     </div>
-                    <input type="range" id="bounds-slider" min="4" max="11" step="0.1" value="7.5" oninput="updateBoundsSim(this.value)" class="w-full accent-amber-500">
+                    <input type="range" id="bounds-slider" min="4" max="11" step="0.01" value="7.5" oninput="updateBoundsSim(this.value)" class="w-full accent-amber-500">
+                  </div>
+                  <div class="flex items-center justify-center gap-2 pt-2 border-t border-amber-200/60">
+                    <button type="button" id="btn-bounds-play" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                      <i class="fa-solid fa-play text-[11px]"></i> <span>자동 재생</span>
+                    </button>
+                    <button type="button" id="btn-bounds-pause" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+                      <i class="fa-solid fa-pause text-[11px]"></i> <span>일시정지</span>
+                    </button>
+                    <button type="button" id="btn-bounds-reset" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-lg transition flex items-center gap-1.5 border border-slate-300">
+                      <i class="fa-solid fa-rotate-left text-[11px]"></i> <span>초기화</span>
+                    </button>
                   </div>
 
                   <div class="p-3 bg-white rounded-lg border border-amber-100 space-y-1.5 text-xs">
                     <div class="flex items-center justify-between text-slate-600">
                       <span>하한선 ($f'=1$):</span>
-                      <span class="font-mono font-bold text-blue-600">y = 1×3 + 3 = 6</span>
+                      <span class="font-bold text-blue-600">$y = 1 \times 3 + 3 = 6$</span>
                     </div>
                     <div class="flex items-center justify-between text-slate-600">
                       <span>상한선 ($f'=2$):</span>
-                      <span class="font-mono font-bold text-rose-600">y = 2×3 + 3 = 9</span>
+                      <span class="font-bold text-rose-600">$y = 2 \times 3 + 3 = 9$</span>
                     </div>
                     <div class="flex items-center justify-between pt-1 border-t border-slate-100">
                       <span class="font-semibold text-slate-700">도함수 조건 만족:</span>
@@ -1551,7 +1706,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
           </div>
 
           <!-- 단원 학습 성찰 및 메타인지 메모 -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-7 shadow-sm space-y-4">
+          <div id="sec-reflection" class="scroll-mt-24 edu-card p-7 shadow-sm space-y-4">
             <h4 class="text-sm font-bold text-slate-900 flex items-center gap-2">
               <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               <span>단원 성취도 자가 진단 및 수업 메모</span>
@@ -1575,226 +1730,769 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
         </section>
 
       </div><!-- // .p-8 max-w-5xl mx-auto space-y-16 -->
+    
+        </div>
     </main>
-  </div><!-- // .flex min-h-screen -->
 
-  <!-- ========================================== -->
-  <!-- JAVASCRIPT 엔진 및 채점 로직 모음 -->
-  <!-- ========================================== -->
-  <script>
-    // ------------------------------------------
-    // 1. 전자칠판 (Whiteboard) 엔진
-    // ------------------------------------------
-    const wbCanvas = document.getElementById('wb-canvas');
-    const wbCtx = wbCanvas ? wbCanvas.getContext('2d') : null;
-    const wbToolbar = document.getElementById('wb-toolbar');
+    <!-- ========================================== -->
+    <!-- SCRIPT ENGINE & LOGIC -->
+    <!-- ========================================== -->
+    <script>// 2. 미분 5. 평균값정리 - 표준 골드 벤치마크 자바스크립트 엔진 (고성능 실시간 애니메이션 완비)
 
-    let wbActive = false;
-    let wbDrawing = false;
-    let wbTool = 'pen';
-    let wbColor = '#0f172a';
-    let wbSize = 4;
-    let wbLastX = 0;
-    let wbLastY = 0;
+/* =====================================================================
+   1. 골드 벤치마크 전자칠판 시스템 (Bézier Smoothing Whiteboard Engine)
+   ===================================================================== */
+let wbCanvas = null;
+let wbCtx = null;
+let wbIsActive = false;
+let wbIsDrawing = false;
+let wbTool = 'pen'; // 'pointer', 'pen', 'highlighter', 'eraser'
+let wbColor = '#ef4444';
+let wbSize = 3;
+let wbStrokes = [];
+let wbCurrentStroke = null;
 
-    function resizeWb() {
-      if (!wbCanvas) return;
-      const dpr = window.devicePixelRatio || 1;
-      wbCanvas.width = window.innerWidth * dpr;
-      wbCanvas.height = window.innerHeight * dpr;
-      wbCtx.scale(dpr, dpr);
-    }
+function initWhiteboard() {
+    wbCanvas = document.getElementById("wb-canvas");
+    if (!wbCanvas) return;
+    wbCtx = wbCanvas.getContext("2d");
 
-    function toggleWhiteboard() {
-      wbActive = !wbActive;
-      if (wbActive) {
-        resizeWb();
-        wbCanvas.classList.add('active');
-        wbToolbar.classList.add('active');
-      } else {
-        wbCanvas.classList.remove('active');
-        wbToolbar.classList.remove('active');
-      }
-    }
+    syncWhiteboardHeight();
+    window.addEventListener("resize", syncWhiteboardHeight);
+    window.addEventListener("scroll", function() {
+        if (wbIsActive && wbCanvas) {
+            syncWhiteboardHeight();
+        }
+    }, { passive: true });
 
-    function setWbTool(tool) {
-      wbTool = tool;
-      document.querySelectorAll('#wb-toolbar .wb-btn').forEach(btn => btn.classList.remove('active'));
-      const target = document.getElementById('wb-tool-' + tool);
-      if (target) target.classList.add('active');
-    }
+    // Pointer events
+    wbCanvas.addEventListener("pointerdown", startWbDraw);
+    window.addEventListener("pointermove", moveWbDraw);
+    window.addEventListener("pointerup", endWbDraw);
+    window.addEventListener("pointercancel", endWbDraw);
 
-    function setWbColor(color, el) {
-      wbColor = color;
-      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-      if (el) el.classList.add('active');
-    }
+    // Keyboard Shortcuts (Ctrl+Z: Undo)
+    window.addEventListener("keydown", function(e) {
+        if (wbIsActive && (e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) {
+            e.preventDefault();
+            undoWb();
+        }
+    });
 
-    function setWbSize(size, el) {
-      wbSize = size;
-      if (el && el.parentElement) {
-        Array.from(el.parentElement.children).forEach(b => {
-          b.classList.remove('bg-slate-200', 'font-bold');
-          b.classList.add('hover:bg-slate-100');
+    const sizeSlider = document.getElementById("wb-size");
+    if (sizeSlider) {
+        sizeSlider.addEventListener("input", function(e) {
+            wbSize = parseInt(e.target.value) || 3;
         });
-        el.classList.add('bg-slate-200', 'font-bold');
-      }
     }
+}
 
-    function clearWhiteboard() {
-      if (!wbCtx || !wbCanvas) return;
-      wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+function syncWhiteboardHeight() {
+    if (!wbCanvas) return;
+    const docHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight,
+        document.body.clientHeight,
+        document.documentElement.clientHeight
+    );
+    const docWidth = document.documentElement.clientWidth || window.innerWidth;
+    if (wbCanvas.width !== docWidth || wbCanvas.height !== docHeight) {
+        wbCanvas.width = docWidth;
+        wbCanvas.height = docHeight;
+        redrawWhiteboard();
     }
+}
 
-    function downloadWhiteboard() {
-      if (!wbCanvas) return;
-      const link = document.createElement('a');
-      link.download = '평균값정리_수업판서.png';
-      link.href = wbCanvas.toDataURL();
-      link.click();
-    }
+function getWbDocCoords(e) {
+    const pageX = e.pageX !== undefined ? e.pageX : (e.clientX + window.scrollX);
+    const pageY = e.pageY !== undefined ? e.pageY : (e.clientY + window.scrollY);
+    return { x: pageX, y: pageY };
+}
 
-    function startWbDraw(e) {
-      if (!wbActive) return;
-      wbDrawing = true;
-      const rect = wbCanvas.getBoundingClientRect();
-      wbLastX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-      wbLastY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
-    }
+function startWbDraw(e) {
+    if (!wbIsActive || wbTool === 'pointer') return;
+    if (e.button !== undefined && e.button !== 0) return;
+    wbIsDrawing = true;
+    const pt = getWbDocCoords(e);
+    wbCurrentStroke = {
+        tool: wbTool,
+        color: wbColor,
+        size: wbSize,
+        points: [pt]
+    };
+    wbStrokes.push(wbCurrentStroke);
+}
 
-    function drawWb(e) {
-      if (!wbActive || !wbDrawing || !wbCtx) return;
-      e.preventDefault();
-      const rect = wbCanvas.getBoundingClientRect();
-      const clientX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-      const clientY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+function moveWbDraw(e) {
+    if (!wbIsDrawing || !wbCurrentStroke) return;
+    const pt = getWbDocCoords(e);
+    const pts = wbCurrentStroke.points;
+    const prevPt = pts[pts.length - 1];
+    const dist = Math.hypot(pt.x - prevPt.x, pt.y - prevPt.y);
+    if (dist < 1.5) return;
 
-      wbCtx.beginPath();
-      wbCtx.moveTo(wbLastX, wbLastY);
-      wbCtx.lineTo(clientX, clientY);
+    pts.push(pt);
+    drawWbStrokeSegment(wbCurrentStroke);
+}
 
-      if (wbTool === 'pen') {
-        wbCtx.globalCompositeOperation = 'source-over';
-        wbCtx.strokeStyle = wbColor;
-        wbCtx.lineWidth = wbSize;
-        wbCtx.lineCap = 'round';
-        wbCtx.lineJoin = 'round';
-        wbCtx.globalAlpha = 1.0;
-      } else if (wbTool === 'highlighter') {
-        wbCtx.globalCompositeOperation = 'source-over';
-        wbCtx.strokeStyle = wbColor;
-        wbCtx.lineWidth = wbSize * 3;
-        wbCtx.lineCap = 'square';
-        wbCtx.lineJoin = 'miter';
+function endWbDraw(e) {
+    if (!wbIsDrawing) return;
+    wbIsDrawing = false;
+    wbCurrentStroke = null;
+    redrawWhiteboard();
+}
+
+function drawWbStrokeSegment(stroke) {
+    if (!wbCtx || !stroke || stroke.points.length < 2) return;
+    const pts = stroke.points;
+    const p1 = pts[pts.length - 2];
+    const p2 = pts[pts.length - 1];
+
+    wbCtx.save();
+    if (stroke.tool === 'highlighter') {
         wbCtx.globalAlpha = 0.35;
-      } else if (wbTool === 'eraser') {
-        wbCtx.globalCompositeOperation = 'destination-out';
-        wbCtx.lineWidth = wbSize * 5;
+        wbCtx.strokeStyle = stroke.color;
+        wbCtx.lineWidth = stroke.size * 3.5;
         wbCtx.lineCap = 'round';
         wbCtx.lineJoin = 'round';
+        wbCtx.globalCompositeOperation = 'source-over';
+    } else if (stroke.tool === 'eraser') {
+        wbCtx.globalCompositeOperation = 'destination-out';
+        wbCtx.strokeStyle = 'rgba(0,0,0,1)';
+        wbCtx.lineWidth = stroke.size * 5;
+        wbCtx.lineCap = 'round';
+        wbCtx.lineJoin = 'round';
+    } else {
         wbCtx.globalAlpha = 1.0;
-      }
-
-      wbCtx.stroke();
-      wbLastX = clientX;
-      wbLastY = clientY;
+        wbCtx.strokeStyle = stroke.color;
+        wbCtx.lineWidth = stroke.size;
+        wbCtx.lineCap = 'round';
+        wbCtx.lineJoin = 'round';
+        wbCtx.globalCompositeOperation = 'source-over';
     }
 
-    function stopWbDraw() {
-      wbDrawing = false;
+    wbCtx.beginPath();
+    wbCtx.moveTo(p1.x, p1.y);
+    wbCtx.lineTo(p2.x, p2.y);
+    wbCtx.stroke();
+    wbCtx.restore();
+}
+
+function drawWbSmoothStroke(ctx, stroke) {
+    const pts = stroke.points;
+    if (!pts || pts.length === 0) return;
+
+    ctx.save();
+    if (stroke.tool === 'highlighter') {
+        ctx.globalAlpha = 0.35;
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth = stroke.size * 3.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalCompositeOperation = 'source-over';
+    } else if (stroke.tool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.strokeStyle = 'rgba(0,0,0,1)';
+        ctx.lineWidth = stroke.size * 5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+    } else {
+        ctx.globalAlpha = 1.0;
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth = stroke.size;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalCompositeOperation = 'source-over';
     }
+
+    if (pts.length === 1) {
+        ctx.beginPath();
+        ctx.arc(pts[0].x, pts[0].y, ctx.lineWidth / 2, 0, Math.PI * 2);
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.fill();
+        ctx.restore();
+        return;
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length - 1; i++) {
+        const midX = (pts[i].x + pts[i + 1].x) / 2;
+        const midY = (pts[i].y + pts[i + 1].y) / 2;
+        ctx.quadraticCurveTo(pts[i].x, pts[i].y, midX, midY);
+    }
+    ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function redrawWhiteboard() {
+    if (!wbCtx || !wbCanvas) return;
+    wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+    for (let i = 0; i < wbStrokes.length; i++) {
+        drawWbSmoothStroke(wbCtx, wbStrokes[i]);
+    }
+}
+
+
+function toggleTeacherTip(bodyId) {
+    const el = document.getElementById(bodyId);
+    const arrow = document.getElementById(bodyId + '-arrow');
+    if (!el) return;
+    const isHidden = el.classList.toggle('hidden');
+    if (arrow) {
+        arrow.textContent = isHidden ? '펼치기 ▼' : '접기 ▲';
+    }
+}
+
+function toggleWhiteboard() {
+    wbIsActive = !wbIsActive;
+    const toolbar = document.getElementById("wb-toolbar");
+    const sbBtn = document.getElementById("sidebar-wb-btn");
+
+    if (wbIsActive) {
+        syncWhiteboardHeight();
+        if (toolbar) toolbar.classList.remove("hidden");
+        if (wbCanvas) wbCanvas.classList.add("wb-drawing-active");
+        if (sbBtn) {
+            sbBtn.classList.remove("from-indigo-600", "to-sky-600");
+            sbBtn.classList.add("from-rose-600", "to-amber-600");
+            sbBtn.innerHTML = '<i class="fa-solid fa-pen-slash text-sm"></i> <span>전자칠판 끄기</span>';
+        }
+    } else {
+        if (toolbar) toolbar.classList.add("hidden");
+        if (wbCanvas) wbCanvas.classList.remove("wb-drawing-active");
+        if (sbBtn) {
+            sbBtn.classList.remove("from-rose-600", "to-amber-600");
+            sbBtn.classList.add("from-indigo-600", "to-sky-600");
+            sbBtn.innerHTML = '<i class="fa-solid fa-chalkboard-user text-sm"></i> <span>전자칠판 (화면 판서 모드) 켜기</span>';
+        }
+    }
+}
+
+function setWbTool(tool) {
+    wbTool = tool;
+    document.querySelectorAll(".wb-tool-btn").forEach(btn => btn.classList.remove("active"));
+    const activeBtn = document.getElementById("wb-btn-" + tool);
+    if (activeBtn) activeBtn.classList.add("active");
 
     if (wbCanvas) {
-      wbCanvas.addEventListener('mousedown', startWbDraw);
-      wbCanvas.addEventListener('mousemove', drawWb);
-      wbCanvas.addEventListener('mouseup', stopWbDraw);
-      wbCanvas.addEventListener('mouseleave', stopWbDraw);
-      wbCanvas.addEventListener('touchstart', startWbDraw, { passive: false });
-      wbCanvas.addEventListener('touchmove', drawWb, { passive: false });
-      wbCanvas.addEventListener('touchend', stopWbDraw);
-    }
-    window.addEventListener('resize', resizeWb);
-
-    // ------------------------------------------
-    // 2. 스크래치패드 (수식 연습장) 엔진
-    // ------------------------------------------
-    function initScratchpads() {
-      document.querySelectorAll('.scratchpad-canvas').forEach(canvas => {
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
-        let lastX = 0, lastY = 0;
-
-        function resize() {
-          const rect = canvas.getBoundingClientRect();
-          canvas.width = rect.width * (window.devicePixelRatio || 1);
-          canvas.height = rect.height * (window.devicePixelRatio || 1);
-          ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+        if (tool === 'pointer') {
+            wbCanvas.classList.remove("wb-drawing-active");
+        } else {
+            if (wbIsActive) wbCanvas.classList.add("wb-drawing-active");
         }
-        resize();
+    }
+}
 
-        function getPos(e) {
-          const rect = canvas.getBoundingClientRect();
-          return {
-            x: (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left,
-            y: (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top
-          };
+function setWbColor(hex, btnEl) {
+    wbColor = hex;
+    document.querySelectorAll(".wb-color-btn").forEach(btn => btn.classList.remove("active"));
+    if (btnEl) btnEl.classList.add("active");
+    if (wbTool === 'pointer' || wbTool === 'eraser') {
+        setWbTool('pen');
+    }
+}
+
+function undoWb() {
+    if (wbStrokes.length > 0) {
+        wbStrokes.pop();
+        redrawWhiteboard();
+    }
+}
+
+function clearWb() {
+    if (wbStrokes.length === 0) return;
+    wbStrokes = [];
+    redrawWhiteboard();
+}
+
+function saveWbImage() {
+    if (!wbCanvas) return;
+    try {
+        const link = document.createElement("a");
+        link.download = "2_미분_5_평균값정리_전자칠판_판서.png";
+        link.href = wbCanvas.toDataURL("image/png");
+        link.click();
+    } catch (err) {
+        console.error("판서 저장 실패:", err);
+    }
+}
+
+window.downloadWb = saveWbImage;
+window.setWbSize = function(val) {
+    wbSize = parseInt(val) || 3;
+    const slider = document.getElementById("wb-size");
+    if (slider) slider.value = wbSize;
+};
+
+/* =====================================================================
+   2. 5단계 Stepper 실시간 글자 크기 조절기 (90% ~ 145%, 기본 115%)
+   ===================================================================== */
+const FONT_SCALES = [
+    { scale: 0.90, label: "90%" },
+    { scale: 1.00, label: "100%" },
+    { scale: 1.15, label: "115%" },
+    { scale: 1.30, label: "130%" },
+    { scale: 1.45, label: "145%" }
+];
+let currentFontIdx = 2; // Default 115%
+
+function applyFontSize(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= FONT_SCALES.length) idx = FONT_SCALES.length - 1;
+    currentFontIdx = idx;
+
+    const scaleObj = FONT_SCALES[currentFontIdx];
+    const rootEl = document.documentElement;
+    rootEl.style.fontSize = (16 * scaleObj.scale) + "px";
+
+    const labelEl = document.getElementById("font-scale-display");
+    if (labelEl) {
+        labelEl.textContent = scaleObj.label;
+    }
+    try {
+        localStorage.setItem("math_lesson_font_scale_idx", currentFontIdx.toString());
+    } catch (e) {}
+
+    setTimeout(syncWhiteboardHeight, 150);
+}
+
+function changeFontSize(delta) {
+    applyFontSize(currentFontIdx + delta);
+}
+
+function resetFontSize() {
+    applyFontSize(2);
+}
+
+function initFontSize() {
+    try {
+        const saved = localStorage.getItem("math_lesson_font_scale_idx");
+        if (saved !== null) {
+            const parsed = parseInt(saved, 10);
+            if (!isNaN(parsed) && parsed >= 0 && parsed < FONT_SCALES.length) {
+                applyFontSize(parsed);
+                return;
+            }
         }
+    } catch (e) {}
+    applyFontSize(2);
+}
 
-        canvas.addEventListener('mousedown', e => {
-          drawing = true;
-          const pos = getPos(e);
-          lastX = pos.x; lastY = pos.y;
+/* =====================================================================
+   3. 해설 토글 및 답안 초기화 시스템
+   ===================================================================== */
+
+function openSolutionById(solId) {
+    const box = document.getElementById(solId);
+    if (!box) return;
+    box.classList.remove('hidden');
+    const arrow = document.getElementById(solId + '-arrow');
+    if (arrow) {
+        arrow.className = 'fa-solid fa-chevron-up text-[11px]';
+    }
+    if (window.renderMathInElement) {
+        window.renderMathInElement(box, {
+            delimiters: [
+                { left: "$", right: "$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "$", right: "$", display: false }
+            ],
+            throwOnError: false
         });
-        canvas.addEventListener('mousemove', e => {
-          if (!drawing) return;
-          const pos = getPos(e);
-          ctx.beginPath();
-          ctx.moveTo(lastX, lastY);
-          ctx.lineTo(pos.x, pos.y);
-          ctx.strokeStyle = '#475569';
-          ctx.lineWidth = 1.8;
-          ctx.lineCap = 'round';
-          ctx.stroke();
-          lastX = pos.x; lastY = pos.y;
+    }
+}
+
+function renderMath(el) {
+    if (el && window.renderMathInElement) {
+        window.renderMathInElement(el, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "$", right: "$", display: false }
+            ],
+            throwOnError: false
         });
-        canvas.addEventListener('mouseup', () => drawing = false);
-        canvas.addEventListener('mouseleave', () => drawing = false);
-
-        canvas.addEventListener('touchstart', e => {
-          drawing = true;
-          const pos = getPos(e);
-          lastX = pos.x; lastY = pos.y;
-        }, { passive: true });
-        canvas.addEventListener('touchmove', e => {
-          if (!drawing) return;
-          const pos = getPos(e);
-          ctx.beginPath();
-          ctx.moveTo(lastX, lastY);
-          ctx.lineTo(pos.x, pos.y);
-          ctx.strokeStyle = '#475569';
-          ctx.lineWidth = 1.8;
-          ctx.lineCap = 'round';
-          ctx.stroke();
-          lastX = pos.x; lastY = pos.y;
-        }, { passive: true });
-        canvas.addEventListener('touchend', () => drawing = false);
-      });
     }
+}
 
-    function clearScratchpad(id) {
-      const canvas = document.getElementById(id);
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+function toggleSolution(id) {
+    const box = document.getElementById(id);
+    if (!box) return;
+    const isHidden = box.classList.toggle('hidden');
+    const arrow = document.getElementById(id + '-arrow');
+    if (arrow) {
+        arrow.className = isHidden ? 'fa-solid fa-chevron-down text-[11px]' : 'fa-solid fa-chevron-up text-[11px]';
     }
-
-    function toggleSolution(id) {
-      const el = document.getElementById(id);
-      if (el) el.classList.toggle('hidden');
+    if (!isHidden) {
+        renderMath(box);
     }
+    setTimeout(syncWhiteboardHeight, 100);
+}
 
-    // ------------------------------------------
-    // 3. Sim 1: 롤의 정리 수평접선 시뮬레이터
+function openSolutionById(solId) {
+    const box = document.getElementById(solId);
+    if (!box) return;
+    box.classList.remove('hidden');
+    const arrow = document.getElementById(solId + '-arrow');
+    if (arrow) {
+        arrow.className = 'fa-solid fa-chevron-up text-[11px]';
+    }
+    renderMath(box);
+    setTimeout(syncWhiteboardHeight, 100);
+}
+
+function autoOpenSolutionForInput(inputEl) {
+    if (!inputEl) return;
+    const card = inputEl.closest('.edu-card, section, div[id^="sec-"], div[id^="lab-"], div.bg-white');
+    if (!card) return;
+    const solBox = card.querySelector('.solution-box, [id^="sol-"]');
+    if (solBox) {
+        openSolutionById(solBox.id);
+    }
+}
+
+function toggleAllSolutions(show) {
+    document.querySelectorAll('.solution-box, [id^="sol-"]').forEach(box => {
+        if (show) {
+            box.classList.remove('hidden');
+            renderMath(box);
+        } else {
+            box.classList.add('hidden');
+        }
+        const id = box.id;
+        const arrow = document.getElementById(id + '-arrow');
+        if (arrow) {
+            arrow.className = show ? 'fa-solid fa-chevron-up text-[11px]' : 'fa-solid fa-chevron-down text-[11px]';
+        }
+    });
+    setTimeout(syncWhiteboardHeight, 100);
+}
+
+let scoreState = new Array(14).fill(false);
+
+function updateProgress() {
+    const solvedCount = scoreState.filter(Boolean).length;
+    const totalCount = scoreState.length;
+    const pct = Math.round((solvedCount / totalCount) * 100);
+
+    const txt = document.getElementById("progress-percent");
+    const bar = document.getElementById("progress-bar");
+    if (txt) txt.textContent = pct + "% (" + solvedCount + "/" + totalCount + ")";
+    if (bar) bar.style.width = pct + "%";
+}
+
+function resetAllInputs() {
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => {
+        el.value = '';
+    });
+    document.querySelectorAll('[id$="-msg"], #bounds-calc-box').forEach(el => {
+        el.innerHTML = '';
+    });
+    scoreState.fill(false);
+    updateProgress();
+    toggleAllSolutions(false);
+}
+
+// ----------------- 채점 및 오답 시 힌트 제공 로직 -----------------
+function checkOpen20_1() {
+    const inputEl = document.getElementById('open20-q1');
+    const val = (inputEl ? inputEl.value : "").trim();
+    const msg = document.getElementById('open20-q1-msg');
+    const isOk = (val === '0');
+    scoreState[0] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (기울기 = 0)</span>';
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 다시 계산해보세요.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 직선 $AB$의 기울기는 $\\dfrac{3 - 3}{3 - (-1)} = 0$입니다.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkOpen20_2() {
+    const inputEl = document.getElementById('open20-q2');
+    const rawVal = (inputEl ? inputEl.value : "").trim();
+    const val = rawVal.toLowerCase().replace(/\s+/g, '');
+    const msg = document.getElementById('open20-q2-msg');
+    
+    // 교과서 질문: '접선이 존재하는지 말해 보자'
+    const isOk = (
+        val.includes('존재') || val.includes('있다') || val.includes('있음') || 
+        val === '예' || val === '네' || val === 'o' || val === '1' || val === 'x=1' || val === 'c=1'
+    );
+    scoreState[1] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (x = 1에서 수평 접선 존재)</span>';
+            const tanLine = document.getElementById('open-tangent-line');
+            if (tanLine) {
+                tanLine.setAttribute('stroke', '#10b981');
+                tanLine.setAttribute('stroke-width', '3');
+                tanLine.setAttribute('stroke-dasharray', 'none');
+            }
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 다시 생각해보세요.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 포물선의 꼭짓점 $(1, -1)$에서 접선($y=-1$)이 직선 $AB$와 평행합니다. "존재한다" 또는 "있다"로 답해보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkU5Prob1_1() {
+    const inputEl = document.getElementById('q1-1-ans');
+    const val = (inputEl ? inputEl.value : "").trim();
+    const msg = document.getElementById('q1-1-msg');
+    const isOk = (val === '3' || val === 'c=3' || val === 'c = 3');
+    scoreState[2] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (c = 3)</span>';
+            openSolutionById('sol-u5-p1');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: $f(0)=f(6)=2$이므로 $f\'(c)=2c-6=0$인 $c \in (0, 6)$를 찾아보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkU5Prob1_2() {
+    const inputEl = document.getElementById('q1-2-ans');
+    const val = (inputEl ? inputEl.value : "").replace(/\s+/g, '');
+    const msg = document.getElementById('q1-2-msg');
+    const isOk = (val === '-1,1' || val === '1,-1' || val === '±1' || val === '+-1' || val === 'c=±1' || val === 'c=+-1');
+    scoreState[3] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (c = -1, 1)</span>';
+            openSolutionById('sol-u5-p1');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: $f(-\\sqrt{3})=f(\\sqrt{3})=0$이므로 $f\'(c)=3c^2-3=0$에서 열린구간 $(-\\sqrt{3}, \\sqrt{3})$에 속하는 $c$들을 모두 구해 쉼표(,)로 구분해 적어보세요. (예: -1, 1)</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkCommP2() {
+    const textEl = document.getElementById('comm-p2-text');
+    const val = (textEl ? textEl.value : "").trim();
+    const msg = document.getElementById('comm-p2-msg');
+    if (!msg) return;
+    if (!val) {
+        msg.innerHTML = '<span class="text-amber-600 font-medium">이유를 간략히 입력해 주세요.</span>';
+        return;
+    }
+    const hasDiff = val.includes('미분') || val.includes('뾰족') || val.includes('첨점') || val.includes('계수');
+    if (hasDiff) {
+        msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 훌륭한 분석입니다! ($x=0$에서 미분불가능)</span>';
+        openSolutionById('sol-u5-p2');
+    } else {
+        msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 보완이 필요합니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 롤의 정리는 열린구간 $(-1, 1)$에서 미분가능해야 하지만, $x=0$에서 뾰족점(미분불가)인 이유를 적어보세요.</span>';
+        renderMath(msg);
+    }
+}
+
+function checkU5Prob3_1() {
+    const inputEl = document.getElementById('q3-1-ans');
+    const val = (inputEl ? inputEl.value : "").trim();
+    const msg = document.getElementById('q3-1-msg');
+    const isOk = (val === '0' || val === 'c=0' || val === 'c = 0');
+    scoreState[4] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (c = 0)</span>';
+            openSolutionById('sol-u5-p3');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 구간 $[-1, 1]$에서 평균변화율 $\\dfrac{f(1)-f(-1)}{1-(-1)}=1$과 $f\'(c)=4c+1=1$을 만족하는 $c$를 찾아보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkU5Prob3_2() {
+    const inputEl = document.getElementById('q3-2-ans');
+    const val = (inputEl ? inputEl.value : "").replace(/\s+/g, '').toLowerCase();
+    const msg = document.getElementById('q3-2-msg');
+    const isOk = (val === '루트3' || val === 'sqrt(3)' || val === '√3' || val === 'c=루트3' || val === 'c=sqrt(3)' || val === 'c=√3');
+    scoreState[5] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (c = √3)</span>';
+            openSolutionById('sol-u5-p3');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 평균변화율 $\\dfrac{f(3)-f(0)}{3-0}=9$와 $f\'(c)=3c^2=9 \\implies c^2=3$에서 열린구간 $(0, 3)$에 속하는 $c$를 찾아보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkSc5_01() {
+    const inputEl = document.getElementById('sc5-01-ans');
+    const val = (inputEl ? inputEl.value : "").replace(/\s+/g, '');
+    const msg = document.getElementById('sc5-01-msg');
+    const isOk = (val === "f'(c)" || val === "f\'(c)" || val === "f'c");
+    scoreState[6] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (f\'(c))</span>';
+            openSolutionById('sol-sc5-01');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 다시 생각해보세요.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 열린구간 $(a, b)$에 속하는 어떤 상수 $c$에서의 순간변화율(미분계수) 기호를 입력하세요. (예: f\'(c))</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkSc5_02_1() {
+    const inputEl = document.getElementById('sc5-02-1-ans');
+    const val = (inputEl ? inputEl.value : "").trim();
+    const msg = document.getElementById('sc5-02-1-msg');
+    const isOk = (val === '1' || val === 'c=1');
+    scoreState[7] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (c = 1)</span>';
+            openSolutionById('sol-sc5-02');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: $f\'(c)=4c-4=0$을 만족하는 $c \in (0, 2)$를 찾아보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkSc5_02_2() {
+    const inputEl = document.getElementById('sc5-02-2-ans');
+    const val = (inputEl ? inputEl.value : "").replace(/\s+/g, '');
+    const msg = document.getElementById('sc5-02-2-msg');
+    const isOk = (val === '-2,2' || val === '2,-2' || val === '±2' || val === '+-2' || val === 'c=±2' || val === 'c=+-2');
+    scoreState[8] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (c = -2, 2)</span>';
+            openSolutionById('sol-sc5-02');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: $f\'(c)=-3c^2+12=0 \\implies c^2=4$에서 $c \in (-2\\sqrt{3}, 2\\sqrt{3})$들을 구해 쉼표로 적어보세요. (예: -2, 2)</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkSc5_03_1() {
+    const inputEl = document.getElementById('sc5-03-1-ans');
+    const val = (inputEl ? inputEl.value : "").trim();
+    const msg = document.getElementById('sc5-03-1-msg');
+    const isOk = (val === '3' || val === 'c=3');
+    scoreState[9] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (c = 3)</span>';
+            openSolutionById('sol-sc5-03');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 평균변화율 $\\dfrac{f(4)-f(2)}{4-2}=2$와 $f\'(c)=2c-4=2$에서 $c$를 구해보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkSc5_03_2() {
+    const inputEl = document.getElementById('sc5-03-2-ans');
+    const val = (inputEl ? inputEl.value : "").replace(/\s+/g, '').toLowerCase();
+    const msg = document.getElementById('sc5-03-2-msg');
+    const isOk = (val === '루트3' || val === 'sqrt(3)' || val === '√3' || val === 'c=루트3' || val === 'c=sqrt(3)' || val === 'c=√3');
+    scoreState[10] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (c = √3)</span>';
+            openSolutionById('sol-sc5-03');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 평균변화율 $\\dfrac{f(3)-f(0)}{3-0}=2$와 $f\'(c)=3c^2-7=2 \\implies c^2=3$에서 $c>0$을 구해보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkSc5_04() {
+    const inputEl = document.getElementById('sc5-04-ans');
+    const val = (inputEl ? inputEl.value : "").trim();
+    const msg = document.getElementById('sc5-04-msg');
+    const isOk = (val === '4' || val === 'a=4');
+    scoreState[11] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (a = 4)</span>';
+            openSolutionById('sol-sc5-04');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: $f\'(x)=4x^3-3ax^2=x^2(4x-3a)=0$에서 $c=\\dfrac{3}{4}a=3$을 풀어보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkSc5_05() {
+    const inputEl = document.getElementById('sc5-05-ans');
+    const val = (inputEl ? inputEl.value : "").trim();
+    const msg = document.getElementById('sc5-05-msg');
+    const isOk = (val === '1' || val === 'a=1');
+    scoreState[12] = isOk;
+    if (msg) {
+        if (isOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> 정답입니다! (a = 1)</span>';
+            openSolutionById('sol-sc5-05');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답입니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: 평균변화율 $\\dfrac{f(3a)-f(-1)}{3a-(-1)} = 3a-3$과 $f\'(a)=2a-2$가 같아지는 양수 $a$를 구해보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+
+function checkSc5_06() {
+    const gaEl = document.getElementById('sc5-06-ga');
+    const naEl = document.getElementById('sc5-06-na');
+    const daEl = document.getElementById('sc5-06-da');
+    const ga = (gaEl ? gaEl.value : "").replace(/\s+/g, '');
+    const na = (naEl ? naEl.value : "").trim();
+    const da = (daEl ? daEl.value : "").trim();
+    const msg = document.getElementById('sc5-06-msg');
+    
+    const gaOk = (ga === 'f(3)-3' || ga === 'f(3)-f(0)' || ga === 'f(3)-0');
+    const naOk = (na === '6');
+    const daOk = (da === '9');
+    
+    const isAllOk = gaOk && naOk && daOk;
+    scoreState[13] = isAllOk;
+    if (msg) {
+        if (isAllOk) {
+            msg.innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> (가), (나), (다) 모두 정답입니다! ($6 \\le f(3) \\le 9$)</span>';
+            openSolutionById('sol-sc5-06');
+        } else {
+            msg.innerHTML = '<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> 오답이 있습니다.</span> <span class="text-slate-600 text-xs ml-1">💡 힌트: (가) $\\dfrac{f(3)-f(0)}{3-0}=f\'(c)$, (나) 최솟값 $3 + 3(1) = 6$, (다) 최댓값 $3 + 3(2) = 9$를 확인해보세요.</span>';
+            renderMath(msg);
+        }
+    }
+    updateProgress();
+}
+/* =====================================================================
+   5. 4대 인터랙티브 시뮬레이터 애니메이션 엔진
+   ===================================================================== */
+// 3. Sim 1: 롤의 정리 수평접선 시뮬레이터
     // ------------------------------------------
     let rolleFuncType = 'quad';
     let rolleC = 2.0;
@@ -2181,7 +2879,7 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
     }
 
     function snapRunnerToMatchPoint() {
-      // Find where f'(c) = g'(c)
+      // Find where f\'(c) = g'(c)
       // Analytical approx: c ≈ 7.5s
       setRunnerTime(7.5);
       document.getElementById('runner-time-slider').value = 7.5;
@@ -2401,207 +3099,333 @@ eq 0$에 대하여 $f(c+h) \le f(c)$이므로 $f(c+h) - f(c) \le 0$입니다.
     }
 
     // ------------------------------------------
-    // 7. 채점 로직 함수들
+    
+
+        // -------------------------------------------------------------
+        // 3. CHECKING FUNCTIONS
+        // -------------------------------------------------------------
+// 7. 채점 로직 함수들
     // ------------------------------------------
-    function checkOpen20_1() {
-      const val = document.getElementById('open20-q1').value.trim();
-      const msg = document.getElementById('open20-q1-msg');
-      if (val === '0') {
-        msg.textContent = '정답입니다! (기울기 0)';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '다시 계산해 보세요. (y좌표가 둘 다 3입니다)';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
+    
+
+/* =====================================================================
+   6. 4대 시뮬레이터 3-버튼 컨트롤러 및 부드러운 애니메이션 엔진 바인딩
+   ===================================================================== */
+function bindSimulatorControls() {
+    // 1. Sim 1 (Rolle)
+    const btnRollePlay = document.getElementById("btn-rolle-play");
+    const btnRollePause = document.getElementById("btn-rolle-pause");
+    const btnRolleReset = document.getElementById("btn-rolle-reset");
+    const sliderRolle = document.getElementById("rolle-c-slider");
+
+    let isRollePlaying = false;
+    let animRolleId = null;
+    let scanRolleDir = 1;
+    let currentRolleC = sliderRolle ? (parseFloat(sliderRolle.value) || 2.0) : 2.0;
+
+    function stepRolle() {
+        if (!isRollePlaying || !sliderRolle) return;
+        const minVal = parseFloat(sliderRolle.min) || 0;
+        const maxVal = parseFloat(sliderRolle.max) || 4;
+        currentRolleC += 0.02 * scanRolleDir;
+        if (currentRolleC >= maxVal) {
+            currentRolleC = maxVal;
+            scanRolleDir = -1;
+        } else if (currentRolleC <= minVal) {
+            currentRolleC = minVal;
+            scanRolleDir = 1;
+        }
+        sliderRolle.value = currentRolleC.toFixed(2);
+        if (typeof updateRolleSimPoint === "function") {
+            updateRolleSimPoint(sliderRolle.value);
+        }
+        animRolleId = requestAnimationFrame(stepRolle);
     }
 
-    function checkOpen20_2() {
-      const val = document.getElementById('open20-q2').value.trim();
-      const msg = document.getElementById('open20-q2-msg');
-      if (val === '1' || val.includes('x=1') || val.includes('x = 1')) {
-        msg.textContent = '정답입니다! 꼭짓점 x=1에서 기울기 0인 접선이 존재합니다.';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = "f'(x) = 2x - 2 = 0을 풀어보세요.";
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
+    if (btnRollePlay) {
+        btnRollePlay.onclick = function() {
+            if (isRollePlaying) return;
+            isRollePlaying = true;
+            currentRolleC = sliderRolle ? parseFloat(sliderRolle.value) || 2.0 : 2.0;
+            cancelAnimationFrame(animRolleId);
+            animRolleId = requestAnimationFrame(stepRolle);
+        };
     }
-
-    function checkU5Prob1_1() {
-      const val = document.getElementById('q1-1-ans').value.trim();
-      const msg = document.getElementById('q1-1-msg');
-      if (val === '3' || val === 'c=3' || val === 'c = 3') {
-        msg.textContent = '정답입니다! (c = 3)';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = "오답입니다. f'(x) = 2x - 6 = 0을 풀어보세요.";
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
+    if (btnRollePause) {
+        btnRollePause.onclick = function() {
+            isRollePlaying = false;
+            cancelAnimationFrame(animRolleId);
+        };
     }
-
-    function checkU5Prob1_2() {
-      const val = document.getElementById('q1-2-ans').value.replace(/\s+/g, '');
-      const msg = document.getElementById('q1-2-msg');
-      if (val === '-1,1' || val === '1,-1' || val === '±1' || val === '+-1' || val === 'c=±1') {
-        msg.textContent = '정답입니다! (c = -1, 1)';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '오답입니다. 3x² - 3 = 0을 풀고 구간에 속하는 값을 적어주세요.';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
+    if (btnRolleReset) {
+        btnRolleReset.onclick = function() {
+            isRollePlaying = false;
+            cancelAnimationFrame(animRolleId);
+            currentRolleC = 2.0;
+            if (sliderRolle) sliderRolle.value = "2.00";
+            scanRolleDir = 1;
+            if (typeof updateRolleSimPoint === "function") {
+                updateRolleSimPoint("2.00");
+            }
+        };
     }
-
-    function checkU5Prob3_1() {
-      const val = document.getElementById('q3-1-ans').value.trim();
-      const msg = document.getElementById('q3-1-msg');
-      if (val === '0' || val === 'c=0' || val === 'c = 0') {
-        msg.textContent = '정답입니다! (c = 0)';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = "오답입니다. 평균변화율 = 1, f'(c) = 4c + 1 = 1";
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkU5Prob3_2() {
-      const val = document.getElementById('q3-2-ans').value.replace(/\s+/g, '').toLowerCase();
-      const msg = document.getElementById('q3-2-msg');
-      if (val === '루트3' || val === 'sqrt(3)' || val === '√3' || val === 'c=루트3' || val === 'c=sqrt(3)') {
-        msg.textContent = '정답입니다! (c = √3)';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '오답입니다. 평균변화율 = 9, 3c² = 9 -> c = √3';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkSc5_01() {
-      const val = document.getElementById('sc5-01-ans').value.replace(/\s+/g, '');
-      const msg = document.getElementById('sc5-01-msg');
-      if (val === "f'(c)" || val === "f'(c)" || val === "f'(c)") {
-        msg.textContent = "정답입니다! f'(c)";
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = "f'(c) 를 입력해 보세요.";
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkSc5_02_1() {
-      const val = document.getElementById('sc5-02-1-ans').value.trim();
-      const msg = document.getElementById('sc5-02-1-msg');
-      if (val === '1' || val === 'c=1') {
-        msg.textContent = '정답! c = 1';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '오답 (4x - 4 = 0)';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkSc5_02_2() {
-      const val = document.getElementById('sc5-02-2-ans').value.replace(/\s+/g, '');
-      const msg = document.getElementById('sc5-02-2-msg');
-      if (val === '-2,2' || val === '2,-2' || val === '±2' || val === '+-2') {
-        msg.textContent = '정답! c = -2, 2';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '오답 (-3x² + 12 = 0)';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkSc5_03_1() {
-      const val = document.getElementById('sc5-03-1-ans').value.trim();
-      const msg = document.getElementById('sc5-03-1-msg');
-      if (val === '3' || val === 'c=3') {
-        msg.textContent = '정답! c = 3';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '오답 (2c - 4 = 2)';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkSc5_03_2() {
-      const val = document.getElementById('sc5-03-2-ans').value.replace(/\s+/g, '').toLowerCase();
-      const msg = document.getElementById('sc5-03-2-msg');
-      if (val === '루트3' || val === 'sqrt(3)' || val === '√3') {
-        msg.textContent = '정답! c = √3';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '오답 (3c² - 7 = 2 -> c² = 3)';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkSc5_04() {
-      const val = document.getElementById('sc5-04-ans').value.trim();
-      const msg = document.getElementById('sc5-04-msg');
-      if (val === '4' || val === 'a=4') {
-        msg.textContent = '정답입니다! (a = 4)';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '오답입니다. c = 3/4 a = 3 입니다.';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkSc5_05() {
-      const val = document.getElementById('sc5-05-ans').value.trim();
-      const msg = document.getElementById('sc5-05-msg');
-      if (val === '1' || val === 'a=1') {
-        msg.textContent = '정답입니다! (a = 1)';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        msg.textContent = '오답입니다. 3a - 3 = 2a - 2 를 풀어보세요.';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    function checkSc5_06() {
-      const ga = document.getElementById('sc5-06-ga').value.replace(/\s+/g, '');
-      const na = document.getElementById('sc5-06-na').value.trim();
-      const da = document.getElementById('sc5-06-da').value.trim();
-      const msg = document.getElementById('sc5-06-msg');
-
-      const gaOk = (ga === 'f(3)-3' || ga === 'f(3)-f(0)');
-      const naOk = (na === '6');
-      const daOk = (da === '9');
-
-      if (gaOk && naOk && daOk) {
-        msg.textContent = '축하합니다! (가), (나), (다) 모두 정답입니다!';
-        msg.className = 'text-xs font-bold text-emerald-600';
-      } else {
-        let errs = [];
-        if (!gaOk) errs.push('(가)');
-        if (!naOk) errs.push('(나)');
-        if (!daOk) errs.push('(다)');
-        msg.textContent = errs.join(', ') + ' 항목을 다시 검토해 보세요.';
-        msg.className = 'text-xs font-bold text-rose-500';
-      }
-    }
-
-    // ------------------------------------------
-    // 8. 초기화 실행
-    // ------------------------------------------
-    window.addEventListener('DOMContentLoaded', () => {
-      initScratchpads();
-      initRolleSim();
-      initMvtSim();
-      initRunnerSim();
-      initBoundsSim();
-
-      // 성찰 메모 로컬스토리지 자동저장
-      const memo = document.getElementById('reflection-memo');
-      if (memo) {
-        const saved = localStorage.getItem('u2_5_reflection_memo');
-        if (saved) memo.value = saved;
-        memo.addEventListener('input', () => {
-          localStorage.setItem('u2_5_reflection_memo', memo.value);
+    if (sliderRolle) {
+        sliderRolle.addEventListener("input", function() {
+            isRollePlaying = false;
+            cancelAnimationFrame(animRolleId);
+            currentRolleC = parseFloat(sliderRolle.value);
         });
-      }
-    });
-  </script>
+    }
+
+    // 2. Sim 2 (MVT)
+    const btnMvtPlay = document.getElementById("btn-mvt-play");
+    const btnMvtPause = document.getElementById("btn-mvt-pause");
+    const btnMvtReset = document.getElementById("btn-mvt-reset");
+    const sliderMvtB = document.getElementById("mvt-b-slider");
+
+    let isMvtPlaying = false;
+    let animMvtId = null;
+    let scanMvtDir = 1;
+    let currentMvtB = sliderMvtB ? (parseFloat(sliderMvtB.value) || 4.0) : 4.0;
+
+    function stepMvt() {
+        if (!isMvtPlaying || !sliderMvtB) return;
+        const minVal = parseFloat(sliderMvtB.min) || 2.5;
+        const maxVal = parseFloat(sliderMvtB.max) || 4.5;
+        currentMvtB += 0.02 * scanMvtDir;
+        if (currentMvtB >= maxVal) {
+            currentMvtB = maxVal;
+            scanMvtDir = -1;
+        } else if (currentMvtB <= minVal) {
+            currentMvtB = minVal;
+            scanMvtDir = 1;
+        }
+        sliderMvtB.value = currentMvtB.toFixed(2);
+        if (typeof updateMvtB === "function") {
+            updateMvtB(sliderMvtB.value);
+        }
+        animMvtId = requestAnimationFrame(stepMvt);
+    }
+
+    if (btnMvtPlay) {
+        btnMvtPlay.onclick = function() {
+            if (isMvtPlaying) return;
+            isMvtPlaying = true;
+            currentMvtB = sliderMvtB ? parseFloat(sliderMvtB.value) || 4.0 : 4.0;
+            cancelAnimationFrame(animMvtId);
+            animMvtId = requestAnimationFrame(stepMvt);
+        };
+    }
+    if (btnMvtPause) {
+        btnMvtPause.onclick = function() {
+            isMvtPlaying = false;
+            cancelAnimationFrame(animMvtId);
+        };
+    }
+    if (btnMvtReset) {
+        btnMvtReset.onclick = function() {
+            isMvtPlaying = false;
+            cancelAnimationFrame(animMvtId);
+            currentMvtB = 4.0;
+            if (sliderMvtB) sliderMvtB.value = "4.00";
+            scanMvtDir = 1;
+            if (typeof updateMvtB === "function") {
+                updateMvtB("4.00");
+            }
+        };
+    }
+    if (sliderMvtB) {
+        sliderMvtB.addEventListener("input", function() {
+            isMvtPlaying = false;
+            cancelAnimationFrame(animMvtId);
+            currentMvtB = parseFloat(sliderMvtB.value);
+        });
+    }
+
+    // 3. Sim 3 (Runner)
+    const btnRunnerPlay = document.getElementById("btn-runner-play");
+    const btnRunnerPause = document.getElementById("btn-runner-pause");
+    const btnRunnerReset = document.getElementById("btn-runner-reset");
+    const sliderRunner = document.getElementById("runner-time-slider");
+
+    let isRunnerPlaying = false;
+    let animRunnerId = null;
+    let currentRunnerT = sliderRunner ? (parseFloat(sliderRunner.value) || 0) : 0;
+
+    function stepRunner() {
+        if (!isRunnerPlaying || !sliderRunner) return;
+        currentRunnerT += 0.05;
+        if (currentRunnerT >= 15.0) {
+            currentRunnerT = 15.0;
+            isRunnerPlaying = false;
+            sliderRunner.value = "15.00";
+            if (typeof setRunnerTime === "function") setRunnerTime(15);
+            return;
+        }
+        sliderRunner.value = currentRunnerT.toFixed(2);
+        if (typeof setRunnerTime === "function") {
+            setRunnerTime(currentRunnerT);
+        }
+        animRunnerId = requestAnimationFrame(stepRunner);
+    }
+
+    if (btnRunnerPlay) {
+        btnRunnerPlay.onclick = function() {
+            if (isRunnerPlaying) return;
+            isRunnerPlaying = true;
+            if (sliderRunner && parseFloat(sliderRunner.value) >= 15.0) {
+                currentRunnerT = 0;
+                sliderRunner.value = "0.00";
+            } else {
+                currentRunnerT = sliderRunner ? parseFloat(sliderRunner.value) || 0 : 0;
+            }
+            cancelAnimationFrame(animRunnerId);
+            animRunnerId = requestAnimationFrame(stepRunner);
+        };
+    }
+    if (btnRunnerPause) {
+        btnRunnerPause.onclick = function() {
+            isRunnerPlaying = false;
+            cancelAnimationFrame(animRunnerId);
+        };
+    }
+    if (btnRunnerReset) {
+        btnRunnerReset.onclick = function() {
+            isRunnerPlaying = false;
+            cancelAnimationFrame(animRunnerId);
+            currentRunnerT = 0;
+            if (sliderRunner) sliderRunner.value = "0.00";
+            if (typeof resetRunnerRace === "function") {
+                resetRunnerRace();
+            } else if (typeof setRunnerTime === "function") {
+                setRunnerTime(0);
+            }
+        };
+    }
+    if (sliderRunner) {
+        sliderRunner.addEventListener("input", function() {
+            isRunnerPlaying = false;
+            cancelAnimationFrame(animRunnerId);
+            currentRunnerT = parseFloat(sliderRunner.value);
+        });
+    }
+
+    // 4. Sim 4 (Bounds)
+    const btnBoundsPlay = document.getElementById("btn-bounds-play");
+    const btnBoundsPause = document.getElementById("btn-bounds-pause");
+    const btnBoundsReset = document.getElementById("btn-bounds-reset");
+    const sliderBounds = document.getElementById("bounds-slider");
+
+    let isBoundsPlaying = false;
+    let animBoundsId = null;
+    let scanBoundsDir = 1;
+    let currentBoundsVal = sliderBounds ? (parseFloat(sliderBounds.value) || 7.5) : 7.5;
+
+    function stepBounds() {
+        if (!isBoundsPlaying || !sliderBounds) return;
+        currentBoundsVal += 0.04 * scanBoundsDir;
+        if (currentBoundsVal >= 10.5) {
+            currentBoundsVal = 10.5;
+            scanBoundsDir = -1;
+        } else if (currentBoundsVal <= 4.5) {
+            currentBoundsVal = 4.5;
+            scanBoundsDir = 1;
+        }
+        sliderBounds.value = currentBoundsVal.toFixed(2);
+        if (typeof updateBoundsSim === "function") {
+            updateBoundsSim(sliderBounds.value);
+        }
+        animBoundsId = requestAnimationFrame(stepBounds);
+    }
+
+    if (btnBoundsPlay) {
+        btnBoundsPlay.onclick = function() {
+            if (isBoundsPlaying) return;
+            isBoundsPlaying = true;
+            currentBoundsVal = sliderBounds ? parseFloat(sliderBounds.value) || 7.5 : 7.5;
+            cancelAnimationFrame(animBoundsId);
+            animBoundsId = requestAnimationFrame(stepBounds);
+        };
+    }
+    if (btnBoundsPause) {
+        btnBoundsPause.onclick = function() {
+            isBoundsPlaying = false;
+            cancelAnimationFrame(animBoundsId);
+        };
+    }
+    if (btnBoundsReset) {
+        btnBoundsReset.onclick = function() {
+            isBoundsPlaying = false;
+            cancelAnimationFrame(animBoundsId);
+            currentBoundsVal = 7.5;
+            if (sliderBounds) sliderBounds.value = "7.50";
+            scanBoundsDir = 1;
+            if (typeof updateBoundsSim === "function") {
+                updateBoundsSim("7.50");
+            }
+        };
+    }
+    if (sliderBounds) {
+        sliderBounds.addEventListener("input", function() {
+            isBoundsPlaying = false;
+            cancelAnimationFrame(animBoundsId);
+            currentBoundsVal = parseFloat(sliderBounds.value);
+        });
+    }
+}
+
+/* =====================================================================
+   7. 안전한 초기화 진입점 (Safe Initialization Entry Point)
+   ===================================================================== */
+function initAllModules() {
+    // 1. KaTeX 자동 렌더링
+    if (window.renderMathInElement) {
+        window.renderMathInElement(document.body, {
+            delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "$", right: "$", display: false }
+            ],
+            throwOnError: false
+        });
+    }
+
+    // 2. 글자 크기 Stepper 초기화
+    initFontSize();
+
+    // 3. 전자칠판 초기화
+    initWhiteboard();
+
+    // 4. 4대 인터랙티브 시뮬레이터 초기화
+    if (typeof initRolleSim === "function") initRolleSim();
+    if (typeof initMvtSim === "function") initMvtSim();
+    if (typeof initRunnerSim === "function") initRunnerSim();
+    if (typeof initBoundsSim === "function") initBoundsSim();
+
+    // 5. 4대 시뮬레이터 3-버튼 자동 재생 바인딩
+    bindSimulatorControls();
+
+    // 6. 학습 성찰 메모 및 진행률 초기화
+    const memo = document.getElementById("reflection-memo");
+    if (memo) {
+        try {
+            const saved = localStorage.getItem("u2_5_reflection_memo");
+            if (saved) memo.value = saved;
+            memo.addEventListener("input", function() {
+                localStorage.setItem("u2_5_reflection_memo", memo.value);
+            });
+        } catch (e) {}
+    }
+    updateProgress();
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAllModules);
+} else {
+    initAllModules();
+}
+
+    </script>
 </body>
 </html>

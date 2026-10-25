@@ -16,12 +16,18 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
     <style>
+        body, input, button, select, textarea {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Malgun Gothic', '맑은 고딕', sans-serif;
+        }
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
             word-break: keep-all;
             overflow-x: hidden;
             background-color: #f8fafc;
             color: #0f172a;
+        }
+        /* Protect KaTeX font integrity */
+        .katex, .katex * {
+            font-family: KaTeX_Main, KaTeX_Math, KaTeX_Size1, KaTeX_Size2, KaTeX_Size3, KaTeX_Size4, KaTeX_AMS, 'Times New Roman', serif !important;
         }
         .katex-display {
             overflow-x: auto;
@@ -29,88 +35,73 @@
             padding: 0.5rem 0;
             margin: 0.5rem 0;
         }
-        .active-nav {
-            background-color: #e0e7ff !important;
-            color: #4338ca !important;
-            font-weight: 700 !important;
-            border-right: 4px solid #6366f1 !important;
+        .wb-drawing-active { pointer-events: auto !important; cursor: crosshair !important; }
+        .wb-color-btn.active { transform: scale(1.2); box-shadow: 0 0 0 3px #fff, 0 0 0 5px #4f46e5; }
+        .wb-tool-btn.active { background-color: #4f46e5 !important; color: #ffffff !important; }
+        #wb-canvas { position: absolute; top: 0; left: 0; width: 100%; z-index: 45; pointer-events: none; }
+    
+        /* Impeccable Design Tokens & Micro-Interactions (Nordic Edu-Chic) */
+        .edu-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(226, 232, 240, 0.85);
+            box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.04), 0 2px 6px -2px rgba(15, 23, 42, 0.02);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
         }
-        /* Drawing Scratchpad */
-        .scratchpad-canvas {
-            touch-action: none;
-            cursor: crosshair;
-            background-color: #ffffff;
-            background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px);
-            background-size: 16px 16px;
+        .edu-card:hover {
+            box-shadow: 0 8px 30px -6px rgba(2, 132, 199, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+            border-color: rgba(186, 230, 253, 0.9);
         }
-        /* Electronic Whiteboard Canvas Overlay */
-        #wb-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .edu-accent-bar-sky {
+            height: 3.5px;
             width: 100%;
-            z-index: 45;
-            pointer-events: none;
-            touch-action: none;
+            background: linear-gradient(90deg, #0284c7 0%, #38bdf8 45%, #6366f1 100%);
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
         }
-        #wb-canvas.wb-drawing-active {
-            pointer-events: auto;
-            cursor: crosshair;
+        .edu-badge-sky {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
         }
-        .wb-color-btn.active {
-            transform: scale(1.22);
-            box-shadow: 0 0 0 3px #ffffff, 0 0 0 5px #4f46e5;
+        .edu-badge-soft {
+            background: rgba(240, 249, 255, 0.9);
+            color: #0369a1;
+            border: 1px solid rgba(186, 230, 253, 0.8);
         }
-        .wb-tool-btn.active {
-            background-color: #4f46e5 !important;
-            color: #ffffff !important;
+        /* Refined Math Input Controls */
+        input[type="text"].edu-input, input[type="text"]:not([class*="wb-"]) {
+            background-color: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .wb-width-btn.active {
-            background-color: #e0e7ff !important;
-            color: #4338ca !important;
-            border-color: #6366f1 !important;
+        input[type="text"].edu-input:focus, input[type="text"]:not([class*="wb-"]):focus {
+            background-color: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
+            outline: none;
         }
-        #wb-toolbar {
-            z-index: 50;
+        /* Buttons Micro-interaction */
+        button:active {
+            transform: scale(0.98);
         }
-        #floating-controls {
-            z-index: 49;
+        /* Enhanced Solution Box */
+        .solution-box {
+            border-left: 4px solid #0284c7 !important;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
+            border-radius: 1rem !important;
+            border-top: 1px solid #e0f2fe !important;
+            border-right: 1px solid #e0f2fe !important;
+            border-bottom: 1px solid #e0f2fe !important;
+            box-shadow: 0 4px 12px -2px rgba(2, 132, 199, 0.06) !important;
         }
-        @media print {
-            #sidebar, #floating-controls, #wb-toolbar, #wb-canvas, .no-print {
-                display: none !important;
-            }
-            #main-content {
-                margin-left: 0 !important;
-                width: 100% !important;
-            }
-            .solution-box {
-                display: block !important;
-            }
-        }
+
     </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        indigo: {
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            200: '#c7d2fe',
-                            300: '#a5b4fc',
-                            400: '#818cf8',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                            800: '#3730a3',
-                            950: '#1e1b4b',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    
 </head>
 <body class="min-h-screen relative bg-slate-50 text-slate-900">
 
@@ -118,87 +109,88 @@
     <canvas id="wb-canvas"></canvas>
 
     <!-- Floating Action Quick Buttons (Bottom Right) -->
-    <div id="floating-controls" class="fixed bottom-6 right-6 flex flex-col gap-3 no-print">
-        <button id="wb-float-toggle" onclick="toggleWhiteboard()" title="전자칠판 판서 모드 켜기/끄기"
-            class="w-14 h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 cursor-pointer">
-            <i class="fa-solid fa-pen-to-square"></i>
+    <div id="floating-controls" class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 no-print">
+        <button onclick="toggleWhiteboard()" title="전자칠판 판서 모드 토글"
+            class="w-12 h-12 rounded-full bg-slate-900 text-white shadow-xl flex items-center justify-center ring-4 ring-white/20 hover:scale-110 active:scale-95 transition-all cursor-pointer">
+            <i class="fa-solid fa-pen-nib text-lg text-sky-400"></i>
         </button>
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="맨 위로 이동"
-            class="w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 shadow-md flex items-center justify-center text-lg transition-all hover:scale-105 active:scale-95 cursor-pointer">
-            <i class="fa-solid fa-arrow-up"></i>
+        <button onclick="window.scrollTo({ top: 0, behavior: 'smooth' })" title="맨 위로 이동"
+            class="w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-700 shadow-md flex items-center justify-center hover:bg-slate-100 transition-all cursor-pointer">
+            <i class="fa-solid fa-arrow-up text-sm"></i>
         </button>
     </div>
 
-    <!-- Electronic Whiteboard Top Toolbar (Fixed Floating) -->
-    <div id="wb-toolbar" class="hidden fixed top-3 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl p-2.5 flex items-center gap-2 sm:gap-3 no-print max-w-[95vw] overflow-x-auto">
-        <div class="flex items-center gap-1.5 px-2 border-r border-slate-200">
-            <span class="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
-            <span class="text-xs font-black text-indigo-700 tracking-wider whitespace-nowrap">전자칠판 판서</span>
+    <!-- Electronic Whiteboard Floating Toolbar -->
+    <div id="wb-toolbar" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex flex-wrap items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-1.5 pr-2 border-r border-slate-700">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-extrabold tracking-wide text-sky-300">전자칠판</span>
         </div>
 
-        <!-- Tool Selection -->
-        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-            <button onclick="setWbTool('pen')" id="wb-btn-pen" class="wb-tool-btn active px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
-                <i class="fa-solid fa-pen"></i><span class="hidden sm:inline">펜</span>
+        <!-- Mode Switch: Pointer (Scroll/Click) vs Pen vs Highlighter vs Eraser -->
+        <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
+            <button id="wb-btn-pointer" onclick="setWbTool('pointer')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="화면 스크롤 및 버튼 클릭">
+                <i class="fa-solid fa-hand-pointer"></i> <span class="hidden sm:inline">포인터</span>
             </button>
-            <button onclick="setWbTool('highlighter')" id="wb-btn-highlighter" class="wb-tool-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-highlighter"></i><span class="hidden sm:inline">형광펜</span>
+            <button id="wb-btn-pen" onclick="setWbTool('pen')" class="wb-tool-btn active px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="일반 펜 판서">
+                <i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">펜</span>
             </button>
-            <button onclick="setWbTool('eraser')" id="wb-btn-eraser" class="wb-tool-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-eraser"></i><span class="hidden sm:inline">지우개</span>
+            <button id="wb-btn-highlighter" onclick="setWbTool('highlighter')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="형광펜">
+                <i class="fa-solid fa-highlighter"></i> <span class="hidden sm:inline">형광펜</span>
             </button>
-            <button onclick="setWbTool('interact')" id="wb-btn-interact" class="wb-tool-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5" title="자료 조작 모드 (판서 일시정지)">
-                <i class="fa-solid fa-arrow-pointer"></i><span class="hidden sm:inline">조작</span>
+            <button id="wb-btn-eraser" onclick="setWbTool('eraser')" class="wb-tool-btn px-2.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1" title="부분 지우개">
+                <i class="fa-solid fa-eraser"></i> <span class="hidden sm:inline">지우개</span>
             </button>
         </div>
 
         <!-- Color Palette -->
-        <div class="flex items-center gap-1.5 px-1 border-r border-slate-200">
-            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-6 h-6 rounded-full bg-red-500 border-2 border-white shadow-xs" title="빨강"></button>
-            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-6 h-6 rounded-full bg-blue-500 border-2 border-white shadow-xs" title="파랑"></button>
-            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-xs" title="초록"></button>
-            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-6 h-6 rounded-full bg-amber-500 border-2 border-white shadow-xs" title="노랑"></button>
-            <button onclick="setWbColor('#8b5cf6', this)" class="wb-color-btn w-6 h-6 rounded-full bg-purple-500 border-2 border-white shadow-xs" title="보라"></button>
-            <button onclick="setWbColor('#0f172a', this)" class="wb-color-btn w-6 h-6 rounded-full  border-2 border-white shadow-xs" title="검정"></button>
+        <div class="flex items-center gap-2 px-2 border-l border-r border-slate-700">
+            <button onclick="setWbColor('#ef4444', this)" class="wb-color-btn active w-5 h-5 rounded-full bg-red-500 transition" title="빨강"></button>
+            <button onclick="setWbColor('#3b82f6', this)" class="wb-color-btn w-5 h-5 rounded-full bg-blue-500 transition" title="파랑"></button>
+            <button onclick="setWbColor('#10b981', this)" class="wb-color-btn w-5 h-5 rounded-full bg-emerald-500 transition" title="초록"></button>
+            <button onclick="setWbColor('#f59e0b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-amber-400 transition" title="노랑"></button>
+            <button onclick="setWbColor('#1e293b', this)" class="wb-color-btn w-5 h-5 rounded-full bg-slate-800 border border-white/50 transition" title="검정"></button>
         </div>
 
-        <!-- Thickness Selection -->
-        <div class="flex items-center gap-1 px-1 border-r border-slate-200">
-            <button onclick="setWbWidth(2, this)" class="wb-width-btn px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 hover:bg-slate-100">가늘게</button>
-            <button onclick="setWbWidth(5, this)" class="wb-width-btn active px-2.5 py-1 rounded-lg text-xs font-bold border border-indigo-200 bg-indigo-50 text-indigo-700">보통</button>
-            <button onclick="setWbWidth(12, this)" class="wb-width-btn px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 hover:bg-slate-100">굵게</button>
+        <!-- Stroke Width -->
+        <div class="hidden md:flex items-center gap-2">
+            <span class="text-[11px] text-slate-400">굵기</span>
+            <input type="range" id="wb-size" min="2" max="14" value="4" class="w-16 accent-indigo-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-1.5">
-            <button onclick="undoWhiteboard()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1 transition" title="한 획 취소">
-                <i class="fa-solid fa-rotate-left"></i><span class="hidden sm:inline">실행취소</span>
+        <!-- Actions: Undo, Clear, Close -->
+        <div class="flex items-center gap-1.5 pl-1">
+            <button onclick="undoWb()" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold transition" title="실행 취소">
+                <i class="fa-solid fa-rotate-left"></i>
             </button>
-            <button onclick="clearWhiteboard()" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold flex items-center gap-1 transition" title="판서 전체 삭제">
-                <i class="fa-solid fa-trash"></i><span class="hidden sm:inline">전체삭제</span>
+            <button onclick="clearWb()" class="p-1.5 px-2.5 rounded-lg bg-rose-900/70 hover:bg-rose-800 text-rose-200 text-xs font-semibold transition" title="판서 전체 삭제">
+                <i class="fa-solid fa-trash-can mr-1"></i>전체 삭제
             </button>
-            <button onclick="saveWhiteboardPNG()" class="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-bold flex items-center gap-1 transition" title="판서 화면 이미지로 저장">
-                <i class="fa-solid fa-download"></i><span class="hidden sm:inline">저장</span>
-            </button>
-            <button onclick="toggleWhiteboard()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition" title="판서 모드 닫기">
-                <i class="fa-solid fa-xmark"></i>
+            <button onclick="toggleWhiteboard()" class="p-1.5 px-2.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold transition" title="전자칠판 닫기">
+                <i class="fa-solid fa-xmark"></i> 닫기
             </button>
         </div>
     </div>
 
-    <!-- Mobile Top Navigation Header -->
+    <!-- Mobile Top Header -->
     <header class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur border-b border-slate-200 z-40 flex items-center justify-between px-4">
-        <span class="font-black text-sm text-indigo-600 truncate max-w-[200px]">Ⅰ-01. 함수의 극한</span>
-        <button onclick="toggleWhiteboard()" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
-            <i class="fa-solid fa-chalkboard-user"></i> 전자칠판
-        </button>
+        <div class="flex items-center gap-3">
+            <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+            <span class="font-bold text-lg text-sky-600">01. 함수의 극한</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="toggleWhiteboard()" class="px-2.5 py-1.5 rounded-lg bg-sky-600 text-white text-xs font-bold flex items-center gap-1">
+                <i class="fa-solid fa-chalkboard-user"></i> 칠판
+            </button>
+        </div>
     </header>
 
-    <!-- Desktop Sidebar Navigation -->
-    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-40 flex flex-col justify-between shadow-lg lg:shadow-none">
+    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-40 flex flex-col justify-between shadow-lg lg:shadow-none" style="font-size: 14px;">
         <div class="p-5 border-b border-slate-200">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-md bg-indigo-100 text-indigo-700">고2 미적분Ⅰ</span>
+                <span class="text-xs font-extrabold tracking-wider uppercase px-2.5 py-1 rounded-md edu-badge-soft font-bold">고2 미적분Ⅰ</span>
                 <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">2차시 완결</span>
             </div>
             <h1 class="text-xl font-black text-slate-900 mt-2.5 flex items-center gap-2">
@@ -225,7 +217,7 @@
                 <i class="fa-solid fa-lightbulb text-amber-500 w-4"></i><span>성취기준 & 생각 열기</span>
             </a>
             <a href="#sec-concept1" class="nav-link flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition">
-                <i class="fa-solid fa-chart-line text-indigo-500 w-4"></i><span>1. 함수의 수렴 (Convergence)</span>
+                <i class="fa-solid fa-chart-line text-indigo-500 w-4"></i><span>1. 함수의 수렴</span>
             </a>
             <a href="#sec-prob1" class="nav-link flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition">
                 <i class="fa-solid fa-pen-to-square text-emerald-500 w-4"></i><span>예제 1 & 문제 1 풀이</span>
@@ -264,24 +256,53 @@
             </a>
         </nav>
 
-        <div class="p-3 border-t border-slate-200 bg-slate-50 space-y-2 no-print">
-            <button onclick="toggleWhiteboard()" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-black shadow-md flex items-center justify-center gap-2 transition cursor-pointer">
-                <i class="fa-solid fa-chalkboard-user"></i>
-                <span>전자칠판 판서 모드</span>
+                <!-- Sidebar Footer Quick Actions -->
+        <!-- Action Buttons: Whiteboard / Solutions / Reset -->
+        <div class="p-4 border-t border-slate-200 space-y-2 bg-slate-50/50">
+            <button onclick="toggleWhiteboard()" id="sidebar-wb-btn" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white text-xs font-extrabold shadow-md transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-pen-nib"></i>
+                <span>전자칠판 (화면 판서)</span>
             </button>
-            <div class="grid grid-cols-2 gap-1.5">
-                <button onclick="toggleAllSolutions(true)" class="py-1.5 px-2 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-[11px] font-bold transition">
-                    정답 모두 보기
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="toggleAllSolutions(true)" class="px-3 py-2 text-xs font-bold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 shadow-sm text-slate-700">
+                    <i class="fa-solid fa-eye text-indigo-500"></i> 해설 모두 열기
                 </button>
-                <button onclick="resetAllInputs()" class="py-1.5 px-2 rounded-lg bg-white border border-slate-200 text-rose-600 hover:bg-rose-50 text-[11px] font-bold transition">
-                    입력 초기화
+                <button onclick="toggleAllSolutions(false)" class="px-3 py-2 text-xs font-bold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 shadow-sm text-slate-700">
+                    <i class="fa-solid fa-eye-slash text-slate-400"></i> 해설 모두 닫기
                 </button>
             </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="resetAllInputs()" class="px-3 py-2 text-xs font-bold rounded-lg bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition flex items-center justify-center gap-1.5 shadow-xs">
+                    <i class="fa-solid fa-rotate-left"></i> 답안 초기화
+                </button>
+                <button onclick="resetFontSize()" class="px-3 py-2 text-xs font-bold rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition flex items-center justify-center gap-1.5 text-slate-700 shadow-xs" title="기본 크기(115%)로 복원">
+                    <i class="fa-solid fa-text-height text-indigo-500"></i> 글자 초기화
+                </button>
+            </div>
+            <!-- 실시간 글자 크기 조절 컨트롤 (교실 맨 뒷자리 시야 확보용) -->
+            <div class="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 shadow-sm text-xs">
+                <span class="text-slate-700 font-bold flex items-center gap-1.5 pl-1">
+                    <i class="fa-solid fa-font text-indigo-500"></i> 글자 크기
+                </span>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="changeFontSize(-1)" title="글자 작게" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center transition">
+                        <i class="fa-solid fa-minus text-[11px]"></i>
+                    </button>
+                    <span id="font-size-label" class="w-11 text-center font-mono font-extrabold text-indigo-700 text-xs">115%</span>
+                    <button onclick="changeFontSize(1)" title="글자 크게 (맨 뒷자리 학생용)" class="w-7 h-7 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center transition border border-indigo-200">
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+                    </button>
+                </div>
+            </div>
+            <a href="index.html" class="block text-center py-2 text-xs font-bold text-slate-500 hover:text-indigo-600 transition">
+                <i class="fa-solid fa-arrow-left"></i> 메인 대시보드로 돌아가기
+            </a>
         </div>
     </aside>
 
     <!-- Main Content Container -->
-    <main id="main-content" class="lg:ml-72 min-h-screen p-4 sm:p-8 lg:p-10 space-y-12">
+    <main id="main-content" class="lg:ml-72 min-h-screen pt-16 lg:pt-0 pb-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 py-8 space-y-12">
 
         <!-- ================= HERO & CURRICULUM BANNER ================= -->
         <header class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-6">
@@ -303,7 +324,7 @@
             <div class="space-y-3">
                 <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight flex items-center gap-3">
                     <span class="w-3.5 h-10 rounded-full bg-indigo-600 inline-block"></span>
-                    <span>01. 함수의 극한 (Limits of Functions)</span>
+                    <span>01. 함수의 극한</span>
                 </h1>
                 <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-4xl">
                     독립변수 $x$의 값이 어떤 실수에 한없이 가까워질 때, 또는 무한히 커지거나 작아질 때 함수의 거동(수렴과 발산)을 기하학적 직관과 수치적 탐구를 통해 엄밀하게 학습합니다.
@@ -324,7 +345,7 @@
                 <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1.5">
                     <div class="flex items-center gap-2 text-amber-800 font-extrabold text-xs">
                         <i class="fa-solid fa-compass"></i>
-                        <span>단원 핵심 탐구 질문 (Essential Question)</span>
+                        <span>단원 핵심 탐구 질문</span>
                     </div>
                     <p class="text-xs text-slate-700 font-medium">
                         함숫값이 정의되지 않은 점에서도 극한값은 존재할 수 있을까? 좌우 방향성은 왜 중요할까?
@@ -360,7 +381,8 @@
         </header>
 
         <!-- ================= SECTION 1: INTRO (생각 열기) ================= -->
-        <section id="sec-intro" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-intro" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-sm">
@@ -383,7 +405,7 @@
                     </p>
                 </div>
 
-                <!-- Widget 1: 생각 열기 수렴 탐구기 (Light Theme Canvas) -->
+                <!-- Widget 1: 생각 열기 수렴 탐구기 -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
                     <div class="lg:col-span-7 space-y-3">
                         <div class="flex justify-between items-center text-xs font-bold text-slate-600">
@@ -406,7 +428,7 @@
                         </div>
                     </div>
 
-                    <!-- 동적 수치 표 (Numerical Table) -->
+                    <!-- 동적 수치 표 -->
                     <div class="lg:col-span-5 space-y-3">
                         <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
                             <span>$x \to 1$ 실시간 수치 접근표</span>
@@ -423,7 +445,7 @@
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-slate-700 font-mono">
                                     <tr class="bg-indigo-50/40">
-                                        <td rowspan="3" class="font-sans font-bold text-indigo-700 bg-indigo-50/70 text-[11px]">좌측 접근<br>($x &lt; 1$)</td>
+                                        <td rowspan="3" class="font-sans font-bold text-indigo-700 bg-indigo-50/70 text-[11px]">좌측 접근<br>($x < 1$)</td>
                                         <td class="py-1">0.9</td>
                                         <td class="py-1">-1.19</td>
                                     </tr>
@@ -436,7 +458,7 @@
                                         <td class="py-1 font-bold text-indigo-700">-1.001999</td>
                                     </tr>
                                     <tr class="bg-amber-50/40">
-                                        <td rowspan="3" class="font-sans font-bold text-amber-700 bg-amber-50/70 text-[11px]">우측 접근<br>($x &gt; 1$)</td>
+                                        <td rowspan="3" class="font-sans font-bold text-amber-700 bg-amber-50/70 text-[11px]">우측 접근<br>($x > 1$)</td>
                                         <td class="py-1 font-bold text-amber-700">1.001</td>
                                         <td class="py-1 font-bold text-amber-700">-0.997999</td>
                                     </tr>
@@ -468,22 +490,22 @@
                     </p>
                     <div class="flex flex-wrap items-center gap-3">
                         <div class="relative flex-1 max-w-xs">
-                            <input type="text" id="ans-intro" placeholder="가까워지는 수 입력 (예: -1)" 
+                            <input type="text" id="ans-intro" 
                                 class="w-full px-4 py-2 rounded-xl border border-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-sm font-mono">
                         </div>
                         <button onclick="checkAnswer('ans-intro', '-1', 'fb-intro')" 
-                            class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition cursor-pointer shadow-xs">
+                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-xs transition-all shadow-sm hover:shadow cursor-pointer flex items-center gap-1.5">
                             정답 확인
                         </button>
                         <button onclick="toggleSolution('sol-intro')" 
-                            class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition cursor-pointer">
+                            class="px-4 py-2.5 rounded-xl bg-slate-100/80 hover:bg-sky-50 hover:text-sky-700 border border-slate-200/80 text-slate-700 font-bold text-xs transition-all cursor-pointer flex items-center gap-1.5">
                             단계별 풀이 보기
                         </button>
                         <span id="fb-intro" class="text-xs font-bold"></span>
                     </div>
 
                     <!-- 해설 박스 -->
-                    <div id="sol-intro" class="hidden p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2 text-slate-700 leading-relaxed">
+                    <div id="sol-intro" class="solution-box hidden p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2 text-slate-700 leading-relaxed">
                         <p class="font-bold text-indigo-700">💡 [단계별 해설]</p>
                         <p>1. $x$가 $1$보다 작으면서 $1$에 가까워질 때($0.9, 0.99, 0.999, \dots$): $f(x)$는 $-1.19, -1.0199, -1.001999, \dots$로 $-1$보다 작은 쪽에서 $-1$에 한없이 가까워집니다.</p>
                         <p>2. $x$가 $1$보다 크면서 $1$에 가까워질 때($1.1, 1.01, 1.001, \dots$): $f(x)$는 $-0.79, -0.9799, -0.997999, \dots$로 $-1$보다 큰 쪽에서 $-1$에 한없이 가까워집니다.</p>
@@ -491,19 +513,14 @@
                     </div>
 
                     <!-- 카드 전용 풀이 스크래치패드 -->
-                    <div class="mt-3">
-                        <div class="flex justify-between items-center mb-1.5 text-xs text-slate-500">
-                            <span class="flex items-center gap-1.5 font-bold"><i class="fa-solid fa-pen-nib text-indigo-500"></i> 풀이 연습장 (필기 가능)</span>
-                            <button class="clear-scratchpad-btn text-rose-500 hover:text-rose-700 font-bold transition">지우기</button>
-                        </div>
-                        <canvas class="scratchpad-canvas w-full h-32 rounded-xl border border-slate-300"></canvas>
-                    </div>
+                    
                 </div>
             </div>
         </section>
 
         <!-- ================= SECTION 2: CONCEPT 1 (함수의 수렴) ================= -->
-        <section id="sec-concept1" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-concept1" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black text-sm">
@@ -511,7 +528,7 @@
                     </span>
                     <div>
                         <span class="text-xs font-bold text-indigo-600 tracking-wide uppercase">교과서 12 ~ 13쪽 핵심 개념</span>
-                        <h2 class="text-xl sm:text-2xl font-black text-slate-900">1. 함수의 수렴 (Convergence)</h2>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900">1. 함수의 수렴</h2>
                     </div>
                 </div>
                 <span class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700">개념 정립</span>
@@ -595,7 +612,8 @@
         </section>
 
         <!-- ================= SECTION 3: EXAMPLE 1 & PROBLEM 1 ================= -->
-        <section id="sec-prob1" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-prob1" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-sm">
@@ -627,7 +645,7 @@
                         <button onclick="toggleSolution('sol-ex1-1')" class="text-xs font-bold text-indigo-600 hover:underline">
                             단계별 해설 보기
                         </button>
-                        <div id="sol-ex1-1" class="hidden p-3 rounded-xl bg-indigo-50/50 border border-indigo-100 text-xs space-y-1.5 text-slate-700">
+                        <div id="sol-ex1-1" class="solution-box hidden p-3 rounded-xl bg-indigo-50/50 border border-indigo-100 text-xs space-y-1.5 text-slate-700">
                             <p><b>정답: 2</b></p>
                             <p>함수 $f(x) = (x-1)^2 + 1$의 그래프에서 $x$의 값이 $2$가 아니면서 $2$에 한없이 가까워질 때, $f(x)$의 값은 $2$에 한없이 가까워집니다.</p>
                             <p class="font-mono text-indigo-700 font-bold">따라서 극한값은 2입니다.</p>
@@ -641,7 +659,7 @@
                         <button onclick="toggleSolution('sol-ex1-2')" class="text-xs font-bold text-indigo-600 hover:underline">
                             단계별 해설 보기
                         </button>
-                        <div id="sol-ex1-2" class="hidden p-3 rounded-xl bg-indigo-50/50 border border-indigo-100 text-xs space-y-1.5 text-slate-700">
+                        <div id="sol-ex1-2" class="solution-box hidden p-3 rounded-xl bg-indigo-50/50 border border-indigo-100 text-xs space-y-1.5 text-slate-700">
                             <p><b>정답: 6</b></p>
                             <p>$x \ne 3$일 때 $\frac{x^2-9}{x-3} = \frac{(x-3)(x+3)}{x-3} = x + 3$ 입니다.</p>
                             <p>따라서 $x$가 $3$에 가까워질 때 $x + 3$은 $6$에 한없이 가까워지므로 극한값은 <b>6</b>입니다.</p>
@@ -652,10 +670,10 @@
                 <!-- 예제 1 전용 스크래치패드 -->
                 <div>
                     <div class="flex justify-between items-center mb-1 text-xs text-slate-500 font-bold">
-                        <span>예제 1 풀이 연습장</span>
-                        <button class="clear-scratchpad-btn text-rose-500 hover:text-rose-700">지우기</button>
+                        <span>예제 1 </span>
+                        
                     </div>
-                    <canvas class="scratchpad-canvas w-full h-28 rounded-xl border border-slate-300"></canvas>
+                    
                 </div>
             </div>
 
@@ -680,7 +698,7 @@
                             $$\lim_{x \to 3} (x^2 - 2x)$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p1-1" placeholder="정답 입력" 
+                            <input type="text" id="ans-p1-1" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-emerald-500">
                             <button onclick="checkAnswer('ans-p1-1', '3', 'fb-p1-1')" 
                                 class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 transition">
@@ -692,16 +710,13 @@
                             </button>
                         </div>
                         <span id="fb-p1-1" class="text-xs font-bold block"></span>
-                        <div id="sol-p1-1" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-p1-1" class="solution-box hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: 3</b><br>
                             $f(x) = x^2 - 2x = (x-1)^2 - 1$의 그래프에서 $x \to 3$일 때 $f(x) \to 3^2 - 2(3) = 3$으로 수렴합니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -715,7 +730,7 @@
                             $$\lim_{x \to 1} \sqrt{x + 3}$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p1-2" placeholder="정답 입력" 
+                            <input type="text" id="ans-p1-2" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-emerald-500">
                             <button onclick="checkAnswer('ans-p1-2', '2', 'fb-p1-2')" 
                                 class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 transition">
@@ -727,16 +742,13 @@
                             </button>
                         </div>
                         <span id="fb-p1-2" class="text-xs font-bold block"></span>
-                        <div id="sol-p1-2" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-p1-2" class="solution-box hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: 2</b><br>
                             $f(x) = \sqrt{x+3}$의 그래프에서 $x \to 1$일 때 $\sqrt{1+3} = \sqrt{4} = 2$에 한없이 가까워집니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -750,7 +762,7 @@
                             $$\lim_{x \to 2} \frac{x^2 - 4}{x - 2}$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p1-3" placeholder="정답 입력" 
+                            <input type="text" id="ans-p1-3" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-emerald-500">
                             <button onclick="checkAnswer('ans-p1-3', '4', 'fb-p1-3')" 
                                 class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 transition">
@@ -762,16 +774,13 @@
                             </button>
                         </div>
                         <span id="fb-p1-3" class="text-xs font-bold block"></span>
-                        <div id="sol-p1-3" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-p1-3" class="solution-box hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: 4</b><br>
                             $x \ne 2$일 때 $\frac{(x-2)(x+2)}{x-2} = x + 2$ 입니다. $x \to 2$일 때 $x+2 \to 4$로 수렴합니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -785,7 +794,7 @@
                             $$\lim_{x \to 3} (-1)$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p1-4" placeholder="정답 입력" 
+                            <input type="text" id="ans-p1-4" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-emerald-500">
                             <button onclick="checkAnswer('ans-p1-4', '-1', 'fb-p1-4')" 
                                 class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 transition">
@@ -797,16 +806,13 @@
                             </button>
                         </div>
                         <span id="fb-p1-4" class="text-xs font-bold block"></span>
-                        <div id="sol-p1-4" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-p1-4" class="solution-box hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: -1</b><br>
                             모든 실수 $x$에 대해 함숫값이 항상 $-1$인 상수함수이므로 $x \to 3$일 때 극한값은 그대로 <b>-1</b>입니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -814,7 +820,8 @@
         </section>
 
         <!-- ================= SECTION 4: CONCEPT 2 & PROBLEM 2 (무한대 극한과 발산) ================= -->
-        <section id="sec-concept2" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-concept2" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-black text-sm">
@@ -884,7 +891,7 @@
                             $$\lim_{x \to \infty} \frac{1}{x + 2}$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p2-1" placeholder="정답 입력 (예: 0)" 
+                            <input type="text" id="ans-p2-1" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-sky-500">
                             <button onclick="checkAnswer('ans-p2-1', '0', 'fb-p2-1')" 
                                 class="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs shrink-0 transition">
@@ -896,16 +903,13 @@
                             </button>
                         </div>
                         <span id="fb-p2-1" class="text-xs font-bold block"></span>
-                        <div id="sol-p2-1" class="hidden p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs text-slate-700">
+                        <div id="sol-p2-1" class="solution-box hidden p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs text-slate-700">
                             <b>정답: 0</b><br>
                             $x$의 값이 한없이 커질 때 분모 $x+2$도 한없이 커지므로, $\frac{1}{x+2}$의 값은 $0$에 한없이 가까워집니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -919,7 +923,7 @@
                             $$\lim_{x \to -\infty} \left(\frac{1}{x} + 1\right)$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p2-2" placeholder="정답 입력 (예: 1)" 
+                            <input type="text" id="ans-p2-2" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-sky-500">
                             <button onclick="checkAnswer('ans-p2-2', '1', 'fb-p2-2')" 
                                 class="px-3 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs shrink-0 transition">
@@ -931,16 +935,13 @@
                             </button>
                         </div>
                         <span id="fb-p2-2" class="text-xs font-bold block"></span>
-                        <div id="sol-p2-2" class="hidden p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs text-slate-700">
+                        <div id="sol-p2-2" class="solution-box hidden p-3 rounded-xl bg-sky-50 border border-sky-200 text-xs text-slate-700">
                             <b>정답: 1</b><br>
                             $x \to -\infty$일 때 $\frac{1}{x} \to 0$이므로, $\lim_{x \to -\infty} (\frac{1}{x} + 1) = 0 + 1 = 1$ 입니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -950,7 +951,7 @@
             <div class="space-y-4 pt-4 border-t border-slate-100">
                 <div class="flex items-center gap-2 text-rose-800 font-extrabold text-base">
                     <i class="fa-solid fa-arrow-trend-up text-rose-600"></i>
-                    <h3>함수의 발산 (Divergence): 양의 무한대와 음의 무한대</h3>
+                    <h3>함수의 발산: 양의 무한대와 음의 무한대</h3>
                 </div>
                 <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
                     <p>
@@ -1004,7 +1005,8 @@
         </section>
 
         <!-- ================= SECTION 5: SKYDIVING REAL-WORLD MATH ================= -->
-        <section id="sec-skydive" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-skydive" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-black text-sm">
@@ -1012,7 +1014,7 @@
                     </span>
                     <div>
                         <span class="text-xs font-bold text-blue-600 tracking-wide uppercase">교과서 16쪽 실생활 수학 탐구</span>
-                        <h2 class="text-xl sm:text-2xl font-black text-slate-900">스카이다이빙과 종단 속도 (Terminal Velocity)</h2>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900">스카이다이빙과 종단 속도</h2>
                     </div>
                 </div>
                 <span class="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
@@ -1026,7 +1028,7 @@
                     그러나 실제 대기에서는 속도가 증가함에 따라 <b>공기 저항력</b>도 함께 증가하여 결국 중력과 평형을 이루게 되며, 일정 속도인 <b>종단 속도($33.78\text{ m/s}$)</b>로 수렴하게 됩니다.
                 </p>
 
-                <!-- Widget 2: 스카이다이빙 종단 속도 Canvas 시뮬레이터 (Light Theme) -->
+                <!-- Widget 2: 스카이다이빙 종단 속도 Canvas 시뮬레이터 -->
                 <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div class="flex items-center gap-3">
@@ -1100,7 +1102,7 @@
                             $$\lim_{x \to 2} \frac{1}{|x - 2|}$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p3-1" placeholder="정답 입력 (예: 무한대 또는 발산)" 
+                            <input type="text" id="ans-p3-1" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-rose-500">
                             <button onclick="checkAnswer('ans-p3-1', '무한대', 'fb-p3-1')" 
                                 class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shrink-0 transition">
@@ -1112,16 +1114,13 @@
                             </button>
                         </div>
                         <span id="fb-p3-1" class="text-xs font-bold block"></span>
-                        <div id="sol-p3-1" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700">
+                        <div id="sol-p3-1" class="solution-box hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700">
                             <b>정답: $\infty$ (양의 무한대로 발산)</b><br>
                             $x \to 2$일 때 분모 $|x-2| \to 0^+$로 한없이 작아지며 항상 양수이므로, 분수 전체의 값은 양의 무한대로 한없이 커집니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -1135,7 +1134,7 @@
                             $$\lim_{x \to -1} \left\{-\frac{2}{(x + 1)^2}\right\}$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p3-2" placeholder="정답 입력 (예: -무한대)" 
+                            <input type="text" id="ans-p3-2" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-rose-500">
                             <button onclick="checkAnswer('ans-p3-2', '-무한대', 'fb-p3-2')" 
                                 class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shrink-0 transition">
@@ -1147,16 +1146,13 @@
                             </button>
                         </div>
                         <span id="fb-p3-2" class="text-xs font-bold block"></span>
-                        <div id="sol-p3-2" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700">
+                        <div id="sol-p3-2" class="solution-box hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700">
                             <b>정답: $-\infty$ (음의 무한대로 발산)</b><br>
                             $x \to -1$일 때 분모 $(x+1)^2 \to 0^+$로 양수이면서 $0$에 가까워지므로, 분자의 $-2$에 의해 음의 무한대로 발산합니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -1170,7 +1166,7 @@
                             $$\lim_{x \to \infty} (2x - 1)$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p4-1" placeholder="정답 입력 (예: 무한대)" 
+                            <input type="text" id="ans-p4-1" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-rose-500">
                             <button onclick="checkAnswer('ans-p4-1', '무한대', 'fb-p4-1')" 
                                 class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shrink-0 transition">
@@ -1182,16 +1178,13 @@
                             </button>
                         </div>
                         <span id="fb-p4-1" class="text-xs font-bold block"></span>
-                        <div id="sol-p4-1" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700">
+                        <div id="sol-p4-1" class="solution-box hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700">
                             <b>정답: $\infty$ (양의 무한대로 발산)</b><br>
                             $x$의 값이 한없이 커지면 $2x - 1$의 값도 한없이 커지므로 양의 무한대로 발산합니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -1205,7 +1198,7 @@
                             $$\lim_{x \to -\infty} (x^2 - 2x)$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p4-2" placeholder="정답 입력 (예: 무한대)" 
+                            <input type="text" id="ans-p4-2" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-rose-500">
                             <button onclick="checkAnswer('ans-p4-2', '무한대', 'fb-p4-2')" 
                                 class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shrink-0 transition">
@@ -1217,16 +1210,13 @@
                             </button>
                         </div>
                         <span id="fb-p4-2" class="text-xs font-bold block"></span>
-                        <div id="sol-p4-2" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700">
+                        <div id="sol-p4-2" class="solution-box hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700">
                             <b>정답: $\infty$ (양의 무한대로 발산)</b><br>
                             $x^2 - 2x = (x-1)^2 - 1$ 이며, $x \to -\infty$일 때 최고차항 $x^2$이 지배적이므로 양의 무한대로 발산합니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -1234,7 +1224,8 @@
         </section>
 
         <!-- ================= SECTION 6: INTERACTIVE LIMIT LAB (수렴 실험실) ================= -->
-        <section id="sec-lab" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-lab" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-black text-sm">
@@ -1248,7 +1239,7 @@
                 <span class="text-xs font-bold px-3 py-1 rounded-full bg-teal-50 text-teal-700">동적 시각화</span>
             </div>
 
-            <!-- Widget 3: 종합 수렴 실험실 (Light Theme) -->
+            <!-- Widget 3: 종합 수렴 실험실 -->
             <div class="p-6 rounded-2xl bg-teal-50/40 border border-teal-200/80 space-y-6">
                 <!-- 함수 선택 탭 -->
                 <div class="space-y-2">
@@ -1394,7 +1385,7 @@
                         </div>
                     </div>
 
-                    <!-- Widget 4: 위탁 수하물 요금 시뮬레이터 (Light Theme) -->
+                    <!-- Widget 4: 위탁 수하물 요금 시뮬레이터 -->
                     <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
                         <div class="flex justify-between items-center text-xs font-bold text-slate-700">
                             <span>계단함수 동적 캔버스</span>
@@ -1423,7 +1414,7 @@
                         <span class="text-xs font-bold text-purple-900">질문 1. 20kg보다 작으면서 20kg에 가까워질 때</span>
                         <p class="text-xs text-slate-600">수하물 무게가 20kg 미만에서 20kg으로 한없이 다가갈 때 요금은 얼마에 가까워지는가?</p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-bag-1" placeholder="금액 입력 (예: 50000)" 
+                            <input type="text" id="ans-bag-1" 
                                 class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-bag-1', '50000', 'fb-bag-1')" 
                                 class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shrink-0 transition">
@@ -1437,7 +1428,7 @@
                         <span class="text-xs font-bold text-purple-900">질문 2. 20kg보다 크면서 20kg에 가까워질 때</span>
                         <p class="text-xs text-slate-600">수하물 무게가 20kg 초과에서 20kg으로 한없이 다가갈 때 요금은 얼마에 가까워지는가?</p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-bag-2" placeholder="금액 입력 (예: 70000)" 
+                            <input type="text" id="ans-bag-2" 
                                 class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-bag-2', '70000', 'fb-bag-2')" 
                                 class="px-3 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shrink-0 transition">
@@ -1451,7 +1442,8 @@
         </section>
 
         <!-- ================= SECTION 7: CONCEPT 4 (우극한과 좌극한) & PROBLEM 5 ================= -->
-        <section id="sec-concept3" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-concept3" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-sm">
@@ -1459,7 +1451,7 @@
                     </span>
                     <div>
                         <span class="text-xs font-bold text-purple-600 tracking-wide uppercase">교과서 17 ~ 18쪽 핵심 개념</span>
-                        <h2 class="text-xl sm:text-2xl font-black text-slate-900">3. 우극한과 좌극한 (One-Sided Limits)</h2>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900">3. 우극한과 좌극한</h2>
                     </div>
                 </div>
                 <span class="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 text-purple-700">개념 정립</span>
@@ -1470,7 +1462,7 @@
                 <!-- 우극한 -->
                 <div class="p-6 rounded-2xl bg-indigo-50/60 border border-indigo-200 space-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-1 rounded-md bg-indigo-600 text-white text-xs font-black">우극한 (Right-hand Limit)</span>
+                        <span class="px-2.5 py-1 rounded-md bg-indigo-600 text-white text-xs font-black">우극한</span>
                         <span class="text-xs font-bold font-mono text-indigo-700">x &gt; a 이면서 x &rarr; a</span>
                     </div>
                     <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
@@ -1484,7 +1476,7 @@
                 <!-- 좌극한 -->
                 <div class="p-6 rounded-2xl bg-purple-50/60 border border-purple-200 space-y-3">
                     <div class="flex items-center justify-between">
-                        <span class="px-2.5 py-1 rounded-md bg-purple-600 text-white text-xs font-black">좌극한 (Left-hand Limit)</span>
+                        <span class="px-2.5 py-1 rounded-md bg-purple-600 text-white text-xs font-black">좌극한</span>
                         <span class="text-xs font-bold font-mono text-purple-700">x &lt; a 이면서 x &rarr; a</span>
                     </div>
                     <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
@@ -1538,7 +1530,7 @@
                             $$\lim_{x \to 1^+} f(x)$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p5-1" placeholder="정답 입력 (예: 2)" 
+                            <input type="text" id="ans-p5-1" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-purple-500">
                             <button onclick="checkAnswer('ans-p5-1', '2', 'fb-p5-1')" 
                                 class="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shrink-0 transition">
@@ -1550,16 +1542,13 @@
                             </button>
                         </div>
                         <span id="fb-p5-1" class="text-xs font-bold block"></span>
-                        <div id="sol-p5-1" class="hidden p-3 rounded-xl bg-purple-50 border border-purple-200 text-xs text-slate-700">
+                        <div id="sol-p5-1" class="solution-box hidden p-3 rounded-xl bg-purple-50 border border-purple-200 text-xs text-slate-700">
                             <b>정답: 2</b><br>
                             $x > 1$일 때 $f(x) = x + 1$ 이므로, $\lim_{x \to 1^+} (x + 1) = 1 + 1 = 2$ 입니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -1573,7 +1562,7 @@
                             $$\lim_{x \to 1^-} f(x)$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p5-2" placeholder="정답 입력 (예: 1)" 
+                            <input type="text" id="ans-p5-2" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-purple-500">
                             <button onclick="checkAnswer('ans-p5-2', '1', 'fb-p5-2')" 
                                 class="px-3 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shrink-0 transition">
@@ -1585,16 +1574,13 @@
                             </button>
                         </div>
                         <span id="fb-p5-2" class="text-xs font-bold block"></span>
-                        <div id="sol-p5-2" class="hidden p-3 rounded-xl bg-purple-50 border border-purple-200 text-xs text-slate-700">
+                        <div id="sol-p5-2" class="solution-box hidden p-3 rounded-xl bg-purple-50 border border-purple-200 text-xs text-slate-700">
                             <b>정답: 1</b><br>
                             $x < 1$일 때 $f(x) = x^2$ 이므로, $\lim_{x \to 1^-} x^2 = 1^2 = 1$ 입니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -1602,7 +1588,8 @@
         </section>
 
         <!-- ================= SECTION 8: CONCEPT 5 (극한값 존재 조건) & PROBLEM 6 ================= -->
-        <section id="sec-concept4" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-concept4" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-black text-sm">
@@ -1672,10 +1659,10 @@
 
                     <div>
                         <div class="flex justify-between items-center mb-1 text-xs text-slate-500 font-bold">
-                            <span>예제 2 풀이 연습장</span>
-                            <button class="clear-scratchpad-btn text-rose-500 hover:text-rose-700">지우기</button>
+                            <span>예제 2 </span>
+                            
                         </div>
-                        <canvas class="scratchpad-canvas w-full h-36 rounded-xl border border-slate-300"></canvas>
+                        
                     </div>
                 </div>
             </div>
@@ -1701,7 +1688,7 @@
                             $$\lim_{x \to 1} \frac{x^2 - 1}{|x - 1|}$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p6-1" placeholder="정답 입력 (예: 존재하지 않는다)" 
+                            <input type="text" id="ans-p6-1" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-rose-500">
                             <button onclick="checkAnswer('ans-p6-1', '존재하지 않는다', 'fb-p6-1')" 
                                 class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shrink-0 transition">
@@ -1713,18 +1700,15 @@
                             </button>
                         </div>
                         <span id="fb-p6-1" class="text-xs font-bold block"></span>
-                        <div id="sol-p6-1" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700 space-y-1">
+                        <div id="sol-p6-1" class="solution-box hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700 space-y-1">
                             <b>정답: 존재하지 않는다</b><br>
                             • 우극한 ($x > 1$): $\lim_{x \to 1^+} \frac{(x-1)(x+1)}{x-1} = \lim_{x \to 1^+} (x+1) = 2$<br>
                             • 좌극한 ($x < 1$): $\lim_{x \to 1^-} \frac{(x-1)(x+1)}{-(x-1)} = \lim_{x \to 1^-} -(x+1) = -2$<br>
                             우극한($2$)과 좌극한($-2$)이 다르므로 극한값은 존재하지 않습니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -1738,7 +1722,7 @@
                             $$\lim_{x \to 2} \frac{x^2 - 4x + 4}{|x - 2|}$$
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-p6-2" placeholder="정답 입력 (예: 0)" 
+                            <input type="text" id="ans-p6-2" 
                                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-rose-500">
                             <button onclick="checkAnswer('ans-p6-2', '0', 'fb-p6-2')" 
                                 class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shrink-0 transition">
@@ -1750,7 +1734,7 @@
                             </button>
                         </div>
                         <span id="fb-p6-2" class="text-xs font-bold block"></span>
-                        <div id="sol-p6-2" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700 space-y-1">
+                        <div id="sol-p6-2" class="solution-box hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700 space-y-1">
                             <b>정답: 0</b><br>
                             분자를 인수분해하면 $(x-2)^2$ 입니다.<br>
                             • 우극한 ($x > 2$): $\lim_{x \to 2^+} \frac{(x-2)^2}{x-2} = \lim_{x \to 2^+} (x-2) = 0$<br>
@@ -1758,11 +1742,8 @@
                             우극한과 좌극한이 모두 $0$으로 일치하므로 극한값은 <b>0</b>으로 존재합니다!
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-24 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -1770,7 +1751,8 @@
         </section>
 
         <!-- ================= SECTION 9: THOUGHT EXPANSION (지레의 원리) ================= -->
-        <section id="sec-expand" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-expand" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-sm">
@@ -1795,7 +1777,7 @@
                     지구의 무게 $W$와 받침점에서 작용점까지의 거리 $r$가 일정할 때, 받침점에서 힘점까지의 거리 $R$에 따라 필요한 힘을 $F(R)$이라 합니다.
                 </p>
 
-                <!-- Widget 5: 아르키메데스 지레 시뮬레이터 (Light Theme) -->
+                <!-- Widget 5: 아르키메데스 지레 시뮬레이터 -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                     <div class="flex justify-between items-center text-xs font-bold text-slate-700">
                         <span>아르키메데스 지레 역학 캔버스</span>
@@ -1827,7 +1809,7 @@
                             $F(R)$을 $W, R, r$을 이용하여 수식으로 나타내 보자.
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-ex-1" placeholder="예: Wr/R" 
+                            <input type="text" id="ans-ex-1" 
                                 class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-ex-1', 'Wr/R', 'fb-ex-1')" 
                                 class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 transition">
@@ -1839,16 +1821,13 @@
                             </button>
                         </div>
                         <span id="fb-ex-1" class="text-xs font-bold block"></span>
-                        <div id="sol-ex-1" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-slate-700">
+                        <div id="sol-ex-1" class="solution-box hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-slate-700">
                             <b>정답: $F(R) = \frac{Wr}{R}$</b><br>
                             지레의 평형식 $W \cdot r = F(R) \cdot R$의 양변을 $R$로 나누면 $F(R) = \frac{Wr}{R}$ 입니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-20 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
 
@@ -1859,7 +1838,7 @@
                             $\lim_{R \to \infty} F(R)$의 값을 구하고 아르키메데스의 주장이 타당한지 말해 보자.
                         </p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-ex-2" placeholder="극한값 입력 (예: 0)" 
+                            <input type="text" id="ans-ex-2" 
                                 class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-ex-2', '0', 'fb-ex-2')" 
                                 class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 transition">
@@ -1871,16 +1850,13 @@
                             </button>
                         </div>
                         <span id="fb-ex-2" class="text-xs font-bold block"></span>
-                        <div id="sol-ex-2" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-slate-700 space-y-1">
+                        <div id="sol-ex-2" class="solution-box hidden p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-slate-700 space-y-1">
                             <b>정답: 0 (수학적으로 타당함)</b><br>
                             $W, r$이 양의 상수일 때 $\lim_{R \to \infty} \frac{Wr}{R} = 0$ 입니다. 즉, 지레의 길이가 무한히 길어지면 사람 한 사람의 작은 힘으로도 지구를 들어 올릴 수 있으므로 아르키메데스의 주장은 수학적으로 타당합니다.
                         </div>
                         <div>
-                            <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                                <span>풀이 연습장</span>
-                                <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                            </div>
-                            <canvas class="scratchpad-canvas w-full h-20 rounded-lg border border-slate-200"></canvas>
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -1888,7 +1864,8 @@
         </section>
 
         <!-- ================= SECTION 10: SELF-CHECK (교과서 20쪽 스스로 확인하기 01~06) ================= -->
-        <section id="sec-check" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-10">
+        <section id="sec-check" class="edu-card p-6 sm:p-10 space-y-10">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-sm">
@@ -1914,9 +1891,9 @@
                     <div class="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
                         <p>
                             ⑴ 함수 $f(x)$에서 $x$의 값이 $a$가 아니면서 $a$에 한없이 가까워질 때, $f(x)$의 값이 일정한 값 $L$에 한없이 가까워지면 함수 $f(x)$는 $L$에 
-                            <input type="text" id="ans-chk1-1" placeholder="빈칸" class="w-20 px-2 py-1 rounded border border-slate-300 font-bold text-center">
+                            <input type="text" id="ans-chk1-1" class="w-20 px-2 py-1 rounded border border-slate-300 font-bold text-center">
                             한다. 이때 $L$을 $x=a$에서의 함수 $f(x)$의 
-                            <input type="text" id="ans-chk1-2" placeholder="빈칸" class="w-24 px-2 py-1 rounded border border-slate-300 font-bold text-center">
+                            <input type="text" id="ans-chk1-2" class="w-24 px-2 py-1 rounded border border-slate-300 font-bold text-center">
                             (이)라고 한다.
                         </p>
                         <div class="flex items-center gap-2">
@@ -1931,7 +1908,7 @@
                     <div class="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
                         <p>
                             ⑵ 함수 $f(x)$에서 $x$의 값이 $a$가 아니면서 $a$에 한없이 가까워질 때, $f(x)$의 값이 한없이 커지면 함수 $f(x)$는 양의 무한대로 
-                            <input type="text" id="ans-chk1-3" placeholder="빈칸" class="w-20 px-2 py-1 rounded border border-slate-300 font-bold text-center">
+                            <input type="text" id="ans-chk1-3" class="w-20 px-2 py-1 rounded border border-slate-300 font-bold text-center">
                             한다고 한다.
                         </p>
                         <div class="flex items-center gap-2">
@@ -1944,7 +1921,7 @@
                     <div class="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
                         <p>
                             ⑶ $\lim_{x \to a} f(x) = L \iff$ [ 
-                            <input type="text" id="ans-chk1-4" placeholder="우극한 기호" class="w-32 px-2 py-1 rounded border border-slate-300 font-mono text-center">
+                            <input type="text" id="ans-chk1-4" class="w-32 px-2 py-1 rounded border border-slate-300 font-mono text-center">
                             ] $= \lim_{x \to a^-} f(x) = L$
                         </p>
                         <div class="flex items-center gap-2">
@@ -1972,15 +1949,15 @@
                         </div>
                         <p class="text-base font-bold text-slate-900 text-center py-1">$$\lim_{x \to 2} (x^2 - x + 2)$$</p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-chk2-1" placeholder="정답" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk2-1" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk2-1', '4', 'fb-chk2-1')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shrink-0">채점</button>
                         </div>
                         <span id="fb-chk2-1" class="text-xs font-bold block"></span>
-                        <div id="sol-chk2-1" class="hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-chk2-1" class="solution-box hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: 4</b><br>
                             이차함수 $x^2-x+2$는 전 구간 연속이므로 $x=2$를 대입한 $2^2-2+2 = 4$로 수렴합니다.
                         </div>
-                        <canvas class="scratchpad-canvas w-full h-20 rounded-lg border border-slate-200"></canvas>
+                        
                     </div>
 
                     <!-- 02-(2) -->
@@ -1991,15 +1968,15 @@
                         </div>
                         <p class="text-base font-bold text-slate-900 text-center py-1">$$\lim_{x \to 1} \frac{x^3 - 1}{x - 1}$$</p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-chk2-2" placeholder="정답" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk2-2" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk2-2', '3', 'fb-chk2-2')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shrink-0">채점</button>
                         </div>
                         <span id="fb-chk2-2" class="text-xs font-bold block"></span>
-                        <div id="sol-chk2-2" class="hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-chk2-2" class="solution-box hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: 3</b><br>
                             $x^3-1 = (x-1)(x^2+x+1)$ 이므로 약분하면 $\lim_{x \to 1} (x^2+x+1) = 1+1+1 = 3$ 입니다.
                         </div>
-                        <canvas class="scratchpad-canvas w-full h-20 rounded-lg border border-slate-200"></canvas>
+                        
                     </div>
 
                     <!-- 02-(3) -->
@@ -2010,15 +1987,15 @@
                         </div>
                         <p class="text-base font-bold text-slate-900 text-center py-1">$$\lim_{x \to \infty} \left(\frac{1}{x} + 1\right)$$</p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-chk2-3" placeholder="정답" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk2-3" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk2-3', '1', 'fb-chk2-3')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shrink-0">채점</button>
                         </div>
                         <span id="fb-chk2-3" class="text-xs font-bold block"></span>
-                        <div id="sol-chk2-3" class="hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-chk2-3" class="solution-box hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: 1</b><br>
                             $x \to \infty$일 때 $\frac{1}{x} \to 0$이므로 $0 + 1 = 1$ 입니다.
                         </div>
-                        <canvas class="scratchpad-canvas w-full h-20 rounded-lg border border-slate-200"></canvas>
+                        
                     </div>
 
                     <!-- 02-(4) -->
@@ -2029,15 +2006,15 @@
                         </div>
                         <p class="text-base font-bold text-slate-900 text-center py-1">$$\lim_{x \to -\infty} \left(\frac{1}{5} x^2 - 3x\right)$$</p>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-chk2-4" placeholder="정답 (예: 무한대)" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk2-4" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk2-4', '무한대', 'fb-chk2-4')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shrink-0">채점</button>
                         </div>
                         <span id="fb-chk2-4" class="text-xs font-bold block"></span>
-                        <div id="sol-chk2-4" class="hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-chk2-4" class="solution-box hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: $\infty$ (양의 무한대로 발산)</b><br>
                             최고차항 $\frac{1}{5}x^2$에서 $x \to -\infty$일 때 $(-)^2 = (+)$로 양의 무한대로 발산합니다.
                         </div>
-                        <canvas class="scratchpad-canvas w-full h-20 rounded-lg border border-slate-200"></canvas>
+                        
                     </div>
                 </div>
             </div>
@@ -2055,7 +2032,7 @@
                     <div class="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
                         <span class="text-xs font-bold text-slate-700">⑴ $\lim_{x \to 0^+} f(x)$</span>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-chk3-1" placeholder="우극한 값" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk3-1" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk3-1', '1', 'fb-chk3-1')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shrink-0">채점</button>
                         </div>
                         <span id="fb-chk3-1" class="text-xs font-bold block"></span>
@@ -2064,7 +2041,7 @@
                     <div class="p-4 bg-white rounded-xl border border-slate-200 space-y-2">
                         <span class="text-xs font-bold text-slate-700">⑵ $\lim_{x \to 0^-} f(x)$</span>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-chk3-2" placeholder="좌극한 값" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk3-2" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk3-2', '-1', 'fb-chk3-2')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shrink-0">채점</button>
                         </div>
                         <span id="fb-chk3-2" class="text-xs font-bold block"></span>
@@ -2084,36 +2061,36 @@
                     <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
                         <span class="text-xs font-bold text-slate-700">04 - ⑴ $\lim_{x \to 0} x|x|$</span>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-chk4-1" placeholder="정답 (예: 0)" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk4-1" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk4-1', '0', 'fb-chk4-1')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shrink-0">채점</button>
                             <button onclick="toggleSolution('sol-chk4-1')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold shrink-0">해설</button>
                         </div>
                         <span id="fb-chk4-1" class="text-xs font-bold block"></span>
-                        <div id="sol-chk4-1" class="hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-chk4-1" class="solution-box hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: 0</b><br>
                             • 우극한: $\lim_{x \to 0^+} x(x) = 0$<br>
                             • 좌극한: $\lim_{x \to 0^-} x(-x) = 0$<br>
                             좌우극한이 모두 0으로 일치하므로 극한값은 <b>0</b>입니다.
                         </div>
-                        <canvas class="scratchpad-canvas w-full h-20 rounded-lg border border-slate-200"></canvas>
+                        
                     </div>
 
                     <!-- 04-(2) -->
                     <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
                         <span class="text-xs font-bold text-slate-700">04 - ⑵ $\lim_{x \to 2} \frac{x - 2}{|x - 2|}$</span>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="ans-chk4-2" placeholder="정답 (예: 존재하지 않는다)" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk4-2" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk4-2', '존재하지 않는다', 'fb-chk4-2')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shrink-0">채점</button>
                             <button onclick="toggleSolution('sol-chk4-2')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold shrink-0">해설</button>
                         </div>
                         <span id="fb-chk4-2" class="text-xs font-bold block"></span>
-                        <div id="sol-chk4-2" class="hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                        <div id="sol-chk4-2" class="solution-box hidden p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
                             <b>정답: 존재하지 않는다</b><br>
                             • 우극한 ($x>2$): $\frac{x-2}{x-2} = 1$<br>
                             • 좌극한 ($x<2$): $\frac{x-2}{-(x-2)} = -1$<br>
                             우극한(1)과 좌극한(-1)이 다르므로 극한값은 존재하지 않습니다.
                         </div>
-                        <canvas class="scratchpad-canvas w-full h-20 rounded-lg border border-slate-200"></canvas>
+                        
                     </div>
                 </div>
             </div>
@@ -2133,7 +2110,7 @@
                         함수 $f(x) = \begin{cases} x^2 + 2 & (x < 2) \\ -x + k & (x \ge 2) \end{cases}$ 에 대하여 $\lim_{x \to 2} f(x)$의 값이 존재할 때, 상수 $k$의 값을 구하시오.
                     </p>
                     <div class="flex items-center gap-2 max-w-sm">
-                        <input type="text" id="ans-chk5" placeholder="상수 k의 값 입력" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-sm">
+                        <input type="text" id="ans-chk5" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-sm">
                         <button onclick="checkAnswer('ans-chk5', '8', 'fb-chk5')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shrink-0 transition">
                             채점
                         </button>
@@ -2142,7 +2119,7 @@
                         </button>
                     </div>
                     <span id="fb-chk5" class="text-xs font-bold block"></span>
-                    <div id="sol-chk5" class="hidden p-4 rounded-xl bg-white border border-indigo-200 text-xs text-slate-700 space-y-1.5">
+                    <div id="sol-chk5" class="solution-box hidden p-4 rounded-xl bg-white border border-indigo-200 text-xs text-slate-700 space-y-1.5">
                         <p class="font-bold text-indigo-900">💡 [수능형 논리 풀이]</p>
                         <p>1. $x=2$에서 극한값이 존재하려면 <b>좌극한과 우극한이 일치</b>해야 합니다.</p>
                         <p>2. 좌극한: $\lim_{x \to 2^-} f(x) = \lim_{x \to 2^-} (x^2 + 2) = 2^2 + 2 = 6$</p>
@@ -2151,11 +2128,8 @@
                         <p class="font-bold text-emerald-700">따라서 상수 $k$의 값은 <b>8</b>입니다.</p>
                     </div>
                     <div>
-                        <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
-                            <span>풀이 연습장</span>
-                            <button class="clear-scratchpad-btn text-slate-500 hover:text-slate-800">지우기</button>
-                        </div>
-                        <canvas class="scratchpad-canvas w-full h-28 rounded-lg border border-slate-200"></canvas>
+                        
+                        
                     </div>
                 </div>
             </div>
@@ -2172,7 +2146,7 @@
                     $t$분 후 소금물의 농도를 $f(t)\%$라고 할 때:
                 </p>
 
-                <!-- Widget 6: 소금물 농도 탱크 시뮬레이터 (Light Theme) -->
+                <!-- Widget 6: 소금물 농도 탱크 시뮬레이터 -->
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
                     <div class="flex justify-between items-center text-xs font-bold text-slate-700">
                         <span>소금물 혼합 탱크 및 농도 $f(t)$ 점근선 캔버스</span>
@@ -2202,7 +2176,7 @@
                         <span class="text-xs font-bold text-amber-900">⑴ $t$분 후 소금물과 소금의 양</span>
                         <p class="text-[11px] text-slate-600">소금물의 양과 소금의 양을 각각 구하시오.</p>
                         <button onclick="toggleSolution('sol-chk6-1')" class="text-xs text-amber-700 font-bold hover:underline">풀이 보기</button>
-                        <div id="sol-chk6-1" class="hidden p-2.5 rounded bg-amber-50 text-[11px] text-slate-700">
+                        <div id="sol-chk6-1" class="solution-box hidden p-2.5 rounded bg-amber-50 text-[11px] text-slate-700">
                             • 소금물: $5000 + 5000t = 5000(1+t)\text{ g}$<br>
                             • 소금: $5000 \times 0.03 + 5000t \times 0.06 = 150 + 300t\text{ g}$
                         </div>
@@ -2213,7 +2187,7 @@
                         <span class="text-xs font-bold text-amber-900">⑵ $t$분 후 농도 $f(t)$식</span>
                         <p class="text-[11px] text-slate-600">농도 $f(t)$를 $t$에 관한 식으로 나타내시오.</p>
                         <button onclick="toggleSolution('sol-chk6-2')" class="text-xs text-amber-700 font-bold hover:underline">풀이 보기</button>
-                        <div id="sol-chk6-2" class="hidden p-2.5 rounded bg-amber-50 text-[11px] text-slate-700">
+                        <div id="sol-chk6-2" class="solution-box hidden p-2.5 rounded bg-amber-50 text-[11px] text-slate-700">
                             $f(t) = \frac{150 + 300t}{5000 + 5000t} \times 100 = \mathbf{\frac{3 + 6t}{1 + t}}$
                         </div>
                     </div>
@@ -2222,7 +2196,7 @@
                     <div class="p-4 bg-white rounded-xl border border-amber-200 space-y-2">
                         <span class="text-xs font-bold text-amber-900">⑶ $\lim_{t \to \infty} f(t)$의 값</span>
                         <div class="flex items-center gap-1.5">
-                            <input type="text" id="ans-chk6-3" placeholder="값 (예: 6)" class="w-full px-2 py-1 rounded border border-slate-300 text-xs font-mono">
+                            <input type="text" id="ans-chk6-3" class="w-full px-2 py-1 rounded border border-slate-300 text-xs font-mono">
                             <button onclick="checkAnswer('ans-chk6-3', '6', 'fb-chk6-3')" class="px-2 py-1 rounded bg-amber-600 text-white text-xs font-bold shrink-0">채점</button>
                         </div>
                         <span id="fb-chk6-3" class="text-xs font-bold block"></span>
@@ -2243,7 +2217,7 @@
                     </span>
                     <div>
                         <span class="text-xs font-bold text-pink-600 tracking-wider uppercase">수학으로 꿈꾸는 미래</span>
-                        <h2 class="text-xl sm:text-2xl font-black text-slate-900">기상학자 & 대기과학자 (Meteorologist)</h2>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900">기상학자 & 대기과학자</h2>
                     </div>
                 </div>
                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-white text-pink-700 border border-pink-200 shadow-2xs">
@@ -2288,7 +2262,8 @@
         </section>
 
         <!-- ================= SECTION 12: REFLECTION & BATCH CONTROLS ================= -->
-        <section id="sec-reflection" class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-200 space-y-8">
+        <section id="sec-reflection" class="edu-card p-6 sm:p-10 space-y-8">
+            <div class="edu-accent-bar-sky -mt-6 -mx-6 sm:-mt-10 sm:-mx-10 mb-6 sm:mb-8"></div>
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-sm">
@@ -2351,6 +2326,7 @@
                 </button>
             </div>
         </section>
+            </div>
     </main>
 
     <!-- ================= FULL JAVASCRIPT ENGINES ================= -->
@@ -2360,352 +2336,544 @@
             if (typeof renderMathInElement === 'function') {
                 renderMathInElement(document.body, {
                     delimiters: [
-                        { left: "$$", right: "$$", display: true },
-                        { left: "$", right: "$", display: false }
-                    ],
-                    throwOnError: false
+                    { left: "$$", right: "$$", display: true },
+                    { left: "\\[", right: "\\]", display: true },
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "$", right: "$", display: false }
+                ],
+                throwOnError: false
                 });
             }
 
-            // 2. Initialize Engines
+            // 2. Initialize Whiteboard Engine
             initWhiteboard();
-            initScratchpads();
+
+            // 3. Initialize Scrollspy & Progress
             initScrollSpy();
-            initSimulations();
-            loadSavedState();
+
+            // 4. Initialize Simulators
+            if (typeof initSimulations === 'function') {
+                initSimulations();
+            }
+
+            // 5. Load Stored Progress
+            if (typeof loadSavedState === 'function') {
+                loadSavedState();
+            }
         });
 
-        // ================= GLOBAL STATE & UTILITIES =================
-        const totalProblemsCount = 20;
-        let solvedProblems = new Set();
-
-        function toggleSolution(id) {
-            const el = document.getElementById(id);
-            if (el) el.classList.toggle('hidden');
-        }
-
-        function toggleAllSolutions(show) {
-            const boxes = document.querySelectorAll('[id^="sol-"]');
-            boxes.forEach(box => {
-                if (show) box.classList.remove('hidden');
-                else box.classList.add('hidden');
-            });
-        }
-
-        function normalizeMathInput(str) {
-            return str.replace(/\s+/g, '').replace(/,/g, '').toLowerCase();
-        }
-
-        function checkAnswer(inputId, correctVal, fbId) {
-            const input = document.getElementById(inputId);
-            const fb = document.getElementById(fbId);
-            if (!input || !fb) return;
-
-            const userVal = normalizeMathInput(input.value);
-            const targetVal = normalizeMathInput(correctVal);
-
-            let isCorrect = false;
-            // Flexible matching for limit expressions
-            if (userVal === targetVal) {
-                isCorrect = true;
-            } else if (targetVal === '무한대' && (userVal === 'inf' || userVal === 'infinity' || userVal === '∞' || userVal === '양의무한대')) {
-                isCorrect = true;
-            } else if (targetVal === '-무한대' && (userVal === '-inf' || userVal === '-infinity' || userVal === '-∞' || userVal === '음의무한대')) {
-                isCorrect = true;
-            } else if (targetVal === '존재하지않는다' && (userVal === '없음' || userVal === '존재하지않음' || userVal === '존재x' || userVal === 'x')) {
-                isCorrect = true;
-            } else if (targetVal === 'wr/r' && (userVal === 'w*r/r' || userVal === '(wr)/r' || userVal === 'r*w/r')) {
-                isCorrect = true;
-            } else if (targetVal === 'lim(x->a+)f(x)' && (userVal.includes('a+') || userVal.includes('우극한'))) {
-                isCorrect = true;
-            }
-
-            if (isCorrect) {
-                fb.innerHTML = '<span class="text-emerald-600 font-bold">정답입니다! 🎉</span>';
-                input.classList.remove('border-rose-400');
-                input.classList.add('border-emerald-500', 'bg-emerald-50/30');
-                solvedProblems.add(inputId);
-            } else {
-                fb.innerHTML = '<span class="text-rose-600 font-bold">다시 한번 풀어보세요! ✍️</span>';
-                input.classList.remove('border-emerald-500');
-                input.classList.add('border-rose-400');
-            }
-            updateProgressUI();
-        }
-
-        function updateProgressUI() {
-            const count = solvedProblems.size;
-            const pct = Math.min(100, Math.round((count / totalProblemsCount) * 100));
-            
-            const bar = document.getElementById('sidebar-progress-bar');
-            const text = document.getElementById('sidebar-progress-text');
-            if (bar) bar.style.width = pct + '%';
-            if (text) text.textContent = pct + '% (' + count + '/' + totalProblemsCount + ')';
-        }
-
-        function resetAllInputs() {
-            if (!confirm('작성한 모든 정답과 풀이 연습장을 초기화하시겠습니까?')) return;
-            
-            document.querySelectorAll('input[type="text"]').forEach(input => {
-                input.value = '';
-                input.classList.remove('border-emerald-500', 'border-rose-400', 'bg-emerald-50/30');
-            });
-            document.querySelectorAll('[id^="fb-"]').forEach(fb => fb.innerHTML = '');
-            solvedProblems.clear();
-            updateProgressUI();
-
-            // Clear all scratchpad canvases
-            document.querySelectorAll('.scratchpad-canvas').forEach(canvas => {
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            });
-        }
-
-        // ================= SCRATCHPAD ENGINE =================
-        function initScratchpads() {
-            const canvases = document.querySelectorAll('.scratchpad-canvas');
-            canvases.forEach(canvas => {
-                const ctx = canvas.getContext('2d');
-                let isDrawing = false;
-                let lastX = 0, lastY = 0;
-
-                function resize() {
-                    const rect = canvas.getBoundingClientRect();
-                    if (rect.width === 0 || rect.height === 0) return;
-                    const dpr = window.devicePixelRatio || 1;
-                    canvas.width = rect.width * dpr;
-                    canvas.height = rect.height * dpr;
-                    ctx.scale(dpr, dpr);
-                    ctx.strokeStyle = '#4338ca';
-                    ctx.lineWidth = 2.2;
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                }
-                resize();
-                window.addEventListener('resize', resize);
-
-                function getPos(e) {
-                    const rect = canvas.getBoundingClientRect();
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    return { x: clientX - rect.left, y: clientY - rect.top };
-                }
-
-                function startDraw(e) {
-                    isDrawing = true;
-                    const pos = getPos(e);
-                    lastX = pos.x; lastY = pos.y;
-                }
-
-                function draw(e) {
-                    if (!isDrawing) return;
-                    if (e.cancelable) e.preventDefault();
-                    const pos = getPos(e);
-                    ctx.beginPath();
-                    ctx.moveTo(lastX, lastY);
-                    ctx.lineTo(pos.x, pos.y);
-                    ctx.stroke();
-                    lastX = pos.x; lastY = pos.y;
-                }
-
-                function stopDraw() { isDrawing = false; }
-
-                canvas.addEventListener('mousedown', startDraw);
-                canvas.addEventListener('mousemove', draw);
-                canvas.addEventListener('mouseup', stopDraw);
-                canvas.addEventListener('mouseleave', stopDraw);
-
-                canvas.addEventListener('touchstart', startDraw, { passive: false });
-                canvas.addEventListener('touchmove', draw, { passive: false });
-                canvas.addEventListener('touchend', stopDraw);
-
-                const parent = canvas.closest('.space-y-4, .space-y-3, .space-y-5, .p-5, .p-6, div');
-                if (parent) {
-                    const clearBtn = parent.querySelector('.clear-scratchpad-btn');
-                    if (clearBtn) {
-                        clearBtn.addEventListener('click', () => {
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        });
-                    }
-                }
-            });
-        }
-
-        // ================= ELECTRONIC WHITEBOARD ENGINE =================
-        let isWbActive = false;
+        // =====================================================================
+        // UNIFIED ULTRA-SMOOTH ELECTRONIC WHITEBOARD ENGINE (Bezier Smoothing)
+        // =====================================================================
+        let wbActive = false;
         let wbTool = 'pen';
         let wbColor = '#ef4444';
-        let wbWidth = 5;
-        let isWbDrawing = false;
-        let wbCanvas, wbCtx;
-        let wbHistory = [];
-        let wbLastX = 0, wbLastY = 0;
+        let wbStrokes = [];
+        let wbCurrentStroke = null;
+        let wbDrawing = false;
+        let wbLastMid = null;
 
         function initWhiteboard() {
-            wbCanvas = document.getElementById('wb-canvas');
-            if (!wbCanvas) return;
-            wbCtx = wbCanvas.getContext('2d');
-
-            function syncWhiteboardHeight() {
-                const docH = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-                const docW = window.innerWidth;
-                if (wbCanvas.width !== docW || wbCanvas.height !== docH) {
-                    const temp = wbCtx.getImageData(0, 0, wbCanvas.width, wbCanvas.height);
-                    wbCanvas.width = docW;
-                    wbCanvas.height = docH;
-                    wbCtx.putImageData(temp, 0, 0);
-                }
-            }
+            const canvas = document.getElementById('wb-canvas');
+            if (!canvas) return;
             syncWhiteboardHeight();
-            window.addEventListener('resize', syncWhiteboardHeight);
-            window.addEventListener('scroll', syncWhiteboardHeight, { passive: true });
 
-            function getDocPos(e) {
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            if (window.ResizeObserver) {
+                const ro = new ResizeObserver(() => {
+                    syncWhiteboardHeight();
+                });
+                ro.observe(document.body);
+            }
+
+            window.addEventListener('resize', syncWhiteboardHeight);
+            window.addEventListener('orientationchange', () => setTimeout(syncWhiteboardHeight, 200));
+
+            const ctx = canvas.getContext('2d');
+
+            function getPt(e) {
+                const rect = canvas.getBoundingClientRect();
+                if (e.touches && e.touches.length > 0) {
+                    return {
+                        x: e.touches[0].clientX - rect.left,
+                        y: e.touches[0].clientY - rect.top
+                    };
+                }
                 return {
-                    x: clientX + window.scrollX,
-                    y: clientY + window.scrollY
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
                 };
             }
 
-            function startWb(e) {
-                if (!isWbActive || wbTool === 'interact') return;
-                isWbDrawing = true;
-                const pos = getDocPos(e);
-                wbLastX = pos.x; wbLastY = pos.y;
-                saveWbHistory();
+            function startDraw(e) {
+                if (!wbActive || wbTool === 'pointer') return;
+                if (e.button !== undefined && e.button !== 0) return;
+                wbDrawing = true;
+                const pt = getPt(e);
+                const sizeInput = document.getElementById('wb-size');
+                const size = sizeInput ? parseFloat(sizeInput.value) : 4;
+
+                wbCurrentStroke = {
+                    tool: wbTool,
+                    color: wbColor,
+                    size: wbTool === 'highlighter' ? size * 3.5 : (wbTool === 'eraser' ? size * 5 : size),
+                    points: [pt]
+                };
+                wbStrokes.push(wbCurrentStroke);
+                wbLastMid = pt;
+
+                // Draw initial round dot
+                ctx.save();
+                applyStrokeStyle(ctx, wbCurrentStroke);
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, wbCurrentStroke.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             }
 
-            function drawWb(e) {
-                if (!isWbDrawing || !isWbActive || wbTool === 'interact') return;
-                if (e.cancelable) e.preventDefault();
-                const pos = getDocPos(e);
+            function moveDraw(e) {
+                if (!wbDrawing || !wbActive || wbTool === 'pointer' || !wbCurrentStroke) return;
+                e.preventDefault();
+                const pt = getPt(e);
+                const pts = wbCurrentStroke.points;
+                const prevPt = pts[pts.length - 1];
 
-                wbCtx.beginPath();
-                wbCtx.moveTo(wbLastX, wbLastY);
-                wbCtx.lineTo(pos.x, pos.y);
+                const dist = Math.hypot(pt.x - prevPt.x, pt.y - prevPt.y);
+                if (dist < 2) return;
 
-                if (wbTool === 'eraser') {
-                    wbCtx.globalCompositeOperation = 'destination-out';
-                    wbCtx.lineWidth = wbWidth * 5;
-                } else if (wbTool === 'highlighter') {
-                    wbCtx.globalCompositeOperation = 'source-over';
-                    wbCtx.strokeStyle = wbColor + '55'; // semi-transparent
-                    wbCtx.lineWidth = wbWidth * 3;
-                } else {
-                    wbCtx.globalCompositeOperation = 'source-over';
-                    wbCtx.strokeStyle = wbColor;
-                    wbCtx.lineWidth = wbWidth;
+                pts.push(pt);
+
+                if (wbCurrentStroke.tool === 'highlighter') {
+                    redrawWhiteboard();
+                    return;
                 }
-                wbCtx.lineCap = 'round';
-                wbCtx.lineJoin = 'round';
-                wbCtx.stroke();
 
-                wbLastX = pos.x; wbLastY = pos.y;
+                // Smooth quadratic curve incremental drawing
+                const mid = { x: (prevPt.x + pt.x) / 2, y: (prevPt.y + pt.y) / 2 };
+                ctx.save();
+                applyStrokeStyle(ctx, wbCurrentStroke);
+                ctx.beginPath();
+                ctx.moveTo(wbLastMid.x, wbLastMid.y);
+                ctx.quadraticCurveTo(prevPt.x, prevPt.y, mid.x, mid.y);
+                ctx.stroke();
+                ctx.restore();
+                wbLastMid = mid;
             }
 
-            function stopWb() { isWbDrawing = false; }
+            function endDraw() {
+                if (!wbDrawing) return;
+                wbDrawing = false;
+                if (wbCurrentStroke && wbCurrentStroke.points.length > 2) {
+                    const pts = wbCurrentStroke.points;
+                    const prevPt = pts[pts.length - 2];
+                    const lastPt = pts[pts.length - 1];
+                    ctx.save();
+                    applyStrokeStyle(ctx, wbCurrentStroke);
+                    ctx.beginPath();
+                    ctx.moveTo(wbLastMid.x, wbLastMid.y);
+                    ctx.quadraticCurveTo(prevPt.x, prevPt.y, lastPt.x, lastPt.y);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+                wbCurrentStroke = null;
+                wbLastMid = null;
+                redrawWhiteboard();
+            }
 
-            wbCanvas.addEventListener('mousedown', startWb);
-            wbCanvas.addEventListener('mousemove', drawWb);
-            wbCanvas.addEventListener('mouseup', stopWb);
-            wbCanvas.addEventListener('touchstart', startWb, { passive: false });
-            wbCanvas.addEventListener('touchmove', drawWb, { passive: false });
-            wbCanvas.addEventListener('touchend', stopWb);
+            canvas.addEventListener('mousedown', startDraw);
+            window.addEventListener('mousemove', moveDraw);
+            window.addEventListener('mouseup', endDraw);
+
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            window.addEventListener('touchmove', moveDraw, { passive: false });
+            window.addEventListener('touchend', endDraw);
+            window.addEventListener('touchcancel', endDraw);
+        }
+
+        function applyStrokeStyle(ctx, stroke) {
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            if (stroke.tool === 'eraser') {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.strokeStyle = 'rgba(0,0,0,1)';
+                ctx.fillStyle = 'rgba(0,0,0,1)';
+                ctx.lineWidth = stroke.size;
+            } else if (stroke.tool === 'highlighter') {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 0.35;
+                ctx.strokeStyle = stroke.color;
+                ctx.fillStyle = stroke.color;
+                ctx.lineWidth = stroke.size;
+            } else {
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1.0;
+                ctx.strokeStyle = stroke.color;
+                ctx.fillStyle = stroke.color;
+                ctx.lineWidth = stroke.size;
+            }
+        }
+
+        function drawSmoothStroke(ctx, st) {
+            const pts = st.points;
+            if (!pts || pts.length === 0) return;
+            ctx.save();
+            applyStrokeStyle(ctx, st);
+
+            if (pts.length === 1) {
+                ctx.beginPath();
+                ctx.arc(pts[0].x, pts[0].y, st.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+                return;
+            }
+
+            if (pts.length === 2) {
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+                ctx.lineTo(pts[1].x, pts[1].y);
+                ctx.stroke();
+                ctx.restore();
+                return;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(pts[0].x, pts[0].y);
+            let prevMid = pts[0];
+            for (let i = 1; i < pts.length - 1; i++) {
+                const mid = {
+                    x: (pts[i].x + pts[i + 1].x) / 2,
+                    y: (pts[i].y + pts[i + 1].y) / 2
+                };
+                ctx.quadraticCurveTo(pts[i].x, pts[i].y, mid.x, mid.y);
+                prevMid = mid;
+            }
+            const last = pts[pts.length - 1];
+            const secondLast = pts[pts.length - 2];
+            ctx.quadraticCurveTo(secondLast.x, secondLast.y, last.x, last.y);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function syncWhiteboardHeight() {
+            const canvas = document.getElementById('wb-canvas');
+            if (!canvas) return;
+            const docH = Math.max(
+                document.body.scrollHeight,
+                document.documentElement.scrollHeight,
+                document.body.offsetHeight,
+                document.documentElement.offsetHeight,
+                document.documentElement.clientHeight
+            );
+            const docW = document.documentElement.scrollWidth || window.innerWidth;
+            if (canvas.width !== docW || canvas.height !== docH) {
+                canvas.width = docW;
+                canvas.height = docH;
+                redrawWhiteboard();
+            }
+        }
+
+        function redrawWhiteboard() {
+            const canvas = document.getElementById('wb-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            wbStrokes.forEach(st => {
+                drawSmoothStroke(ctx, st);
+            });
         }
 
         function toggleWhiteboard() {
-            isWbActive = !isWbActive;
-            const tb = document.getElementById('wb-toolbar');
-            if (isWbActive) {
-                tb.classList.remove('hidden');
-                wbCanvas.classList.add('wb-drawing-active');
-                setWbTool(wbTool);
+            wbActive = !wbActive;
+            const toolbar = document.getElementById('wb-toolbar');
+            const canvas = document.getElementById('wb-canvas');
+            if (wbActive) {
+                syncWhiteboardHeight();
+                toolbar.classList.remove('hidden');
+                setWbTool('pen');
             } else {
-                tb.classList.add('hidden');
-                wbCanvas.classList.remove('wb-drawing-active');
+                toolbar.classList.add('hidden');
+                canvas.classList.remove('wb-drawing-active');
+            }
+            const sideBtn = document.getElementById('sidebar-wb-btn');
+            if (sideBtn) {
+                if (wbActive) {
+                    sideBtn.classList.remove('from-indigo-600', 'to-sky-600');
+                    sideBtn.classList.add('from-rose-600', 'to-amber-600');
+                } else {
+                    sideBtn.classList.remove('from-rose-600', 'to-amber-600');
+                    sideBtn.classList.add('from-indigo-600', 'to-sky-600');
+                }
             }
         }
 
         function setWbTool(tool) {
             wbTool = tool;
-            document.querySelectorAll('.wb-tool-btn').forEach(btn => btn.classList.remove('active'));
-            const btn = document.getElementById('wb-btn-' + tool);
-            if (btn) btn.classList.add('active');
+            const canvas = document.getElementById('wb-canvas');
+            document.querySelectorAll('.wb-tool-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById('wb-btn-' + tool);
+            if (activeBtn) activeBtn.classList.add('active');
 
-            if (tool === 'interact') {
-                wbCanvas.classList.remove('wb-drawing-active');
+            if (tool === 'pointer') {
+                canvas.classList.remove('wb-drawing-active');
             } else {
-                wbCanvas.classList.add('wb-drawing-active');
+                canvas.classList.add('wb-drawing-active');
             }
         }
 
-        function setWbColor(color, btnEl) {
-            wbColor = color;
-            document.querySelectorAll('.wb-color-btn').forEach(btn => btn.classList.remove('active'));
+        function setWbColor(hex, btnEl) {
+            wbColor = hex;
+            document.querySelectorAll('.wb-color-btn').forEach(b => b.classList.remove('active'));
             if (btnEl) btnEl.classList.add('active');
-            if (wbTool === 'eraser' || wbTool === 'interact') setWbTool('pen');
+            if (wbTool === 'pointer' || wbTool === 'eraser') setWbTool('pen');
         }
 
-        function setWbWidth(w, btnEl) {
-            wbWidth = w;
-            document.querySelectorAll('.wb-width-btn').forEach(btn => btn.classList.remove('active'));
-            if (btnEl) btnEl.classList.add('active');
+        function undoWb() {
+            if (wbStrokes.length === 0) return;
+            wbStrokes.pop();
+            redrawWhiteboard();
         }
 
-        function saveWbHistory() {
-            if (wbHistory.length > 10) wbHistory.shift();
+        function clearWb() {
+            wbStrokes = [];
+            redrawWhiteboard();
+        }
+
+        // =====================================================================
+        // PROGRESS TRACKER & RESET
+        // =====================================================================
+        const solvedSet = new Set();
+        const TOTAL_ITEMS = 35;
+
+        function updateProgressUI() {
             try {
-                wbHistory.push(wbCtx.getImageData(0, 0, wbCanvas.width, wbCanvas.height));
-            } catch(e) {}
-        }
-
-        function undoWhiteboard() {
-            if (wbHistory.length > 0) {
-                const prev = wbHistory.pop();
-                wbCtx.putImageData(prev, 0, 0);
+                const count = Math.min(solvedSet.size, TOTAL_ITEMS);
+                const pct = Math.round((count / TOTAL_ITEMS) * 100);
+                const pText = document.getElementById('sidebar-progress-text');
+                const pBar = document.getElementById('sidebar-progress-bar');
+                if (pText) pText.textContent = `${pct}% (${count}/${TOTAL_ITEMS})`;
+                if (pBar) pBar.style.width = `${pct}%`;
+            } catch (e) {
+                console.warn('updateProgressUI error:', e);
             }
         }
 
-        function clearWhiteboard() {
-            if (!confirm('칠판의 모든 판서 내용을 지우시겠습니까?')) return;
-            saveWbHistory();
-            wbCtx.clearRect(0, 0, wbCanvas.width, wbCanvas.height);
+        function resetAllInputs() {
+            document.querySelectorAll('input[type="text"]').forEach(inp => {
+                inp.value = '';
+                inp.classList.remove('border-emerald-500', 'border-rose-500', 'bg-emerald-50/40');
+                inp.classList.add('border-slate-300');
+            });
+            document.querySelectorAll('[id^="feedback-"], [id^="fb-"]').forEach(fb => {
+                fb.textContent = '';
+            });
+            solvedSet.clear();
+            updateProgressUI();
         }
 
-        function saveWhiteboardPNG() {
-            const link = document.createElement('a');
-            link.download = '함수의극한_수업판서_' + new Date().toISOString().slice(0, 10) + '.png';
-            link.href = wbCanvas.toDataURL('image/png');
-            link.click();
+        // =====================================================================
+        // SOLUTION TOGGLES & AUTO-OPEN ON CORRECT ANSWER
+        // =====================================================================
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.classList.contains('hidden') || el.style.display === 'none') {
+                el.classList.remove('hidden');
+                el.style.display = 'block';
+            } else {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+            }
+            try {
+                if (typeof renderMathInElement === 'function') {
+                    renderMathInElement(el, {
+                        delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "\\[", right: "\\]", display: true },
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "$", right: "$", display: false }
+                ],
+                throwOnError: false
+                    });
+                }
+            } catch (e) {}
+            setTimeout(syncWhiteboardHeight, 100);
         }
 
-        // ================= SCROLLSPY =================
+        function toggleAllSolutions(show) {
+            const boxes = document.querySelectorAll('.solution-box, [id^="sol-"]');
+            boxes.forEach(box => {
+                if (show) {
+                    box.classList.remove('hidden');
+                    box.style.display = 'block';
+                } else {
+                    box.classList.add('hidden');
+                    box.style.display = 'none';
+                }
+            });
+            try {
+                if (show && typeof renderMathInElement === 'function') {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "\\[", right: "\\]", display: true },
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "$", right: "$", display: false }
+                ],
+                throwOnError: false
+                    });
+                }
+            } catch (e) {}
+            setTimeout(syncWhiteboardHeight, 150);
+        }
+
+        function autoOpenSolutionForInput(inputId, explicitSolId) {
+            try {
+                let solEl = null;
+                if (explicitSolId) {
+                    solEl = document.getElementById(explicitSolId);
+                }
+                if (!solEl) {
+                    const inputEl = document.getElementById(inputId);
+                    if (inputEl) {
+                        const predictedId = inputId.replace(/^ans-/, 'sol-');
+                        solEl = document.getElementById(predictedId);
+                        if (!solEl) {
+                            const card = inputEl.closest('.rounded-2xl, .p-4, .p-5, .p-6, .border');
+                            if (card) {
+                                solEl = card.querySelector('.solution-box, [id^="sol-"]');
+                            }
+                        }
+                    }
+                }
+                if (solEl) {
+                    solEl.classList.remove('hidden');
+                    solEl.style.display = 'block';
+                    if (typeof renderMathInElement === 'function') {
+                        renderMathInElement(solEl, {
+                            delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "\\[", right: "\\]", display: true },
+                    { left: "\\(", right: "\\)", display: false },
+                    { left: "$", right: "$", display: false }
+                ],
+                throwOnError: false
+                        });
+                    }
+                    setTimeout(syncWhiteboardHeight, 150);
+                }
+            } catch (err) {
+                console.warn('autoOpenSolution error:', err);
+            }
+        }
+
+        function normalizeMathInput(str) {
+            return (str || '')
+                .replace(/\s+/g, '')
+                .replace(/\$/g, '')
+                .replace(/\pm/g, '+-')
+                .toLowerCase();
+        }
+
+        function checkAnswer(inputId, correctVal, fbId, solId) {
+            const inputEl = document.getElementById(inputId);
+            const feedbackEl = document.getElementById(fbId || ('feedback-' + inputId));
+            if (!inputEl) return false;
+
+            const userVal = normalizeMathInput(inputEl.value);
+            if (!userVal) {
+                if (feedbackEl) {
+                    feedbackEl.textContent = '답을 입력해 주세요.';
+                    feedbackEl.className = 'text-xs font-bold text-amber-500';
+                }
+                return false;
+            }
+
+            const acceptedRaw = (correctVal !== undefined ? String(correctVal) : (inputEl.dataset.answer || ''));
+            const accepted = acceptedRaw.split(',').map(normalizeMathInput);
+            const isCorrect = accepted.includes(userVal);
+
+            if (isCorrect) {
+                inputEl.classList.remove('border-rose-500', 'border-slate-300');
+                inputEl.classList.add('border-emerald-500', 'bg-emerald-50/40');
+                if (feedbackEl) {
+                    feedbackEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> 정답입니다!';
+                    feedbackEl.className = 'text-xs font-bold text-emerald-600';
+                }
+                solvedSet.add(inputId);
+                updateProgressUI();
+                autoOpenSolutionForInput(inputId, solId);
+            } else {
+                inputEl.classList.remove('border-emerald-500', 'border-slate-300');
+                inputEl.classList.add('border-rose-500');
+                if (feedbackEl) {
+                    feedbackEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> 다시 확인해 보세요.';
+                    feedbackEl.className = 'text-xs font-bold text-rose-500';
+                }
+            }
+            return isCorrect;
+        }
+
+        function checkMultiAnswer(inputIds, feedbackId, solId) {
+            let allCorrect = true;
+            let anyEmpty = false;
+
+            inputIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el || !el.value.trim()) anyEmpty = true;
+            });
+
+            const feedbackEl = document.getElementById(feedbackId);
+            if (anyEmpty) {
+                if (feedbackEl) {
+                    feedbackEl.textContent = '모든 빈칸에 답을 입력해 주세요.';
+                    feedbackEl.className = 'text-xs font-bold text-amber-500';
+                }
+                return;
+            }
+
+            inputIds.forEach(id => {
+                const ok = checkAnswer(id);
+                if (!ok) allCorrect = false;
+            });
+
+            if (feedbackEl) {
+                if (allCorrect) {
+                    feedbackEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> 모두 정답입니다!';
+                    feedbackEl.className = 'text-xs font-bold text-emerald-600';
+                    autoOpenSolutionForInput(inputIds[0], solId);
+                } else {
+                    feedbackEl.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> 틀린 항목이 있습니다. 빈칸을 다시 확인해 보세요.';
+                    feedbackEl.className = 'text-xs font-bold text-rose-500';
+                }
+            }
+        }
+
+        // =====================================================================
+        // SCROLLSPY & NAVIGATION
+        // =====================================================================
         function initScrollSpy() {
-            const sections = document.querySelectorAll('section[id], header[id]');
-            const navLinks = document.querySelectorAll('#sidebar .nav-link');
-
-            window.addEventListener('scroll', () => {
+            const links = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section[id]');
+            
+            function onScroll() {
                 let current = '';
-                const scrollPos = window.scrollY + 200;
-
+                const scrollPos = window.scrollY + 140;
                 sections.forEach(sec => {
                     const top = sec.offsetTop;
-                    const height = sec.offsetHeight;
-                    if (scrollPos >= top && scrollPos < top + height) {
-                        current = '#' + sec.getAttribute('id');
+                    const h = sec.offsetHeight;
+                    if (scrollPos >= top && scrollPos < top + h) {
+                        current = sec.getAttribute('id');
                     }
                 });
-
-                navLinks.forEach(link => {
-                    if (link.getAttribute('href') === current) {
-                        link.classList.add('active-nav');
-                    } else {
-                        link.classList.remove('active-nav');
+                links.forEach(l => {
+                    l.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-bold');
+                    if (l.getAttribute('href') === '#' + current) {
+                        l.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold');
                     }
                 });
-            }, { passive: true });
+            }
+            window.addEventListener('scroll', onScroll);
+            onScroll();
         }
 
         // ================= 6 DYNAMIC SIMULATOR ENGINES =================
@@ -3396,6 +3564,50 @@
                 if (ta) ta.value = savedNote;
             }
         }
-    </script>
+    
+// =====================================================================
+// DYNAMIC CLASSROOM FONT RESIZER (교실 시야 확보 글자 크기 조절 모듈)
+// =====================================================================
+const FONT_LEVELS = [
+    { label: '90%', px: 14.5 },
+    { label: '100%', px: 16 },
+    { label: '115%', px: 18.5 }, // 기본값 (교실 프로젝터 최적화)
+    { label: '130%', px: 21 },   // 맨 뒷자리 권장
+    { label: '145%', px: 23.5 }  // 초대형 TV/스크린용
+];
+let currentFontIdx = 2; // 기본 115%
+
+function applyFontSize(idx, save = true) {
+    currentFontIdx = Math.max(0, Math.min(FONT_LEVELS.length - 1, idx));
+    const level = FONT_LEVELS[currentFontIdx];
+    document.documentElement.style.fontSize = level.px + 'px';
+    const labelEl = document.getElementById('font-size-label');
+    if (labelEl) labelEl.textContent = level.label;
+    if (save) {
+        try { localStorage.setItem('classroom_font_idx', currentFontIdx); } catch(e){}
+    }
+}
+
+function changeFontSize(delta) {
+    applyFontSize(currentFontIdx + delta, true);
+}
+
+function resetFontSize() {
+    applyFontSize(2, true); // 115% 기본
+}
+
+// 초기화
+(function initFontSize() {
+    let savedIdx = null;
+    try { savedIdx = localStorage.getItem('classroom_font_idx'); } catch(e){}
+    if (savedIdx !== null && !isNaN(parseInt(savedIdx, 10))) {
+        currentFontIdx = parseInt(savedIdx, 10);
+    } else {
+        currentFontIdx = 2; // 기본 115% 큼직하게
+    }
+    applyFontSize(currentFontIdx, false);
+})();
+
+</script>
 </body>
 </html>
