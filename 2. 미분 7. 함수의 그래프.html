@@ -978,7 +978,7 @@
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-3 flex-1 min-w-[240px]">
                         <span class="text-xs font-bold text-slate-700">잘라낼 길이 $x$:</span>
-                        <input type="range" id="box-x-slider" min="0.2" max="5.8" step="0.1" value="2.0" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                        <input type="range" id="box-x-slider" min="0.2" max="5.8" step="0.01" value="2.0" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
                         <span id="box-x-badge" class="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono font-bold text-xs">2.0 cm</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -1037,7 +1037,7 @@
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-3 flex-1 min-w-[240px]">
                         <span class="text-xs font-bold text-slate-700">꼭짓점 $x$ 좌표:</span>
-                        <input type="range" id="rect-x-slider" min="0.1" max="2.4" step="0.05" value="1.41" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                        <input type="range" id="rect-x-slider" min="0.1" max="2.4" step="0.01" value="1.41" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
                         <span id="rect-x-badge" class="px-2 py-0.5 rounded bg-indigo-600 text-white font-mono font-bold text-xs">1.41</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -1095,7 +1095,7 @@
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-4">
                     <div class="flex items-center gap-3 flex-1 min-w-[240px]">
                         <span class="text-xs font-bold text-slate-700">탐색점 $x$:</span>
-                        <input type="range" id="dual-x-slider" min="0.2" max="3.8" step="0.05" value="2.0" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
+                        <input type="range" id="dual-x-slider" min="0.2" max="3.8" step="0.01" value="2.0" class="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
                         <span id="dual-x-badge" class="px-2 py-0.5 rounded bg-purple-600 text-white font-mono font-bold text-xs">x = 2.00</span>
                     </div>
                     <div class="flex items-center gap-2">
@@ -2005,9 +2005,13 @@
     // 5. 4 INTERACTIVE SIMULATORS (60fps RAF ENGINE & CONTROLS)
     // -------------------------------------------------------------
     
+    // =============================================================
     // --- SIMULATOR 1: Graph Gallery ---
+    // =============================================================
     let sim1TypeIdx = 0;
     const sim1Types = ["cubic-n", "cubic-mono", "quartic-w", "quartic-stop"];
+    let sim1Timer = null;
+    let sim1IsPlaying = false;
 
     function initGraphGallery() {
         const canvas = document.getElementById("graph-gallery-canvas");
@@ -2016,158 +2020,191 @@
 
         let currentType = "cubic-n";
 
+        const eqDisp = document.getElementById("gallery-eq-disp");
+        const derivDisp = document.getElementById("gallery-deriv-disp");
+        const descDisp = document.getElementById("gallery-desc-disp");
+
+        function updateGalleryMeta(type) {
+            if (!eqDisp || !derivDisp || !descDisp) return;
+            if (type === "cubic-n") {
+                eqDisp.innerHTML = "$f(x) = x^3 - 3x + 1$";
+                derivDisp.innerHTML = "$f'(x) = 3(x+1)(x-1)$";
+                descDisp.innerHTML = "극댓값 $3$ ($x=-1$), 극솟값 $-1$ ($x=1$)";
+            } else if (type === "cubic-mono") {
+                eqDisp.innerHTML = "$f(x) = x^3 + 1$";
+                derivDisp.innerHTML = "$f'(x) = 3x^2 \ge 0$";
+                descDisp.innerHTML = "$x=0$에서 $f'(0)=0$ (수평 접선)이나 부호가 바뀌지 않아 계속 증가";
+            } else if (type === "quartic-w") {
+                eqDisp.innerHTML = "$f(x) = x^4 - 2x^2 + 1$";
+                derivDisp.innerHTML = "$f'(x) = 4x(x+1)(x-1)$";
+                descDisp.innerHTML = "극댓값 $1$ ($x=0$), 극솟값 $0$ ($x=\pm 1$) 대칭 W자형";
+            } else if (type === "quartic-stop") {
+                eqDisp.innerHTML = "$f(x) = -3x^4 + 8x^3 - 6x^2 + 1$";
+                derivDisp.innerHTML = "$f'(x) = -12x(x-1)^2$";
+                descDisp.innerHTML = "극댓값 $1$ ($x=0$), $x=1$에서 $f'(1)=0$ 멈춤점 (극값 아님)";
+            }
+            if (typeof renderMath === "function") {
+                renderMath(eqDisp);
+                renderMath(derivDisp);
+                renderMath(descDisp);
+            }
+        }
+
         document.querySelectorAll('input[name="sim1-preset"]').forEach(r => {
             r.addEventListener("change", (e) => {
                 currentType = e.target.value;
                 sim1TypeIdx = sim1Types.indexOf(currentType);
+                updateGalleryMeta(currentType);
                 drawGallery();
             });
         });
 
         function drawGallery() {
-          const w = canvas.width;
-          const h = canvas.height;
-          ctx.clearRect(0, 0, w, h);
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
 
-          // Grid & Axes
-          const cx = w / 2;
-          const cy = h / 2;
+            // Grid & Axes
+            const cx = w / 2;
+            const cy = h / 2;
 
-          ctx.strokeStyle = "#e2e8f0";
-          ctx.lineWidth = 1;
-          for (let x = 0; x <= w; x += 40) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-          }
-          for (let y = 0; y <= h; y += 40) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-          }
-
-          // Main Axes
-          ctx.strokeStyle = "#94a3b8";
-          ctx.lineWidth = 1.5;
-          ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
-
-          // Axis Labels
-          ctx.fillStyle = "#64748b";
-          ctx.font = "11px Inter, sans-serif";
-          ctx.fillText("x", w - 15, cy - 8);
-          ctx.fillText("y", cx + 8, 15);
-          ctx.fillText("O", cx - 14, cy + 14);
-
-          const scaleX = 45;
-          const scaleY = 16;
-
-          let fn, d1fn, title, pts = [];
-
-          if (currentType === "cubic-n") {
-            // f(x) = x^3 - 6x^2 + 9x - 1, shifted to view near origin: x_math in [-1, 5]
-            // Let x_shift = x - 2 => y = (x-2)^3 - 3(x-2) = x^3 - 6x^2 + 9x - 2
-            // Let's use pure f(x) = x^3 - 3x:
-            // x_math in [-2.5, 2.5]
-            scaleY_current = 24;
-            fn = (x) => x * x * x - 3 * x;
-            title = "삼차함수 N자형: f(x) = x³ - 3x";
-            pts = [
-              { x: -1, y: 2, label: "극대 (-1, 2)", color: "#dc2626" },
-              { x: 1, y: -2, label: "극소 (1, -2)", color: "#16a34a" },
-              { x: 0, y: 0, label: "y절편 (0, 0)", color: "#2563eb" }
-            ];
-          } else if (currentType === "quartic-w") {
-            // f(x) = x^4 - 2x^2
-            scaleY_current = 40;
-            fn = (x) => x * x * x * x - 2 * x * x;
-            title = "사차함수 W자형: f(x) = x⁴ - 2x²";
-            pts = [
-              { x: -1, y: -1, label: "극소 (-1, -1)", color: "#16a34a" },
-              { x: 1, y: -1, label: "극소 (1, -1)", color: "#16a34a" },
-              { x: 0, y: 0, label: "극대 (0, 0)", color: "#dc2626" }
-            ];
-          } else {
-            // Quartic inflection pause: f(x) = -3x^4 + 8x^3 - 6x^2 + 1
-            // f'(x) = -12x(x-1)^2. x=0 is max (y=1), x=1 is pause (y=0).
-            scaleY_current = 45;
-            fn = (x) => -3 * Math.pow(x, 4) + 8 * Math.pow(x, 3) - 6 * Math.pow(x, 2) + 1;
-            title = "사차함수 변곡멈춤형: f(x) = -3x⁴ + 8x³ - 6x² + 1";
-            pts = [
-              { x: 0, y: 1, label: "극대 (0, 1)", color: "#dc2626" },
-              { x: 1, y: 0, label: "변곡 멈춤 (1, 0)", color: "#9333ea" }
-            ];
-          }
-
-          // Draw Curve
-          ctx.strokeStyle = "#4f46e5";
-          ctx.lineWidth = 2.5;
-          ctx.beginPath();
-          let started = false;
-
-          for (let px = 0; px <= w; px++) {
-            const xm = (px - cx) / scaleX;
-            const ym = fn(xm);
-            const py = cy - ym * scaleY_current;
-
-            if (py >= -50 && py <= h + 50) {
-              if (!started) {
-                ctx.moveTo(px, py);
-                started = true;
-              } else {
-                ctx.lineTo(px, py);
-              }
-            } else {
-              started = false;
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= w; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
             }
-          }
-          ctx.stroke();
+            for (let y = 0; y <= h; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+            }
 
-          // Draw Special Points
-          pts.forEach(p => {
-            const px = cx + p.x * scaleX;
-            const py = cy - p.y * scaleY_current;
+            // Main Axes
+            ctx.strokeStyle = "#94a3b8";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
 
-            // Dot
-            ctx.fillStyle = p.color;
+            // Axis Labels
+            ctx.fillStyle = "#64748b";
+            ctx.font = "11px Pretendard, sans-serif";
+            ctx.fillText("x", w - 15, cy - 8);
+            ctx.fillText("y", cx + 8, 15);
+            ctx.fillText("O", cx - 14, cy + 14);
+
+            const scaleX = 50;
+            let scaleY = 24;
+
+            let fn, title, pts = [];
+
+            if (currentType === "cubic-n") {
+                scaleY = 25;
+                fn = (x) => x * x * x - 3 * x + 1;
+                title = "삼차함수 N자형: f(x) = x³ - 3x + 1";
+                pts = [
+                    { x: -1, y: 3, label: "극대 (-1, 3)", color: "#dc2626" },
+                    { x: 1, y: -1, label: "극소 (1, -1)", color: "#16a34a" },
+                    { x: 0, y: 1, label: "y절편 (0, 1)", color: "#2563eb" }
+                ];
+            } else if (currentType === "cubic-mono") {
+                scaleY = 25;
+                fn = (x) => x * x * x + 1;
+                title = "삼차함수 단조증가형: f(x) = x³ + 1";
+                pts = [
+                    { x: 0, y: 1, label: "변곡 멈춤점 (0, 1)", color: "#9333ea" }
+                ];
+            } else if (currentType === "quartic-w") {
+                scaleY = 40;
+                fn = (x) => x * x * x * x - 2 * x * x + 1;
+                title = "사차함수 W자형: f(x) = x⁴ - 2x² + 1";
+                pts = [
+                    { x: -1, y: 0, label: "극소 (-1, 0)", color: "#16a34a" },
+                    { x: 1, y: 0, label: "극소 (1, 0)", color: "#16a34a" },
+                    { x: 0, y: 1, label: "극대 (0, 1)", color: "#dc2626" }
+                ];
+            } else {
+                scaleY = 45;
+                fn = (x) => -3 * Math.pow(x, 4) + 8 * Math.pow(x, 3) - 6 * Math.pow(x, 2) + 1;
+                title = "사차함수 변곡멈춤형: f(x) = -3x⁴ + 8x³ - 6x² + 1";
+                pts = [
+                    { x: 0, y: 1, label: "극대 (0, 1)", color: "#dc2626" },
+                    { x: 1, y: 0, label: "변곡 멈춤 (1, 0)", color: "#9333ea" }
+                ];
+            }
+
+            // Draw Curve
+            ctx.strokeStyle = "#4f46e5";
+            ctx.lineWidth = 2.5;
             ctx.beginPath();
-            ctx.arc(px, py, 5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 2;
+            let started = false;
+
+            for (let px = 0; px <= w; px++) {
+                const xm = (px - cx) / scaleX;
+                const ym = fn(xm);
+                const py = cy - ym * scaleY;
+
+                if (py >= -60 && py <= h + 60) {
+                    if (!started) {
+                        ctx.moveTo(px, py);
+                        started = true;
+                    } else {
+                        ctx.lineTo(px, py);
+                    }
+                } else {
+                    started = false;
+                }
+            }
             ctx.stroke();
 
-            // Label
-            ctx.fillStyle = "#1e293b";
-            ctx.font = "bold 11px Inter, sans-serif";
-            ctx.fillText(p.label, px + 8, py - 6);
-          });
+            // Draw Special Points
+            pts.forEach(p => {
+                const px = cx + p.x * scaleX;
+                const py = cy - p.y * scaleY;
 
-          // Title badge in canvas
-          ctx.fillStyle = "#4f46e5";
-          ctx.font = "bold 12px Inter, sans-serif";
-          ctx.fillText(title, 15, 25);
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(px, py, 5.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = "#1e293b";
+                ctx.font = "bold 11px Pretendard, sans-serif";
+                ctx.fillText(p.label, px + 8, py - 6);
+            });
+
+            // Title badge in canvas
+            ctx.fillStyle = "#4f46e5";
+            ctx.font = "bold 13px Pretendard, sans-serif";
+            ctx.fillText(title, 15, 25);
         }
 
-        // Sim 1 Control Buttons
+        // Controls
         const btnPlay = document.getElementById("btn-sim1-play");
         const btnPause = document.getElementById("btn-sim1-pause");
         const btnReset = document.getElementById("btn-sim1-reset");
 
-        let sim1Timer = null;
-
         function playSim1() {
+            if (sim1IsPlaying) return;
+            sim1IsPlaying = true;
+            if (btnPlay) btnPlay.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> <span>순환 재생중</span>';
             if (sim1Timer) clearInterval(sim1Timer);
-            btnPlay.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> <span>순환 재생중</span>';
             sim1Timer = setInterval(() => {
                 sim1TypeIdx = (sim1TypeIdx + 1) % sim1Types.length;
                 currentType = sim1Types[sim1TypeIdx];
                 const r = document.querySelector(`input[name="sim1-preset"][value="${currentType}"]`);
                 if (r) r.checked = true;
+                updateGalleryMeta(currentType);
                 drawGallery();
             }, 2500);
         }
 
         function pauseSim1() {
-            if (sim1Timer) clearInterval(sim1Timer);
-            sim1Timer = null;
-            btnPlay.innerHTML = '<i class="fa-solid fa-play"></i> <span>자동 회전</span>';
+            sim1IsPlaying = false;
+            if (sim1Timer) {
+                clearInterval(sim1Timer);
+                sim1Timer = null;
+            }
+            if (btnPlay) btnPlay.innerHTML = '<i class="fa-solid fa-play"></i> <span>자동 회전</span>';
         }
 
         function resetSim1() {
@@ -2176,6 +2213,7 @@
             currentType = sim1Types[0];
             const r = document.querySelector(`input[name="sim1-preset"][value="${currentType}"]`);
             if (r) r.checked = true;
+            updateGalleryMeta(currentType);
             drawGallery();
         }
 
@@ -2183,12 +2221,17 @@
         if (btnPause) btnPause.addEventListener("click", pauseSim1);
         if (btnReset) btnReset.addEventListener("click", resetSim1);
 
+        updateGalleryMeta(currentType);
         drawGallery();
     }
 
+    // =============================================================
     // --- SIMULATOR 2: Box Volume Optimization ---
+    // =============================================================
     let boxAnimId = null;
+    let boxIsPlaying = false;
     let boxDirection = 1;
+    let boxCurrentX = 2.0;
 
     function initBoxVolume() {
         const canvas = document.getElementById("box-volume-canvas");
@@ -2357,7 +2400,10 @@
             ctx.stroke();
         }
 
-        slider.addEventListener("input", drawBox);
+        slider.addEventListener("input", () => {
+            boxCurrentX = parseFloat(slider.value);
+            drawBox();
+        });
 
         // Controls
         const btnPlay = document.getElementById("btn-box-play");
@@ -2365,35 +2411,41 @@
         const btnReset = document.getElementById("btn-box-reset");
 
         function loopBox() {
-            let cur = parseFloat(slider.value);
-            cur += boxDirection * 0.04;
-            if (cur >= 5.5) {
-                cur = 5.5;
+            if (!boxIsPlaying) return;
+            boxCurrentX += boxDirection * 0.02;
+            if (boxCurrentX >= 5.5) {
+                boxCurrentX = 5.5;
                 boxDirection = -1;
-            } else if (cur <= 0.5) {
-                cur = 0.5;
+            } else if (boxCurrentX <= 0.5) {
+                boxCurrentX = 0.5;
                 boxDirection = 1;
             }
-            slider.value = cur.toFixed(1);
+            slider.value = boxCurrentX.toFixed(2);
             drawBox();
             boxAnimId = requestAnimationFrame(loopBox);
         }
 
         function playBox() {
-            if (boxAnimId) cancelAnimationFrame(boxAnimId);
+            if (boxIsPlaying) return;
+            boxIsPlaying = true;
             if (btnPlay) btnPlay.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> <span>스캔중</span>';
+            boxCurrentX = parseFloat(slider.value);
             boxAnimId = requestAnimationFrame(loopBox);
         }
 
         function pauseBox() {
-            if (boxAnimId) cancelAnimationFrame(boxAnimId);
-            boxAnimId = null;
+            boxIsPlaying = false;
+            if (boxAnimId) {
+                cancelAnimationFrame(boxAnimId);
+                boxAnimId = null;
+            }
             if (btnPlay) btnPlay.innerHTML = '<i class="fa-solid fa-play"></i> <span>자동 스캔</span>';
         }
 
         function resetBox() {
             pauseBox();
-            slider.value = 2.0;
+            boxCurrentX = 2.0;
+            slider.value = "2.0";
             boxDirection = 1;
             drawBox();
         }
@@ -2402,12 +2454,17 @@
         if (btnPause) btnPause.addEventListener("click", pauseBox);
         if (btnReset) btnReset.addEventListener("click", resetBox);
 
+        boxCurrentX = parseFloat(slider.value) || 2.0;
         drawBox();
     }
 
+    // =============================================================
     // --- SIMULATOR 3: Parabola Inscribed Rectangle ---
+    // =============================================================
     let rectAnimId = null;
+    let rectIsPlaying = false;
     let rectDirection = 1;
+    let rectCurrentX = 1.41;
 
     function initRectParabola() {
         const canvas = document.getElementById("rect-in-parabola-canvas");
@@ -2569,7 +2626,10 @@
             ctx.stroke();
         }
 
-        slider.addEventListener("input", drawParabola);
+        slider.addEventListener("input", () => {
+            rectCurrentX = parseFloat(slider.value);
+            drawParabola();
+        });
 
         // Controls
         const btnPlay = document.getElementById("btn-rect-play");
@@ -2577,35 +2637,41 @@
         const btnReset = document.getElementById("btn-rect-reset");
 
         function loopRect() {
-            let cur = parseFloat(slider.value);
-            cur += rectDirection * 0.02;
-            if (cur >= 2.35) {
-                cur = 2.35;
+            if (!rectIsPlaying) return;
+            rectCurrentX += rectDirection * 0.01;
+            if (rectCurrentX >= 2.35) {
+                rectCurrentX = 2.35;
                 rectDirection = -1;
-            } else if (cur <= 0.15) {
-                cur = 0.15;
+            } else if (rectCurrentX <= 0.15) {
+                rectCurrentX = 0.15;
                 rectDirection = 1;
             }
-            slider.value = cur.toFixed(2);
+            slider.value = rectCurrentX.toFixed(2);
             drawParabola();
             rectAnimId = requestAnimationFrame(loopRect);
         }
 
         function playRect() {
-            if (rectAnimId) cancelAnimationFrame(rectAnimId);
+            if (rectIsPlaying) return;
+            rectIsPlaying = true;
             if (btnPlay) btnPlay.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> <span>스캔중</span>';
+            rectCurrentX = parseFloat(slider.value);
             rectAnimId = requestAnimationFrame(loopRect);
         }
 
         function pauseRect() {
-            if (rectAnimId) cancelAnimationFrame(rectAnimId);
-            rectAnimId = null;
+            rectIsPlaying = false;
+            if (rectAnimId) {
+                cancelAnimationFrame(rectAnimId);
+                rectAnimId = null;
+            }
             if (btnPlay) btnPlay.innerHTML = '<i class="fa-solid fa-play"></i> <span>자동 스캔</span>';
         }
 
         function resetRect() {
             pauseRect();
-            slider.value = 1.41;
+            rectCurrentX = 1.41;
+            slider.value = "1.41";
             rectDirection = 1;
             drawParabola();
         }
@@ -2614,12 +2680,17 @@
         if (btnPause) btnPause.addEventListener("click", pauseRect);
         if (btnReset) btnReset.addEventListener("click", resetRect);
 
+        rectCurrentX = parseFloat(slider.value) || 1.41;
         drawParabola();
     }
 
+    // =============================================================
     // --- SIMULATOR 4: Derivative vs Original Dual Viewer ---
+    // =============================================================
     let dualAnimId = null;
+    let dualIsPlaying = false;
     let dualDirection = 1;
+    let dualCurrentX = 2.0;
 
     function initDualViewer() {
         const canvas = document.getElementById("dual-derivative-canvas");
@@ -2645,7 +2716,7 @@
             if (xValBadge) xValBadge.textContent = "x = " + x.toFixed(2);
             if (fprimeVal) fprimeVal.textContent = yFp.toFixed(2);
             if (slopeVal) {
-                const statusStr = Math.abs(yFp) < 0.05 ? " (수평 접선!)" : (yFp > 0 ? " (증가 ↑)" : " (감소 ↓)");
+                const statusStr = Math.abs(yFp) < 0.08 ? " (수평 접선!)" : (yFp > 0 ? " (증가 ↑)" : " (감소 ↓)");
                 slopeVal.textContent = yFp.toFixed(2) + statusStr;
             }
             if (fxVal) fxVal.textContent = yF.toFixed(2);
@@ -2782,7 +2853,10 @@
             ctx.stroke();
         }
 
-        slider.addEventListener("input", drawDual);
+        slider.addEventListener("input", () => {
+            dualCurrentX = parseFloat(slider.value);
+            drawDual();
+        });
 
         // Controls
         const btnPlay = document.getElementById("btn-dual-play");
@@ -2790,35 +2864,41 @@
         const btnReset = document.getElementById("btn-dual-reset");
 
         function loopDual() {
-            let cur = parseFloat(slider.value);
-            cur += dualDirection * 0.025;
-            if (cur >= 3.8) {
-                cur = 3.8;
+            if (!dualIsPlaying) return;
+            dualCurrentX += dualDirection * 0.015;
+            if (dualCurrentX >= 3.8) {
+                dualCurrentX = 3.8;
                 dualDirection = -1;
-            } else if (cur <= 0.2) {
-                cur = 0.2;
+            } else if (dualCurrentX <= 0.2) {
+                dualCurrentX = 0.2;
                 dualDirection = 1;
             }
-            slider.value = cur.toFixed(2);
+            slider.value = dualCurrentX.toFixed(2);
             drawDual();
             dualAnimId = requestAnimationFrame(loopDual);
         }
 
         function playDual() {
-            if (dualAnimId) cancelAnimationFrame(dualAnimId);
+            if (dualIsPlaying) return;
+            dualIsPlaying = true;
             if (btnPlay) btnPlay.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i> <span>스캔중</span>';
+            dualCurrentX = parseFloat(slider.value);
             dualAnimId = requestAnimationFrame(loopDual);
         }
 
         function pauseDual() {
-            if (dualAnimId) cancelAnimationFrame(dualAnimId);
-            dualAnimId = null;
+            dualIsPlaying = false;
+            if (dualAnimId) {
+                cancelAnimationFrame(dualAnimId);
+                dualAnimId = null;
+            }
             if (btnPlay) btnPlay.innerHTML = '<i class="fa-solid fa-play"></i> <span>자동 스캔</span>';
         }
 
         function resetDual() {
             pauseDual();
-            slider.value = 2.0;
+            dualCurrentX = 2.0;
+            slider.value = "2.00";
             dualDirection = 1;
             drawDual();
         }
@@ -2827,9 +2907,9 @@
         if (btnPause) btnPause.addEventListener("click", pauseDual);
         if (btnReset) btnReset.addEventListener("click", resetDual);
 
+        dualCurrentX = parseFloat(slider.value) || 2.0;
         drawDual();
     }
-
     // -------------------------------------------------------------
     // 6. REFLECTION SAVE & RESTORE
     // -------------------------------------------------------------
