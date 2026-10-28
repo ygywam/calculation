@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-vel-dist">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 05. 속도와 거리 (위치, 변화량, 움직인 거리)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  /* 상단 배지 고정 */
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b {
+    color: #1E3A8A;
+  }
+  /* 표지 선생님 성함·직함 편집 상자 */
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  /* 2단 레이아웃 (오른쪽 풀이 영역 폭 520px 확보하여 수식 잘림 완벽 방지) */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 520px;
+    gap: 20px;
+    align-items: start;
+  }
+  .grid-2 > div {
+    min-width: 0;
+  }
+  /* 문제 상자 및 풀이 단계 상자 */
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 8px 14px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 1.38;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    font-size: 20px;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
+  }
+  .ctrl-card p {
+    margin: 3px 0;
+    font-size: 20px;
+  }
+  .ctrl-card input[type=range] {
+    width: 100%;
+    height: 56px;
+  }
+  .ctrl-card button {
+    min-height: 56px;
+    font-size: 20px;
+    padding: 6px 12px;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display {
+    margin: 4px 0 !important;
+    overflow-x: hidden;
+  }
+  .katex {
+    font-size: 1.02em !important;
+  }
+  .formula-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 2px solid #CBD5E1;
+    border-radius: 10px;
+    padding: 6px 14px;
+    margin: 4px 0 8px 0;
+    font-size: 24px;
+  }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ</p>
+  </div>
+  <h1>05. 속도와 거리<br>위치 · 위치의 변화량 · 움직인 거리</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 핵심 개념: 위치, 위치의 변화량, 움직인 거리 (p.54) -->
+<section class="slide" id="concept-vel-dist" data-sec="05. 속도와 거리" data-title="위치의 변화량과 움직인 거리">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>위치의 변화량과 실제로 움직인 거리는 어떻게 다를까?</h2>
+  <div class="calc grid-2" data-ai="위치의 변화량과 움직인 거리 비교 탐색기" data-let="disp = 2*t^2 - t^3; dist = t <= 1 ? 2*t^2 - t^3 : 2 - 2*t^2 + t^3; vt = 4*t - 3*t^2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 위치와 움직인 거리 (p.54)</span><br>
+        시각 $t=a$에서의 위치가 $x_0$, 속도가 $v(t)$일 때<br>
+        1. <b>위치</b>: $x = x_0 + \int_a^t v(s)\,ds$, &nbsp; 2. <b>변화량</b>: $\int_a^b v(t)\,dt$<br>
+        3. <b>움직인 거리</b>: $s = \int_a^b |v(t)|\,dt$ (속력의 정적분 = 넓이!)
+      </div>
+      <figure class="plot" data-x="0, 2.2" data-y="-4.5, 2.5" data-xstep="0.5" data-ystep="2" data-height="220" data-xlabel="시각 t" data-ylabel="속도 v(t)">
+        <i data-line="4*x - 3*x^2" data-label="속도 v(t)" data-color="#1E3A8A"></i>
+        <i data-line="abs(4*x - 3*x^2)" data-x="0, t" data-dash data-label="속력 |v(t)|" data-color="#0F766E"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="t" data-dash data-color="#DC2626"></i>
+        <i data-point="t, vt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>시각 $t =$ <b><output data-expr="t" data-digits="1"></output></b> (출발 $x_0 = 0$ 예시 모형)</p>
+        <input type="range" name="t" min="0" max="2" step="0.5" value="2" data-play="6" aria-label="시각 t">
+        <p>위치의 변화량 $\int_0^t v(s)\,ds =$ <b><output data-expr="disp" data-digits="2"></output></b></p>
+        <p class="status-pill">실제 움직인 거리 ∫₀ᵗ |v(s)| ds = <output data-expr="dist" data-digits="2"></output></p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1. 위치의 변화량 ($\int_a^b v(t)\,dt$)</b>:<br>
+        정적분 값 그 자체다 ($t$축 아래는 음수로 계산되어 빼진다).</p>
+        <p class="step"><b>2. 현재 위치 ($x$)</b>: <b>처음 위치 $x_0$</b>에 위치의 변화량을 더한다.<br>
+        $x = x_0 + \int_a^t v(s)\,ds$</p>
+        <p class="step ans"><b>3. 움직인 거리 ($s = \int_a^b |v(t)|\,dt$)</b>:<br>
+        방향이 바뀌는($v(t)=0$) 시각에서 구간을 나누어 넓이를 더한다!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 교과서 [문제] #1 (p.147) -->
+<section class="slide" id="p147-q1" data-sec="05. 속도와 거리" data-title="교과서 문제 1 (p.147)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>출발 위치가 $2$일 때 점 P의 위치와 변화량을 구해 보자</h2>
+  <div class="calc grid-2" data-ai="문제 1 수직선 운동 위치 탐색기" data-let="xt = 2 + (t^3)/3 - t^2; vt = t^2 - 2*t">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #1 (p.147)</span><br>
+        좌표가 $2$인 점에서 출발하여 수직선 위를 움직이는 점 P의 시각 $t$에서의 속도가 $v(t) = t^2 - 2t$일 때, 다음을 구하시오.<br>
+        (1) 시각 $t = 3$에서의 점 P의 위치<br>
+        (2) 시각 $t = 1$에서 $t = 4$까지 점 P의 위치의 변화량
+      </div>
+      <figure class="plot" data-x="0, 4.2" data-y="-2, 12" data-xstep="1" data-ystep="3" data-height="225" data-xlabel="시각 t" data-ylabel="위치 x(t) / 속도 v(t)">
+        <i data-line="2 + (x^3)/3 - x^2" data-label="위치 x(t)" data-color="#1E3A8A"></i>
+        <i data-line="x^2 - 2*x" data-dash data-label="속도 v(t)" data-color="#DC2626"></i>
+        <i data-point="t, xt" data-color="#1E3A8A"></i>
+        <i data-point="t, vt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; $\implies$ 현재 위치 $x(t) =$ <b><output data-expr="xt" data-digits="2"></output></b></p>
+        <input type="range" name="t" min="0" max="4" step="1" value="3" data-play="5" aria-label="시각 t">
+        <p data-show="t == 3" class="status-pill">t = 3일 때 위치는 x₀(2) + 변화량(0) = 2이다!</p>
+        <p data-show="t != 3">처음 위치 $x_0 = 2$를 잊지 말고 더해야 한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) $t = 3$에서의 위치 ($x_0 = 2$ 주의!)</b>:<br>
+        $x = 2 + \int_0^3 (t^2 - 2t)\,dt = 2 + \Big[ \frac{1}{3}t^3 - t^2 \Big]_0^3$<br>
+        $= 2 + (9 - 9) = 2$</p>
+        <p class="step"><b>(2) $t = 1$에서 $t = 4$까지 위치의 변화량</b>:<br>
+        $\int_1^4 (t^2 - 2t)\,dt = \Big[ \frac{1}{3}t^3 - t^2 \Big]_1^4$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $\left(\frac{64}{3} - 16\right) - \left(\frac{1}{3} - 1\right) = 6$<br>
+        <b>정답: (1) $2$ &nbsp; / &nbsp; (2) $6$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 교과서 [문제] #2 (p.148) -->
+<section class="slide" id="p148-q2" data-sec="05. 속도와 거리" data-title="교과서 문제 2 (p.148)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>운동 방향이 바뀌는 구간에서 움직인 거리는 어떻게 구할까?</h2>
+  <div class="calc grid-2" data-ai="문제 2 움직인 거리 구간 분할 탐색기" data-let="vt = t^2 - 6*t + 8">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #2 (p.148)</span><br>
+        수직선 위를 움직이는 점 P의 시각 $t$에서의 속도가
+        $$v(t) = t^2 - 6t + 8$$
+        일 때, 시각 $t = 0$에서 $t = 4$까지 점 P가 움직인 거리를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 4.2" data-y="-2, 9" data-xstep="1" data-ystep="2" data-height="225" data-xlabel="시각 t" data-ylabel="속도 v(t)">
+        <i data-line="x^2 - 6*x + 8" data-label="v(t) = (t-2)(t-4)" data-color="#1E3A8A"></i>
+        <i data-line="abs(x^2 - 6*x + 8)" data-dash data-label="|v(t)|" data-color="#0F766E"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="2" data-dash data-label="방향 전환 t = 2" data-color="#DC2626"></i>
+        <i data-point="t, vt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; $\implies$ 속도 $v(t) =$ <b><output data-expr="vt" data-digits="2"></output></b></p>
+        <input type="range" name="t" min="0" max="4" step="0.5" value="2" aria-label="시각 t">
+        <p data-show="t < 2" class="status-pill">[0, 2] 구간: v(t) ≥ 0 (양의 방향으로 20/3 이동)</p>
+        <p data-show="t >= 2" class="status-pill">[2, 4] 구간: v(t) ≤ 0 (음의 방향으로 4/3 이동)</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (속도의 부호가 바뀌는 시각 찾기)</b>:<br>
+        $v(t) = t^2 - 6t + 8 = (t-2)(t-4) = 0 \implies t = 2, 4$</p>
+        <p class="step"><b>2단계 ($t = 2$를 기준으로 구간 나누어 적분)</b>:<br>
+        $s = \int_0^4 |t^2 - 6t + 8|\,dt$<br>
+        $= \int_0^2 (t^2 - 6t + 8)\,dt + \int_2^4 (-t^2 + 6t - 8)\,dt$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $\frac{20}{3} + \frac{4}{3} = \frac{24}{3} = 8$ &nbsp; $\therefore$ <b>정답: $8$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 교과서 [예제] #2 (p.148) 지면에서 던진 공 -->
+<section class="slide" id="p148-ex2" data-sec="05. 속도와 거리" data-title="교과서 예제 2 (p.148)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>위로 던진 공의 최고 높이와 3초 동안 움직인 거리는?</h2>
+  <div class="calc grid-2" data-ai="위로 던진 공의 최고 높이와 이동 거리 탐색기" data-let="ht = 20*t - 5*t^2; vt = 20 - 10*t; dist = t <= 2 ? 20*t - 5*t^2 : 20 + 5*(t - 2)^2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [예제] #2 (p.148)</span><br>
+        지면에서 $20\text{ m/s}$의 속도로 수직으로 위로 던진 공의 $t$초 후의 속도가 $v(t) = 20 - 10t\text{ (m/s)}$ ($0 \le t \le 4$)일 때, 다음을 구하시오.<br>
+        (1) 최고 지점에 도달할 때의 지면으로부터의 높이<br>
+        (2) 공을 던진 후 $3$초 동안 공이 움직인 거리
+      </div>
+      <figure class="plot" data-x="0, 4" data-y="-20, 25" data-xstep="1" data-ystep="10" data-height="225" data-xlabel="시간 t(초)" data-ylabel="높이 h(m) / 속도 v(m/s)">
+        <i data-line="20*x - 5*x^2" data-label="높이 h(t)" data-color="#1E3A8A"></i>
+        <i data-line="20 - 10*x" data-dash data-label="속도 v(t)" data-color="#DC2626"></i>
+        <i data-point="t, ht" data-color="#1E3A8A"></i>
+        <i data-point="t, vt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시간 $t =$ <b><output data-expr="t" data-digits="1"></output>초</b> &nbsp; (높이 $=$ <output data-expr="ht" data-digits="1"></output> m, 누적 이동 거리 $=$ <b><output data-expr="dist" data-digits="1"></output> m</b>)</p>
+        <input type="range" name="t" min="0" max="4" step="0.5" value="2" data-play="6" aria-label="시간 t">
+        <p data-show="t == 2" class="status-pill">t = 2초일 때 v(2) = 0이 되어 최고 높이 20 m에 도달한다!</p>
+        <p data-show="t == 3" class="status-pill">t = 3초일 때 올라간 20 m + 내려온 5 m = 총 25 m 이동!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 최고 지점 도달 시각 ($v(t) = 0$)</b>: $20 - 10t = 0 \implies t = 2$<br>
+        최고 높이 $= 0 + \int_0^2 (20 - 10t)\,dt = \Big[ 20t - 5t^2 \Big]_0^2 = 20\text{ (m)}$</p>
+        <p class="step"><b>(2) $3$초 동안 움직인 거리 ($t = 2$에서 구간 분할)</b>:<br>
+        $s = \int_0^3 |20 - 10t|\,dt = \int_0^2 (20 - 10t)\,dt + \int_2^3 (-20 + 10t)\,dt$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $20 + 5 = 25\text{ (m)}$<br>
+        <b>정답: (1) $20\text{ m}$ &nbsp; / &nbsp; (2) $25\text{ m}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 교과서 [문제] #3-1 (p.149) 건물 옥상에서 쏘아 올린 물체 -->
+<section class="slide" id="p149-q3-building" data-sec="05. 속도와 거리" data-title="교과서 문제 3 - 옥상 물체 (p.149)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>지상 $35\text{ m}$ 건물 옥상에서 쏘아 올린 물체의 높이와 이동 거리는?</h2>
+  <div class="calc grid-2" data-ai="옥상 발사 물체 높이와 거리 탐색기" data-let="ht = 35 + 30*t - 5*t^2; dist = t <= 3 ? 30*t - 5*t^2 : 45 + 5*(t - 3)^2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #3 (p.149)</span><br>
+        지상 $35\text{ m}$ 높이의 건물 옥상에서 $30\text{ m/s}$의 속도로 수직으로 쏘아 올린 물체의 $t$초 후의 속도가 $v(t) = 30 - 10t\text{ (m/s)}$ ($0 \le t \le 7$)일 때, 다음을 구하시오.<br>
+        (1) $2$초 후 지면으로부터의 높이 &nbsp; (2) $4$초 동안 움직인 거리
+      </div>
+      <figure class="plot" data-x="0, 7" data-y="0, 85" data-xstep="1" data-ystep="20" data-height="225" data-xlabel="시간 t(초)" data-ylabel="지면으로부터의 높이 h(m)">
+        <i data-line="35 + 30*x - 5*x^2" data-label="높이 h(t) = 35 + 30t - 5t²" data-color="#1E3A8A"></i>
+        <i data-vline="3" data-dash data-label="최고점 t = 3초 (80 m)" data-color="#DC2626"></i>
+        <i data-point="t, ht" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시간 $t =$ <b><output data-expr="t"></output>초</b> &nbsp; (지면 높이 $=$ <b><output data-expr="ht"></output> m</b>, 이동 거리 $=$ <b><output data-expr="dist"></output> m</b>)</p>
+        <input type="range" name="t" min="0" max="7" step="1" value="2" data-play="7" aria-label="시간 t">
+        <p data-show="t == 2" class="status-pill">(1) t = 2초일 때 지면으로부터 높이는 35 + 40 = 75 m!</p>
+        <p data-show="t == 4" class="status-pill">(2) t = 4초일 때 움직인 거리는 45 + 5 = 50 m!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) $2$초 후 지면으로부터의 높이 ($x_0 = 35\text{ m}$ 더하기!)</b>:<br>
+        $h(2) = 35 + \int_0^2 (30 - 10t)\,dt = 35 + \Big[ 30t - 5t^2 \Big]_0^2$<br>
+        $= 35 + (60 - 20) = 75\text{ (m)}$</p>
+        <p class="step"><b>(2) $4$초 동안 움직인 거리 ($v(t)=0 \implies t=3$에서 분할)</b>:<br>
+        $s = \int_0^3 (30 - 10t)\,dt + \int_3^4 (-30 + 10t)\,dt$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $45 + 5 = 50\text{ (m)}$<br>
+        <b>정답: (1) $75\text{ m}$ &nbsp; / &nbsp; (2) $50\text{ m}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 교과서 [문제] #3-2 (p.54) 열기구 -->
+<section class="slide" id="p54-q3-balloon" data-sec="05. 속도와 거리" data-title="교과서 문제 3 - 열기구 (p.54)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>구간별로 속도가 다른 열기구의 최고 높이와 이동 거리는?</h2>
+  <div class="calc grid-2" data-ai="열기구 구간별 속도 그래프와 넓이 탐색기" data-let="vt = t <= 5 ? 4*t : 70 - 10*t">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #3 | 열기구 (p.54)</span><br>
+        지면에서 출발하여 수직 방향으로 움직이는 열기구의 $t$분 후의 속도 $v(t)\text{ m/min}$가<br>
+        $$v(t) = \begin{cases} 4t & (0 \le t \le 5) \\ 70 - 10t & (5 \le t \le 10) \end{cases}$$
+        일 때, (1) 최고 높이와 (2) $8$분 동안 움직인 거리를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 10" data-y="-35, 25" data-xstep="2" data-ystep="10" data-height="215" data-xlabel="시간 t(분)" data-ylabel="속도 v(t) (m/min)">
+        <i data-line="4*x" data-x="0, 5" data-label="0 ≤ t ≤ 5 (4t)" data-color="#1E3A8A"></i>
+        <i data-line="70 - 10*x" data-x="5, 10" data-label="5 ≤ t ≤ 10 (70-10t)" data-color="#0F766E"></i>
+        <i data-path="0, 0; 5, 20; 7, 0" data-close data-fill data-color="#2563EB" data-label="상승 넓이 70"></i>
+        <i data-path="7, 0; 8, 0; 8, -10" data-close data-fill data-color="#DC2626" data-label="하강 넓이 5"></i>
+        <i data-point="t, vt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시간 $t =$ <b><output data-expr="t"></output>분</b> &nbsp; $\implies$ 속도 $v(t) =$ <b><output data-expr="vt"></output> m/min</b></p>
+        <input type="range" name="t" min="0" max="10" step="1" value="7" data-play="7" aria-label="시간 t">
+        <p data-show="t == 7" class="status-pill">t = 7분에서 v(7) = 0이 되어 최고 높이 70 m에 도달한다!</p>
+        <p data-show="t == 8" class="status-pill">t = 8분까지 상승 70 m + 하강 5 m = 총 75 m 이동!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 최고 지점 ($v(t) = 0$)</b>: $70 - 10t = 0 \implies t = 7$분<br>
+        최고 높이 $= \int_0^5 4t\,dt + \int_5^7 (70 - 10t)\,dt = 50 + 20 = 70\text{ (m)}$</p>
+        <p class="step"><b>(2) $8$분 동안 움직인 거리 ($7 \le t \le 8$에서는 하강)</b>:<br>
+        $s = 70 + \int_7^8 (-70 + 10t)\,dt = 70 + 5 = 75\text{ (m)}$</p>
+        <p class="step ans"><b>팁</b>: 속도 그래프가 직선이므로 삼각형 넓이로 구해도 같다!<br>
+        <b>정답: (1) $70\text{ m}$ &nbsp; / &nbsp; (2) $75\text{ m}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 생각 넓히기: 자율 주행 자동차 A, B (p.54) -->
+<section class="slide" id="p54-think" data-sec="05. 속도와 거리" data-title="생각 넓히기 (p.54)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>속도 그래프가 만날 때 두 자동차가 만나는 것일까?</h2>
+  <div class="calc grid-2" data-ai="두 자율주행차 속도와 위치 비교 시뮬레이터" data-let="va = 2*t - t^2; vb = t/2; xa = t^2 - (t^3)/3; xb = (t^2)/4; diff = xa - xb">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">생각 넓히기 | 자율 주행 자동차 A, B (p.54)</span><br>
+        같은 지점에서 동시에 출발한 두 자동차 A, B의 속도 그래프에서 색칠한 두 도형의 넓이가 같을 때, [1] $1$분 동안 움직인 거리를 비교하고, [2] 하나와 지환이의 말 중 잘못된 부분을 찾으시오.
+      </div>
+      <figure class="plot" data-x="0, 2.1" data-y="0, 1.3" data-xstep="1" data-ystep="0.5" data-height="225" data-xlabel="시간 t(분)" data-ylabel="속도 v(t)">
+        <i data-line="2*x - x^2" data-x="0, 2" data-label="자동차 A의 속도" data-color="#DC2626"></i>
+        <i data-line="0.5*x" data-x="0, 2" data-label="자동차 B의 속도" data-color="#1E3A8A"></i>
+        <i data-vline="1" data-dash data-label="t = 1 (속도가 같은 시각)" data-color="#0F766E"></i>
+        <i data-vline="t" data-dash data-color="#D97706"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>시간 $t =$ <b><output data-expr="t" data-digits="1"></output>분</b> &nbsp; $\implies$ A와 B의 위치 차 $=$ <b><output data-expr="diff" data-digits="2"></output></b> (모형)</p>
+        <input type="range" name="t" min="0" max="2" step="0.5" value="1" data-play="5" aria-label="시간 t">
+        <p data-show="t == 1" class="status-pill">t = 1분은 '속도'가 같을 뿐, A가 B보다 훨씬 앞에 있다!</p>
+        <p data-show="t == 2" class="status-pill">t = 2분에서 두 넓이가 같아져 위치 차가 0(처음 만남)이 된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>[활동 1] $1$분 동안 움직인 거리 비교</b>:<br>
+        $[0, 1]$에서 A의 속도 그래프가 B보다 위에 있으므로, 곡선 아래 넓이(움직인 거리)는 <b>자동차 A가 자동차 B보다 더 크다.</b></p>
+        <p class="step"><b>[활동 2] 잘못 말한 사람 찾기</b>: <b>하나</b>가 잘못 말했다.<br>
+        $t = 1$분일 때는 두 자동차의 <b>속도가 같을 뿐</b> 위치는 A가 앞선다.</p>
+        <p class="step ans"><b>결론</b>: 색칠한 두 부분의 넓이가 같으므로 $\int_0^2 v_A(t)\,dt = \int_0^2 v_B(t)\,dt$가 되어 <b>지환이 말대로 $2$분이 지났을 때 처음으로 만난다!</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 교과서 [스스로 확인하기] #1 (p.150) -->
+<section class="slide" id="p150-q1" data-sec="스스로 확인하기" data-title="스스로 확인하기 1 (p.150)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>위치, 위치의 변화량, 움직인 거리 공식을 빈칸으로 정리하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #1 (p.150)</span><br>
+        수직선 위를 움직이는 점 P의 시각 $t$에서의 속도를 $v(t)$, 시각 $t=a$에서의 위치를 $x_0$이라 할 때, 빈칸을 눌러 확인하시오.<br>
+        <div style="margin-top:6px;">(1) 시각 $t$에서의 점 P의 위치 $x$는</div>
+        <div class="formula-row">
+          <span>$x = x_0 + \displaystyle\int_a^t$</span>
+          <span class="blank">$v(s)$</span>
+          <span>$ds$</span>
+        </div>
+        <div>(2) 시각 $t=a$에서 $t=b$까지 점 P의 위치의 변화량은</div>
+        <div class="formula-row">
+          <span>$\displaystyle\int_a^b$</span>
+          <span class="blank">$v(t)$</span>
+          <span>$dt$</span>
+        </div>
+        <div>(3) 시각 $t=a$에서 $t=b$까지 점 P가 움직인 거리 $s$는</div>
+        <div class="formula-row">
+          <span>$s = \displaystyle\int_a^b$</span>
+          <span class="blank">$|v(t)|$</span>
+          <span>$dt$</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 위치</b>: 처음 위치 $x_0$에 시각 $a$부터 $t$까지의 위치 변화량을 더하므로 피적분함수는 <b>$v(s)$</b>이다.</p>
+        <p class="step"><b>(2) 위치의 변화량</b>: 속도 $v(t)$를 구간 $[a, b]$에서 그대로 정적분한 값이므로 <b>$v(t)$</b>이다.</p>
+        <p class="step ans"><b>(3) 움직인 거리</b>: 속도의 절댓값(속력)을 정적분해야 하므로 <b>$|v(t)|$</b>이다.</p>
+      </div>
+      <p style="font-weight:700; margin:12px 0 8px;">즉시 확인: 점 P가 움직이는 동안 운동 방향을 바꾸지 않고 양(+)의 방향으로만 이동한다면, 위치의 변화량과 움직인 거리는 어떤 관계일까?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. v(t) ≥ 0이면 |v(t)| = v(t)이므로 위치의 변화량과 움직인 거리가 서로 같다.">서로 같다.</button>
+        <button class="opt" data-why="v(t) ≥ 0이면 두 적분식이 완전히 같아진다.">움직인 거리가 항상 더 크다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 교과서 [스스로 확인하기] #2 (p.150) -->
+<section class="slide" id="p150-q2" data-sec="스스로 확인하기" data-title="스스로 확인하기 2 (p.150)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>원점을 출발한 점 P의 위치와 위치의 변화량을 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2 (p.150)</span><br>
+        원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$에서의 속도가 $v(t) = 3t^2 - 2t$일 때, 다음을 구하시오.<br>
+        (1) 시각 $t = 3$에서의 점 P의 위치<br>
+        (2) 시각 $t = 1$에서 $t = 4$까지 점 P의 위치의 변화량
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 원점 출발이므로 $x_0 = 0$</b>:<br>
+        $x = 0 + \int_0^3 (3t^2 - 2t)\,dt = \Big[ t^3 - t^2 \Big]_0^3$<br>
+        $= 27 - 9 = 18$</p>
+        <p class="step"><b>(2) $t = 1$에서 $t = 4$까지 위치의 변화량</b>:<br>
+        $\int_1^4 (3t^2 - 2t)\,dt = \Big[ t^3 - t^2 \Big]_1^4$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $(64 - 16) - (1 - 1) = 48$<br>
+        <b>정답: (1) $18$ &nbsp; / &nbsp; (2) $48$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 만약 이 점 P가 원점이 아니라 좌표가 $5$인 점에서 출발했다면, (1)번과 (2)번의 답은 어떻게 달라질까?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="(2)번은 '위치의 변화량'이므로 출발 위치 x₀와 무관하게 48로 일정하다.">(1)번과 (2)번 모두 5만큼 커진다.</button>
+        <button class="opt" data-ok data-why="맞다. 현재 위치는 x₀ + 변화량이므로 (1)은 23이 되지만, 위치의 변화량인 (2)는 출발점과 무관하게 48이다.">(1)번만 23으로 커지고, (2)번은 48로 그대로이다.</button>
+        <button class="opt" data-why="(1)번은 시각 t=3에서의 위치이므로 처음 위치 5를 더해야 한다.">(1)번과 (2)번 모두 변하지 않는다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 교과서 [스스로 확인하기] #3 (p.150) -->
+<section class="slide" id="p150-q3" data-sec="스스로 확인하기" data-title="스스로 확인하기 3 (p.150)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>속도가 $v(t) = -3t^2 + 6t$일 때 $t=3$까지 움직인 거리는?</h2>
+  <div class="calc grid-2" data-ai="스스로 3 움직인 거리 탐색기" data-let="vt = -3*t^2 + 6*t">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #3 (p.150)</span><br>
+        수직선 위를 움직이는 점 P의 시각 $t$에서의 속도가
+        $$v(t) = -3t^2 + 6t$$
+        일 때, 시각 $t = 0$에서 $t = 3$까지 점 P가 움직인 거리를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 3.2" data-y="-10, 5" data-xstep="1" data-ystep="3" data-height="225" data-xlabel="시각 t" data-ylabel="속도 v(t)">
+        <i data-line="-3*x^2 + 6*x" data-label="v(t) = -3t(t-2)" data-color="#1E3A8A"></i>
+        <i data-line="abs(-3*x^2 + 6*x)" data-dash data-label="속력 |v(t)|" data-color="#0F766E"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="2" data-dash data-label="방향 전환 t = 2" data-color="#DC2626"></i>
+        <i data-point="t, vt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; $\implies$ 속도 $v(t) =$ <b><output data-expr="vt" data-digits="2"></output></b></p>
+        <input type="range" name="t" min="0" max="3" step="0.5" value="2" aria-label="시각 t">
+        <p data-show="t <= 2" class="status-pill">[0, 2] 구간: v(t) ≥ 0 (앞으로 4만큼 이동)</p>
+        <p data-show="t > 2" class="status-pill">[2, 3] 구간: v(t) ≤ 0 (뒤로 5만큼 이동)</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($v(t) = 0$인 시각 찾기)</b>:<br>
+        $-3t^2 + 6t = -3t(t - 2) = 0 \implies t = 0 \text{ 또는 } t = 2$</p>
+        <p class="step"><b>2단계 ($t = 2$에서 구간 나누어 적분)</b>:<br>
+        $s = \int_0^2 (-3t^2 + 6t)\,dt + \int_2^3 (3t^2 - 6t)\,dt$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $\Big[-t^3 + 3t^2\Big]_0^2 + \Big[t^3 - 3t^2\Big]_2^3 = 4 + 5 = 9$ &nbsp; $\therefore$ <b>정답: $9$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 교과서 [스스로 확인하기] #4 (p.150) -->
+<section class="slide" id="p150-q4" data-sec="스스로 확인하기" data-title="스스로 확인하기 4 (p.150)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>속도 그래프의 넓이로 점 P의 위치와 움직인 거리를 구하자</h2>
+  <div class="calc grid-2" data-ai="스스로 4 속도 그래프 넓이 탐색기" data-let="vt = t <= 1 ? t : (t <= 3 ? 2 - t : t - 4)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #4 (p.150)</span><br>
+        원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$에서의 속도 $v(t)$의 그래프가 아래 그림과 같을 때, 다음을 구하시오.<br>
+        (1) 시각 $t = 3$에서의 점 P의 위치<br>
+        (2) 시각 $t = 2$에서 $t = 4$까지 점 P가 움직인 거리
+      </div>
+      <figure class="plot" data-x="0, 4.2" data-y="-1.3, 1.3" data-xstep="1" data-ystep="1" data-height="225" data-xlabel="시각 t" data-ylabel="속도 v(t)">
+        <i data-path="0, 0; 2, 0; 1, 1" data-close data-fill data-color="#2563EB" data-label="[0, 2] 넓이 = 1"></i>
+        <i data-path="2, 0; 4, 0; 3, -1" data-close data-fill data-color="#DC2626" data-label="[2, 4] 넓이 = 1"></i>
+        <i data-vline="t" data-dash data-color="#0F766E"></i>
+        <i data-point="t, vt" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; $\implies$ 속도 $v(t) =$ <b><output data-expr="vt" data-digits="1"></output></b></p>
+        <input type="range" name="t" min="0" max="4" step="0.5" value="3" data-play="5" aria-label="시각 t">
+        <p class="status-pill">[0, 2] 위쪽 삼각형 넓이 = 1 / [2, 3] 아래쪽 삼각형 넓이 = 1/2</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) $t = 3$에서의 위치 (넓이의 부호 반영!)</b>:<br>
+        $[0, 2]$ 넓이는 $\frac{1}{2} \times 2 \times 1 = 1$ (양의 방향)<br>
+        $[2, 3]$ 넓이는 $\frac{1}{2} \times 1 \times 1 = \frac{1}{2}$ (음의 방향)<br>
+        $\implies x(3) = 0 + 1 - \frac{1}{2} = \frac{1}{2}$</p>
+        <p class="step"><b>(2) $t = 2$에서 $t = 4$까지 움직인 거리 (넓이 그 자체!)</b>:<br>
+        구간 $[2, 4]$의 삼각형 넓이 $= \frac{1}{2} \times 2 \times 1 = 1$</p>
+        <p class="step ans"><b>정답: (1) $\frac{1}{2}$ &nbsp; / &nbsp; (2) $1$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 교과서 [스스로 확인하기] #5 (p.150) 승강기 -->
+<section class="slide" id="p150-q5" data-sec="스스로 확인하기" data-title="스스로 확인하기 5 (p.150)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>승강기가 출발 후 $24$초 동안 움직인 거리는 얼마일까?</h2>
+  <div class="calc grid-2" data-ai="승강기 속도 그래프와 이동 거리 시뮬레이터" data-let="vt = t < 4 ? (3/8)*t : (t < 20 ? 1.5 : -(3/8)*t + 9); s = t < 4 ? (3/16)*t^2 : (t < 20 ? 3 + 1.5*(t - 4) : 27 + 9*(t - 20) - (3/16)*(t^2 - 400))">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #5 (p.150)</span><br>
+        승강기가 올라가기 시작한 지 $t$초 후의 속도 $v(t)\text{ m/s}$가<br>
+        $$v(t) = \begin{cases} \frac{3}{8}t & (0 \le t < 4) \\ \frac{3}{2} & (4 \le t < 20) \\ -\frac{3}{8}t + 9 & (20 \le t \le 24) \end{cases}$$
+        일 때, 출발 후 $24$초 동안 움직인 거리를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 25" data-y="0, 2" data-xstep="4" data-ystep="0.5" data-height="215" data-xlabel="시간 t(초)" data-ylabel="속도 v(t) (m/s)">
+        <i data-path="0, 0; 24, 0; 20, 1.5; 4, 1.5" data-close data-fill data-color="#1E3A8A" data-label="사다리꼴 넓이 = 이동 거리"></i>
+        <i data-vline="t" data-dash data-color="#DC2626"></i>
+        <i data-point="t, vt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시간 $t =$ <b><output data-expr="t"></output>초</b> &nbsp; (속도 $=$ <output data-expr="vt" data-digits="2"></output> m/s, 이동 거리 $=$ <b><output data-expr="s" data-digits="1"></output> m</b>)</p>
+        <input type="range" name="t" min="0" max="24" step="4" value="24" data-play="6" aria-label="시간 t">
+        <p data-show="t == 24" class="status-pill">24초 동안 움직인 총 거리는 사다리꼴 넓이 30 m와 같다!</p>
+        <p data-show="t < 24">구간 $[0, 24]$에서 항상 $v(t) \ge 0$이므로 넓이가 곧 이동 거리다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>풀이 1 (구간별 정적분의 합)</b>:<br>
+        $s = \int_0^4 \frac{3}{8}t\,dt + \int_4^{20} \frac{3}{2}\,dt + \int_{20}^{24} \left(-\frac{3}{8}t + 9\right)\,dt$<br>
+        $= 3 + 24 + 3 = 30\text{ (m)}$</p>
+        <p class="step"><b>풀이 2 (사다리꼴의 넓이 이용 — 추천!)</b>:<br>
+        윗변 길이 $= 20 - 4 = 16$, 아랫변 길이 $= 24$, 높이 $= \frac{3}{2}$</p>
+        <p class="step ans">$s = \frac{1}{2} \times (16 + 24) \times \frac{3}{2} = 30$ &nbsp; $\therefore$ <b>정답: $30\text{ m}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

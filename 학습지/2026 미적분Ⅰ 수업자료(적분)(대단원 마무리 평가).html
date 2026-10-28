@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-int-review">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 적분 대단원 마무리 평가 (p.153~155)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  /* 상단 배지 고정 */
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b {
+    color: #1E3A8A;
+  }
+  /* 표지 선생님 성함·직함 편집 상자 */
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  /* 2단 레이아웃 (왼쪽 열 확장 방지 + 오른쪽 풀이 영역 폭 520px 확보) */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 520px;
+    gap: 20px;
+    align-items: start;
+  }
+  .grid-2 > div {
+    min-width: 0;
+  }
+  /* 문제 상자 및 풀이 단계 상자 */
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 8px 14px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 1.38;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    font-size: 20px;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
+  }
+  .ctrl-card p {
+    margin: 3px 0;
+    font-size: 20px;
+  }
+  .ctrl-card input[type=range] {
+    width: 100%;
+    height: 56px;
+  }
+  .ctrl-card button {
+    min-height: 56px;
+    font-size: 20px;
+    padding: 6px 12px;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display {
+    margin: 4px 0 !important;
+    overflow-x: hidden;
+  }
+  .katex {
+    font-size: 1.02em !important;
+  }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ</p>
+  </div>
+  <h1>적분 대단원 마무리 평가<br>부정적분 · 정적분 · 넓이 · 속도와 거리</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 교과서 [대단원] #1 (p.153) -->
+<section class="slide" id="p153-q1" data-sec="대단원 마무리" data-title="대단원 문제 1 (p.153)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>부정적분 등식의 양변을 미분하여 $f(-1)$을 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #1 (p.153)</span><br>
+        다항함수 $f(x)$에 대하여
+        $$\int f(x)\,dx = x^4 + x^2 + C$$
+        일 때, $f(-1)$의 값은? (단, $C$는 적분상수)
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (부정적분과 미분의 관계)</b>:<br>
+        주어진 등식의 양변을 $x$에 대하여 미분하면 좌변은 피적분함수 $f(x)$가 된다.</p>
+        <p class="step"><b>2단계 ($f(x)$ 구하기)</b>:<br>
+        $f(x) = \frac{d}{dx}(x^4 + x^2 + C) = 4x^3 + 2x$</p>
+        <p class="step ans"><b>3단계 ($x = -1$ 대입 및 정답)</b>:<br>
+        $f(-1) = 4(-1)^3 + 2(-1) = -4 - 2 = -6$<br>
+        <b>정답: $-6$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위 문제에서 구한 함수 $f(x) = 4x^3 + 2x$에 대하여 $f(1) + f(-1)$의 값은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. f(x) = 4x³ + 2x는 홀수 차수 항만 있는 기함수(원점 대칭)이므로 f(1) + f(-1) = 6 + (-6) = 0이다.">0</button>
+        <button class="opt" data-why="f(1) = 6이고 f(-1) = -6이므로 두 값의 합은 0이다.">-6</button>
+        <button class="opt" data-why="f(1) = 6, f(-1) = -6을 더하면 0이 된다.">12</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 교과서 [대단원] #2 (p.153) -->
+<section class="slide" id="p153-q2" data-sec="대단원 마무리" data-title="대단원 문제 2 (p.153)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>다항함수의 성질을 이용하여 부정적분을 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #2 (p.153)</span><br>
+        다음 부정적분을 구하시오.<br>
+        (1) $\int (2x^3 + 4x - 1)\,dx$<br>
+        (2) $\int (x^2 - 3)(x + 2)\,dx$<br>
+        (3) $\int (2x + 1)^2\,dx - \int (2x - 1)^2\,dx$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 항별 적분</b>:<br>
+        $\int (2x^3 + 4x - 1)\,dx = \frac{1}{2}x^4 + 2x^2 - x + C$</p>
+        <p class="step"><b>(2) 전개 후 적분</b>: $(x^2 - 3)(x + 2) = x^3 + 2x^2 - 3x - 6$<br>
+        $\implies \frac{1}{4}x^4 + \frac{2}{3}x^3 - \frac{3}{2}x^2 - 6x + C$</p>
+        <p class="step ans"><b>(3) 하나의 적분으로 합치기</b>:<br>
+        $\int \{(2x + 1)^2 - (2x - 1)^2\}\,dx = \int 8x\,dx = 4x^2 + C$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (3)번에서 두 부정적분을 하나로 합쳤을 때 피적분함수 $(2x+1)^2 - (2x-1)^2$을 간단히 한 식은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="(4x² + 4x + 1) - (4x² - 4x + 1)에서 4x²과 1은 소거된다.">8x² + 2</button>
+        <button class="opt" data-ok data-why="맞다. +4x - (-4x) = 8x만 남으므로 적분하면 4x² + C가 된다.">8x</button>
+        <button class="opt" data-why="부호에 주의하자. 4x - (-4x) = 8x이다.">4x</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 교과서 [대단원] #3 (p.153) -->
+<section class="slide" id="p153-q3" data-sec="대단원 마무리" data-title="대단원 문제 3 (p.153)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>접선의 기울기가 $6x + 2$이고 점 $(1, 6)$을 지나는 곡선은?</h2>
+  <div class="calc grid-2" data-ai="대단원 3 적분상수 탐색기" data-let="f1 = 5 + c; f2 = 16 + c">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #3 (p.153)</span><br>
+        곡선 $y = f(x)$ 위의 점 $(x, f(x))$에서의 접선의 기울기가 $6x + 2$이다. 이 곡선이 점 $(1, 6)$을 지날 때, $f(2)$의 값은?
+      </div>
+      <figure class="plot" data-x="-1.5, 2.5" data-y="-2, 20" data-xstep="1" data-ystep="5" data-height="225" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="3*x^2 + 2*x + c" data-label="f(x) = 3x² + 2x + C" data-color="#1E3A8A"></i>
+        <i data-point="1, 6" data-label="목표점 (1, 6)" data-color="#DC2626"></i>
+        <i data-point="1, f1" data-color="#1E3A8A"></i>
+        <i data-point="2, f2" data-label="(2, f(2))" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>적분상수 $C =$ <b><output data-expr="c"></output></b> &nbsp; $\implies f(1) =$ <output data-expr="f1"></output>, &nbsp; $f(2) =$ <b><output data-expr="f2"></output></b></p>
+        <input type="range" name="c" min="-2" max="4" step="1" value="0" aria-label="적분상수 C">
+        <p data-show="c == 1" class="status-pill">C = 1일 때 점 (1, 6)을 지나며 f(2) = 17이 된다!</p>
+        <p data-show="c != 1">$C$를 조절하여 곡선이 점 $(1, 6)$을 지나도록 맞춰 보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (도함수와 부정적분)</b>: $f'(x) = 6x + 2$이므로<br>
+        $f(x) = \int (6x + 2)\,dx = 3x^2 + 2x + C$</p>
+        <p class="step"><b>2단계 (적분상수 $C$ 구하기)</b>: 점 $(1, 6)$을 지나므로<br>
+        $f(1) = 3 + 2 + C = 6 \implies C = 1$</p>
+        <p class="step ans"><b>3단계 ($f(2)$ 계산)</b>: $f(x) = 3x^2 + 2x + 1$이므로<br>
+        $f(2) = 12 + 4 + 1 = 17$ &nbsp; $\therefore$ <b>정답: $17$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 교과서 [대단원] #4 (p.153) -->
+<section class="slide" id="p153-q4" data-sec="대단원 마무리" data-title="대단원 문제 4 (p.153)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>적분 변수를 통일하고 구간을 이어서 정적분을 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #4 (p.153)</span><br>
+        정적분
+        $$\int_1^2 (3x^2 + 1)\,dx - \int_4^2 (3t^2 + 1)\,dt$$
+        의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (적분 변수 통일 및 위끝·아래끝 바꾸기)</b>:<br>
+        정적분의 값은 적분 변수 문자와 무관하므로 $t$를 $x$로 바꾸고, $-\int_4^2 = +\int_2^4$로 고친다.</p>
+        <p class="step"><b>2단계 (적분 구간 $[1, 2]$와 $[2, 4]$ 연결)</b>:<br>
+        $\int_1^2 (3x^2 + 1)\,dx + \int_2^4 (3x^2 + 1)\,dx = \int_1^4 (3x^2 + 1)\,dx$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $\Big[ x^3 + x \Big]_1^4 = (64 + 4) - (1 + 1) = 66$ &nbsp; $\therefore$ <b>정답: $66$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위 식을 하나로 합쳤을 때 만들어지는 정적분 식은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. -∫₄²는 +∫₂⁴와 같으므로 [1, 2]와 [2, 4]가 연결되어 ∫₁⁴ (3x²+1) dx가 된다.">∫₁⁴ (3x² + 1) dx</button>
+        <button class="opt" data-why="위끝이 2에서 4로 이어지므로 [1, 4] 구간이 된다.">∫₂⁴ (3x² + 1) dx</button>
+        <button class="opt" data-why="-∫₄² = +∫₂⁴이므로 빼기가 아니라 구간이 하나로 합쳐진다.">-∫₁⁴ (3x² + 1) dx</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 교과서 [대단원] #5 (p.153) -->
+<section class="slide" id="p153-q5" data-sec="대단원 마무리" data-title="대단원 문제 5 (p.153)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>절댓값 기호가 포함된 $\int_3^5 |x^2 - 4x|\,dx$의 값은?</h2>
+  <div class="calc grid-2" data-ai="대단원 5 절댓값 정적분 탐색기" data-let="yx = abs(x0^2 - 4*x0)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #5 (p.153)</span><br>
+        정적분
+        $$\int_3^5 |x^2 - 4x|\,dx$$
+        의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="2.5, 5.2" data-y="-4, 6" data-xstep="1" data-ystep="2" data-height="225" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^2 - 4*x" data-dash data-label="y = x(x - 4)" data-color="#64748B"></i>
+        <i data-line="abs(x^2 - 4*x)" data-x="3, 5" data-label="y = |x² - 4x|" data-color="#1E3A8A"></i>
+        <i data-vline="4" data-dash data-label="경계 x = 4" data-color="#DC2626"></i>
+        <i data-point="x0, yx" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 $x =$ <b><output data-expr="x0" data-digits="1"></output></b> &nbsp; $\implies |x^2 - 4x| =$ <b><output data-expr="yx" data-digits="2"></output></b></p>
+        <input type="range" name="x0" min="3" max="5" step="0.5" value="4" aria-label="탐침 x">
+        <p data-show="x0 < 4" class="status-pill">[3, 4] 구간: x² - 4x ≤ 0이므로 -(x² - 4x)를 적분!</p>
+        <p data-show="x0 >= 4" class="status-pill">[4, 5] 구간: x² - 4x ≥ 0이므로 그대로 적분!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (부호가 바뀌는 경계 찾기)</b>: $x^2 - 4x = x(x - 4) = 0$<br>
+        구간 $[3, 5]$ 안의 $x = 4$를 기준으로 부호가 $(-)$에서 $(+)$로 바뀐다.</p>
+        <p class="step"><b>2단계 (구간 분할 정적분)</b>:<br>
+        $\int_3^4 (-x^2 + 4x)\,dx + \int_4^5 (x^2 - 4x)\,dx$<br>
+        $= \Big[ -\frac{1}{3}x^3 + 2x^2 \Big]_3^4 + \Big[ \frac{1}{3}x^3 - 2x^2 \Big]_4^5$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>: $\frac{5}{3} + \frac{7}{3} = \frac{12}{3} = 4$ &nbsp; $\therefore$ <b>정답: $4$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 교과서 [대단원] #6 (p.153) -->
+<section class="slide" id="p153-q6" data-sec="대단원 마무리" data-title="대단원 문제 6 (p.153)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차곡선과 이차곡선으로 둘러싸인 도형의 넓이는?</h2>
+  <div class="calc grid-2" data-ai="대단원 6 두 곡선 넓이 탐색기" data-let="diff = x0^3 - 3*x0^2 + 2*x0">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #6 (p.153)</span><br>
+        두 곡선 $y = x^3 - 2x^2 + x + 1, \; y = x^2 - x + 1$로 둘러싸인 도형의 넓이는?
+      </div>
+      <figure class="plot" data-x="-0.3, 2.3" data-y="-0.6, 0.6" data-xstep="1" data-ystep="0.5" data-height="225" data-xlabel="x" data-ylabel="차함수 f(x) - g(x)">
+        <i data-line="x^3 - 3*x^2 + 2*x" data-x="0, 2" data-label="f(x) - g(x) = x(x-1)(x-2)" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-point="0, 0" data-label="0" data-color="#DC2626"></i>
+        <i data-point="1, 0" data-label="1" data-color="#DC2626"></i>
+        <i data-point="2, 0" data-label="2" data-color="#DC2626"></i>
+        <i data-point="x0, diff" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 $x =$ <b><output data-expr="x0" data-digits="1"></output></b> &nbsp; $\implies f(x) - g(x) =$ <b><output data-expr="diff" data-digits="2"></output></b></p>
+        <input type="range" name="x0" min="0" max="2" step="0.5" value="0.5" aria-label="탐침 x">
+        <p class="status-pill">교점 0, 1, 2가 등간격(1칸)이므로 두 영역의 넓이가 서로 같다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (교점의 $x$좌표 구하기)</b>:<br>
+        $(x^3 - 2x^2 + x + 1) - (x^2 - x + 1) = x^3 - 3x^2 + 2x = 0$<br>
+        $\implies x(x - 1)(x - 2) = 0 \implies x = 0, 1, 2$</p>
+        <p class="step"><b>2단계 (구간 $[0, 1]$과 $[1, 2]$로 나누어 적분)</b>:<br>
+        $S = \int_0^1 (x^3 - 3x^2 + 2x)\,dx + \int_1^2 (-x^3 + 3x^2 - 2x)\,dx$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $\frac{1}{4} + \frac{1}{4} = \frac{1}{2}$ &nbsp; $\therefore$ <b>정답: $\frac{1}{2}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 교과서 [대단원] #7 (p.154) -->
+<section class="slide" id="p154-q7" data-sec="대단원 마무리" data-title="대단원 문제 7 (p.154)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분이 포함된 항등식 $2xf(x) = x^2 + 2\int_1^x f(t)\,dt$ 풀기</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #7 (p.154)</span><br>
+        다항함수 $f(x)$가 모든 실수 $x$에 대하여
+        $$2xf(x) = x^2 + 2\int_1^x f(t)\,dt$$
+        를 만족시킬 때, $f(3)$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (양변에 $x = 1$ 대입하여 초기조건 찾기)</b>:<br>
+        $2(1)f(1) = 1^2 + 2\int_1^1 f(t)\,dt = 1 + 0 \implies f(1) = \frac{1}{2}$</p>
+        <p class="step"><b>2단계 (양변을 $x$에 대하여 미분 — 좌변 곱의 미분법 주의!)</b>:<br>
+        $2f(x) + 2xf'(x) = 2x + 2f(x) \implies 2xf'(x) = 2x$<br>
+        다항함수이므로 모든 실수 $x$에 대하여 $f'(x) = 1$</p>
+        <p class="step ans"><b>3단계 ($f(x)$ 구하기 및 정답)</b>:<br>
+        $f(x) = x + C$이고 $f(1) = \frac{1}{2}$이므로 $C = -\frac{1}{2}$<br>
+        $\therefore f(3) = 3 - \frac{1}{2} = \frac{5}{2}$ &nbsp; <b>정답: $\frac{5}{2}$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위 등식의 좌변 $2xf(x)$를 $x$에 대하여 미분한 결과는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="2x와 f(x)의 곱이므로 곱의 미분법을 적용해야 한다.">2f'(x)</button>
+        <button class="opt" data-ok data-why="맞다. {2xf(x)}' = 2f(x) + 2xf'(x)가 되어 우변의 2f(x)와 소거된다.">2f(x) + 2xf'(x)</button>
+        <button class="opt" data-why="앞의 2x를 미분한 2f(x) 항이 더해져야 한다.">2xf'(x)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 교과서 [대단원] #8 (p.154) -->
+<section class="slide" id="p154-q8" data-sec="대단원 마무리" data-title="대단원 문제 8 (p.154)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>극한과 정적분이 결합된 $\lim_{x \to 1}\frac{1}{x - 1}\int_1^x f(t)\,dt$의 값은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #8 (p.154)</span><br>
+        함수 $f(x) = 4x^3 - 2x + 3$에 대하여
+        $$\lim_{x \to 1} \frac{1}{x - 1}\int_1^x f(t)\,dt$$
+        의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (부정적분 $F(x)$로 나타내기)</b>:<br>
+        $f(t)$의 한 부정적분을 $F(t)$라 하면 $F'(x) = f(x)$이고,<br>
+        $\int_1^x f(t)\,dt = F(x) - F(1)$이다.</p>
+        <p class="step"><b>2단계 (미분계수의 정의 적용)</b>:<br>
+        $\lim_{x \to 1} \frac{F(x) - F(1)}{x - 1} = F'(1) = f(1)$</p>
+        <p class="step ans"><b>3단계 ($x = 1$ 대입 및 정답)</b>:<br>
+        $f(1) = 4(1)^3 - 2(1) + 3 = 5$ &nbsp; $\therefore$ <b>정답: $5$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 같은 함수 $f(x) = 4x^3 - 2x + 3$에 대하여 $\lim_{h \to 0} \frac{1}{h}\int_2^{2+h} f(t)\,dt$의 값은 무엇과 같을까?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. lim_{h→0} {F(2+h) - F(2)} / h = F'(2) = f(2) = 32 - 4 + 3 = 31이다.">f(2) = 31</button>
+        <button class="opt" data-why="f'(2)가 아니라 F'(2) = f(2)이다.">f'(2) = 46</button>
+        <button class="opt" data-why="적분 구간의 아래끝이 2이므로 f(2)가 된다.">f(1) = 5</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 교과서 [대단원] #9 (p.154) -->
+<section class="slide" id="p154-q9" data-sec="대단원 마무리" data-title="대단원 문제 9 (p.154)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선 $y = -3x^2 + 3$과 접선 및 $y$축으로 둘러싸인 넓이는?</h2>
+  <div class="calc grid-2" data-ai="대단원 9 곡선과 접선 넓이 탐색기" data-let="yt = -6*x0 + 6; yc = -3*(x0^2) + 3; h = yt - yc">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #9 (p.154)</span><br>
+        곡선 $y = -3x^2 + 3$과 이 곡선 위의 점 $(1, 0)$에서의 접선 및 $y$축으로 둘러싸인 도형의 넓이를 구하시오.
+      </div>
+      <figure class="plot" data-x="-0.2, 1.3" data-y="-1, 6.5" data-xstep="0.5" data-ystep="2" data-height="225" data-xlabel="x" data-ylabel="y">
+        <i data-line="-6*x + 6" data-x="0, 1.1" data-label="접선 y = -6x + 6" data-color="#DC2626"></i>
+        <i data-line="-3*x^2 + 3" data-x="-0.2, 1.1" data-label="곡선 y = -3x² + 3" data-color="#1E3A8A"></i>
+        <i data-path="x0, yc; x0, yt" data-label="세로 간격 3(x-1)²" data-color="#0F766E"></i>
+        <i data-point="1, 0" data-label="접점 (1, 0)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 $x =$ <b><output data-expr="x0" data-digits="2"></output></b> &nbsp; $\implies$ (접선 $y$) $-$ (곡선 $y$) $=$ <b><output data-expr="h" data-digits="2"></output></b></p>
+        <input type="range" name="x0" min="0" max="1" step="0.25" value="0.5" aria-label="탐침 x">
+        <p class="status-pill">구간 [0, 1]에서 접선이 곡선보다 항상 위쪽에 있다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (점 $(1, 0)$에서의 접선의 방정식)</b>:<br>
+        $y' = -6x$에서 $x = 1$일 때 기울기는 $-6$이므로<br>
+        접선의 방정식은 $y - 0 = -6(x - 1) \implies y = -6x + 6$</p>
+        <p class="step"><b>2단계 (구간 $[0, 1]$에서 정적분으로 넓이 구하기)</b>:<br>
+        $S = \int_0^1 \{(-6x + 6) - (-3x^2 + 3)\}\,dx = \int_0^1 (3x^2 - 6x + 3)\,dx$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $\Big[ x^3 - 3x^2 + 3x \Big]_0^1 = 1 - 3 + 3 = 1$ &nbsp; $\therefore$ <b>정답: $1$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 교과서 [대단원] #10 (p.154) -->
+<section class="slide" id="p154-q10" data-sec="대단원 마무리" data-title="대단원 문제 10 (p.154)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>두 도형의 넓이의 비가 $A : B = 1 : 2$일 때 상수 $a$의 값은?</h2>
+  <div class="calc grid-2" data-ai="대단원 10 넓이 비 1:2 탐색기" data-let="net = 2*a - 16/3">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #10 (p.154)</span><br>
+        오른쪽 그림과 같이 곡선 $y = x^2 - 4x + a$와 $x$축 및 $y$축으로 둘러싸인 두 도형의 넓이를 각각 $A, B$라 하자. $A : B = 1 : 2$일 때, 상수 $a$의 값을 구하시오. (단, $0 < a < 4$)
+      </div>
+      <figure class="plot" data-x="-0.2, 4.2" data-y="-2, 4" data-xstep="1" data-ystep="1" data-height="225" data-xlabel="x" data-ylabel="y = x² - 4x + a">
+        <i data-line="x^2 - 4*x + a" data-label="y = (x - 2)² + a - 4" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="2" data-dash data-label="대칭축 x = 2" data-color="#DC2626"></i>
+        <i data-point="2, a - 4" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $a =$ <b><output data-expr="a" data-digits="2"></output></b> &nbsp; $\implies \int_0^2 (x^2 - 4x + a)\,dx = A - \frac{1}{2}B =$ <b><output data-expr="net" data-digits="2"></output></b></p>
+        <input type="range" name="a" min="1.5" max="3.5" step="0.01" value="2.67" aria-label="상수 a">
+        <p class="status-pill">대칭축 x = 2가 도형 B를 이등분하므로 [0, 2]에서 A = B/2이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (대칭축 $x = 2$ 활용 — 핵심 아이디어!)</b>:<br>
+        이차함수 $y = (x - 2)^2 + a - 4$는 직선 $x = 2$에 대하여 대칭이므로,<br>
+        구간 $[0, 2]$에서 $x$축 아래 부분의 넓이는 $\frac{1}{2}B$이다.</p>
+        <p class="step"><b>2단계 ($A : B = 1 : 2 \iff A = \frac{1}{2}B$ 조건 적용)</b>:<br>
+        구간 $[0, 2]$에서 위쪽 넓이 $A$와 아래쪽 넓이 $\frac{1}{2}B$가 같으므로<br>
+        $\int_0^2 (x^2 - 4x + a)\,dx = 0$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $\Big[ \frac{1}{3}x^3 - 2x^2 + ax \Big]_0^2 = \frac{8}{3} - 8 + 2a = 0 \implies 2a = \frac{16}{3}$ &nbsp; $\therefore$ <b>정답: $a = \frac{8}{3}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 교과서 [대단원] #11 (p.154) -->
+<section class="slide" id="p154-q11" data-sec="대단원 마무리" data-title="대단원 문제 11 (p.154)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>속도 $v(t)$의 그래프에서 점 P의 위치와 이동 거리를 해석하자</h2>
+  <div class="calc grid-2" data-ai="대단원 11 속도 그래프 넓이 탐색기" data-let="vt = t <= 1 ? 2*t : (t <= 3 ? 4 - 2*t : (t <= 5 ? 2*t - 8 : (t <= 6 ? 2 : 14 - 2*t)))">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #11 (p.154)</span><br>
+        원점을 출발하여 $7$초 동안 움직이는 점 P의 속도 $v(t)$의 그래프가 그림과 같을 때, 보기에서 옳은 것만을 있는 대로 고른 것은?<br>
+        ㄱ. 점 P는 $t = 2$일 때 다시 원점을 지난다.<br>
+        ㄴ. $t = 1$일 때와 $t = 5$일 때 점 P의 위치가 같다.<br>
+        ㄷ. 처음으로 운동 방향을 바꾼 시각부터 두 번째로 운동 방향을 바꾼 시각까지 움직인 거리는 $2$이다.
+      </div>
+      <figure class="plot" data-x="0, 7.2" data-y="-2.3, 2.3" data-xstep="1" data-ystep="1" data-height="205" data-xlabel="시간 t(초)" data-ylabel="속도 v(t)">
+        <i data-path="0, 0; 1, 2; 2, 0" data-close data-fill data-color="#2563EB" data-label="[0,2] 넓이 2"></i>
+        <i data-path="2, 0; 3, -2; 4, 0" data-close data-fill data-color="#DC2626" data-label="[2,4] 넓이 2"></i>
+        <i data-path="4, 0; 5, 2; 6, 2; 7, 0" data-close data-fill data-color="#0F766E" data-label="[4,7] 넓이 4"></i>
+        <i data-point="t, vt" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <b><output data-expr="t" data-digits="1"></output>초</b> &nbsp; $\implies$ 속도 $v(t) =$ <b><output data-expr="vt" data-digits="1"></output></b></p>
+        <input type="range" name="t" min="0" max="7" step="1" value="2" data-play="7" aria-label="시각 t">
+        <p class="status-pill">각 삼각형(밑변 2, 높이 2)의 넓이는 2, 반쪽(밑변 1) 넓이는 1이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>ㄱ (거짓)</b>: $x(2) = \int_0^2 v(t)\,dt = \frac{1}{2} \times 2 \times 2 = 2 \ne 0$ ($t=4$에서 원점 통과)</p>
+        <p class="step"><b>ㄴ (참)</b>: $x(1) = 1$이고, $x(5) = 2 - 2 + 1 = 1$이므로 위치가 서로 같다.</p>
+        <p class="step ans"><b>ㄷ (참)</b>: 방향 전환 시각은 $t = 2, 4$이므로 $\int_2^4 |v(t)|\,dt = 2$<br>
+        <b>정답: ㄴ, ㄷ</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 교과서 [대단원] #12 (p.154) -->
+<section class="slide" id="p154-q12" data-sec="대단원 마무리" data-title="대단원 문제 12 (p.154)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>열기구가 출발한 지 $25$분 후 지면으로부터의 높이는?</h2>
+  <div class="calc grid-2" data-ai="대단원 12 열기구 높이 탐색기" data-let="vt = t < 20 ? t : 60 - 2*t; ht = t < 20 ? 0.5*(t^2) : 200 + 60*(t - 20) - (t^2 - 400)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #12 (p.154)</span><br>
+        지면과 수직인 방향으로 움직이는 열기구가 지면을 출발한 지 $t$분이 지났을 때의 속도 $v(t)\text{ m/min}$가<br>
+        $$v(t) = \begin{cases} t & (0 \le t < 20) \\ 60 - 2t & (20 \le t \le 30) \end{cases}$$
+        일 때, $t = 25$에서의 지면으로부터의 높이를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 30" data-y="0, 22" data-xstep="5" data-ystep="5" data-height="215" data-xlabel="시간 t(분)" data-ylabel="속도 v(t) (m/min)">
+        <i data-path="0, 0; 20, 0; 20, 20" data-close data-fill data-color="#2563EB" data-label="[0, 20] 넓이 = 200"></i>
+        <i data-path="20, 0; 25, 0; 25, 10; 20, 20" data-close data-fill data-color="#0F766E" data-label="[20, 25] 넓이 = 75"></i>
+        <i data-line="60 - 2*x" data-x="20, 30" data-dash data-color="#64748B"></i>
+        <i data-point="t, vt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시간 $t =$ <b><output data-expr="t"></output>분</b> &nbsp; (속도 $=$ <output data-expr="vt"></output> m/min, 현재 높이 $=$ <b><output data-expr="ht" data-digits="0"></output> m</b>)</p>
+        <input type="range" name="t" min="0" max="30" step="5" value="25" data-play="6" aria-label="시간 t">
+        <p data-show="t == 25" class="status-pill">t = 25분일 때 지면으로부터의 높이는 200 + 75 = 275 m이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (구간 $[0, 20]$과 $[20, 25]$로 나누어 정적분)</b>:<br>
+        $h(25) = 0 + \int_0^{20} t\,dt + \int_{20}^{25} (60 - 2t)\,dt$</p>
+        <p class="step"><b>2단계 (각 구간 계산)</b>:<br>
+        $\Big[ \frac{1}{2}t^2 \Big]_0^{20} + \Big[ 60t - t^2 \Big]_{20}^{25} = 200 + (875 - 800) = 275$</p>
+        <p class="step ans"><b>팁</b>: 삼각형($200$) $+$ 사다리꼴($\frac{20+10}{2}\times 5 = 75$) 넓이 합과 같다!<br>
+        <b>정답: $275\text{ m}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 교과서 [대단원] #13 (p.155) -->
+<section class="slide" id="p155-q13" data-sec="대단원 마무리" data-title="대단원 문제 13 (p.155)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수 그래프와 극솟값 $\frac{5}{3}$로 극댓값을 구해 보자</h2>
+  <div class="calc grid-2" data-ai="대단원 13 도함수로부터 삼차함수 복원 탐색기" data-let="f0 = c; f2 = c - 4/3">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #13 (p.155)</span><br>
+        삼차함수 $f(x)$에 대하여 도함수 $y = f'(x)$의 그래프가 $(0, 0), (2, 0), (1, -1)$을 지나는 포물선이다. 함수 $f(x)$의 극솟값이 $\frac{5}{3}$일 때, $f(x)$의 극댓값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-0.8, 2.8" data-y="-1.5, 4" data-xstep="1" data-ystep="1" data-height="225" data-xlabel="x" data-ylabel="y">
+        <i data-line="x*(x - 2)" data-dash data-label="도함수 f'(x) = x(x - 2)" data-color="#64748B"></i>
+        <i data-line="(x^3)/3 - x^2 + c" data-label="삼차함수 y = f(x)" data-color="#1E3A8A"></i>
+        <i data-point="0, f0" data-label="극대 (0, C)" data-color="#DC2626"></i>
+        <i data-point="2, f2" data-label="극소 (2, C - 4/3)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>적분상수 $C =$ <b><output data-expr="c" data-digits="1"></output></b> &nbsp; (극댓값 $f(0) =$ <b><output data-expr="f0" data-digits="2"></output></b>, 극솟값 $f(2) =$ <b><output data-expr="f2" data-digits="2"></output></b>)</p>
+        <input type="range" name="c" min="1" max="4" step="0.5" value="3" aria-label="적분상수 C">
+        <p data-show="c == 3" class="status-pill">C = 3일 때 극솟값이 5/3(≈1.67)가 되고 극댓값은 3이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($f'(x)$의 식 구하기)</b>:<br>
+        절편이 $0, 2$이고 꼭짓점이 $(1, -1)$이므로 $f'(x) = x(x - 2) = x^2 - 2x$</p>
+        <p class="step"><b>2단계 (부정적분 및 극솟값 조건)</b>:<br>
+        $f(x) = \frac{1}{3}x^3 - x^2 + C$ ($x = 0$에서 극대, $x = 2$에서 극소)<br>
+        극솟값 $f(2) = \frac{8}{3} - 4 + C = -\frac{4}{3} + C = \frac{5}{3} \implies C = 3$</p>
+        <p class="step ans"><b>3단계 (극댓값 구하기)</b>: 극댓값은 $f(0) = C = 3$ &nbsp; $\therefore$ <b>정답: $3$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. 교과서 [대단원] #14 (p.155) -->
+<section class="slide" id="p155-q14" data-sec="대단원 마무리" data-title="대단원 문제 14 (p.155)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>대칭 구간 $[-1, 1]$에서의 정적분으로 상수 $a, b$를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #14 (p.155)</span><br>
+        함수 $f(x) = ax^3 + bx^2 + x$가
+        $$\int_{-1}^1 f(x)\,dx = 2, \quad \int_{-1}^1 xf(x)\,dx = \frac{16}{15}$$
+        를 만족시킬 때, 상수 $a, b$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 원리 (대칭 구간 $[-1, 1]$의 성질)</b>:<br>
+        홀수 차수 항($x, x^3$)은 $[-1, 1]$에서 정적분이 $0$이고,<br>
+        짝수 차수 항($x^2, x^4$)은 $[0, 1]$ 정적분의 $2$배와 같다!</p>
+        <p class="step"><b>1단계 ($b$ 구하기)</b>: $\int_{-1}^1 (ax^3 + bx^2 + x)\,dx = 2\int_0^1 bx^2\,dx$<br>
+        $= \frac{2}{3}b = 2 \implies b = 3$</p>
+        <p class="step ans"><b>2단계 ($a$ 구하기)</b>: $xf(x) = ax^4 + 3x^3 + x^2$이므로<br>
+        $\int_{-1}^1 xf(x)\,dx = 2\int_0^1 (ax^4 + x^2)\,dx = \frac{2}{5}a + \frac{2}{3} = \frac{16}{15} \implies a = 1$<br>
+        <b>정답: $a = 1, \quad b = 3$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 닫힌구간 $[-1, 1]$에서 정적분했을 때 값이 $0$이 되어 계산에서 바로 지울 수 있는 항들만 모은 것은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 기함수(원점 대칭)인 홀수 차수 항 x, x³은 [-1, 1]에서 정적분하면 항상 0이다.">홀수 차수 항 (x, x³)</button>
+        <button class="opt" data-why="짝수 차수 항은 y축 대칭(우함수)이므로 0이 되지 않고 [0, 1] 적분의 2배가 된다.">짝수 차수 항 (x², x⁴)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 교과서 [대단원] #15 (p.155) -->
+<section class="slide" id="p155-q15" data-sec="대단원 마무리" data-title="대단원 문제 15 (p.155)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>적분 기호 안의 $(x - t)f(t)$는 어떻게 분리하여 미분할까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #15 (p.155)</span><br>
+        다항함수 $f(x)$가 모든 실수 $x$에 대하여
+        $$\int_1^x (x - t)f(t)\,dt = ax^2 + bx - 1$$
+        을 만족시킬 때, 상수 $a, b$에 대하여 $ab$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (좌변의 $x$를 적분 기호 밖으로 분리)</b>:<br>
+        $x\int_1^x f(t)\,dt - \int_1^x tf(t)\,dt = ax^2 + bx - 1$<br>
+        양변에 $x = 1$을 대입하면 $0 = a + b - 1 \implies a + b = 1$ &nbsp; $\cdots$ ㉠</p>
+        <p class="step"><b>2단계 (양변을 $x$에 대하여 미분)</b>:<br>
+        $\left(\int_1^x f(t)\,dt + xf(x)\right) - xf(x) = 2ax + b$<br>
+        $\implies \int_1^x f(t)\,dt = 2ax + b$</p>
+        <p class="step ans"><b>3단계 (다시 $x = 1$ 대입 및 연립)</b>: $0 = 2a + b$ &nbsp; $\cdots$ ㉡<br>
+        ㉠, ㉡을 연립하면 $a = -1, b = 2 \implies$ <b>정답: $ab = -2$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위 문제에서 구한 $a = -1, b = 2$를 $\int_1^x f(t)\,dt = 2ax + b$에 대입하고 한 번 더 미분하면 다항함수 $f(x)$는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. ∫₁ˣ f(t) dt = -2x + 2의 양변을 미분하면 f(x) = -2인 상수함수가 된다.">f(x) = -2</button>
+        <button class="opt" data-why="2a = -2이므로 미분하면 -2가 된다.">f(x) = 2</button>
+        <button class="opt" data-why="-2x + 2를 한 번 더 미분해야 f(x)가 나온다.">f(x) = -2x + 2</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 교과서 [대단원] #16 (p.155) -->
+<section class="slide" id="p155-q16" data-sec="대단원 마무리" data-title="대단원 문제 16 (p.155)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선과 직선 사이의 넓이가 $x$축에 의해 이등분될 조건은?</h2>
+  <div class="calc grid-2" data-ai="대단원 16 넓이 이등분 기울기 탐색기" data-let="tot = ((2 - m)^3)/6">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #16 (p.155)</span><br>
+        곡선 $y = x^2 + 2x$와 직선 $y = mx$로 둘러싸인 도형의 넓이가 $x$축에 의하여 이등분될 때, $(m - 2)^3$의 값을 구하시오. (단, $m < 0$)
+      </div>
+      <figure class="plot" data-x="-3, 0.5" data-y="-1.5, 3.5" data-xstep="1" data-ystep="1" data-height="225" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^2 + 2*x" data-label="y = x(x + 2)" data-color="#1E3A8A"></i>
+        <i data-line="m*x" data-label="직선 y = mx (m < 0)" data-color="#DC2626"></i>
+        <i data-line="0" data-dash data-label="x축 (y = 0)" data-color="#0F766E"></i>
+        <i data-point="-2, 0" data-label="(-2, 0)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>음수 기울기 $m =$ <b><output data-expr="m" data-digits="2"></output></b> &nbsp; $\implies$ 전체 넓이 $S =$ <b><output data-expr="tot" data-digits="2"></output></b></p>
+        <input type="range" name="m" min="-1.5" max="-0.2" step="0.1" value="-0.5" aria-label="기울기 m">
+        <p class="status-pill">x축 아래 넓이 S₁ = 4/3이므로 전체 넓이 S = 8/3일 때 이등분된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (곡선과 $x$축으로 둘러싸인 넓이 $S_1$)</b>:<br>
+        교점이 $x = -2, 0$이므로 $S_1 = \int_{-2}^0 (-x^2 - 2x)\,dx = \frac{1}{6}(2)^3 = \frac{4}{3}$</p>
+        <p class="step"><b>2단계 (곡선과 직선 $y = mx$로 둘러싸인 전체 넓이 $S$)</b>:<br>
+        $x^2 + 2x = mx \implies x(x + 2 - m) = 0$에서 두 교점은 $x = m - 2, \; 0$<br>
+        $\implies S = \int_{m-2}^0 \{mx - (x^2 + 2x)\}\,dx = \frac{1}{6}(2 - m)^3$</p>
+        <p class="step ans"><b>3단계 ($S = 2S_1$ 조건 적용)</b>: $\frac{1}{6}(2 - m)^3 = 2 \times \frac{4}{3} = \frac{8}{3}$<br>
+        $(2 - m)^3 = 16 \implies$ <b>정답: $(m - 2)^3 = -16$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

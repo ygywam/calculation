@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-vel-review">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 09. 속도와 가속도 &amp; 대단원 마무리 평가</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.chapter {
+    background: #1E3A8A;
+    color: #FFFFFF;
+  }
+  /* 상단 배지 고정 */
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b {
+    color: #1E3A8A;
+  }
+  /* 표지 선생님 성함·직함 편집 상자 */
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  /* 2단 레이아웃 (오른쪽 풀이 영역 폭 확보) */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    gap: 20px;
+    align-items: start;
+  }
+  .grid-2-wide {
+    display: grid;
+    grid-template-columns: 540px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  /* 문제 상자 및 풀이 단계 상자 */
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 8px 14px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 1.38;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    font-size: 20px;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
+  }
+  .ctrl-card p {
+    margin: 3px 0;
+    font-size: 20px;
+  }
+  .ctrl-card input[type=range] {
+    width: 100%;
+    height: 56px;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display {
+    margin: 4px 0 !important;
+    overflow-x: hidden;
+  }
+  .katex {
+    font-size: 1.02em !important;
+  }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ</p>
+  </div>
+  <h1>09. 속도와 가속도<br>대단원 마무리 평가</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 개념: 속도와 가속도 -->
+<section class="slide" id="concept-vel" data-sec="09. 속도와 가속도" data-title="속도와 가속도의 뜻">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>위치를 미분하면 속도와 가속도는 어떻게 될까?</h2>
+  <div class="calc grid-2" data-ai="속도와 가속도 개념 익스플로라그램" data-let="x = t^3 - 6*t^2 + 9*t; v = 3*t^2 - 12*t + 9; a = 6*t - 12">
+    <div>
+      <svg viewBox="0 0 680 110" aria-label="수직선 위를 움직이는 점 P">
+        <line x1="40" y1="65" x2="640" y2="65" stroke="#475569" stroke-width="4"/>
+        <line x1="140" y1="53" x2="140" y2="77" stroke="#475569" stroke-width="3"/>
+        <text x="140" y="100" font-size="22" text-anchor="middle" fill="#334155">0</text>
+        <line x1="540" y1="53" x2="540" y2="77" stroke="#475569" stroke-width="3"/>
+        <text x="540" y="100" font-size="22" text-anchor="middle" fill="#334155">4</text>
+        <g data-attr="transform: 'translate(' + (140 + x * 100) + ' 0)'">
+          <circle cx="0" cy="65" r="14" fill="#DC2626"/>
+          <text x="0" y="34" font-size="24" font-weight="bold" text-anchor="middle" fill="#DC2626">P</text>
+        </g>
+      </svg>
+      <figure class="plot" data-x="0, 4" data-y="-4, 10" data-xstep="1" data-ystep="2" data-height="250" data-xlabel="시각 t" data-ylabel="위치 x / 속도 v">
+        <i data-line="x^3 - 6*x^2 + 9*x" data-label="위치 x(t)" data-color="#1E3A8A"></i>
+        <i data-line="3*x^2 - 12*x + 9" data-label="속도 v(t)" data-color="#DC2626" data-dash></i>
+        <i data-point="t, x" data-color="#1E3A8A"></i>
+        <i data-point="t, v" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <output data-expr="t" data-digits="1" data-unit="초"></output> &nbsp; 위치 $x =$ <output data-expr="x" data-digits="2"></output></p>
+        <input type="range" name="t" min="0" max="4" step="0.2" value="0" data-play="6" aria-label="시각 t">
+        <p>속도 $v =$ <output data-expr="v" data-digits="2"></output>, 가속도 $a =$ <output data-expr="a" data-digits="1"></output></p>
+        <p data-show="v > 0" class="status-pill">v &gt; 0 : 양(+)의 방향으로 이동 중</p>
+        <p data-show="v == 0" class="status-pill">v = 0 : 정지 및 운동 방향 전환 순간</p>
+        <p data-show="v < 0" class="status-pill">v &lt; 0 : 음(-)의 방향으로 이동 중</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1. 속도 $v$</b>: 위치 $x=f(t)$의 시각 $t$에 대한 변화율<br>$$v = \frac{dx}{dt} = f'(t)$$</p>
+        <p class="step"><b>2. 가속도 $a$</b>: 속도 $v$의 시각 $t$에 대한 변화율<br>$$a = \frac{dv}{dt}$$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 교과서 [문제] #1 (p109) -->
+<section class="slide" id="p109-q1" data-sec="09. 속도와 가속도" data-title="교과서 문제 1 (p.109)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>운동 방향을 바꿀 때의 속도는 얼마일까?</h2>
+  <div class="calc grid-2" data-ai="문제 1 수직선 운동 익스플로라그램" data-let="x = (t^3)/3 - 2*t^2; v = t^2 - 4*t; a = 2*t - 4">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #1 (p.109)</span><br>
+        원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$에서의 위치 $x$가 $x = \frac{1}{3}t^3 - 2t^2$일 때, 다음을 구하시오.<br>
+        (1) $t=5$에서의 속도와 가속도 &nbsp; (2) 운동 방향을 바꿀 때의 시각
+      </div>
+      <figure class="plot" data-x="0, 6" data-y="-12, 16" data-xstep="1" data-ystep="4" data-height="250" data-xlabel="시각 t" data-ylabel="위치 x / 속도 v">
+        <i data-line="(x^3)/3 - 2*x^2" data-label="위치 x(t)" data-color="#1E3A8A"></i>
+        <i data-line="x^2 - 4*x" data-label="속도 v(t)" data-color="#DC2626" data-dash></i>
+        <i data-point="t, x" data-color="#1E3A8A"></i>
+        <i data-point="t, v" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <output data-expr="t" data-digits="1"></output> &nbsp; 속도 $v =$ <output data-expr="v" data-digits="1"></output> &nbsp; 가속도 $a =$ <output data-expr="a" data-digits="1"></output></p>
+        <input type="range" name="t" min="0" max="6" step="0.5" value="0" data-play="6" aria-label="시각 t">
+        <p data-show="t < 4 && t > 0">음(-)의 방향으로 이동한다 ($v &lt; 0$).</p>
+        <p data-show="t == 4"><b>t = 4</b>에서 $v=0$이 되며 운동 방향을 바꾼다.</p>
+        <p data-show="t > 4">양(+)의 방향으로 이동한다 ($v &gt; 0$).</p>
+        <p data-show="t == 0">「재생」을 눌러 점 P의 움직임을 확인해 보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">도함수: $v = \frac{dx}{dt} = t^2 - 4t$, &nbsp; $a = \frac{dv}{dt} = 2t - 4$</p>
+        <p class="step">(1) $t=5$ 대입: $v(5) = 25 - 20 = 5$, $a(5) = 10 - 4 = 6$</p>
+        <p class="step ans">(2) $v = t(t-4) = 0$ ($t>0$) $\Rightarrow$ 정답: (1) 속도 $5$, 가속도 $6$ / (2) $t = 4$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 교과서 [문제] #2 (p110) -->
+<section class="slide" id="p110-q2" data-sec="09. 속도와 가속도" data-title="교과서 문제 2 (p.110)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>제동을 건 모형 기차는 언제 멈출까?</h2>
+  <div class="calc grid-2" data-ai="모형 기차 제동 익스플로라그램" data-let="x = -2.5*t^2 + 15*t; v = -5*t + 15">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #2 (p.110)</span><br>
+        모형 기차가 정차하기 위하여 제동을 건 후 $t$초 동안 움직인 거리 $x\text{ cm}$가 $x = -\frac{5}{2}t^2 + 15t$일 때, 다음을 구하시오.<br>
+        (1) 1초가 지났을 때의 속도 &nbsp; (2) 정지할 때까지 걸린 시간과 거리
+      </div>
+      <svg viewBox="0 0 680 90" aria-label="철길 위를 달리는 모형 기차">
+        <line x1="30" y1="68" x2="640" y2="68" stroke="#64748B" stroke-width="5"/>
+        <g data-attr="transform: 'translate(' + (40 + x * 22) + ' 0)'">
+          <rect x="0" y="28" width="64" height="36" rx="6" fill="#1E3A8A"/>
+          <circle cx="16" cy="68" r="8" fill="#334155"/>
+          <circle cx="48" cy="68" r="8" fill="#334155"/>
+        </g>
+      </svg>
+      <figure class="plot" data-x="0, 3.5" data-y="0, 25" data-xstep="1" data-ystep="5" data-height="185" data-xlabel="시간 t(초)" data-ylabel="거리 x(cm) / 속도 v">
+        <i data-line="-2.5*x^2 + 15*x" data-x="0, max(t, 0.01)" data-label="거리 x" data-color="#1E3A8A"></i>
+        <i data-line="-5*x + 15" data-x="0, max(t, 0.01)" data-label="속도 v" data-color="#DC2626" data-dash></i>
+        <i data-point="t, x" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>경과 시간 <output data-expr="t" data-digits="1" data-unit="초"></output> &nbsp; 이동 거리 <output data-expr="x" data-digits="1" data-unit="cm"></output></p>
+        <input type="range" name="t" min="0" max="3" step="0.5" value="0" data-play="5" aria-label="제동 후 시간">
+        <p>현재 속도 $v =$ <output data-expr="v" data-digits="1" data-unit="cm/s"></output></p>
+        <p data-show="t == 0">「재생」을 눌러 제동 후 기차의 이동을 살펴보자.</p>
+        <p data-show="t > 0 && t < 3">속도가 일정하게 줄어들며 앞으로 나아간다.</p>
+        <p data-show="t == 3"><b>3초</b>가 되는 순간 속도 $v=0$이 되어 정지한다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">(1) $v = \frac{dx}{dt} = -5t + 15$이므로 $t=1$일 때 $v(1) = 10\text{ cm/s}$</p>
+        <p class="step">(2) 정지할 때 $v = -5t + 15 = 0 \Rightarrow t = 3\text{초}$</p>
+        <p class="step ans">$t=3$일 때 거리 $x = -\frac{5}{2}(9) + 45 = \frac{45}{2} = 22.5\text{ cm}$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 교과서 [스스로확인하기] #2 (p111) -->
+<section class="slide" id="p111-q2" data-sec="09. 속도와 가속도" data-title="스스로 확인하기 2 (p.111)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>시각 $t=1$에서의 속도와 가속도를 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2 (p.111)</span><br>
+        원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$에서의 위치 $x$가
+        $$x = 4t^3 - t^2$$
+        일 때, 다음을 구하시오.<br>
+        (1) 점 P의 $t=1$에서의 속도<br>
+        (2) 점 P의 $t=1$에서의 가속도
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (속도 함수)</b>: 위치를 미분하면<br>$v(t) = \frac{dx}{dt} = 12t^2 - 2t$</p>
+        <p class="step"><b>2단계 (가속도 함수)</b>: 속도를 미분하면<br>$a(t) = \frac{dv}{dt} = 24t - 2$</p>
+        <p class="step ans"><b>정답</b>: (1) $v(1) = 12 - 2 = 10$ &nbsp; / &nbsp; (2) $a(1) = 24 - 2 = 22$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (1) 속도 $v(1)$과 (2) 가속도 $a(1)$의 합은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="v(1)=10, a(1)=22이므로 합은 32이다.">28</button>
+        <button class="opt" data-ok data-why="맞다. v(1) = 10, a(1) = 22이므로 합은 32이다.">32</button>
+        <button class="opt" data-why="일차항 -t²의 미분 계수를 다시 확인해 보자.">36</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 교과서 [스스로확인하기] #3 (p111) -->
+<section class="slide" id="p111-q3" data-sec="09. 속도와 가속도" data-title="스스로 확인하기 3 (p.111)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>출발 후 처음으로 운동 방향을 바꾸는 위치는?</h2>
+  <div class="calc grid-2" data-ai="스스로 3 방향 전환 위치 익스플로라그램" data-let="x = (t^3)/3 - 3*t^2 + 8*t; v = t^2 - 6*t + 8">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #3 (p.111)</span><br>
+        원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$에서의 위치 $x$가 $x = \frac{1}{3}t^3 - 3t^2 + 8t$일 때, 점 P가 출발 후 처음으로 운동 방향을 바꾸는 순간의 위치를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 5" data-y="-2, 9" data-xstep="1" data-ystep="2" data-height="250" data-xlabel="시각 t" data-ylabel="위치 x / 속도 v">
+        <i data-line="(x^3)/3 - 3*x^2 + 8*x" data-label="위치 x(t)" data-color="#1E3A8A"></i>
+        <i data-line="x^2 - 6*x + 8" data-label="속도 v(t)" data-color="#DC2626" data-dash></i>
+        <i data-point="t, x" data-color="#1E3A8A"></i>
+        <i data-point="t, v" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <output data-expr="t" data-digits="1"></output> &nbsp; 위치 $x =$ <output data-expr="x" data-digits="2"></output> &nbsp; 속도 $v =$ <output data-expr="v" data-digits="2"></output></p>
+        <input type="range" name="t" min="0" max="5" step="0.5" value="0" data-play="6" aria-label="시각 t">
+        <p data-show="t == 2"><b>t = 2</b> : 처음으로 운동 방향을 바꾸는 순간 ($x = \frac{20}{3} \approx 6.67$)</p>
+        <p data-show="t == 4"><b>t = 4</b> : 두 번째로 운동 방향을 바꾸는 순간 ($x = \frac{16}{3} \approx 5.33$)</p>
+        <p data-show="t != 2 && t != 4">$v=0$이 되는 두 시각 $t=2, 4$ 중 첫 번째 시각을 찾는다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">$v = \frac{dx}{dt} = t^2 - 6t + 8 = (t-2)(t-4) = 0$<br>$\Rightarrow t = 2 \text{ 또는 } t = 4$</p>
+        <p class="step">출발 후 <b>처음으로</b> 운동 방향을 바꾸는 시각은 $t = 2$</p>
+        <p class="step ans">$t=2$일 때 위치: $x = \frac{8}{3} - 12 + 16 = \frac{20}{3}$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 교과서 [스스로확인하기] #4 (p111) -->
+<section class="slide" id="p111-q4" data-sec="09. 속도와 가속도" data-title="스스로 확인하기 4 (p.111)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정지할 때까지 움직인 거리가 $45\text{ m}$가 되려면?</h2>
+  <div class="calc grid-2" data-ai="자동차 제동 거리 k 탐색기" data-let="ts = k / 40; xs = (k^2) / 80">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #4 (p.111)</span><br>
+        직선 도로 위를 달리는 자동차가 제동이 걸린 후 $t$초 동안 움직인 거리가 $x = -20t^2 + kt$이다. 정지할 때까지 움직인 거리가 $45\text{ m}$일 때, 양수 $k$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 2.5" data-y="0, 70" data-xstep="0.5" data-ystep="15" data-height="235" data-xlabel="시각 t(초)" data-ylabel="거리 x(m)">
+        <i data-line="-20*x^2 + k*x" data-x="0, ts" data-label="이동 거리 x(t)" data-color="#1E3A8A"></i>
+        <i data-line="45" data-dash data-label="목표 정지 거리 45 m" data-color="#0F766E"></i>
+        <i data-point="ts, xs" data-label="정지점" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>양수 $k =$ <output data-expr="k"></output> &nbsp; (정지 시각 $t =$ <output data-expr="ts" data-digits="2" data-unit="초"></output>)</p>
+        <input type="range" name="k" min="20" max="80" step="10" value="40" aria-label="상수 k">
+        <p>정지할 때까지 움직인 거리: <b><output data-expr="xs" data-digits="1" data-unit="m"></output></b></p>
+        <p data-show="k < 60">정지 거리가 $45\text{ m}$보다 짧다. $k$를 키워 보자.</p>
+        <p data-show="k == 60" class="status-pill">k = 60일 때 정지 거리가 정확히 45 m이다!</p>
+        <p data-show="k > 60">정지 거리가 $45\text{ m}$를 넘어섰다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">속도 $v = -40t + k = 0$에서 정지 시각 $t = \frac{k}{40}$</p>
+        <p class="step">정지 거리: $x\left(\frac{k}{40}\right) = -20\left(\frac{k^2}{1600}\right) + \frac{k^2}{40}$<br>
+        $= \frac{k^2}{80} = 45$</p>
+        <p class="step ans">$k^2 = 3600$ ($k > 0$) $\implies$ 정답: $k = 60$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 교과서 [스스로확인하기] #5 (p111) -->
+<section class="slide" id="p111-q5" data-sec="09. 속도와 가속도" data-title="스스로 확인하기 5 (p.111)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>두 점 P, Q가 서로 반대 방향으로 움직이는 시각은?</h2>
+  <div class="calc grid-2" data-ai="두 점 반대 방향 운동 익스플로라그램" data-let="vp = 4*t - 4; vq = 2*t - 6; prod = vp * vq">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #5 (p.111)</span><br>
+        원점을 출발하여 수직선 위를 움직이는 두 점 P, Q의 시각 $t$에서의 위치가 각각 $f(t)=2t^2-4t$, $g(t)=t^2-6t$일 때, 서로 반대 방향으로 움직이는 $t$의 값의 범위를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 4" data-y="-6, 12" data-xstep="1" data-ystep="3" data-height="250" data-xlabel="시각 t" data-ylabel="속도 v">
+        <i data-line="4*x - 4" data-label="P의 속도 v_P" data-color="#1E3A8A"></i>
+        <i data-line="2*x - 6" data-label="Q의 속도 v_Q" data-color="#DC2626"></i>
+        <i data-vline="t" data-dash></i>
+        <i data-point="t, vp" data-color="#1E3A8A"></i>
+        <i data-point="t, vq" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <output data-expr="t" data-digits="1"></output> &nbsp; ($v_P =$ <output data-expr="vp" data-digits="1"></output>, $v_Q =$ <output data-expr="vq" data-digits="1"></output>)</p>
+        <input type="range" name="t" min="0" max="4" step="0.5" value="0" data-play="6" aria-label="시각 t">
+        <p>속도의 곱 $v_P \cdot v_Q =$ <b><output data-expr="prod" data-digits="1"></output></b></p>
+        <p data-show="prod < 0" class="status-pill">v_P &gt; 0, v_Q &lt; 0 : 서로 반대 방향 이동 (1 &lt; t &lt; 3)</p>
+        <p data-show="prod >= 0">두 점의 운동 방향이 같거나 한 점이 정지한 순간이다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">각 점의 속도: $v_P = f'(t) = 4t - 4$, &nbsp; $v_Q = g'(t) = 2t - 6$</p>
+        <p class="step">반대 방향 조건: $v_P \cdot v_Q < 0 \Rightarrow (4t-4)(2t-6) < 0$</p>
+        <p class="step ans">$8(t-1)(t-3) < 0$이므로 정답: $1 < t < 3$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 교과서 [스스로확인하기] #6 (p111) -->
+<section class="slide" id="p111-q6" data-sec="09. 속도와 가속도" data-title="스스로 확인하기 6 (p.111)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>고도 $800\text{ m}$에서 낙하산을 펼치는 순간의 속도는?</h2>
+  <div class="calc grid-2" data-ai="스카이다이버 자유 낙하 익스플로라그램" data-let="h = 4180 - 5*t^2; v = -10*t">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #6 (p.111)</span><br>
+        지상 $4180\text{ m}$에서 뛰어내린 지 $t$초 후의 높이가 $h = 4180 - 5t^2\text{ (m)}$이다.<br>
+        (1) 2초 후의 속도 &nbsp; (2) 지상 $800\text{ m}$에서 낙하산을 펼치는 순간의 속도
+      </div>
+      <figure class="plot" data-x="0, 28" data-y="0, 4500" data-xstep="4" data-ystep="1000" data-height="250" data-xlabel="시간 t(초)" data-ylabel="높이 h(m)">
+        <i data-line="4180 - 5*x^2" data-x="0, max(t, 0.01)" data-label="높이 h(t)" data-color="#1E3A8A"></i>
+        <i data-line="800" data-dash data-label="낙하산 고도 800 m" data-color="#DC2626"></i>
+        <i data-point="t, h" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>낙하 시간 $t =$ <output data-expr="t" data-unit="초"></output> &nbsp; 현재 높이 $h =$ <output data-expr="h" data-unit="m"></output></p>
+        <input type="range" name="t" min="0" max="28" step="2" value="0" data-play="7" aria-label="낙하 시간 t">
+        <p>순간 속도 $v =$ <b><output data-expr="v" data-unit="m/s"></output></b></p>
+        <p data-show="t == 2" class="status-pill">t = 2초 : 속도 v = -20 m/s</p>
+        <p data-show="t == 26" class="status-pill">t = 26초 (h = 800 m) : 속도 v = -260 m/s</p>
+        <p data-show="t != 2 && t != 26">슬라이더를 움직이거나 재생해 $t=2$초와 $t=26$초를 확인하자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">(1) $v = \frac{dh}{dt} = -10t$이므로 $t=2$일 때 $v(2) = -20\text{ m/s}$</p>
+        <p class="step">(2) $4180 - 5t^2 = 800 \Rightarrow 5t^2 = 3380$<br>$\Rightarrow t^2 = 676 \Rightarrow t = 26$ ($t>0$)</p>
+        <p class="step ans">$t=26$일 때 속도 $v(26) = -260\text{ m/s}$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 대단원 #1 (p114) -->
+<section class="slide" id="rev-q1" data-sec="대단원 마무리" data-title="대단원 마무리 1 (p.114)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>평균변화율이 $5$가 되도록 하는 상수 $a$는?</h2>
+  <div class="calc grid-2" data-ai="평균변화율 할선 기울기 탐색기" data-let="x2 = 1 + a; y2 = x2^2 - x2 + 2; m = a + 1">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #1 (p.114)</span><br>
+        함수 $f(x) = x^2 - x + 2$에 대하여 $x$의 값이 $1$에서 $1+a$까지 변할 때의 평균변화율이 $5$이다. 상수 $a$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 6" data-y="0, 25" data-xstep="1" data-ystep="5" data-height="250" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^2 - x + 2" data-label="y = f(x)" data-color="#1E3A8A"></i>
+        <i data-path="1, 2; x2, y2" data-label="할선" data-color="#DC2626"></i>
+        <i data-point="1, 2" data-label="(1, 2)"></i>
+        <i data-point="x2, y2" data-label="(1+a, f(1+a))" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $a =$ <output data-expr="a" data-digits="1"></output> &nbsp; (구간 [1, <output data-expr="x2" data-digits="1"></output>])</p>
+        <input type="range" name="a" min="1" max="5" step="0.5" value="2" aria-label="상수 a">
+        <p>평균변화율 (할선의 기울기) $=$ <b><output data-expr="m" data-digits="1"></output></b></p>
+        <p data-show="a == 4" class="status-pill">a = 4일 때 평균변화율이 5가 된다!</p>
+        <p data-show="a != 4">$a$를 조절해 평균변화율이 $5$가 되는 위치를 찾아보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">$\frac{f(1+a)-f(1)}{(1+a)-1} = \frac{\{(1+a)^2-(1+a)+2\}-2}{a}$</p>
+        <p class="step">$= \frac{a^2+a}{a} = a + 1 = 5$</p>
+        <p class="step ans">정답: $a = 4$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 대단원 #2 (p114) -->
+<section class="slide" id="rev-q2" data-sec="대단원 마무리" data-title="대단원 마무리 2 (p.114)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>미분계수의 정의 모양을 어떻게 맞출까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #2 (p.114)</span><br>
+        미분가능한 함수 $f(x)$에 대하여
+        $$\lim_{h \to 0} \frac{f(a) - f(a-3h)}{h}$$
+        를 $f'(a)$를 이용하여 나타낸 것은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 포인트</b>: 분자의 두 점 차이 $a - (a-3h) = 3h$와 분모의 모양을 같게 맞춘다.</p>
+        <p class="step">$$\lim_{h \to 0} \frac{f(a) - f(a-3h)}{h} = \lim_{h \to 0} \left\{ -\frac{f(a-3h) - f(a)}{-3h} \times 3 \right\}$$</p>
+        <p class="step ans">$-3h = t$로 놓으면 $t \to 0$일 때 $f'(a)$로 수렴하므로 정답: $3f'(a)$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">올바른 식을 골라 보자.</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="분자의 부호(-)와 괄호 안 -3h의 부호(-)가 만나 양수가 된다.">-3f'(a)</button>
+        <button class="opt" data-why="계수 3이 곱해져야 한다.">f'(a)</button>
+        <button class="opt" data-ok data-why="맞다. -(-3)f'(a) = 3f'(a)이다.">3f'(a)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 대단원 #3 (p114) -->
+<section class="slide" id="rev-q3" data-sec="대단원 마무리" data-title="대단원 마무리 3 (p.114)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곱의 미분법을 써서 $f'(2)$의 값을 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #3 (p.114)</span><br>
+        함수 $f(x) = (1 + x - x^2)(1 - x + x^2)$에 대하여 $f'(2)$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (곱의 미분법)</b>: $\{g(x)h(x)\}' = g'(x)h(x) + g(x)h'(x)$<br>
+        $f'(x) = (1 - 2x)(1 - x + x^2) + (1 + x - x^2)(-1 + 2x)$</p>
+        <p class="step"><b>2단계 ($x=2$ 대입)</b>:<br>
+        $f'(2) = (-3) \times (1 - 2 + 4) + (1 + 2 - 4) \times 3$</p>
+        <p class="step ans">$f'(2) = (-3) \times 3 + (-1) \times 3 = -9 - 3 = -12$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">확인: $x=2$일 때 앞 식 $(1+x-x^2)$과 뒤 식 $(1-x+x^2)$의 값은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 1+2-4 = -1이고 1-2+4 = 3이다.">-1과 3</button>
+        <button class="opt" data-why="x=2를 대입하면 1+2-2² = -1이다.">1과 3</button>
+        <button class="opt" data-why="부호를 다시 확인해 보자.">-1과 -3</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 대단원 #4 (p114) -->
+<section class="slide" id="rev-q4" data-sec="대단원 마무리" data-title="대단원 마무리 4 (p.114)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>접선의 기울기 조건으로 미정계수를 어떻게 구할까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #4 (p.114)</span><br>
+        점 $(0, -2)$를 지나는 곡선 $y = ax^3 + bx + c$ 위의 점 $(1, 2)$에서의 접선의 기울기가 $6$일 때, $a - b - c$의 값은? (단, $a, b, c$는 상수)
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (지나는 두 점)</b>: $f(0) = c = -2$<br>
+        점 $(1, 2)$를 지나므로 $f(1) = a + b + c = 2 \Rightarrow a + b = 4$ &nbsp; $\cdots$ ㉠</p>
+        <p class="step"><b>2단계 (접선의 기울기)</b>: $y' = 3ax^2 + b$에서<br>
+        $f'(1) = 3a + b = 6$ &nbsp; $\cdots$ ㉡</p>
+        <p class="step ans">㉠, ㉡을 연립하면 $a = 1, b = 3, c = -2$<br>
+        정답: $a - b - c = 1 - 3 - (-2) = 0$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 구한 $a, b, c$의 값으로 옳은 것은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="3a+b=6, a+b=4를 빼면 2a=2에서 a=1이다.">a = 2, b = 2, c = -2</button>
+        <button class="opt" data-why="c는 점 (0, -2)의 y좌표이므로 -2이다.">a = 1, b = 3, c = 2</button>
+        <button class="opt" data-ok data-why="맞다. a=1, b=3, c=-2이므로 a-b-c = 0이다.">a = 1, b = 3, c = -2</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 대단원 #5 (p114) -->
+<section class="slide" id="rev-q5" data-sec="대단원 마무리" data-title="대단원 마무리 5 (p.114)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>평균변화율과 기울기가 같은 접선은 몇 개일까?</h2>
+  <div class="calc grid-2" data-ai="평균값 정리 기하적 의미 탐색기" data-let="yc = 0.25*c - 1.2*sin(2*c); mc = 0.25 - 2.4*cos(2*c); hit = abs(mc - 0.25) < 0.35">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #5 (p.114)</span><br>
+        함수 $y=f(x)$의 그래프가 그림과 같을 때, $\frac{f(b)-f(a)}{b-a} = f'(c)$를 만족시키는 상수 $c$의 개수를 구하시오. (단, $a < c < b$)
+      </div>
+      <figure class="plot" data-x="-3, 6" data-y="-2.2, 2.8" data-xstep="2" data-ystep="1" data-height="250" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="0.25*x - 1.2*sin(2*x)" data-x="-2.35, 5.5" data-label="y = f(x)" data-color="#1E3A8A"></i>
+        <i data-line="0.25*x + 1.2" data-x="-2.35, 5.5" data-dash data-label="평균변화율 직선" data-color="#64748B"></i>
+        <i data-line="mc*(x - c) + yc" data-x="c - 1.2, c + 1.2" data-label="접선" data-color="#DC2626"></i>
+        <i data-point="c, yc" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>탐침 위치 $c =$ <output data-expr="c" data-digits="2"></output> (모형)</p>
+        <input type="range" name="c" min="-2.2" max="5.2" step="0.1" value="-2.2" data-play="10" aria-label="상수 c">
+        <p data-show="hit" class="status-pill">접선이 두 끝점을 이은 직선과 평행하다!</p>
+        <p data-show="!hit">「재생」을 누르거나 탐침 $c$를 옮겨 평행한 접선이 생기는 곳을 세어 보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>기하적 의미</b>: 두 점 $(a, f(a))$, $(b, f(b))$를 이은 직선과 접선의 기울기 $f'(c)$가 같은 점의 개수다.</p>
+        <p class="step">그래프의 오르내리는 봉우리와 골짜기마다 평행한 접선이 하나씩 그어진다.</p>
+        <p class="step ans">열린구간 $(a, b)$에서 평행한 접점의 개수 $\Rightarrow$ 정답: $5$개</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. 대단원 #6 (p114) -->
+<section class="slide" id="rev-q6" data-sec="대단원 마무리" data-title="대단원 마무리 6 (p.114)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>사차함수의 최댓값과 최솟값의 합이 $11$이 되려면?</h2>
+  <div class="calc grid-2" data-ai="사차함수 최대최소 평행이동 탐색기" data-let="hi = a + 16; lo = a - 9; s = hi + lo">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #6 (p.114)</span><br>
+        닫힌구간 $[0, 4]$에서 함수 $f(x) = x^4 - 4x^3 - 2x^2 + 12x + a$의 최댓값과 최솟값의 합이 $11$일 때, 상수 $a$의 값은?
+      </div>
+      <figure class="plot" data-x="0, 4" data-y="-15, 25" data-xstep="1" data-ystep="10" data-height="250" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="x^4 - 4*x^3 - 2*x^2 + 12*x + a" data-label="y = f(x)" data-color="#1E3A8A"></i>
+        <i data-line="hi" data-dash data-label="최댓값 a+16" data-color="#DC2626"></i>
+        <i data-line="lo" data-dash data-label="최솟값 a-9" data-color="#0F766E"></i>
+        <i data-point="4, hi" data-color="#DC2626"></i>
+        <i data-point="3, lo" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $a =$ <output data-expr="a"></output> &nbsp; (최댓값 <output data-expr="hi"></output>, 최솟값 <output data-expr="lo"></output>)</p>
+        <input type="range" name="a" min="-2" max="6" step="1" value="0" aria-label="상수 a">
+        <p>최댓값 + 최솟값 $=$ <b><output data-expr="s"></output></b></p>
+        <p data-show="a == 2" class="status-pill">a = 2일 때 최댓값(18) + 최솟값(-7) = 11이다!</p>
+        <p data-show="a != 2">$a$를 움직여 최댓값과 최솟값의 합이 $11$이 되게 맞춰 보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">$f'(x) = 4x^3 - 12x^2 - 4x + 12$<br>$= 4(x-1)(x+1)(x-3) = 0$</p>
+        <p class="step">구간 $[0, 4]$에서 함숫값 비교:<br>$f(0)=a, \; f(1)=a+7, \; f(3)=a-9, \; f(4)=a+16$</p>
+        <p class="step ans">최댓값 $a+16$, 최솟값 $a-9$<br>$\Rightarrow (a+16)+(a-9)=11 \Rightarrow$ 정답: $a = 2$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 대단원 #7 (p115) -->
+<section class="slide" id="rev-q7" data-sec="대단원 마무리" data-title="대단원 마무리 7 (p.115)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선 위의 점 P와 직선 사이의 거리가 최소가 될 때는?</h2>
+  <div class="calc grid-2" data-ai="곡선과 직선 사이 최소 거리 탐색기" data-let="py = 2*px^3 + 1; m = 6*px^2; d = abs(6*px - py - 12) / sqrt(37)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #7 (p.115)</span><br>
+        곡선 $y = 2x^3 + 1$ ($x>0$) 위를 움직이는 점 P와 직선 $y = 6x - 12$ 사이의 거리가 최소가 되도록 하는 점 P의 좌표를 $(a, b)$라고 할 때, $a+b$의 값은?
+      </div>
+      <figure class="plot" data-x="0, 2.5" data-y="-12, 18" data-xstep="0.5" data-ystep="6" data-height="250" data-xlabel="x" data-ylabel="y">
+        <i data-line="2*x^3 + 1" data-label="y = 2x³ + 1" data-color="#1E3A8A"></i>
+        <i data-line="6*x - 12" data-label="y = 6x - 12" data-color="#0F766E"></i>
+        <i data-line="m*(x - px) + py" data-x="px - 0.6, px + 0.6" data-dash data-label="P에서의 접선" data-color="#DC2626"></i>
+        <i data-point="px, py" data-label="P" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>점 P의 좌표: (<output data-expr="px" data-digits="1"></output>, <output data-expr="py" data-digits="2"></output>) &nbsp; 접선 기울기: <b><output data-expr="m" data-digits="1"></output></b></p>
+        <input type="range" name="px" min="0.2" max="2.0" step="0.2" value="1.6" aria-label="점 P의 x좌표">
+        <p>직선까지의 거리 $d =$ <output data-expr="d" data-digits="2"></output></p>
+        <p data-show="px == 1" class="status-pill">x = 1일 때 접선 기울기가 6(평행)이 되어 거리가 최소다!</p>
+        <p data-show="px != 1">점 P의 $x$좌표를 움직여 접선 기울기가 직선 기울기($6$)와 같아지는 곳을 찾자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 원리</b>: 점 P에서의 접선이 직선 $y=6x-12$와 평행할 때 거리가 최소가 된다.</p>
+        <p class="step">$y' = 6x^2 = 6$에서 $x > 0$이므로 $a = 1$, 대입하면 $b = 2(1)^3 + 1 = 3$</p>
+        <p class="step ans">점 P의 좌표는 $(1, 3)$이므로 정답: $a + b = 4$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 대단원 #8 (p115) -->
+<section class="slide" id="rev-q8" data-sec="대단원 마무리" data-title="대단원 마무리 8 (p.115)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>극한 조건과 극솟값 조건으로 삼차함수의 극댓값을 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #8 (p.115)</span><br>
+        삼차함수 $f(x)$가 다음을 모두 만족시킬 때, 함수 $f(x)$의 극댓값을 구하시오.<br>
+        (가) $\lim_{x \to 0} \frac{f(x)}{x} = -15$ &nbsp; (나) $x=1$에서 극솟값 $-8$을 갖는다.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (조건 (가) 해석)</b>: $f(0) = 0$이고 $f'(0) = -15$이므로<br>
+        $f(x) = ax^3 + bx^2 - 15x$</p>
+        <p class="step"><b>2단계 (조건 (나) 해석)</b>: $f(1) = a + b - 15 = -8 \Rightarrow a + b = 7$<br>
+        $f'(1) = 3a + 2b - 15 = 0 \Rightarrow 3a + 2b = 15$ &nbsp; $\therefore a = 1, b = 6$</p>
+        <p class="step ans">$f'(x) = 3x^2 + 12x - 15 = 3(x+5)(x-1) = 0$<br>
+        $x = -5$에서 극대이므로 극댓값 $f(-5) = -125 + 150 + 75 = 100$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 함수 $f(x)$가 극댓값을 갖는 $x$의 좌표는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="x = -3은 도함수의 근이 아니다.">x = -3</button>
+        <button class="opt" data-ok data-why="맞다. f'(x) = 3(x+5)(x-1) = 0이므로 x = -5에서 극대이다.">x = -5</button>
+        <button class="opt" data-why="x = 1에서는 극솟값 -8을 갖는다.">x = 5</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18. 대단원 #9 (p115) -->
+<section class="slide" id="rev-q9" data-sec="대단원 마무리" data-title="대단원 마무리 9 (p.115)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>포물선에 내접하는 사다리꼴의 넓이가 최대가 될 때는?</h2>
+  <div class="calc grid-2" data-ai="내접 사다리꼴 최대 넓이 탐색기" data-let="h = 9 - t^2; s = (t + 3) * (9 - t^2)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #9 (p.115)</span><br>
+        곡선 $y = 9 - x^2$과 $x$축으로 둘러싸인 부분에 내접하는 사다리꼴의 넓이의 최댓값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-3.5, 3.5" data-y="0, 10" data-xstep="1" data-ystep="3" data-height="235" data-xlabel="x" data-ylabel="y = 9 - x²">
+        <i data-line="9 - x^2" data-x="-3, 3" data-label="y = 9 - x²" data-color="#1E3A8A"></i>
+        <i data-path="-3, 0; 3, 0; t, h; -t, h" data-close data-fill data-color="#D97706" data-label="내접 사다리꼴"></i>
+        <i data-point="t, h" data-label="(t, 9-t²)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>윗변 오른쪽 꼭짓점 $x$좌표 $t =$ <output data-expr="t" data-digits="1"></output> &nbsp; (높이 $9-t^2 =$ <output data-expr="h" data-digits="2"></output>)</p>
+        <input type="range" name="t" min="0.2" max="2.8" step="0.2" value="1.8" aria-label="점의 x좌표 t">
+        <p>사다리꼴의 넓이 $S(t) =$ <b><output data-expr="s" data-digits="2"></output></b></p>
+        <p data-show="t == 1" class="status-pill">t = 1일 때 넓이가 최댓값 32가 된다!</p>
+        <p data-show="t != 1">$t$를 움직여 사다리꼴의 넓이가 가장 커지는 순간을 찾아보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">윗변 $2t$, 아랫변 $6$, 높이 $9-t^2$ ($0 < t < 3$):<br>
+        $S(t) = \frac{1}{2}(2t + 6)(9 - t^2)$<br>
+        $= -t^3 - 3t^2 + 9t + 27$</p>
+        <p class="step">$S'(t) = -3t^2 - 6t + 9 = -3(t+3)(t-1) = 0$<br>
+        $\implies t = 1$에서 극대이자 최대</p>
+        <p class="step ans">최댓값 $S(1) = (1 + 3)(9 - 1) = 32$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 19. 대단원 #10 (p115) -->
+<section class="slide" id="rev-q10" data-sec="대단원 마무리" data-title="대단원 마무리 10 (p.115)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>방정식 $2f(x) - k = 0$이 서로 다른 두 실근을 가지려면?</h2>
+  <div class="calc grid-2" data-ai="실근 개수 탐색기" data-let="hit = (k == 4) || (k == -8)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #10 (p.115)</span><br>
+        삼차함수 $y=f(x)$의 도함수 $y=f'(x)$가 $x=-1, 2$에서 $x$축과 만난다. $f(-1)=2, f(2)=-4$일 때, 방정식 $2f(x)-k=0$이 서로 다른 두 실근을 갖도록 하는 실수 $k$의 값의 합을 구하시오.
+      </div>
+      <figure class="plot" data-x="-2.5, 3.5" data-y="-12, 8" data-xstep="1" data-ystep="4" data-height="250" data-xlabel="x" data-ylabel="y = 2f(x), y = k">
+        <i data-line="(8/9)*x^3 - (4/3)*x^2 - (16/3)*x + 4/9" data-label="y = 2f(x)" data-color="#1E3A8A"></i>
+        <i data-line="k" data-label="y = k" data-color="#DC2626" data-dash></i>
+        <i data-point="-1, 4" data-label="극대 (-1, 4)" data-color="#0F766E"></i>
+        <i data-point="2, -8" data-label="극소 (2, -8)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수함수 높이 $k =$ <b><output data-expr="k"></output></b></p>
+        <input type="range" name="k" min="-10" max="6" step="2" value="0" aria-label="실수 k">
+        <p data-show="hit" class="status-pill">곡선 y = 2f(x)와 직선 y = k가 두 점에서 만난다 (실근 2개)!</p>
+        <p data-show="k > -8 && k < 4">세 점에서 만나므로 서로 다른 세 실근을 갖는다.</p>
+        <p data-show="k < -8 || k > 4">한 점에서만 만나므로 실근이 1개뿐이다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">$2f(x) - k = 0 \iff 2f(x) = k$이므로 $y=2f(x)$와 $y=k$의 교점이 2개여야 한다.</p>
+        <p class="step">$y=2f(x)$의 극댓값은 $2f(-1) = 4$, 극솟값은 $2f(2) = -8$</p>
+        <p class="step ans">$k = 4$ 또는 $k = -8$일 때 두 실근을 가지므로 합은 $4 + (-8) = -4$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20. 대단원 #11 (p115) -->
+<section class="slide" id="rev-q11" data-sec="대단원 마무리" data-title="대단원 마무리 11 (p.115)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>모든 실수에서 사차부등식이 성립하는 정수 $k$의 개수는?</h2>
+  <div class="calc grid-2" data-ai="사차부등식 최솟값 탐색기" data-let="ymin = 3 - 3*(k^4); ok = ymin >= 0">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #11 (p.115)</span><br>
+        모든 실수 $x$에 대하여 부등식 $x^4 - 4k^3x + 3 \ge 0$이 성립하도록 하는 정수 $k$의 개수를 구하시오.
+      </div>
+      <figure class="plot" data-x="-3, 3" data-y="-50, 30" data-xstep="1" data-ystep="20" data-height="235" data-xlabel="x" data-ylabel="f(x)">
+        <i data-line="x^4 - 4*(k^3)*x + 3" data-label="y = x⁴ - 4k³x + 3" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#DC2626"></i>
+        <i data-point="k, ymin" data-label="최솟점 (k, 3-3k⁴)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>정수 $k =$ <b><output data-expr="k"></output></b> &nbsp; $\Rightarrow$ 최솟값 $f(k) = 3 - 3k^4 =$ <b><output data-expr="ymin"></output></b></p>
+        <input type="range" name="k" min="-2" max="2" step="1" value="2" aria-label="정수 k">
+        <p data-show="ok" class="status-pill">최솟값 ≥ 0 : 모든 실수 x에 대하여 부등식이 성립한다!</p>
+        <p data-show="!ok">최솟값이 음수여서 $x$축 아래로 내려가는 부분이 생긴다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">$f(x) = x^4 - 4k^3x + 3$으로 놓으면<br>
+        $f'(x) = 4x^3 - 4k^3$<br>
+        $= 4(x-k)(x^2+kx+k^2) = 0$</p>
+        <p class="step">$x = k$에서 극소이자 최소이므로<br>
+        최솟값 $f(k) = k^4 - 4k^4 + 3 = 3 - 3k^4 \ge 0$</p>
+        <p class="step ans">$k^4 \le 1 \iff -1 \le k \le 1$<br>
+        정수 $k$는 $-1, 0, 1$ $\Rightarrow$ 정답: $3$개</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 21. 대단원 #12 (p115) -->
+<section class="slide" id="rev-q12" data-sec="대단원 마무리" data-title="대단원 마무리 12 (p.115)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>점 P의 속도와 가속도에 대한 설명 중 옳은 것은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #12 (p.115)</span><br>
+        원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$에서의 위치 $x$가 $x = 2t^3 - 7t^2 + 8t$일 때, 옳은 것만을 보기에서 있는 대로 고르시오.<br>
+        ㄱ. 원점을 출발할 때의 속도는 $8$이다.<br>
+        ㄴ. 움직이는 동안 운동 방향을 두 번 바꾼다.<br>
+        ㄷ. $t = \frac{4}{3}$에서의 가속도는 $-2$이다.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>ㄱ 확인</b>: $v(t) = 6t^2 - 14t + 8$이므로<br>
+        출발할 때($t=0$) 속도 $v(0) = 8$ (참)</p>
+        <p class="step"><b>ㄴ 확인</b>: $v(t) = 2(3t-4)(t-1) = 0$<br>
+        $\implies t = 1, \frac{4}{3}$에서 부호가 바뀌므로 두 번 바꾼다 (참)</p>
+        <p class="step ans"><b>ㄷ 확인</b>: $a(t) = 12t - 14$에서 $a\left(\frac{4}{3}\right) = 16 - 14 = 2 \ne -2$ (거짓)<br>
+        <b>정답: ㄱ, ㄴ</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">보기 중 옳은 것을 모두 골라 보자.</p>
+      <div class="quiz" data-multi data-why="ㄱ(v(0)=8)과 ㄴ(t=1, 4/3에서 방향 전환)은 참이고, ㄷ은 가속도가 +2이므로 거짓이다.">
+        <button class="opt" data-ok data-why="v(0) = 8이므로 참이다.">ㄱ. 출발할 때의 속도는 8이다.</button>
+        <button class="opt" data-ok data-why="t=1과 t=4/3에서 속도의 부호가 바뀌므로 참이다.">ㄴ. 운동 방향을 두 번 바꾼다.</button>
+        <button class="opt" data-why="a(4/3) = 12×(4/3) - 14 = 2이다.">ㄷ. t = 4/3에서의 가속도는 -2이다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 22. 대단원 #13 (p116) -->
+<section class="slide" id="rev-q13" data-sec="대단원 마무리" data-title="대단원 마무리 13 (p.116)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$x=1$에서 끊어지지 않고 매끄럽게 이어지려면?</h2>
+  <div class="calc grid-2" data-ai="미분가능성 연결 탐색기" data-let="y1 = a - b + 1; m1 = 2*a - b; ok = (y1 == 2) && (m1 == 3)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #13 (p.116)</span><br>
+        모든 실수 $x$에 대하여 함수 $f(x) = \begin{cases} x^3 + 1 & (x < 1) \\ ax^2 - bx + 1 & (x \ge 1) \end{cases}$이 미분가능할 때, $a+b$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-0.5, 2.5" data-y="0, 8" data-xstep="0.5" data-ystep="2" data-height="250" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="x^3 + 1" data-x="-0.5, 1" data-label="x < 1 (x³+1)" data-color="#1E3A8A"></i>
+        <i data-line="a*x^2 - b*x + 1" data-x="1, 2.5" data-label="x ≥ 1 (ax²-bx+1)" data-color="#DC2626"></i>
+        <i data-point="1, 2" data-color="#1E3A8A"></i>
+        <i data-point="1, y1" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>계수 $a =$ <output data-expr="a"></output>, &nbsp; $b =$ <output data-expr="b"></output></p>
+        <input type="range" name="a" min="0" max="4" step="1" value="1" aria-label="상수 a">
+        <input type="range" name="b" min="-1" max="3" step="1" value="1" aria-label="상수 b">
+        <p>우극한값 $a-b+1 =$ <output data-expr="y1"></output> (좌극한 $2$) / 우미분계수 $2a-b =$ <output data-expr="m1"></output> (좌미분 $3$)</p>
+        <p data-show="ok" class="status-pill">a = 2, b = 1일 때 연속이고 미분가능하다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1. 연속 조건</b>: $1^3 + 1 = a - b + 1 \Rightarrow a - b = 1$</p>
+        <p class="step"><b>2. 미분가능 조건</b>:<br>좌미분계수 $3(1)^2$ = 우미분계수 $2a(1) - b \Rightarrow 2a - b = 3$</p>
+        <p class="step ans">연립하면 $a = 2, b = 1 \Rightarrow$ 정답: $a + b = 3$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 23. 대단원 #14 (p116) -->
+<section class="slide" id="rev-q14" data-sec="대단원 마무리" data-title="대단원 마무리 14 (p.116)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>닫힌구간 $[1, 2]$에서 함수가 감소하기 위한 $a$의 범위는?</h2>
+  <div class="calc grid-2" data-ai="구간 감소 조건 도함수 탐색기" data-let="fp1 = 1 - a; fp2 = 8 - a; ok = fp2 <= 0">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #14 (p.116)</span><br>
+        함수 $f(x) = x^3 - x^2 - ax + 2$가 닫힌구간 $[1, 2]$에서 감소하도록 하는 실수 $a$의 값의 범위를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 3" data-y="-12, 12" data-xstep="1" data-ystep="4" data-height="250" data-xlabel="x" data-ylabel="도함수 y = f'(x)">
+        <i data-line="3*x^2 - 2*x - a" data-label="f'(x) = 3x² - 2x - a" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="1" data-dash data-color="#0F766E"></i>
+        <i data-vline="2" data-dash data-color="#0F766E"></i>
+        <i data-point="2, fp2" data-label="(2, f'(2))" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>실수 $a =$ <b><output data-expr="a"></output></b> &nbsp; ($f'(1) =$ <output data-expr="fp1"></output>, $f'(2) =$ <output data-expr="fp2"></output>)</p>
+        <input type="range" name="a" min="0" max="12" step="2" value="4" aria-label="실수 a">
+        <p data-show="ok" class="status-pill">a ≥ 8 : 구간 [1, 2] 전체에서 f'(x) ≤ 0이므로 감소한다!</p>
+        <p data-show="!ok">$x=2$ 근처에서 $f'(x) > 0$이므로 구간 $[1, 2]$에서 증가하는 부분이 있다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">구간 $[1, 2]$에서 감소하려면 이 구간에서 $f'(x) = 3x^2 - 2x - a \le 0$이어야 한다.</p>
+        <p class="step">아래로 볼록한 이차함수이므로 구간 양 끝에서 $f'(1) \le 0$이고 $f'(2) \le 0$이면 된다.</p>
+        <p class="step ans">$f'(1) = 1 - a \le 0$ ($a \ge 1$), $f'(2) = 8 - a \le 0$ ($a \ge 8$) $\Rightarrow$ 정답: $a \ge 8$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 24. 대단원 #15 (p116) -->
+<section class="slide" id="rev-q15" data-sec="대단원 마무리" data-title="대단원 마무리 15 (p.116)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>다항함수 항등식에서 차수와 계수를 어떻게 결정할까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #15 (p.116)</span><br>
+        다항함수 $f(x)$가 다음을 모두 만족시킬 때, $f(2)$의 값을 구하시오.<br>
+        (가) 모든 실수 $x$에 대하여 $\{f'(x)\}^2 = 4f(x) + 9$<br>
+        (나) $f'(1) = 1$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (차수 결정)</b>: $f(x)$를 $n$차식(최고차항 $ax^n$)이라 하면<br>
+        좌변은 $2(n-1)$차, 우변은 $n$차이므로 $2n - 2 = n \Rightarrow n = 2$ (이차함수)</p>
+        <p class="step"><b>2단계 (미분 및 계수 비교)</b>: $f(x) = ax^2 + bx + c$를 대입하면 최고차항 비교에서 $4a^2 = 4a \Rightarrow a = 1$<br>
+        (나)에서 $f'(1) = 2a + b = 1 \Rightarrow b = -1$</p>
+        <p class="step ans">$(2x-1)^2 = 4(x^2 - x + c) + 9 \Rightarrow 1 = 4c + 9 \Rightarrow c = -2$<br>
+        따라서 $f(x) = x^2 - x - 2$이므로 정답: $f(2) = 4 - 2 - 2 = 0$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 조건 (가)를 만족하는 다항함수 $f(x)$의 차수는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="일차함수이면 좌변은 상수, 우변은 일차식이 되어 모순이다.">일차함수 (n = 1)</button>
+        <button class="opt" data-ok data-why="맞다. 2(n-1) = n에서 n = 2인 이차함수이다.">이차함수 (n = 2)</button>
+        <button class="opt" data-why="삼차함수이면 좌변은 4차, 우변은 3차가 된다.">삼차함수 (n = 3)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 25. 대단원 #16 (p116) -->
+<section class="slide" id="rev-q16" data-sec="대단원 마무리" data-title="대단원 마무리 16 (p.116)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$x > 1$에서 부등식이 항상 성립하는 자연수 $n$의 최솟값은?</h2>
+  <div class="calc grid-2" data-ai="대단원 16 부등식 탐색기" data-let="y1 = n^2 - 4*n">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [대단원] #16 (p.116)</span><br>
+        $x > 1$일 때, $2$ 이상의 자연수 $n$에 대하여 부등식
+        $$x^n + n(n-3) > nx + 1$$
+        이 성립하도록 하는 자연수 $n$의 최솟값을 구하시오.
+      </div>
+      <figure class="plot" data-x="1, 2" data-y="-5, 12" data-xstep="0.5" data-ystep="5" data-height="250" data-xlabel="x (x > 1)" data-ylabel="y = f(x)">
+        <i data-line="x^n - n*x + n^2 - 3*n - 1" data-label="f(x) = xⁿ - nx + n² - 3n - 1" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#DC2626"></i>
+        <i data-point="1, y1" data-label="(1, f(1))" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>자연수 $n =$ <b><output data-expr="n"></output></b> &nbsp; $\Rightarrow$ 경계값 $f(1) = n(n-4) =$ <b><output data-expr="y1"></output></b></p>
+        <input type="range" name="n" min="2" max="6" step="1" value="3" aria-label="자연수 n">
+        <p data-show="n >= 4" class="status-pill">n ≥ 4일 때 f(1) ≥ 0이므로 x &gt; 1에서 항상 f(x) &gt; 0이다!</p>
+        <p data-show="n < 4">$f(1) < 0$이므로 $x > 1$ 근처에서 부등식이 성립하지 않는 구간이 있다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">$f(x) = x^n - nx + n(n-3) - 1$로 놓으면<br>
+        $x > 1$일 때 $f'(x) = n(x^{n-1} - 1) > 0$이므로 증가한다.</p>
+        <p class="step">따라서 $x > 1$에서 $f(x) > 0$이려면<br>$f(1) \ge 0$이어야 한다 (등호 주의!).</p>
+        <p class="step ans">$f(1) = n^2 - 4n = n(n-4) \ge 0$<br>$\Rightarrow n \ge 4$이므로 최솟값은 $4$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 26. 목차 및 전체 돌아보기 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

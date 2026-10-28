@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-inc-dec-extrema">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 06. 함수의 증가와 감소, 극대와 극소 (p.33~35)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b { color: #1E3A8A; }
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 520px;
+    gap: 20px;
+    align-items: start;
+  }
+  .grid-2 > div { min-width: 0; }
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 8px 14px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 1.38;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    font-size: 20px;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
+  }
+  .ctrl-card p { margin: 3px 0; font-size: 20px; }
+  .ctrl-card input[type=range] { width: 100%; height: 56px; }
+  .ctrl-card button { min-height: 56px; font-size: 20px; padding: 6px 12px; }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display { margin: 4px 0 !important; overflow-x: hidden; }
+  .katex { font-size: 1.02em !important; }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ (p.33~35)</p>
+  </div>
+  <h1>06. 함수의 증가와 감소<br>극대와 극소</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 개념 1: 함수의 증가와 감소의 뜻 및 판정 (p.33) -->
+<section class="slide" id="concept-inc-dec" data-sec="06. 증가와 감소, 극대와 극소" data-title="함수의 증가와 감소 판정 (p.33)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수 $f'(x)$의 부호로 함수의 증가·감소를 어떻게 판정할까?</h2>
+  <div class="calc grid-2" data-ai="증가와 감소 판정 탐색기" data-let="yx = -t^3 + 3*t; fp = -3*t^2 + 3">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 함수의 증가와 감소의 판정 (p.33)</span><br>
+        함수 $f(x)$가 어떤 열린구간에서 미분가능할 때, 이 구간의 모든 $x$에 대하여<br>
+        1. $f'(x) > 0$이면 $f(x)$는 이 구간에서 <b>증가</b>한다.<br>
+        2. $f'(x) < 0$이면 $f(x)$는 이 구간에서 <b>감소</b>한다. (단, 역은 성립하지 않는다!)
+      </div>
+      <figure class="plot" data-x="-2.2, 2.2" data-y="-4, 4" data-xstep="1" data-ystep="2" data-height="220" data-xlabel="x" data-ylabel="y = f(x) / f'(x)">
+        <i data-line="-x^3 + 3*x" data-label="f(x) = -x³ + 3x" data-color="#1E3A8A"></i>
+        <i data-line="-3*x^2 + 3" data-dash data-label="f'(x) = -3(x+1)(x-1)" data-color="#DC2626"></i>
+        <i data-line="fp*(x - t) + yx" data-x="t - 0.6, t + 0.6" data-label="접선" data-color="#0F766E"></i>
+        <i data-point="t, yx" data-color="#1E3A8A"></i>
+        <i data-point="t, fp" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 $x =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; $\implies$ 도함수 $f'(x) =$ <b><output data-expr="fp" data-digits="2"></output></b></p>
+        <input type="range" name="t" min="-2" max="2" step="0.2" value="0" data-play="6" aria-label="탐침 x">
+        <p data-show="fp > 0" class="status-pill">f'(x) &gt; 0 : 접선 기울기가 양수(+)이므로 증가 구간이다!</p>
+        <p data-show="fp < 0" class="status-pill">f'(x) &lt; 0 : 접선 기울기가 음수(-)이므로 감소 구간이다!</p>
+        <p data-show="fp == 0" class="status-pill">f'(x) = 0 : 증가와 감소가 바뀌는 경계점이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>증명 핵심 (평균값 정리 활용)</b>:<br>
+        구간 안의 $x_1 < x_2$에 대하여 $\frac{f(x_2)-f(x_1)}{x_2-x_1} = f'(c)$인 $c \in (x_1, x_2)$가 존재한다.</p>
+        <p class="step">$f'(c) > 0$이고 $x_2 - x_1 > 0$이면 $f(x_2) - f(x_1) > 0 \implies f(x_1) < f(x_2)$ (증가)</p>
+        <p class="step ans"><b>주의 (역이 성립하지 않는 반례)</b>: $f(x) = x^3$은 실수 전체에서 증가하지만 $f'(0) = 0$이다.<br>
+        따라서 다항함수 $f(x)$가 증가할 필요충분조건은 <b>$f'(x) \ge 0$</b>이다!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 교과서 [문제] #2 (p.83 / 자료 p.33) -->
+<section class="slide" id="p83-q2" data-sec="06. 증가와 감소, 극대와 극소" data-title="교과서 문제 2 (p.83)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차함수의 도함수 부호를 조사해 증가와 감소를 판정하자</h2>
+  <div class="calc grid-2" data-ai="교과서 문제 2 증가 감소 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #2 (p.83)</span><br>
+        다음 함수의 증가와 감소를 조사하시오.<br>
+        (1) $f(x) = -x^3 + 12x + 1$<br>
+        (2) $f(x) = 2x^3 - 6x^2 + 7x + 3$
+      </div>
+      <figure class="plot" data-x="-3.2, 3.2" data-y="-18, 20" data-xstep="1" data-ystep="10" data-height="225" data-xlabel="x" data-ylabel="y">
+        <i data-line="-x^3 + 12*x + 1" data-show="q == 1" data-label="(1) f(x) = -x³ + 12x + 1" data-color="#1E3A8A"></i>
+        <i data-line="-3*x^2 + 12" data-show="q == 1" data-dash data-label="f'(x) = -3(x+2)(x-2)" data-color="#DC2626"></i>
+        <i data-line="2*x^3 - 6*x^2 + 7*x + 3" data-show="q == 2" data-label="(2) f(x) = 2x³ - 6x² + 7x + 3" data-color="#0F766E"></i>
+        <i data-line="6*x^2 - 12*x + 7" data-show="q == 2" data-dash data-label="f'(x) = 6(x-1)² + 1 > 0" data-color="#DC2626"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1)번 그래프 확인</button>
+          <button data-set="q" data-value="2">(2)번 그래프 확인</button>
+        </p>
+        <p data-show="q == 1" class="status-pill">f'(x) = 0의 근 x = -2, 2를 기준으로 부호가 (-) → (+) → (-)로 바뀐다!</p>
+        <p data-show="q == 2" class="status-pill">f'(x) = 6(x-1)² + 1 > 0이므로 모든 실수에서 항상 양수(+)이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 풀이</b>: $f'(x) = -3x^2 + 12 = -3(x+2)(x-2) = 0 \implies x = -2, 2$<br>
+        • 구간 $(-\infty, -2], \; [2, \infty)$에서 <b>감소</b> / 구간 $[-2, 2]$에서 <b>증가</b></p>
+        <p class="step"><b>(2) 풀이</b>: $f'(x) = 6x^2 - 12x + 7 = 6(x-1)^2 + 1 > 0$ (모든 실수 $x$)</p>
+        <p class="step ans"><b>(2) 정답</b>: 모든 실수 $x$에서 $f'(x) > 0$이므로 <b>구간 $(-\infty, \infty)$에서 증가</b>한다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 교과서 [문제] #3 (p.83 / 자료 p.33) -->
+<section class="slide" id="p83-q3" data-sec="06. 증가와 감소, 극대와 극소" data-title="교과서 문제 3 (p.83)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수 $y=f'(x)$의 그래프를 보고 $f(x)$의 증가·감소를 찾자</h2>
+  <div class="calc grid-2" data-ai="도함수 그래프 3유형 비교 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #3 (p.83)</span><br>
+        삼차함수 $y=f(x)$의 도함수 $y=f'(x)$의 그래프가 다음 (1), (2), (3)과 같을 때, $f(x)$의 증가와 감소를 조사하시오.
+      </div>
+      <figure class="plot" data-x="-1, 4" data-y="-3, 4" data-xstep="1" data-ystep="2" data-height="230" data-xlabel="x" data-ylabel="도함수 y = f'(x)">
+        <i data-line="(x - 1)*(x - 3)" data-show="q == 1" data-label="(1) x절편 1, 3 (아래로 볼록)" data-color="#1E3A8A"></i>
+        <i data-line="-(x - 2)^2" data-show="q == 2" data-label="(2) x=2에서 접함 (위로 볼록)" data-color="#DC2626"></i>
+        <i data-line="(x - 2)^2 + 0.8" data-show="q == 3" data-label="(3) x축 위에 떠 있음" data-color="#0F766E"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">그래프 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1) 두 점 교차</button>
+          <button data-set="q" data-value="2">(2) x=2 접함</button>
+          <button data-set="q" data-value="3">(3) 항상 양수</button>
+        </p>
+        <p class="status-pill">도함수 y = f'(x)의 모양이 아니라 x축 위(+)인지 아래(-)인지를 본다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) $x=1, 3$에서 부호 변화</b>:<br>
+        구간 $(-\infty, 1], \; [3, \infty)$에서 $f'(x) \ge 0$이므로 <b>증가</b>, 구간 $[1, 3]$에서 <b>감소</b></p>
+        <p class="step"><b>(2) $x=2$에서만 $f'(2)=0$이고 나머지 모든 $x$에서 $f'(x) < 0$</b>:<br>
+        실수 전체의 구간 <b>$(-\infty, \infty)$에서 감소</b></p>
+        <p class="step ans"><b>(3) 모든 실수 $x$에서 $f'(x) > 0$</b>:<br>
+        실수 전체의 구간 <b>$(-\infty, \infty)$에서 증가</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 개념 2: 함수의 극대와 극소 및 미분계수 (p.34) -->
+<section class="slide" id="concept-extrema" data-sec="06. 증가와 감소, 극대와 극소" data-title="함수의 극대와 극소 (p.34)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>극대와 극소란 무엇이고 도함수의 부호는 어떻게 바뀔까?</h2>
+  <div class="calc grid-2" data-ai="극대와 극소 부호 변화 탐색기" data-let="yx = t^3 - 3*t; fp = 3*t^2 - 3">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 극대와 극소의 뜻과 판정 (p.34)</span><br>
+        • $x=a$를 포함하는 열린구간에서 $f(x) \le f(a)$이면 <b>극대</b>(극댓값 $f(a)$), $f(x) \ge f(b)$이면 <b>극소</b>(극솟값 $f(b)$)라 한다.<br>
+        • 미분가능한 함수 $f(x)$에서 $f'(a)=0$이고 $x=a$ 좌우에서<br>
+        ① $f'(x)$ 부호가 <b>$(+) \to (-)$</b>이면 <b>극대</b>, ② <b>$(-) \to (+)$</b>이면 <b>극소</b>이다.
+      </div>
+      <figure class="plot" data-x="-2.2, 2.2" data-y="-3.5, 3.5" data-xstep="1" data-ystep="1" data-height="215" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^3 - 3*x" data-label="f(x) = x³ - 3x" data-color="#1E3A8A"></i>
+        <i data-line="3*x^2 - 3" data-dash data-label="f'(x) = 3(x+1)(x-1)" data-color="#DC2626"></i>
+        <i data-point="-1, 2" data-label="극대 (-1, 2)" data-color="#1E3A8A"></i>
+        <i data-point="1, -2" data-label="극소 (1, -2)" data-color="#0F766E"></i>
+        <i data-vline="t" data-dash data-color="#D97706"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 $x =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; ($f(x) =$ <output data-expr="yx" data-digits="2"></output>, &nbsp; $f'(x) =$ <b><output data-expr="fp" data-digits="2"></output></b>)</p>
+        <input type="range" name="t" min="-2" max="2" step="0.5" value="-1" data-play="6" aria-label="탐침 x">
+        <p data-show="t == -1" class="status-pill">x = -1 : f'(x)가 (+) → (-)로 바뀌므로 극댓값 2를 갖는다!</p>
+        <p data-show="t == 1" class="status-pill">x = 1 : f'(x)가 (-) → (+)로 바뀌므로 극솟값 -2를 갖는다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>극값과 미분계수의 정리 (페르마 정리)</b>:<br>
+        미분가능한 함수 $f(x)$가 $x=a$에서 극댓값을 가지면 충분히 작은 $h$에 대하여<br>
+        $h<0$일 때 $\frac{f(a+h)-f(a)}{h} \ge 0$, $h>0$일 때 $\frac{f(a+h)-f(a)}{h} \le 0$이므로 <b>$f'(a) = 0$</b>이다.</p>
+        <p class="step ans"><b>주의</b>: $f'(a) = 0$이라고 해서 반드시 극값을 갖는 것은 아니다!<br>
+        반드시 $x=a$ 좌우에서 <b>$f'(x)$의 부호가 바뀌는지</b> 확인해야 한다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 교과서 [문제] #5 (p.87 / 자료 p.34) -->
+<section class="slide" id="p87-q5" data-sec="06. 증가와 감소, 극대와 극소" data-title="교과서 문제 5 (p.87)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차함수와 사차함수의 극댓값·극솟값을 구해 보자</h2>
+  <div class="calc grid-2" data-ai="문제 5 극값 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #5 (p.87)</span><br>
+        다음 함수의 극값을 구하시오.<br>
+        (1) $f(x) = -x^3 + 3x^2 + 9x - 4$<br>
+        (2) $f(x) = 3x^4 - 4x^3 - 12x^2 + 1$
+      </div>
+      <figure class="plot" data-x="-2.5, 4" data-y="-35, 30" data-xstep="1" data-ystep="10" data-height="225" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="-x^3 + 3*x^2 + 9*x - 4" data-show="q == 1" data-label="(1) f(x) = -x³ + 3x² + 9x - 4" data-color="#1E3A8A"></i>
+        <i data-point="-1, -9" data-show="q == 1" data-label="극소(-1,-9)" data-color="#0F766E"></i>
+        <i data-point="3, 23" data-show="q == 1" data-label="극대(3,23)" data-color="#DC2626"></i>
+        <i data-line="3*x^4 - 4*x^3 - 12*x^2 + 1" data-show="q == 2" data-label="(2) f(x) = 3x⁴ - 4x³ - 12x² + 1" data-color="#1E3A8A"></i>
+        <i data-point="-1, -4" data-show="q == 2" data-label="극소(-1,-4)" data-color="#0F766E"></i>
+        <i data-point="0, 1" data-show="q == 2" data-label="극대(0,1)" data-color="#DC2626"></i>
+        <i data-point="2, -31" data-show="q == 2" data-label="극소(2,-31)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1) 삼차함수 극값</button>
+          <button data-set="q" data-value="2">(2) 사차함수 극값</button>
+        </p>
+        <p data-show="q == 2" class="status-pill">사차함수는 극솟값이 2개(-4, -31)가 나올 수 있다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 도함수 인수분해</b>:<br>
+        $f'(x) = -3x^2 + 6x + 9 = -3(x+1)(x-3) = 0 \implies x = -1, 3$<br>
+        • $x=3$에서 <b>극댓값 $f(3) = 23$</b>, &nbsp;$x=-1$에서 <b>극솟값 $f(-1) = -9$</b></p>
+        <p class="step"><b>(2) 도함수 인수분해</b>:<br>
+        $f'(x) = 12x^3 - 12x^2 - 24x = 12x(x+1)(x-2) = 0 \implies x = -1, 0, 2$</p>
+        <p class="step ans"><b>(2) 정답</b>: $x=0$에서 <b>극댓값 $f(0) = 1$</b>,<br>
+        $x=-1, 2$에서 <b>극솟값 $f(-1) = -4$, $f(2) = -31$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 교과서 [문제] #6 (p.87 / 자료 p.34) -->
+<section class="slide" id="p87-q6" data-sec="06. 증가와 감소, 극대와 극소" data-title="교과서 문제 6 (p.87)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>사차함수의 극소 위치와 극댓값으로 미정계수 $a, b$를 구하자</h2>
+  <div class="calc grid-2" data-ai="문제 6 사차함수 미정계수 탐색기" data-let="fp1 = -4 - 2*a; ymax = b">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #6 (p.87)</span><br>
+        함수 $f(x) = x^4 + ax^2 + b$가 $x = -1$에서 극소이다. 함수 $f(x)$의 극댓값이 $4$일 때, 상수 $a, b$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-2, 2" data-y="0, 7" data-xstep="1" data-ystep="2" data-height="225" data-xlabel="x" data-ylabel="y = x⁴ + ax² + b">
+        <i data-line="x^4 + a*x^2 + b" data-label="f(x) = x⁴ + ax² + b" data-color="#1E3A8A"></i>
+        <i data-point="0, b" data-label="극대 (0, b)" data-color="#DC2626"></i>
+        <i data-point="-1, 1 + a + b" data-label="(-1, f(-1))" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>계수 $a =$ <b><output data-expr="a"></output></b> ($f'(-1) =$ <output data-expr="fp1"></output>), &nbsp; $b =$ <b><output data-expr="b"></output></b> (극댓값 $f(0) =$ <output data-expr="ymax"></output>)</p>
+        <input type="range" name="a" min="-4" max="0" step="1" value="-2" aria-label="상수 a">
+        <input type="range" name="b" min="1" max="6" step="1" value="4" aria-label="상수 b">
+        <p data-show="a == -2 && b == 4" class="status-pill">a = -2, b = 4일 때 x = -1에서 극소이고 극댓값 f(0) = 4가 된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($x=-1$에서 극소 $\implies f'(-1) = 0$)</b>:<br>
+        $f'(x) = 4x^3 + 2ax$이므로 $f'(-1) = -4 - 2a = 0 \implies a = -2$</p>
+        <p class="step"><b>2단계 (극댓값 위치 찾기)</b>:<br>
+        $f'(x) = 4x^3 - 4x = 4x(x+1)(x-1) = 0$이므로<br>
+        $x = -1, 1$에서 극소이고 <b>$x = 0$에서 극대</b>이다.</p>
+        <p class="step ans"><b>3단계 (극댓값 $f(0) = 4$ 대입)</b>: $f(0) = b = 4$<br>
+        <b>정답: $a = -2, \quad b = 4$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 교과서 [스스로 확인하기] #1 (p.88 / 자료 p.35) -->
+<section class="slide" id="p88-q1" data-sec="스스로 확인하기" data-title="스스로 확인하기 1 (p.88)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>증가·감소와 극대·극소의 핵심 개념을 빈칸으로 정리하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #1 (p.88)</span><br>
+        다음 빈칸을 눌러 알맞은 기호나 말을 확인하시오.<br>
+        (1) 열린구간에서 미분가능한 함수 $f(x)$에 대하여<br>
+        &nbsp; ① $f'(x)$ <span class="blank">$&gt;$</span> $0$이면 $f(x)$는 이 구간에서 <b>증가</b>한다.<br>
+        &nbsp; ② $f'(x)$ <span class="blank">$&lt;$</span> $0$이면 $f(x)$는 이 구간에서 <b>감소</b>한다.<br>
+        (2) 미분가능한 함수 $f(x)$가 $x=a$에서 극값을 가지면 $f'(a) =$ <span class="blank">$0$</span>이다.<br>
+        (3) 미분가능한 함수 $f(x)$에서 $f'(a)=0$일 때, $x=a$ 좌우에서<br>
+        &nbsp; ① $f'(x)$ 부호가 $(+) \to (-)$로 바뀌면 $x=a$에서 <span class="blank">극대</span>이다.<br>
+        &nbsp; ② $f'(x)$ 부호가 $(-) \to (+)$로 바뀌면 $x=a$에서 <span class="blank">극소</span>이다.
+      </div>
+    </div>
+    <div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 요약 1</b>: 도함수 $f'(x)$의 부호가 $(+)$이면 원함수는 올라가고(증가), $(-)$이면 내려간다(감소).</p>
+        <p class="step"><b>핵심 요약 2</b>: 미분가능한 함수의 극점에서는 접선의 기울기가 반드시 $0$($f'(a)=0$)이다.</p>
+        <p class="step ans"><b>핵심 요약 3</b>: 올라가다 내려가면($+ \to -$) 산봉우리(<b>극대</b>), 내려가다 올라가면($- \to +$) 골짜기(<b>극소</b>)다!</p>
+      </div>
+      <p style="font-weight:700; margin:10px 0 6px;">즉시 확인: 미분가능한 함수 $f(x)$에서 $f'(a)=0$이면 $x=a$에서 반드시 극값을 가질까?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="f(x)=x³에서 f'(0)=0이지만 x=0 좌우에서 부호가 바뀌지 않아 극값이 아니다.">반드시 극값을 갖는다.</button>
+        <button class="opt" data-ok data-why="맞다. f'(a)=0이더라도 좌우에서 f'(x)의 부호가 바뀌어야만 극값을 갖는다.">아니다. 좌우에서 부호가 바뀌어야 극값을 갖는다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 교과서 [스스로 확인하기] #2 (p.88 / 자료 p.35) -->
+<section class="slide" id="p88-q2" data-sec="스스로 확인하기" data-title="스스로 확인하기 2 (p.88)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수를 인수분해하여 삼차·사차함수의 극값을 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2 (p.88)</span><br>
+        다음 함수의 극값을 구하시오.<br>
+        (1) $f(x) = \frac{1}{3}x^3 - x^2 - 3x + 5$<br>
+        (2) $f(x) = x^4 - 8x^2 + 3$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 삼차함수의 극값</b>:<br>
+        $f'(x) = x^2 - 2x - 3 = (x+1)(x-3) = 0 \implies x = -1, 3$<br>
+        • $x = -1$에서 <b>극댓값 $f(-1) = -\frac{1}{3} - 1 + 3 + 5 = \frac{20}{3}$</b><br>
+        • $x = 3$에서 <b>극솟값 $f(3) = 9 - 9 - 9 + 5 = -4$</b></p>
+        <p class="step"><b>(2) 사차함수의 극값</b>:<br>
+        $f'(x) = 4x^3 - 16x = 4x(x+2)(x-2) = 0 \implies x = -2, 0, 2$</p>
+        <p class="step ans"><b>(2) 정답</b>: $x = 0$에서 <b>극댓값 $f(0) = 3$</b>,<br>
+        $x = -2, 2$에서 <b>극솟값 $f(-2) = f(2) = 16 - 32 + 3 = -13$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (2)번 함수 $f(x) = x^4 - 8x^2 + 3$처럼 짝수 차수 항과 상수항만 있는 함수(우함수)의 그래프 대칭성은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. y축 대칭이므로 x = -2와 x = 2에서 같은 극솟값 -13을 갖는다.">y축에 대하여 대칭이다.</button>
+        <button class="opt" data-why="원점 대칭은 홀수 차수 항만 있는 기함수이다.">원점에 대하여 대칭이다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 교과서 [스스로 확인하기] #3 & #4 (p.88 / 자료 p.35) -->
+<section class="slide" id="p88-q3-q4" data-sec="스스로 확인하기" data-title="스스로 확인하기 3, 4 (p.88)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>증감 구간과 극점의 $x$좌표는 도함수 $f'(x)=0$의 무엇일까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #3, #4 (p.88)</span><br>
+        <b>[#3]</b> 함수 $f(x) = 2x^3 + ax^2 + bx$가 구간 $(-\infty, -1], [1, \infty)$에서 증가하고 닫힌구간 $[-1, 1]$에서 감소할 때, 상수 $a, b$의 값을 구하시오.<br>
+        <b>[#4]</b> 함수 $f(x) = \frac{1}{3}x^3 + ax^2 + bx$의 그래프가 $x = -3$에서 극대, $x = 1$에서 극소일 때, 상수 $a, b$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 원리</b>: 증감이 바뀌는 경계점과 극점의 $x$좌표는 이차방정식 <b>$f'(x) = 0$의 두 실근</b>이다!</p>
+        <p class="step"><b>[#3 풀이]</b> $f'(x) = 6x^2 + 2ax + b = 0$의 두 근이 $-1, 1$이므로<br>
+        $6(x+1)(x-1) = 6x^2 - 6 \implies 2a = 0, \; b = -6$<br>
+        $\therefore$ <b>#3 정답: $a = 0, \quad b = -6$</b></p>
+        <p class="step ans"><b>[#4 풀이]</b> $f'(x) = x^2 + 2ax + b = 0$의 두 근이 $-3, 1$이므로<br>
+        $(x+3)(x-1) = x^2 + 2x - 3 \implies 2a = 2, \; b = -3$<br>
+        $\therefore$ <b>#4 정답: $a = 1, \quad b = -3$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 이차방정식 $x^2 + 2ax + b = 0$의 두 근이 $-3, 1$일 때, 근과 계수의 관계로 구한 두 근의 합과 곱은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 합 (-3)+1 = -2 = -2a에서 a=1이고, 곱 (-3)×1 = -3 = b이다.">합 = -2, 곱 = -3</button>
+        <button class="opt" data-why="-3과 1을 더하면 -2이다.">합 = 2, 곱 = -3</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 교과서 [스스로 확인하기] #5 (p.88 / 자료 p.35) -->
+<section class="slide" id="p88-q5" data-sec="스스로 확인하기" data-title="스스로 확인하기 5 (p.88)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차함수의 극댓값과 극솟값의 차가 $108$일 때 양수 $a$는?</h2>
+  <div class="calc grid-2" data-ai="극댓값과 극솟값의 차 탐색기" data-let="ymax = 2*(a^3) + 1; ymin = -2*(a^3) + 1; diff = 4*(a^3)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #5 (p.88)</span><br>
+        함수 $f(x) = x^3 - 3a^2x + 1$의 극댓값과 극솟값의 차가 $108$일 때, 양수 $a$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-4.5, 4.5" data-y="-60, 60" data-xstep="2" data-ystep="30" data-height="225" data-xlabel="x" data-ylabel="y = x³ - 3a²x + 1">
+        <i data-line="x^3 - 3*(a^2)*x + 1" data-label="f(x) = x³ - 3a²x + 1" data-color="#1E3A8A"></i>
+        <i data-point="-a, ymax" data-label="극대 (-a, 2a³+1)" data-color="#DC2626"></i>
+        <i data-point="a, ymin" data-label="극소 (a, -2a³+1)" data-color="#0F766E"></i>
+        <i data-path="-a, ymin; -a, ymax" data-dash data-color="#D97706" data-label="차이 4a³"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>양수 $a =$ <b><output data-expr="a"></output></b> &nbsp; $\implies$ 극댓값 $-$ 극솟값 $= 4a^3 =$ <b><output data-expr="diff"></output></b></p>
+        <input type="range" name="a" min="1" max="4" step="1" value="2" aria-label="양수 a">
+        <p data-show="a == 3" class="status-pill">a = 3일 때 극댓값(55) - 극솟값(-53) = 108이 된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (극점의 $x$좌표 찾기)</b>:<br>
+        $f'(x) = 3x^2 - 3a^2 = 3(x+a)(x-a) = 0$<br>
+        $a > 0$이므로 $x = -a$에서 극대, $x = a$에서 극소이다.</p>
+        <p class="step"><b>2단계 (극댓값과 극솟값의 차)</b>:<br>
+        $f(-a) - f(a) = (2a^3 + 1) - (-2a^3 + 1) = 4a^3 = 108$</p>
+        <p class="step ans">$a^3 = 27$이고 $a > 0$이므로 <b>정답: $a = 3$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 교과서 [스스로 확인하기] #6 (p.88 / 자료 p.35) -->
+<section class="slide" id="p88-q6" data-sec="스스로 확인하기" data-title="스스로 확인하기 6 (p.88)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>기침할 때 빠져나가는 공기 속도가 극대가 되는 반지름은?</h2>
+  <div class="calc grid-2" data-ai="기침 공기 속도 극댓값 탐색기" data-let="vr = -(r^3) + r^2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #6 (p.88)</span><br>
+        목구멍의 최대 반지름의 길이가 $1\text{ cm}$인 사람이 기침을 할 때, 목구멍의 반지름의 길이가 $r\text{ cm}$인 순간 빠져나가는 공기의 속도 $v\text{ cm/s}$가
+        $$v(r) = -cr^3 + cr^2 \quad \left(\frac{1}{2} \le r \le 1\right)$$
+        이라고 한다. 공기의 속도의 극댓값을 구하시오. (단, $c$는 양수)
+      </div>
+      <figure class="plot" data-x="0.4, 1.05" data-y="0, 0.18" data-xstep="0.2" data-ystep="0.05" data-height="215" data-xlabel="반지름 r (cm)" data-ylabel="속도 v / c">
+        <i data-line="-x^3 + x^2" data-x="0.5, 1" data-label="v(r) = c(-r³ + r²)" data-color="#1E3A8A"></i>
+        <i data-vline="0.6667" data-dash data-label="r = 2/3" data-color="#DC2626"></i>
+        <i data-point="r, vr" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>반지름 $r =$ <b><output data-expr="r" data-digits="2"></output> cm</b> &nbsp; $\implies$ 속도 비율 $v/c =$ <b><output data-expr="vr" data-digits="4"></output></b> (모형)</p>
+        <input type="range" name="r" min="0.5" max="1.0" step="0.01" value="0.67" aria-label="반지름 r">
+        <p class="status-pill">r = 2/3(≈0.67 cm)일 때 공기 속도가 극대(4/27 c ≈ 0.1481 c)가 된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($r$에 대하여 미분)</b>:<br>
+        $v'(r) = -3cr^2 + 2cr = -cr(3r - 2) = 0$</p>
+        <p class="step"><b>2단계 (구간 $\frac{1}{2} \le r \le 1$에서 부호 변화 확인)</b>:<br>
+        $r = \frac{2}{3}$ 좌우에서 $v'(r)$의 부호가 $(+) \to (-)$로 바뀌므로 $r = \frac{2}{3}$에서 극대이다.</p>
+        <p class="step ans"><b>3단계 (극댓값 계산)</b>:<br>
+        $v\left(\frac{2}{3}\right) = -c\left(\frac{8}{27}\right) + c\left(\frac{4}{9}\right) = \frac{4}{27}c$ &nbsp; $\therefore$ <b>정답: $\frac{4}{27}c\text{ (cm/s)}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-olympos-int">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 올림포스 적분 유형확인 · 고난도 · 대단원 종합 (p.63~69)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b { color: #1E3A8A; }
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 520px;
+    gap: 22px;
+    align-items: start;
+  }
+  .grid-2 > div { min-width: 0; }
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 12px 16px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 10px;
+    font-size: 23px;
+    line-height: 1.44;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 9px 14px;
+    border-radius: 8px;
+    margin: 6px 0;
+    font-size: 22px;
+    line-height: 1.42;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 10px 16px;
+    font-size: 21px;
+  }
+  .ctrl-card p { margin: 4px 0; font-size: 21px; }
+  .ctrl-card input[type=range] { width: 100%; height: 56px; }
+  .ctrl-card button { min-height: 56px; font-size: 20px; padding: 6px 12px; }
+  .status-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display { margin: 4px 0 !important; overflow-x: hidden; }
+  .katex { font-size: 1.03em !important; }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ (자료 p.63~69)</p>
+  </div>
+  <h1>올림포스 적분 총정리<br>유형확인 · 고난도 · 대단원 종합 (1슬라이드 1문항)</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 올림포스 [유형확인] #3 (p.66) -->
+<section class="slide" id="olym-p66-3" data-sec="03. 부정적분과 정적분" data-title="유형확인 #3 (p.66)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>적분 후 미분 관계에서 다항함수 $f(x)$의 최솟값은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #3 (p.66 / 자료 p.63)</span><br>
+        다항함수 $f(x)$가 모든 실수 $x$에 대하여<br>
+        $$(x-1)f(x) = \frac{d}{dx}\left\{\int (x^3+x^2+x-3)\,dx\right\}$$
+        를 만족시킬 때, 함수 $f(x)$의 최솟값은?
+      </div>
+      <figure class="plot" data-x="-3, 1.5" data-y="0, 8" data-xstep="1" data-ystep="2" data-height="220" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="x^2 + 2*x + 3" data-label="f(x) = (x+1)² + 2" data-color="#1E3A8A"></i>
+        <i data-point="-1, 2" data-label="최솟점 (-1, 2)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (부정적분 후 미분)</b>:<br>
+        우변은 적분한 뒤 다시 $x$에 대하여 미분하므로 피적분함수 그대로 나온다.<br>
+        $(x-1)f(x) = x^3 + x^2 + x - 3$</p>
+        <p class="step"><b>2단계 (조립제법으로 우변 인수분해)</b>:<br>
+        $x^3 + x^2 + x - 3 = (x-1)(x^2 + 2x + 3)$<br>
+        다항함수 $f(x)$는 실수 전체에서 연속이므로 $f(x) = x^2 + 2x + 3$</p>
+        <p class="step ans"><b>3단계 (완전제곱식 변형 및 최솟값)</b>:<br>
+        $f(x) = (x+1)^2 + 2 \ge 2$ ($x = -1$일 때 최소)<br>
+        <b>정답: $2$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 올림포스 [유형확인] #6 (p.66) -->
+<section class="slide" id="olym-p66-6" data-sec="03. 부정적분과 정적분" data-title="유형확인 #6 (p.66)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>구간별 도함수에서 연속 조건으로 적분상수를 결정하자</h2>
+  <div class="calc grid-2" data-ai="구간별 도함수 적분상수 연결 탐색기" data-let="y1R = 1 - 4 + c2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #6 (p.66 / 자료 p.63)</span><br>
+        실수 전체의 집합에서 미분가능한 함수 $f(x)$의 도함수가<br>
+        $$f'(x) = \begin{cases} -2x+1 & (x<1) \\ 3x^2-4 & (x\ge 1) \end{cases}$$
+        이고 $f(0)=5$일 때, $f(-1)+f(2)$의 값은?
+      </div>
+      <figure class="plot" data-x="-1.5, 2.5" data-y="1, 10" data-xstep="1" data-ystep="2" data-height="215" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="-x^2 + x + 5" data-x="-1.5, 1" data-label="x < 1 (-x²+x+5)" data-color="#1E3A8A"></i>
+        <i data-line="x^3 - 4*x + c2" data-x="1, 2.5" data-label="x ≥ 1 (x³-4x+C₂)" data-color="#DC2626"></i>
+        <i data-point="1, 5" data-label="(1, 5)" data-color="#1E3A8A"></i>
+        <i data-point="1, y1R" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>오른쪽 적분상수 $C_2 =$ <b><output data-expr="c2"></output></b> &nbsp; ($x=1$ 우극한 $= -3 + C_2 =$ <b><output data-expr="y1R"></output></b>)</p>
+        <input type="range" name="c2" min="5" max="10" step="1" value="8" aria-label="적분상수 C2">
+        <p data-show="c2 == 8" class="status-pill">C₂ = 8일 때 x = 1에서 함숫값 5로 매끄럽게 연결된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (구간별 부정적분과 $f(0)=5$ 대입)</b>:<br>
+        $f(x) = \begin{cases} -x^2+x+C_1 & (x<1) \\ x^3-4x+C_2 & (x\ge 1) \end{cases}$에서 $f(0) = C_1 = 5$</p>
+        <p class="step"><b>2단계 ($x=1$에서 연속 조건 적용)</b>:<br>
+        $\lim_{x\to 1^-} f(x) = f(1) \implies -1+1+5 = 1-4+C_2 \implies C_2 = 8$</p>
+        <p class="step ans"><b>3단계 ($f(-1)+f(2)$ 계산)</b>:<br>
+        $f(-1) = -1-1+5 = 3, \; f(2) = 8-8+8 = 8$<br>
+        $\therefore f(-1)+f(2) = 11$ &nbsp; <b>(정답: $11$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 올림포스 [유형확인] #9 (p.67) -->
+<section class="slide" id="olym-p67-9" data-sec="03. 부정적분과 정적분" data-title="유형확인 #9 (p.67)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>위끝이 $x$인 정적분 항등식에 대입과 미분을 적용하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #9 (p.67 / 자료 p.63)</span><br>
+        다항함수 $f(x)$가 모든 실수 $x$에 대하여<br>
+        $$\int_1^x \left\{\frac{d}{dt}f(t)\right\}dt = 5x^3 + ax^2 - 3$$
+        을 만족시킬 때, $f'(a+1)$의 값은? (단, $a$는 상수이다.)
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (양변에 $x = 1$을 대입하여 상수 $a$ 구하기)</b>:<br>
+        위끝과 아래끝이 같으면 정적분은 $0$이므로<br>
+        $0 = 5(1)^3 + a(1)^2 - 3 \implies a = -2$</p>
+        <p class="step"><b>2단계 (양변을 $x$에 대하여 미분하기)</b>:<br>
+        좌변을 $x$에 대하여 미분하면 피적분함수에 $t=x$를 대입한 $f'(x)$가 된다.<br>
+        $f'(x) = 15x^2 + 2ax = 15x^2 - 4x$</p>
+        <p class="step ans"><b>3단계 ($f'(a+1)$ 계산)</b>:<br>
+        $a = -2$이므로 $f'(a+1) = f'(-1) = 15(-1)^2 - 4(-1) = 19$<br>
+        <b>정답: $19$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위끝이 $x$이고 아래끝이 상수 $1$인 정적분 항등식을 만나면 가장 먼저 실행하는 두 가지 조작은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. x = 1을 대입하여 미정계수를 구하고, 양변을 x에 대하여 미분하여 피적분함수를 꺼낸다.">① x = 1 대입 &nbsp; ② 양변을 x에 대하여 미분</button>
+        <button class="opt" data-why="위끝이 변수 x이므로 상수 k로 치환할 수 없다.">정적분 전체를 상수 k로 치환한다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 올림포스 [유형확인] #12 (p.67) -->
+<section class="slide" id="olym-p67-12" data-sec="03. 부정적분과 정적분" data-title="유형확인 #12 (p.67)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>우변에 $\{f(x)\}^2$이 있는 정적분 항등식을 미분해 풀자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #12 (p.67 / 자료 p.63)</span><br>
+        상수함수가 아닌 다항함수 $f(x)$가 모든 실수 $x$에 대하여<br>
+        $$4\int_1^x f(t)\,dt = \{f(x)\}^2$$
+        을 만족시킬 때, $f(4)$의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (양변에 $x = 1$ 대입)</b>:<br>
+        $4\int_1^1 f(t)\,dt = \{f(1)\}^2 \implies \{f(1)\}^2 = 0 \implies f(1) = 0$</p>
+        <p class="step"><b>2단계 (양변을 $x$에 대하여 미분)</b>:<br>
+        우변 $\{f(x)\}^2 = f(x)\cdot f(x)$를 미분하면 $2f(x)f'(x)$이므로<br>
+        $4f(x) = 2f(x)f'(x) \implies 2f(x)\{f'(x) - 2\} = 0$</p>
+        <p class="step ans"><b>3단계 ($f(x)$ 결정 및 $f(4)$ 계산)</b>:<br>
+        $f(x)$는 상수함수가 아니므로 모든 실수 $x$에서 $f'(x) = 2$<br>
+        $f(1) = 0$이므로 $f(x) = 2x - 2 \implies f(4) = 8 - 2 = 6$<br>
+        <b>정답: $6$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 우변 $\{f(x)\}^2$을 $x$에 대하여 미분한 결과는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 곱의 미분법에 의해 f'(x)f(x) + f(x)f'(x) = 2f(x)f'(x)가 된다.">2f(x)f'(x)</button>
+        <button class="opt" data-why="합성함수·곱의 미분법에 의해 f'(x)가 반드시 곱해져야 한다.">2f(x)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 올림포스 [유형확인] #15 (p.68) -->
+<section class="slide" id="olym-p68-15" data-sec="03. 부정적분과 정적분" data-title="유형확인 #15 (p.68)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>이차함수의 대칭축 성질을 이용해 $\int_{-1}^3 f'(x)\,dx$를 구하자</h2>
+  <div class="calc grid-2" data-ai="이차함수 대칭축과 정적분 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #15 (p.68 / 자료 p.63)</span><br>
+        이차함수 $f(x)$가 $x = 1$에서 최댓값을 가질 때,<br>
+        $$\int_{-1}^3 \{3x^2 - 2x + f'(x)\}\,dx$$
+        의 값은?
+      </div>
+      <figure class="plot" data-x="-1.5, 3.5" data-y="-1, 5" data-xstep="1" data-ystep="2" data-height="215" data-xlabel="x" data-ylabel="y = f(x) (대칭축 x = 1)">
+        <i data-line="-(x - 1)^2 + 4" data-label="이차함수 y = f(x)" data-color="#1E3A8A"></i>
+        <i data-vline="1" data-dash data-label="대칭축 x = 1" data-color="#DC2626"></i>
+        <i data-point="-1, 0" data-label="(-1, f(-1))" data-color="#0F766E"></i>
+        <i data-point="3, 0" data-label="(3, f(3))" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p class="status-pill">대칭축 x = 1에서 -1과 3까지의 거리가 2로 같으므로 항상 f(-1) = f(3)이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (대칭성을 이용해 $\int_{-1}^3 f'(x)\,dx$ 소거)</b>:<br>
+        이차함수 $f(x)$는 직선 $x=1$에 대하여 대칭이므로 $f(-1) = f(3)$이다.<br>
+        $\therefore \int_{-1}^3 f'(x)\,dx = \Big[f(x)\Big]_{-1}^3 = f(3) - f(-1) = 0$</p>
+        <p class="step"><b>2단계 (나머지 다항식 정적분 계산)</b>:<br>
+        $\int_{-1}^3 (3x^2 - 2x)\,dx = \Big[x^3 - x^2\Big]_{-1}^3$</p>
+        <p class="step ans"><b>3단계 (정답)</b>:<br>
+        $(27 - 9) - (-1 - 1) = 18 - (-2) = 20$ &nbsp; <b>(정답: $20$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 올림포스 [유형확인] #18 (p.68) -->
+<section class="slide" id="olym-p68-18" data-sec="03. 부정적분과 정적분" data-title="유형확인 #18 (p.68)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>적분 변수를 통일하고 구간을 연결해 미정계수 $a$를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #18 (p.68 / 자료 p.63)</span><br>
+        함수 $f(x) = ax + 1$에 대하여<br>
+        $$\int_{-3}^3 f(x)\,dx + \int_1^{-3} f(t)\,dt = 18$$
+        을 만족시킬 때, $f(a)$의 값을 구하시오. (단, $a$는 상수이다.)
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (적분 변수 통일 및 구간 연결)</b>:<br>
+        정적분에서 적분 변수 $t$를 $x$로 바꾸고 두 적분 구간을 이으면<br>
+        $\int_1^{-3} f(x)\,dx + \int_{-3}^3 f(x)\,dx = \int_1^3 f(x)\,dx = 18$</p>
+        <p class="step"><b>2단계 ($f(x) = ax + 1$ 대입 및 적분)</b>:<br>
+        $\int_1^3 (ax + 1)\,dx = \Big[\frac{a}{2}x^2 + x\Big]_1^3 = \left(\frac{9}{2}a + 3\right) - \left(\frac{1}{2}a + 1\right) = 4a + 2 = 18$</p>
+        <p class="step ans"><b>3단계 ($a$ 및 $f(a)$ 계산)</b>:<br>
+        $4a = 16 \implies a = 4 \implies f(x) = 4x + 1$<br>
+        $\therefore f(a) = f(4) = 17$ &nbsp; <b>(정답: $17$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $\int_1^{-3} f(x)\,dx + \int_{-3}^3 f(x)\,dx$를 하나의 정적분으로 합치면 적분 구간은 어떻게 되는가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 1에서 -3까지, 다시 -3에서 3까지 이어지므로 [1, 3] 구간의 정적분이 된다.">[1, 3] 구간 (∫₁³ f(x) dx)</button>
+        <button class="opt" data-why="-3이 중간 경계로 연결되므로 아래끝은 1, 위끝은 3이 된다.">[-3, 1] 구간 (∫₋₃¹ f(x) dx)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 올림포스 [유형확인] #21 (p.69) -->
+<section class="slide" id="olym-p69-21" data-sec="03. 부정적분과 정적분" data-title="유형확인 #21 (p.69)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곱의 미분법 $\{xg(x)\}' = xg'(x) + g(x)$를 발견해 적분하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #21 (p.69 / 자료 p.64)</span><br>
+        두 다항함수 $f(x), g(x)$가 모든 실수 $x$에 대하여 다음 조건을 만족시킨다.<br>
+        (가) $\int_0^x t\{f(t)+g(t)\}\,dt = \frac{3}{2}x^4 - 4x^3 + x^2$<br>
+        (나) $f(x) = xg'(x)$<br>
+        이때 $\int_0^3 g(x)\,dx$의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (조건 (가)의 양변을 $x$에 대하여 미분)</b>:<br>
+        $x\{f(x) + g(x)\} = 6x^3 - 12x^2 + 2x \implies f(x) + g(x) = 6x^2 - 12x + 2$</p>
+        <p class="step"><b>2단계 (조건 (나) $f(x) = xg'(x)$ 대입 및 적분)</b>:<br>
+        $xg'(x) + g(x) = \{xg(x)\}' = 6x^2 - 12x + 2$<br>
+        양변을 적분하면 $xg(x) = 2x^3 - 6x^2 + 2x + C$ ($x=0$ 대입 시 $C=0$)<br>
+        $\therefore g(x) = 2x^2 - 6x + 2$</p>
+        <p class="step ans"><b>3단계 ($\int_0^3 g(x)\,dx$ 계산)</b>:<br>
+        $\int_0^3 (2x^2 - 6x + 2)\,dx = \Big[\frac{2}{3}x^3 - 3x^2 + 2x\Big]_0^3 = 18 - 27 + 6 = -3$<br>
+        <b>정답: $-3$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 식 $xg'(x) + g(x)$는 어떤 함수를 미분한 도함수인가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. {xg(x)}' = (x)'g(x) + x·g'(x) = g(x) + xg'(x)이다.">{x g(x)}'</button>
+        <button class="opt" data-why="x와 g(x)의 곱을 미분한 결과이다.">{x + g(x)}'</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 올림포스 [유형확인] #24 (p.69) -->
+<section class="slide" id="olym-p69-24" data-sec="03. 부정적분과 정적분" data-title="유형확인 #24 (p.69)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수의 대칭성(우함수·기함수)으로 정적분을 간단히 풀자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #24 (p.69 / 자료 p.64)</span><br>
+        $f(0) = 0$인 다항함수 $f(x)$가 다음 조건을 만족시킬 때, $f(3)$의 값은?<br>
+        (가) 곡선 $y = f'(x)$는 $y$축에 대하여 대칭이다.<br>
+        (나) $\int_{-3}^3 (x+2)f'(x)\,dx = 20$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (우함수·기함수 성질 파악)</b>:<br>
+        조건 (가)에서 $f'(x)$는 우함수($y$축 대칭)이므로,<br>
+        여기에 $x$를 곱한 $xf'(x)$는 <b>기함수(원점 대칭)</b>이다!</p>
+        <p class="step"><b>2단계 (대칭 구간 $[-3, 3]$에서의 정적분 정리)</b>:<br>
+        $\int_{-3}^3 xf'(x)\,dx + 2\int_{-3}^3 f'(x)\,dx = 0 + 4\int_0^3 f'(x)\,dx = 20$</p>
+        <p class="step ans"><b>3단계 ($f(3)$ 구하기)</b>:<br>
+        $\int_0^3 f'(x)\,dx = f(3) - f(0) = 5$이고 $f(0) = 0$이므로<br>
+        <b>정답: $f(3) = 5$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $y = f'(x)$가 $y$축 대칭(우함수)일 때, $\int_{-3}^3 xf'(x)\,dx$의 값은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 기함수(x) × 우함수(f'(x)) = 기함수이므로 대칭 구간 [-3, 3]에서 정적분하면 0이다.">0</button>
+        <button class="opt" data-why="우함수에 x를 곱하면 기함수가 되어 정적분이 0으로 소거된다.">2 ∫₀³ x f'(x) dx</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 올림포스 [서술형] #2 (p.70) -->
+<section class="slide" id="olym-p70-s2" data-sec="03. 부정적분과 정적분" data-title="서술형 #2 (p.70)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>인수분해로 $f(x)$를 구하고 대칭 구간 $[-3, 3]$에서 적분하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [서술형] #2 (p.70 / 자료 p.64)</span><br>
+        다항함수 $f(x)$가 모든 실수 $x$에 대하여<br>
+        $$xf(x) - f(x) = 3x^4 + 3x^3 + 3x^2 - 9x$$
+        를 만족시킬 때, $\int_{-3}^3 f(x)\,dx$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (양변을 인수분해하여 $f(x)$ 구하기)</b>:<br>
+        좌변은 $(x-1)f(x)$이고, 우변을 인수분해하면<br>
+        $3x(x^3 + x^2 + x - 3) = 3x(x-1)(x^2 + 2x + 3)$<br>
+        다항함수이므로 $f(x) = 3x(x^2 + 2x + 3) = 3x^3 + 6x^2 + 9x$</p>
+        <p class="step"><b>2단계 (기함수 항 소거 후 정적분)</b>:<br>
+        구간 $[-3, 3]$에서 홀수 차수 항($3x^3, 9x$)의 정적분은 $0$이므로<br>
+        $\int_{-3}^3 f(x)\,dx = 2\int_0^3 6x^2\,dx$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $2\Big[2x^3\Big]_0^3 = 2 \times 54 = 108$ &nbsp; <b>(정답: $108$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $f(x) = 3x^3 + 6x^2 + 9x$를 구간 $[-3, 3]$에서 정적분할 때 남는 항은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 홀수 차수 항 3x³, 9x는 0이 되어 사라지고 짝수 차수 항 6x²만 남는다.">짝수 차수 항인 6x²만 남는다.</button>
+        <button class="opt" data-why="홀수 차수 항은 원점 대칭(기함수)이므로 [-3, 3]에서 정적분이 0이다.">홀수 차수 항인 3x³ + 9x만 남는다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 올림포스 [고난도문항] #2 (p.71) -->
+<section class="slide" id="olym-p71-h2" data-sec="03. 부정적분과 정적분" data-title="고난도문항 #2 (p.71)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곱의 미분법 $\{F(x)G(x)\}'$과 인수분해로 부정적분을 결정하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [고난도문항] #2 (p.71 / 자료 p.64)</span><br>
+        두 다항함수 $f(x), g(x)$의 한 부정적분을 각각 $F(x), G(x)$라 할 때, 모든 실수 $x$에 대하여 다음 조건을 만족시킨다.<br>
+        (가) $F(x) - F(1) = xf(x) - x^2 - 4$<br>
+        (나) $f(x)G(x) + F(x)g(x) = 8x^3 + 15x^2 + 2$<br>
+        이때 $\int_1^5 \{f(x)+g(x)\}\,dx$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (조건 (가)에서 $f(x)$와 $F(x)$ 구하기)</b>:<br>
+        (가)에 $x=1$ 대입: $0 = f(1) - 5 \implies f(1) = 5$<br>
+        (가)의 양변 미분: $f(x) = f(x) + xf'(x) - 2x \implies f'(x) = 2$<br>
+        $\therefore f(x) = 2x + 3 \implies F(x) = x^2 + 3x + C_1$</p>
+        <p class="step"><b>2단계 (조건 (나) 적분 및 인수분해)</b>:<br>
+        좌변은 $\{F(x)G(x)\}'$이므로 적분하면 $F(x)G(x) = 2x^4 + 5x^3 + 2x + C_2$<br>
+        우변이 $x^2+3x+C_1$을 인수로 가지려면 $C_1 = 2, C_2 = 2$일 때<br>
+        $2x^4 + 5x^3 + 2x + 2 = (x^2+3x+2)(2x^2-x+1) \implies G(x) = 2x^2-x+1$</p>
+        <p class="step ans"><b>3단계 (정적분 계산)</b>:<br>
+        $\int_1^5 \{f(x)+g(x)\}\,dx = \{F(5)-F(1)\} + \{G(5)-G(1)\}$<br>
+        $= (42 - 6) + (46 - 2) = 36 + 44 = 80$ &nbsp; <b>(정답: $80$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $F'(x)=f(x), G'(x)=g(x)$일 때, $\int_1^5 \{f(x)+g(x)\}\,dx$를 $F, G$의 함숫값으로 바로 나타내면?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. g(x)를 다시 미분할 필요 없이 {F(5)-F(1)} + {G(5)-G(1)}로 바로 구할 수 있다.">{F(5) - F(1)} + {G(5) - G(1)}</button>
+        <button class="opt" data-why="미적분학의 기본 정리에 의해 부정적분 F, G의 함숫값 차로 바로 계산된다.">F(5)G(5) - F(1)G(1)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 올림포스 [고난도문항] #4 (p.71) -->
+<section class="slide" id="olym-p71-h4" data-sec="03. 부정적분과 정적분" data-title="고난도문항 #4 (p.71)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차함수 정적분 함수 $g(-1) \ge 5$일 때 $g(0)$의 최댓값은?</h2>
+  <div class="calc grid-2" data-ai="고난도 4 삼차함수 k 범위 탐색기" data-let="gm1 = (7/12) - (k/2); g0 = -(1/6) + (k/3)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [고난도문항] #4 (p.71 / 자료 p.64)</span><br>
+        최고차항의 계수가 $1$이고 $f(0)=0, f(1)=0$인 삼차함수 $f(x)$에 대하여<br>
+        $$g(t) = \int_t^{t+1} f(x)\,dx - \int_0^1 |f(x)|\,dx$$
+        라 하자. $g(-1) \ge 5$일 때, $g(0)$의 최댓값은?
+      </div>
+      <figure class="plot" data-x="-1.2, 1.5" data-y="-8, 12" data-xstep="1" data-ystep="4" data-height="215" data-xlabel="x" data-ylabel="f(x) = x(x-1)(x-k)">
+        <i data-line="x*(x - 1)*(x - k)" data-label="f(x) = x(x-1)(x-k)" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-point="0, 0" data-color="#DC2626"></i>
+        <i data-point="1, 0" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>나머지 근 $k =$ <b><output data-expr="k" data-digits="2"></output></b> ($k \le 0$일 때 $[0,1]$에서 $f(x) \le 0$)</p>
+        <input type="range" name="k" min="-11" max="-5" step="0.5" value="-9" aria-label="근 k">
+        <p>$g(-1) =$ <b><output data-expr="gm1" data-digits="2"></output></b>, &nbsp; $g(0) =$ <b><output data-expr="g0" data-digits="2"></output></b></p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($f(x) = x(x-1)(x-k)$ 설정 및 부호 판별)</b>:<br>
+        • $k \ge 1$이면 $[0, 1]$에서 $f(x) \ge 0$이고 $[-1, 0]$에서 $f(x) \le 0$이므로 $g(-1) < 0$ (불가능!)<br>
+        • 따라서 $k \le 0$이어야 하고, 이때 $[0, 1]$에서 $f(x) \le 0$이므로<br>
+        $\int_0^1 |f(x)|\,dx = -\int_0^1 f(x)\,dx = \frac{1}{12} - \frac{1}{6}k$이다.</p>
+        <p class="step"><b>2단계 ($g(-1) \ge 5$로부터 $k$의 범위 구하기)</b>:<br>
+        $g(-1) = \int_{-1}^0 f(x)\,dx + \int_0^1 f(x)\,dx = \int_{-1}^1 (x^3 - (k+1)x^2 + kx)\,dx$<br>
+        $= -\frac{2}{3}(k+1) \ge 5 \implies k + 1 \le -\frac{15}{2} \implies k \le -\frac{17}{2}$</p>
+        <p class="step ans"><b>3단계 ($g(0)$의 최댓값 계산)</b>:<br>
+        $g(0) = 2\int_0^1 f(x)\,dx = 2\left(-\frac{1}{12} + \frac{1}{6}k\right) = \frac{1}{3}k - \frac{1}{6}$<br>
+        $k = -\frac{17}{2}$일 때 최대이므로 $g(0) \le \frac{1}{3}\left(-\frac{17}{2}\right) - \frac{1}{6} = -3$ &nbsp; <b>(정답: $-3$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 올림포스 [유형확인] #3 (p.78) -->
+<section class="slide" id="olym-p78-3" data-sec="04. 정적분의 활용" data-title="유형확인 #3 (p.78)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선 $y = 4x^3$과 $x$축 사이의 넓이가 $25$일 때 양수 $a$는?</h2>
+  <div class="calc grid-2" data-ai="y=4x³ 넓이 탐색기" data-let="tot = 16 + a^4">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #3 (p.78 / 자료 p.65)</span><br>
+        그림과 같이 곡선 $y = 4x^3$과 $x$축 및 두 직선 $x = -2, \; x = a$로 둘러싸인 부분의 넓이가 $25$일 때, 양수 $a$의 값은?
+      </div>
+      <figure class="plot" data-x="-2.2, 2.2" data-y="-35, 35" data-xstep="1" data-ystep="15" data-height="220" data-xlabel="x" data-ylabel="y = 4x³">
+        <i data-line="4*x^3" data-label="y = 4x³" data-color="#1E3A8A"></i>
+        <i data-vline="-2" data-dash data-label="x = -2 (넓이 16)" data-color="#0F766E"></i>
+        <i data-vline="a" data-dash data-label="x = a (넓이 a⁴)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>양수 $a =$ <b><output data-expr="a" data-digits="2"></output></b> &nbsp; $\implies$ 전체 넓이 $16 + a^4 =$ <b><output data-expr="tot" data-digits="1"></output></b></p>
+        <input type="range" name="a" min="1" max="2" step="0.01" value="1.73" aria-label="양수 a">
+        <p class="status-pill">a⁴ = 9 ⟹ a = √3(≈1.73)일 때 전체 넓이가 16 + 9 = 25가 된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($x=0$을 기준으로 구간 나누어 적분)</b>:<br>
+        $[-2, 0]$에서는 $y \le 0$이고 $[0, a]$에서는 $y \ge 0$이므로<br>
+        $S = \int_{-2}^0 (-4x^3)\,dx + \int_0^a 4x^3\,dx$</p>
+        <p class="step"><b>2단계 (정적분 계산)</b>:<br>
+        $\Big[-x^4\Big]_{-2}^0 + \Big[x^4\Big]_0^a = 16 + a^4 = 25$</p>
+        <p class="step ans"><b>3단계 (양수 $a$ 구하기)</b>:<br>
+        $a^4 = 9 \implies a^2 = 3$ ($a > 0$) $\implies$ <b>정답: $a = \sqrt{3}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 올림포스 [유형확인] #5 (p.78) -->
+<section class="slide" id="olym-p78-5" data-sec="04. 정적분의 활용" data-title="유형확인 #5 (p.78)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>절댓값이 포함된 곡선 $y = x|x-1|$과 $x$축 사이의 넓이는?</h2>
+  <div class="calc grid-2" data-ai="절댓값 곡선 y=x|x-1| 넓이 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #5 (p.78 / 자료 p.65)</span><br>
+        곡선 $y = x|x-1|$과 $x$축으로 둘러싸인 부분의 넓이와 곡선 $y = x|x-1|$ ($x \ge 1$)과 $x$축 및 직선 $x = 3$으로 둘러싸인 부분의 넓이의 합은?
+      </div>
+      <figure class="plot" data-x="-0.5, 3.2" data-y="-1, 6.5" data-xstep="1" data-ystep="2" data-height="220" data-xlabel="x" data-ylabel="y = x|x - 1|">
+        <i data-line="x*abs(x - 1)" data-label="y = x|x - 1|" data-color="#1E3A8A"></i>
+        <i data-vline="1" data-dash data-label="x = 1" data-color="#0F766E"></i>
+        <i data-vline="3" data-dash data-label="x = 3" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($x = 1$을 기준으로 함수식 나누기)</b>:<br>
+        • $0 \le x < 1$일 때: $y = -x(x-1) = -x^2 + x$<br>
+        • $x \ge 1$일 때: $y = x(x-1) = x^2 - x$</p>
+        <p class="step"><b>2단계 (두 영역의 넓이 $S_1, S_2$ 각각 구하기)</b>:<br>
+        • $[0, 1]$ 넓이: $S_1 = \int_0^1 (-x^2 + x)\,dx = \frac{1}{6}(1 - 0)^3 = \frac{1}{6}$<br>
+        • $[1, 3]$ 넓이: $S_2 = \int_1^3 (x^2 - x)\,dx = \Big[\frac{1}{3}x^3 - \frac{1}{2}x^2\Big]_1^3 = \frac{9}{2} - \left(-\frac{1}{6}\right) = \frac{14}{3}$</p>
+        <p class="step ans"><b>3단계 (넓이의 합 계산)</b>:<br>
+        $S_1 + S_2 = \frac{1}{6} + \frac{28}{6} = \frac{29}{6}$ &nbsp; <b>(정답: $\frac{29}{6}$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. 올림포스 [유형확인] #8 (p.79) -->
+<section class="slide" id="olym-p79-8" data-sec="04. 정적분의 활용" data-title="유형확인 #8 (p.79)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>이차곡선과 점 $(-2, 1)$에서의 접선 및 $y$축 사이의 넓이는?</h2>
+  <div class="calc grid-2" data-ai="곡선과 접선 사이 넓이 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #8 (p.79 / 자료 p.65)</span><br>
+        곡선 $y = x^2 + 2x + 1$ 위의 점 $(-2, 1)$에서의 접선을 $l$이라 할 때, 곡선 $y = x^2 + 2x + 1$과 접선 $l$ 및 $y$축($x=0$)으로 둘러싸인 부분의 넓이는?
+      </div>
+      <figure class="plot" data-x="-2.5, 0.5" data-y="-3.5, 2" data-xstep="1" data-ystep="1" data-height="220" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^2 + 2*x + 1" data-label="곡선 y = (x+1)²" data-color="#1E3A8A"></i>
+        <i data-line="-2*x - 3" data-label="접선 l: y = -2x - 3" data-color="#DC2626"></i>
+        <i data-point="-2, 1" data-label="접점 (-2, 1)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (점 $(-2, 1)$에서의 접선의 방정식 구하기)</b>:<br>
+        $y' = 2x + 2$에서 $x = -2$일 때 접선의 기울기는 $-2$이므로<br>
+        접선 $l$: $y - 1 = -2(x + 2) \implies y = -2x - 3$</p>
+        <p class="step"><b>2단계 (곡선 식에서 접선 식 빼기)</b>:<br>
+        $(x^2 + 2x + 1) - (-2x - 3) = x^2 + 4x + 4 = (x + 2)^2$<br>
+        ($x = -2$에서 접하므로 항상 완전제곱식이 된다!)</p>
+        <p class="step ans"><b>3단계 (구간 $[-2, 0]$에서 정적분)</b>:<br>
+        $S = \int_{-2}^0 (x + 2)^2\,dx = \Big[\frac{1}{3}(x + 2)^3\Big]_{-2}^0 = \frac{8}{3}$ &nbsp; <b>(정답: $\frac{8}{3}$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 올림포스 [유형확인] #11 (p.79) -->
+<section class="slide" id="olym-p79-11" data-sec="04. 정적분의 활용" data-title="유형확인 #11 (p.79)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>원함수와 역함수의 정적분의 합을 직사각형 넓이로 구하자</h2>
+  <div class="calc grid-2" data-ai="역함수 정적분 직사각형 넓이 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #11 (p.79 / 자료 p.65)</span><br>
+        함수 $f(x) = x^3 - 3x^2 + 4x$의 역함수를 $g(x)$라 하자.<br>
+        $$\int_0^1 f(x)\,dx + \int_0^2 g(x)\,dx$$
+        의 값은?
+      </div>
+      <figure class="plot" data-x="0, 1.3" data-y="0, 2.3" data-xstep="0.5" data-ystep="0.5" data-height="220" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-path="0, 0; 1, 0; 1, 2; 0, 2" data-close data-fill data-color="#DBEAFE" data-label="직사각형 넓이 1 × 2 = 2"></i>
+        <i data-line="x^3 - 3*x^2 + 4*x" data-x="0, 1.1" data-label="f(x) = x³ - 3x² + 4x" data-color="#1E3A8A"></i>
+        <i data-point="0, 0" data-label="(0, 0)" data-color="#DC2626"></i>
+        <i data-point="1, 2" data-label="(1, 2)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p class="status-pill">[핵심 공식] f(a)=c, f(b)=d일 때 ∫_a^b f(x)dx + ∫_c^d g(x)dx = bd - ac</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (양 끝점 함숫값 확인)</b>:<br>
+        $f(0) = 0$이고 $f(1) = 1 - 3 + 4 = 2$이다.<br>
+        즉, 역함수 적분 구간 $[0, 2]$는 정확히 $[f(0), f(1)]$과 일치한다!</p>
+        <p class="step"><b>2단계 (기하적 의미 — 직사각형 퍼즐 맞추기)</b>:<br>
+        $\int_0^1 f(x)\,dx$는 곡선과 $x$축 사이의 넓이이고,<br>
+        $\int_0^2 g(x)\,dx$는 곡선과 $y$축 사이의 넓이와 같다.</p>
+        <p class="step ans"><b>3단계 (직사각형 넓이 계산)</b>:<br>
+        두 넓이를 합치면 가로 $1$, 세로 $2$인 직사각형이 되므로<br>
+        $1 \times 2 - 0 \times 0 = 2$ &nbsp; <b>(정답: $2$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 올림포스 [유형확인] #14 (p.80) -->
+<section class="slide" id="olym-p80-14" data-sec="04. 정적분의 활용" data-title="유형확인 #14 (p.80)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분 등식을 미분해 $f(x)$를 구하고 직선과의 넓이를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #14 (p.80 / 자료 p.65)</span><br>
+        다항함수 $f(x)$가 모든 실수 $x$에 대하여<br>
+        $$\int_0^x f(t)\,dt = -\frac{1}{3}x^3 + \frac{5}{2}x^2$$
+        을 만족시킬 때, 곡선 $y = f(x)$와 직선 $y = 2x$로 둘러싸인 부분의 넓이는?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (양변을 미분하여 $f(x)$ 구하기)</b>:<br>
+        $f(x) = \left(-\frac{1}{3}x^3 + \frac{5}{2}x^2\right)' = -x^2 + 5x$</p>
+        <p class="step"><b>2단계 (직선 $y = 2x$와의 교점 구하기)</b>:<br>
+        $-x^2 + 5x = 2x \implies x^2 - 3x = x(x - 3) = 0 \implies x = 0, 3$</p>
+        <p class="step ans"><b>3단계 (이차함수 넓이 공식 적용)</b>:<br>
+        $S = \int_0^3 (-x^2 + 3x)\,dx = \frac{|-1|}{6}(3 - 0)^3 = \frac{27}{6} = \frac{9}{2}$ &nbsp; <b>(정답: $\frac{9}{2}$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 이차함수 $y = ax^2 + bx + c$와 직선이 두 점 $x = \alpha, \beta$에서 만날 때 둘러싸인 넓이 공식은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. S = (|a|/6)·(β - α)³ 공식을 쓰면 (1/6)×3³ = 9/2로 빠르게 구할 수 있다.">(|a| / 6) · (β - α)³</button>
+        <button class="opt" data-why="분모가 12가 아니라 6이다.">(|a| / 12) · (β - α)³</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18. 올림포스 [유형확인] #16 (p.80) -->
+<section class="slide" id="olym-p80-16" data-sec="04. 정적분의 활용" data-title="유형확인 #16 (p.80)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차함수의 극대점·극소점을 이은 직선과 곡선 사이의 넓이는?</h2>
+  <div class="calc grid-2" data-ai="삼차함수 극점 연결 직선 넓이 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #16 (p.80 / 자료 p.66)</span><br>
+        함수 $f(x) = x^3 - 3x + 3$이 $x=a$에서 극대, $x=b$에서 극소일 때, 두 점 $A(a, f(a)), B(b, f(b))$에 대하여 곡선 $y = f(x)$와 직선 $AB$로 둘러싸인 두 부분의 넓이를 각각 $S_1, S_2$라 하자. $S_1 + S_2$의 값은?
+      </div>
+      <figure class="plot" data-x="-1.5, 1.5" data-y="0, 6" data-xstep="1" data-ystep="2" data-height="215" data-xlabel="x" data-ylabel="y = x³ - 3x + 3">
+        <i data-line="x^3 - 3*x + 3" data-label="f(x) = x³ - 3x + 3" data-color="#1E3A8A"></i>
+        <i data-line="-2*x + 3" data-label="직선 AB: y = -2x + 3" data-color="#DC2626"></i>
+        <i data-point="-1, 5" data-label="A(-1, 5)" data-color="#0F766E"></i>
+        <i data-point="0, 3" data-label="변곡점(0, 3)" data-color="#64748B"></i>
+        <i data-point="1, 1" data-label="B(1, 1)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p class="status-pill">변곡점 (0, 3) 대칭이므로 S₁ = S₂이고 세 교점은 x = -1, 0, 1이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (극대점 $A$, 극소점 $B$ 및 직선 $AB$의 방정식)</b>:<br>
+        $f'(x) = 3(x+1)(x-1) = 0 \implies A(-1, 5), \; B(1, 1)$<br>
+        직선 $AB$의 기울기는 $\frac{1-5}{1-(-1)} = -2$이므로 $y = -2x + 3$</p>
+        <p class="step"><b>2단계 (차함수 및 대칭성 활용)</b>:<br>
+        $f(x) - (-2x + 3) = x^3 - x = x(x+1)(x-1)$<br>
+        간격이 $1$칸씩 같으므로 $S_1 = S_2$이다.</p>
+        <p class="step ans"><b>3단계 ($S_1 + S_2$ 계산)</b>:<br>
+        $S_1 + S_2 = 2\int_{-1}^0 (x^3 - x)\,dx = 2\Big[\frac{1}{4}x^4 - \frac{1}{2}x^2\Big]_{-1}^0 = 2 \times \frac{1}{4} = \frac{1}{2}$ &nbsp; <b>(정답: $\frac{1}{2}$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 19. 올림포스 [유형확인] #18 (p.81) -->
+<section class="slide" id="olym-p81-18" data-sec="04. 정적분의 활용" data-title="유형확인 #18 (p.81)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>구간별로 다르게 정의된 속도 함수를 적분해 위치를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #18 (p.81 / 자료 p.66)</span><br>
+        시각 $t = 0$일 때 원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$ ($t \ge 0$)에서의 속도 $v(t)$가<br>
+        $$v(t) = \begin{cases} -t^3+4t & (0\le t < 2) \\ t^2-6t+8 & (t \ge 2) \end{cases}$$
+        이다. 시각 $t = 4$에서의 점 P의 위치는?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (원점 출발이므로 구간 $[0, 2]$와 $[2, 4]$로 나누어 정적분)</b>:<br>
+        $x(4) = 0 + \int_0^2 (-t^3 + 4t)\,dt + \int_2^4 (t^2 - 6t + 8)\,dt$</p>
+        <p class="step"><b>2단계 (각 구간의 정적분 계산)</b>:<br>
+        • $\int_0^2 (-t^3 + 4t)\,dt = \Big[-\frac{1}{4}t^4 + 2t^2\Big]_0^2 = -4 + 8 = 4$<br>
+        • $\int_2^4 (t^2 - 6t + 8)\,dt = \Big[\frac{1}{3}t^3 - 3t^2 + 8t\Big]_2^4 = \frac{16}{3} - \frac{20}{3} = -\frac{4}{3}$</p>
+        <p class="step ans"><b>3단계 (시각 $t=4$에서의 위치)</b>:<br>
+        $x(4) = 4 + \left(-\frac{4}{3}\right) = \frac{8}{3}$ &nbsp; <b>(정답: $\frac{8}{3}$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 만약 '위치'가 아니라 '움직인 거리'를 물었다면 구간 $[2, 4]$에서 $v(t) = (t-2)(t-4) \le 0$을 어떻게 적분해야 하는가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 위치는 부호를 그대로 더해 4 - 4/3 = 8/3이지만, 움직인 거리는 넓이를 더하므로 4 + 4/3 = 16/3이 된다.">부호를 반대로 바꾸어 넓이(+4/3)를 더한다.</button>
+        <button class="opt" data-why="그대로 더하면 움직인 거리가 아니라 위치의 변화량이 된다.">음수 정적분(-4/3)을 그대로 더한다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20. 올림포스 [유형확인] #20 (p.81) -->
+<section class="slide" id="olym-p81-20" data-sec="04. 정적분의 활용" data-title="유형확인 #20 (p.81)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>속도 $v(t) = -t^2 + 2t$에서 점 P의 운동 보기 ㄱ, ㄴ, ㄷ 판별하기</h2>
+  <div class="calc grid-2" data-ai="속도 v(t)=-t²+2t 운동 탐색기" data-let="vt = -(t^2) + 2*t; xt = -(t^3)/3 + t^2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #20 (p.81 / 자료 p.66)</span><br>
+        원점을 출발한 점 P의 속도가 $v(t) = -t^2 + 2t$ ($t \ge 0$)일 때, 옳은 것만을 고른 것은?<br>
+        ㄱ. $0 \le t \le 2$일 때, 원점에서 가장 멀리 떨어진 시각은 $t = 1$이다.<br>
+        ㄴ. 출발 후 방향을 바꿀 때까지 움직인 거리는 $\frac{4}{3}$이다.<br>
+        ㄷ. 점 P는 $0 < t < 5$에서 원점을 지난다.
+      </div>
+      <figure class="plot" data-x="0, 3.5" data-y="-3, 2" data-xstep="1" data-ystep="1" data-height="205" data-xlabel="시각 t" data-ylabel="위치 x(t) / 속도 v(t)">
+        <i data-line="-x^2 + 2*x" data-dash data-label="속도 v(t) = -t(t-2)" data-color="#DC2626"></i>
+        <i data-line="-(x^3)/3 + x^2" data-label="위치 x(t) = -t³ / 3 + t²" data-color="#1E3A8A"></i>
+        <i data-point="2, 1.333" data-label="최대 위치(2, 4/3)" data-color="#0F766E"></i>
+        <i data-point="3, 0" data-label="원점 통과(3, 0)" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; (위치 $x(t) =$ <b><output data-expr="xt" data-digits="2"></output></b>, 속도 $v(t) =$ <output data-expr="vt" data-digits="2"></output>)</p>
+        <input type="range" name="t" min="0" max="3.5" step="0.5" value="2" data-play="6" aria-label="시각 t">
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>ㄱ (거짓)</b>: $0 \le t \le 2$에서 $v(t) \ge 0$이므로 계속 전진한다.<br>
+        $t=1$은 속도가 최대인 시각이고, 원점에서 가장 먼 시각은 방향 전환 순간인 <b>$t = 2$</b>이다.</p>
+        <p class="step"><b>ㄴ (참)</b>: $t = 2$에서 방향을 바꾸므로 $\int_0^2 (-t^2 + 2t)\,dt = \frac{1}{6}(2)^3 = \frac{4}{3}$</p>
+        <p class="step ans"><b>ㄷ (참)</b>: 위치 $x(t) = -\frac{1}{3}t^3 + t^2 = -\frac{1}{3}t^2(t - 3) = 0 \implies t = 3 \in (0, 5)$에서 원점을 지난다. &nbsp; $\therefore$ <b>정답: ㄴ, ㄷ</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 21. 올림포스 [서술형] #2 (p.82) -->
+<section class="slide" id="olym-p82-s2" data-sec="04. 정적분의 활용" data-title="서술형 #2 (p.82)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>원점으로 다시 돌아올 때까지 움직인 거리가 $\frac{64}{27}$일 때 양수 $a$는?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [서술형] #2 (p.82 / 자료 p.66)</span><br>
+        시각 $t = 0$일 때 원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$ ($t \ge 0$)에서의 속도가 $v(t) = -3t^2 + at$이다. 점 P가 출발한 후 원점으로 다시 돌아올 때까지 움직인 거리가 $\frac{64}{27}$일 때, 양수 $a$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (핵심 원리 — 왕복 이동 거리)</b>:<br>
+        원점을 출발해 양의 방향으로 갔다가 다시 원점으로 돌아왔으므로,<br>
+        방향 전환 시각 $t = \frac{a}{3}$까지 앞으로 간 거리는 전체 이동 거리의 절반인 $\frac{32}{27}$이다!</p>
+        <p class="step"><b>2단계 (구간 $[0, \frac{a}{3}]$에서 정적분 계산)</b>:<br>
+        $\int_0^{a/3} (-3t^2 + at)\,dt = \frac{|-3|}{6}\left(\frac{a}{3} - 0\right)^3 = \frac{1}{2} \times \frac{a^3}{27} = \frac{a^3}{54}$</p>
+        <p class="step ans"><b>3단계 (양수 $a$ 구하기)</b>:<br>
+        $\frac{a^3}{54} = \frac{32}{27} \implies a^3 = 64 \implies$ <b>정답: $a = 4$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 원점을 출발한 점 P가 방향을 한 번 바꾸어 다시 원점으로 돌아왔다면, 방향을 바꾸기 전까지 이동한 거리 $s_1$과 돌아오는 동안 이동한 거리 $s_2$의 관계는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 원점으로 복귀했으므로 앞으로 간 거리와 돌아온 거리가 같아 각각 전체 거리의 절반이다.">s₁ = s₂ = (전체 움직인 거리) / 2</button>
+        <button class="opt" data-why="다시 원점으로 돌아오려면 전진한 거리와 후진한 거리가 같아야 한다.">s₁ = 2s₂</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 22. 올림포스 [고난도문항] #2 (p.83) -->
+<section class="slide" id="olym-p83-h2" data-sec="04. 정적분의 활용" data-title="고난도문항 #2 (p.83)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>사차함수와 $x$축으로 둘러싸인 두 넓이가 같을 조건을 풀자</h2>
+  <div class="calc grid-2" data-ai="사차함수 두 부분 넓이 같음 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [고난도문항] #2 (p.83 / 자료 p.67)</span><br>
+        최고차항의 계수가 $1$인 사차함수 $f(x)$가 다음을 만족시킨다.<br>
+        (가) 방정식 $f(x)=0$의 서로 다른 실근은 $0, 2, a$ ($3$개)<br>
+        (나) 함수 $f(x)$는 $x=0$에서 극솟값을 갖는다.<br>
+        곡선 $y=f(x)$와 $x$축으로 둘러싸인 두 부분의 넓이가 서로 같도록 하는 양수 $a$에 대하여 $f(3)$의 최댓값을 $M$이라 할 때, $30M$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-0.4, 3.6" data-y="-1.5, 2" data-xstep="1" data-ystep="1" data-height="195" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="(x^2)*(x - 0.8)*(x - 2)" data-label="케이스 1: a = 4/5 (0 < a < 2)" data-color="#DC2626"></i>
+        <i data-line="(x^2)*(x - 2)*(x - 3.333)" data-dash data-label="케이스 2: a = 10/3 (a > 2)" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($x=0$ 중근 확인)</b>: 실근이 $0, 2, a$의 $3$개이고 $x=0$에서 극솟값($f(0)=0, f'(0)=0$)을 가지려면 <b>$x = 0$이 중근</b>이어야 한다!<br>
+        $\therefore f(x) = x^2(x-2)(x-a) = x^4 - (a+2)x^3 + 2ax^2$</p>
+        <p class="step"><b>2단계 (케이스 분류 — 두 부분의 넓이가 같으므로 전체 정적분 $= 0$)</b>:<br>
+        ① $a > 2$일 때: $\int_0^a f(x)\,dx = 0 \implies \frac{a^4}{60}(3a - 10) = 0 \implies a = \frac{10}{3}$<br>
+        이때 $f(3) = 9 \times 1 \times \left(3 - \frac{10}{3}\right) = -3$<br>
+        ② $0 < a < 2$일 때: $\int_0^2 f(x)\,dx = 0 \implies \frac{16}{15} - \frac{4}{3}a = 0 \implies a = \frac{4}{5}$</p>
+        <p class="step ans"><b>3단계 ($f(3)$의 최댓값 $M$ 및 $30M$ 계산)</b>:<br>
+        $a = \frac{4}{5}$일 때 $f(3) = 9 \times 1 \times \left(3 - \frac{4}{5}\right) = \frac{99}{5} = M$<br>
+        $\therefore 30M = 30 \times \frac{99}{5} = 594$ &nbsp; <b>(정답: $594$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 23. 올림포스 [대단원종합문제] #3 (p.84) -->
+<section class="slide" id="olym-p84-3" data-sec="05. 대단원 종합문제" data-title="대단원종합 #3 (p.84)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수 $f'(x)$와 $f(1)=2$가 주어졌을 때 $f(3)$의 값은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #3 (p.84 / 자료 p.67)</span><br>
+        함수 $f(x)$에 대하여<br>
+        $$f'(x) = 2x^3 - 6x + 3$$
+        이고 $f(1) = 2$일 때, $f(3)$의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (부정적분 구하기)</b>:<br>
+        $f(x) = \int (2x^3 - 6x + 3)\,dx = \frac{1}{2}x^4 - 3x^2 + 3x + C$</p>
+        <p class="step"><b>2단계 ($f(1) = 2$를 대입하여 적분상수 $C$ 결정)</b>:<br>
+        $f(1) = \frac{1}{2} - 3 + 3 + C = 2 \implies C = \frac{3}{2}$</p>
+        <p class="step ans"><b>3단계 ($f(3)$ 계산)</b>:<br>
+        $f(3) = \frac{81}{2} - 27 + 9 + \frac{3}{2} = 42 - 18 = 24$ &nbsp; <b>(정답: $24$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 적분상수 $C$를 구하지 않고 정적분으로 $f(3)$을 한 번에 계산하는 식은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. f(3) - f(1) = ∫₁³ f'(x) dx이므로 f(3) = f(1) + ∫₁³ f'(x) dx로 바로 계산할 수 있다.">f(3) = f(1) + ∫₁³ f'(x) dx</button>
+        <button class="opt" data-why="f(1)을 빼는 것이 아니라 더해야 한다.">f(3) = ∫₁³ f'(x) dx - f(1)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 24. 올림포스 [대단원종합문제] #6 (p.84) -->
+<section class="slide" id="olym-p84-6" data-sec="05. 대단원 종합문제" data-title="대단원종합 #6 (p.84)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곱의 꼴로 주어진 다항식을 전개하여 정적분을 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #6 (p.84 / 자료 p.67)</span><br>
+        정적분
+        $$\int_1^2 (2-x)(3x+1)\,dx$$
+        의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (피적분함수 전개)</b>:<br>
+        $(2-x)(3x+1) = -3x^2 + 5x + 2$</p>
+        <p class="step"><b>2단계 (부정적분 및 위끝·아래끝 대입)</b>:<br>
+        $\int_1^2 (-3x^2 + 5x + 2)\,dx = \Big[-x^3 + \frac{5}{2}x^2 + 2x\Big]_1^2$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $(-8 + 10 + 4) - \left(-1 + \frac{5}{2} + 2\right) = 6 - \frac{7}{2} = \frac{5}{2}$ &nbsp; <b>(정답: $\frac{5}{2}$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위 정적분 계산에서 $\Big[x^2\Big]_1^2, \Big[x^3\Big]_1^2$처럼 항별로 $(2^n - 1^n)$을 먼저 계산하면 $(-3)\times(8-1)/3 + \frac{5}{2}\times(4-1) + 2\times(2-1)$은 얼마인가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. -7 + 15/2 + 2 = -5 + 15/2 = 5/2로 부호 실수 없이 빠르게 검산할 수 있다.">-7 + 15/2 + 2 = 5/2</button>
+        <button class="opt" data-why="-(2³ - 1³) = -7이다.">-8 + 15/2 + 2 = 3/2</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 25. 올림포스 [대단원종합문제] #9 (p.85) -->
+<section class="slide" id="olym-p85-9" data-sec="05. 대단원 종합문제" data-title="대단원종합 #9 (p.85)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>절편이 등간격인 삼차곡선 $y = x(x+1)(x+2)$의 넓이는?</h2>
+  <div class="calc grid-2" data-ai="등간격 삼차함수 넓이 대칭 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #9 (p.85 / 자료 p.67)</span><br>
+        곡선 $y = x(x+1)(x+2)$와 $x$축으로 둘러싸인 부분의 넓이는?
+      </div>
+      <figure class="plot" data-x="-2.3, 0.3" data-y="-0.6, 0.6" data-xstep="1" data-ystep="0.5" data-height="220" data-xlabel="x" data-ylabel="y = x(x+1)(x+2)">
+        <i data-line="x*(x + 1)*(x + 2)" data-x="-2.2, 0.2" data-label="y = x(x+1)(x+2)" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-point="-2, 0" data-label="-2" data-color="#DC2626"></i>
+        <i data-point="-1, 0" data-label="변곡점(-1, 0)" data-color="#0F766E"></i>
+        <i data-point="0, 0" data-label="0" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p class="status-pill">x절편 -2, -1, 0이 1칸씩 등간격이므로 [-2, -1]과 [-1, 0]의 넓이가 같다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($x$절편과 대칭성 확인)</b>:<br>
+        $x$절편이 $-2, -1, 0$이고 점 $(-1, 0)$에 대하여 대칭이므로<br>
+        구간 $[-2, -1]$과 구간 $[-1, 0]$의 넓이는 서로 같다.</p>
+        <p class="step"><b>2단계 ($[-1, 0]$ 구간 넓이의 $2$배로 계산)</b>:<br>
+        $S = 2\int_{-1}^0 -(x^3 + 3x^2 + 2x)\,dx = 2\Big[-\frac{1}{4}x^4 - x^3 - x^2\Big]_{-1}^0$</p>
+        <p class="step ans"><b>3단계 (정답)</b>:<br>
+        $2 \times \left(\frac{1}{4} - 1 + 1\right) = 2 \times \frac{1}{4} = \frac{1}{2}$ &nbsp; <b>(정답: $\frac{1}{2}$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 26. 올림포스 [대단원종합문제] #12 (p.85) -->
+<section class="slide" id="olym-p85-12" data-sec="05. 대단원 종합문제" data-title="대단원종합 #12 (p.85)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수 $f'(x) = 12x(x-1)$에서 극댓값과 극솟값의 차를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #12 (p.85 / 자료 p.67)</span><br>
+        다항함수 $f(x)$에 대하여<br>
+        $$f'(x) = 12x(x-1)$$
+        일 때, 함수 $f(x)$의 극댓값과 극솟값의 차는?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (극점의 $x$좌표 확인)</b>:<br>
+        $f'(x) = 12x(x-1) = 0$에서 $x = 0$일 때 극대, $x = 1$일 때 극소이다.</p>
+        <p class="step"><b>2단계 (극값의 차 $=$ 도함수의 정적분 넓이!)</b>:<br>
+        $f(0) - f(1) = -\int_0^1 f'(x)\,dx = -\int_0^1 (12x^2 - 12x)\,dx$</p>
+        <p class="step ans"><b>3단계 (넓이 공식으로 계산 및 정답)</b>:<br>
+        $\frac{12}{6}(1 - 0)^3 = 2 \times 1 = 2$ &nbsp; <b>(정답: $2$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 삼차함수 $f(x)$의 두 극점 $x = \alpha, \beta$에 대하여 극댓값과 극솟값의 차 $|f(\beta) - f(\alpha)|$는 도함수 $y = f'(x)$ 그래프에서 무엇과 같은가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. |f(β) - f(α)| = ∫_α^β |f'(x)| dx이므로 도함수와 x축으로 둘러싸인 넓이와 같다.">구간 [α, β]에서 도함수 y = f'(x)와 x축으로 둘러싸인 넓이</button>
+        <button class="opt" data-why="도함수의 꼭짓점 y좌표는 변곡점에서의 접선 기울기이다.">도함수 y = f'(x)의 꼭짓점의 y좌표의 절댓값</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 27. 올림포스 [대단원종합문제] #15 (p.86) -->
+<section class="slide" id="olym-p86-15" data-sec="05. 대단원 종합문제" data-title="대단원종합 #15 (p.86)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분과 극한이 결합된 $\lim_{h \to 0}\frac{1}{h}\int_1^{1+2h} f(x)\,dx$의 값은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #15 (p.86 / 자료 p.67)</span><br>
+        극한값
+        $$\lim_{h \to 0} \frac{1}{h}\int_1^{1+2h} (x^2 + 7x - 3)\,dx$$
+        의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (피적분함수 치환 및 부정적분 표현)</b>:<br>
+        $f(x) = x^2 + 7x - 3$이라 하고, $f(x)$의 한 부정적분을 $F(x)$라 하면<br>
+        $F'(x) = f(x)$이다.</p>
+        <p class="step"><b>2단계 (미분계수의 정의 적용)</b>:<br>
+        $\lim_{h \to 0} \frac{F(1+2h) - F(1)}{h} = \lim_{h \to 0} \frac{F(1+2h) - F(1)}{2h} \times 2$<br>
+        $= 2F'(1) = 2f(1)$</p>
+        <p class="step ans"><b>3단계 ($f(1)$ 대입 및 정답)</b>:<br>
+        $f(1) = 1 + 7 - 3 = 5 \implies 2f(1) = 10$ &nbsp; <b>(정답: $10$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $\lim_{h \to 0}\frac{1}{h}\int_a^{a+kh} f(x)\,dx$를 $f(a)$로 간단히 나타낸 공식은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 위끝의 h 계수 k가 앞으로 곱해져서 k·f(a)가 된다.">k · f(a)</button>
+        <button class="opt" data-why="분모의 h를 kh로 맞추면서 k를 곱해주어야 한다.">f(ka)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 28. 올림포스 [대단원종합문제] #18 (p.86) -->
+<section class="slide" id="olym-p86-18" data-sec="05. 대단원 종합문제" data-title="대단원종합 #18 (p.86)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분 부등식을 만족시키는 자연수 $n$의 개수를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #18 (p.86 / 자료 p.68)</span><br>
+        부등식
+        $$\int_{-1}^3 (3x^2 - 2nx + 1)\,dx > -1$$
+        을 만족시키는 자연수 $n$의 개수는?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (좌변의 정적분 계산)</b>:<br>
+        $\Big[x^3 - nx^2 + x\Big]_{-1}^3 = (27 - 9n + 3) - (-1 - n - 1)$<br>
+        $= (30 - 9n) - (-2 - n) = 32 - 8n$</p>
+        <p class="step"><b>2단계 (일차부등식 풀기)</b>:<br>
+        $32 - 8n > -1 \implies 8n < 33 \implies n < \frac{33}{8} = 4.125$</p>
+        <p class="step ans"><b>3단계 (자연수 $n$의 개수)</b>:<br>
+        만족시키는 자연수 $n$은 $1, 2, 3, 4$의 $4$개이다.<br>
+        <b>정답: $4$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위 적분에서 $\int_{-1}^3 (-2nx)\,dx$를 구간 $[-1, 1]$과 $[1, 3]$으로 나누어 보면 어떤 구간의 적분이 $0$으로 소거되는가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 기함수 -2nx는 대칭 구간 [-1, 1]에서 정적분이 0이므로 [1, 3] 구간만 적분해도 된다.">대칭 구간 [-1, 1]에서의 정적분이 0이다.</button>
+        <button class="opt" data-why="[1, 3] 구간에서는 정적분이 -8n이 된다.">구간 [1, 3]에서의 정적분이 0이다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 29. 올림포스 [대단원종합문제] #21 (p.87) -->
+<section class="slide" id="olym-p87-21" data-sec="05. 대단원 종합문제" data-title="대단원종합 #21 (p.87)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>두 극한 조건으로 이차함수 $f(x)$를 결정하고 넓이를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #21 (p.87 / 자료 p.68)</span><br>
+        다항함수 $f(x)$가 다음 조건을 만족시킨다.<br>
+        (가) $\lim_{x \to \infty}\frac{f(x)}{x^2 - x + 1} = -1$<br>
+        (나) $\lim_{x \to 2}\frac{f(x)}{x - 2} = 4$<br>
+        곡선 $y = f(x)$와 $x$축으로 둘러싸인 부분의 넓이는?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (조건 (가), (나)로부터 $f(x)$ 식 세우기)</b>:<br>
+        (가)에서 $f(x)$는 최고차항 계수가 $-1$인 이차함수이고,<br>
+        (나)에서 $f(2) = 0$이므로 $f(x) = -(x - 2)(x - k)$로 놓는다.</p>
+        <p class="step"><b>2단계 (나머지 한 근 $k$ 구하기)</b>:<br>
+        $\lim_{x \to 2}\frac{-(x-2)(x-k)}{x-2} = -(2 - k) = 4 \implies k = 6$</p>
+        <p class="step ans"><b>3단계 ($x$축과 둘러싸인 넓이 공식 적용)</b>:<br>
+        두 교점이 $x = 2, 6$이므로 $S = \frac{|-1|}{6}(6 - 2)^3 = \frac{64}{6} = \frac{32}{3}$<br>
+        <b>정답: $\frac{32}{3}$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 조건 (나) $\lim_{x \to 2}\frac{f(x)}{x - 2} = 4$에서 바로 알 수 있는 두 가지 정보는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 분모가 0으로 가므로 f(2) = 0이고, 미분계수의 정의에 의해 f'(2) = 4이다.">f(2) = 0 이고 f'(2) = 4</button>
+        <button class="opt" data-why="f(2) = 0이어야 극한값이 존재한다.">f(2) = 4 이고 f'(2) = 0</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 30. 올림포스 [대단원종합문제] #24 (p.87) -->
+<section class="slide" id="olym-p87-24" data-sec="05. 대단원 종합문제" data-title="대단원종합 #24 (p.87)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분 상수 치환 $\int_0^1 g(t)\,dt = k$로 부정적분 $g(x)$를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #24 (p.87 / 자료 p.68)</span><br>
+        다항함수 $f(x)$의 한 부정적분 $g(x)$가 다음 조건을 만족시킬 때, $g(-1)$의 값은?<br>
+        (가) 모든 실수 $x$에 대하여 $f(x) = x^2 + 3\int_0^1 g(t)\,dt$<br>
+        (나) $\int_0^1 g(x)\,dx + \frac{11}{12} = g(0)$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($\int_0^1 g(t)\,dt = k$로 치환하여 $g(x)$ 나타내기)</b>:<br>
+        (가)에서 $f(x) = x^2 + 3k$이고, (나)에서 $g(0) = k + \frac{11}{12}$이다.<br>
+        $g(x) = \int f(x)\,dx = \frac{1}{3}x^3 + 3kx + k + \frac{11}{12}$</p>
+        <p class="step"><b>2단계 ($\int_0^1 g(t)\,dt = k$에 다시 대입하여 $k$ 구하기)</b>:<br>
+        $k = \int_0^1 \left(\frac{1}{3}t^3 + 3kt + k + \frac{11}{12}\right)dt = \frac{1}{12} + \frac{3}{2}k + k + \frac{11}{12} = \frac{5}{2}k + 1$<br>
+        $\implies -\frac{3}{2}k = 1 \implies k = -\frac{2}{3}$</p>
+        <p class="step ans"><b>3단계 ($g(-1)$ 계산)</b>:<br>
+        $g(x) = \frac{1}{3}x^3 - 2x + \frac{1}{4} \implies g(-1) = -\frac{1}{3} + 2 + \frac{1}{4} = \frac{23}{12}$ &nbsp; <b>(정답: $\frac{23}{12}$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $g(x)$가 $f(x)$의 한 부정적분일 때, $g(x)$의 상수항은 무엇과 같은가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 다항함수 g(x)에 x = 0을 대입한 값 g(0)이 곧 적분상수(상수항)이다.">g(0) = k + 11/12</button>
+        <button class="opt" data-why="f(0)은 g'(0), 즉 일차항의 계수이다.">f(0) = 3k</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 31. 올림포스 [대단원종합문제] #26 (p.88) -->
+<section class="slide" id="olym-p88-26" data-sec="05. 대단원 종합문제" data-title="대단원종합 #26 (p.88)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>움직인 거리의 비가 $s_1 : s_2 = 2 : 1$이 되는 시각 $a$는?</h2>
+  <div class="calc grid-2" data-ai="올림포스 26 이동 거리 비 탐색기" data-let="s2 = a < 1 ? -(2/3)*(a^3) + 2*(a^2) : (a < 3 ? (4/3) + 2*(a - 1) : (16/3) + 5*(a - 3) - 0.5*(a^2 - 9))">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #26 (p.88 / 자료 p.68)</span><br>
+        점 P의 시각 $t$ ($0 \le t \le 5$)에서의 속도가 $v(t) = \begin{cases} -2t^2+4t & (0\le t<1) \\ 2 & (1\le t<3) \\ -t+5 & (3\le t\le 5) \end{cases}$이다. $t=0$에서 $t=5$까지 움직인 거리를 $s_1$, $t=0$에서 $t=a$까지 움직인 거리를 $s_2$라 할 때, $s_1 : s_2 = 2 : 1$을 만족시키는 상수 $a$의 값은?
+      </div>
+      <figure class="plot" data-x="0, 5.2" data-y="0, 2.5" data-xstep="1" data-ystep="1" data-height="210" data-xlabel="시각 t" data-ylabel="속도 v(t) ≥ 0">
+        <i data-line="-2*x^2 + 4*x" data-x="0, 1" data-label="[0,1] 넓이 4/3" data-color="#1E3A8A"></i>
+        <i data-path="1, 0; 1, 2; 3, 2; 3, 0" data-close data-fill data-color="#0F766E" data-label="[1,3] 넓이 4"></i>
+        <i data-path="3, 0; 3, 2; 5, 0" data-close data-fill data-color="#2563EB" data-label="[3,5] 넓이 2"></i>
+        <i data-vline="a" data-dash data-label="t = a" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $a =$ <b><output data-expr="a" data-digits="2"></output></b> &nbsp; $\implies$ $[0, a]$ 이동 거리 $s_2 =$ <b><output data-expr="s2" data-digits="2"></output></b> (목표: $\frac{11}{3} \approx 3.67$)</p>
+        <input type="range" name="a" min="1" max="3" step="0.01" value="2.17" aria-label="상수 a">
+        <p class="status-pill">전체 거리 s₁ = 22/3이므로 s₂ = 11/3이 되는 시각은 a = 13/6(≈2.17)이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (전체 이동 거리 $s_1$ 구하기)</b>:<br>
+        구간 $[0, 5]$에서 항상 $v(t) \ge 0$이므로<br>
+        $s_1 = \int_0^1 (-2t^2+4t)\,dt + (2 \times 2) + \left(\frac{1}{2} \times 2 \times 2\right) = \frac{4}{3} + 4 + 2 = \frac{22}{3}$</p>
+        <p class="step"><b>2단계 ($s_2 = \frac{1}{2}s_1 = \frac{11}{3}$이 되는 구간 확인)</b>:<br>
+        $t=1$까지 거리는 $\frac{4}{3}$, $t=3$까지 거리는 $\frac{16}{3}$이므로 $1 < a < 3$이다.</p>
+        <p class="step ans"><b>3단계 ($a$ 구하기)</b>: $s_2 = \frac{4}{3} + 2(a - 1) = \frac{11}{3}$<br>
+        $2(a - 1) = \frac{7}{3} \implies a - 1 = \frac{7}{6} \implies$ <b>정답: $a = \frac{13}{6}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 32. 올림포스 [대단원종합문제] #28 (p.88) -->
+<section class="slide" id="olym-p88-28" data-sec="05. 대단원 종합문제" data-title="대단원종합 #28 (p.88)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선 밖의 점 $(1, 4)$에서 그은 두 접선과 곡선 사이의 넓이는?</h2>
+  <div class="calc grid-2" data-ai="이차곡선과 두 접선 사이 넓이 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #28 (p.88 / 자료 p.69)</span><br>
+        그림과 같이 점 $(1, 4)$에서 곡선 $y = -x^2 + x + 3$에 그은 두 접선을 $l, m$이라 할 때, 곡선 $y = -x^2 + x + 3$과 두 접선 $l, m$으로 둘러싸인 부분의 넓이를 $S$라 하자. $12S$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-0.5, 2.5" data-y="-1, 5" data-xstep="1" data-ystep="2" data-height="220" data-xlabel="x" data-ylabel="y">
+        <i data-line="-x^2 + x + 3" data-label="곡선 y = -x² + x + 3" data-color="#1E3A8A"></i>
+        <i data-line="x + 3" data-x="-0.3, 1.5" data-label="접선 l: y = x + 3 (접점 x=0)" data-color="#0F766E"></i>
+        <i data-line="-3*x + 7" data-x="0.7, 2.3" data-label="접선 m: y = -3x + 7 (접점 x=2)" data-color="#DC2626"></i>
+        <i data-point="1, 4" data-label="교점 (1, 4)" data-color="#D97706"></i>
+        <i data-point="0, 3" data-label="(0, 3)" data-color="#0F766E"></i>
+        <i data-point="2, 1" data-label="(2, 1)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p class="status-pill">[보너스 공식] 포물선과 두 접선 사이 넓이 S = |a|/12 · (β - α)³ = (1/12)·2³ = 2/3</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (접점 $(t, -t^2+t+3)$에서의 접선이 $(1, 4)$를 지남)</b>:<br>
+        $y' = -2x + 1$이므로 접선 $y - (-t^2+t+3) = (-2t+1)(x - t)$에 $(1, 4)$ 대입:<br>
+        $4 = (-2t+1)(1 - t) - t^2 + t + 3 \implies t^2 - 2t = t(t - 2) = 0 \implies t = 0, 2$</p>
+        <p class="step"><b>2단계 (두 접선 $l, m$을 경계 $x = 1$로 나누어 정적분)</b>:<br>
+        • $t = 0$일 때 접선 $l$: $y = x + 3$ &nbsp; ($\implies (x+3) - (-x^2+x+3) = x^2$)<br>
+        • $t = 2$일 때 접선 $m$: $y = -3x + 7$ &nbsp; ($\implies (-3x+7) - (-x^2+x+3) = (x-2)^2$)</p>
+        <p class="step ans"><b>3단계 ($S$ 및 $12S$ 계산)</b>:<br>
+        $S = \int_0^1 x^2\,dx + \int_1^2 (x-2)^2\,dx = \frac{1}{3} + \frac{1}{3} = \frac{2}{3} \implies$ <b>정답: $12S = 8$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 33. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

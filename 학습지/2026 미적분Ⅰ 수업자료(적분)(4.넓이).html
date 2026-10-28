@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-area">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 04. 넓이 (곡선과 축, 두 곡선 사이의 넓이)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  /* 상단 배지 고정 */
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b {
+    color: #1E3A8A;
+  }
+  /* 표지 선생님 성함·직함 편집 상자 */
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  /* 2단 레이아웃 (오른쪽 풀이 영역 폭 520px 확보하여 수식 잘림 완벽 방지) */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    gap: 20px;
+    align-items: start;
+  }
+  /* 문제 상자 및 풀이 단계 상자 */
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 8px 14px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 1.38;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    font-size: 20px;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
+  }
+  .ctrl-card p {
+    margin: 3px 0;
+    font-size: 20px;
+  }
+  .ctrl-card input[type=range] {
+    width: 100%;
+    height: 56px;
+  }
+  .ctrl-card button {
+    min-height: 56px;
+    font-size: 20px;
+    padding: 6px 12px;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display {
+    margin: 4px 0 !important;
+    overflow-x: hidden;
+  }
+  .katex {
+    font-size: 1.02em !important;
+  }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ</p>
+  </div>
+  <h1>04. 넓이<br>곡선과 좌표축 · 두 곡선 사이의 넓이</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 개념 1: 곡선과 x축 사이의 넓이 (p.51) -->
+<section class="slide" id="concept-axis-area" data-sec="04. 넓이" data-title="곡선과 x축 사이의 넓이">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선이 $x$축 아래에 있을 때 도형의 넓이는 어떻게 구할까?</h2>
+  <div class="calc grid-2" data-ai="곡선과 x축 사이의 넓이 탐색기" data-let="s1 = b <= 2 ? b^2 - (b^3)/3 : 4/3; s2 = b <= 2 ? 0 : (b^3)/3 - b^2 + 4/3; area = s1 + s2; defint = s1 - s2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 곡선과 x축 사이의 넓이 (p.51)</span><br>
+        닫힌구간 $[a, b]$에서 연속인 곡선 $y=f(x)$와 $x$축 및 두 직선 $x=a, x=b$로 둘러싸인 도형의 넓이 $S$는<br>
+        $$S = \int_a^b |f(x)|\,dx$$
+      </div>
+      <figure class="plot" data-x="0, 3.2" data-y="-3.5, 2.5" data-xstep="1" data-ystep="1" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="2*x - x^2" data-label="y = f(x)" data-color="#1E3A8A"></i>
+        <i data-line="abs(2*x - x^2)" data-x="0, b" data-dash data-label="y = |f(x)|" data-color="#0F766E"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="b" data-dash data-label="x = b" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>구간 오른쪽 끝 $b =$ <b><output data-expr="b" data-digits="1"></output></b> (구간 $[0, b]$ 예시 모형)</p>
+        <input type="range" name="b" min="0.5" max="3.0" step="0.5" value="3.0" data-play="6" aria-label="오른쪽 끝 b">
+        <p>$x$축 위 넓이 $S_1 =$ <output data-expr="s1" data-digits="2"></output>, &nbsp; 아래 넓이 $S_2 =$ <output data-expr="s2" data-digits="2"></output></p>
+        <p class="status-pill">넓이 S = S₁ + S₂ = <output data-expr="area" data-digits="2"></output> &nbsp; (정적분 S₁ - S₂ = <output data-expr="defint" data-digits="2"></output>)</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1. $f(x) \ge 0$인 구간</b>: 정적분이 곧 넓이이므로 그대로 적분한다.<br>
+        $S = \int_a^b f(x)\,dx$</p>
+        <p class="step"><b>2. $f(x) \le 0$인 구간</b>: 정적분이 음수이므로 <b>앞에 $-$를 붙여</b> 양수로 만든다.<br>
+        $S = \int_a^b \{-f(x)\}\,dx$</p>
+        <p class="step ans"><b>3. 부호가 바뀌는 구간</b>: $f(x) = 0$인 $x$절편을 찾아 구간을 나누어 적분한다!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 교과서 [문제] #1 (p.140) -->
+<section class="slide" id="p140-q1" data-sec="04. 넓이" data-title="교과서 문제 1 (p.140)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>구간에서 부호가 일정한 곡선과 $x$축 사이의 넓이를 구하자</h2>
+  <div class="calc grid-2" data-ai="문제 1 넓이 비교 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #1 (p.140)</span><br>
+        다음 도형의 넓이를 구하시오.<br>
+        (1) 곡선 $y = x^2 + 2x + 1$과 $x$축 및 두 직선 $x=0, x=3$<br>
+        (2) 곡선 $y = x^2 - 4x - 2$와 $x$축 및 두 직선 $x=1, x=2$
+      </div>
+      <figure class="plot" data-x="-0.5, 3.5" data-y="-7, 17" data-xstep="1" data-ystep="4" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^2 + 2*x + 1" data-x="-0.5, 3.3" data-show="q == 1" data-label="(1) y = (x+1)² ≥ 0" data-color="#1E3A8A"></i>
+        <i data-vline="0" data-show="q == 1" data-dash data-color="#0F766E"></i>
+        <i data-vline="3" data-show="q == 1" data-dash data-color="#0F766E"></i>
+        <i data-line="x^2 - 4*x - 2" data-x="-0.5, 3.5" data-show="q == 2" data-label="(2) y = x² - 4x - 2 ≤ 0" data-color="#DC2626"></i>
+        <i data-vline="1" data-show="q == 2" data-dash data-color="#0F766E"></i>
+        <i data-vline="2" data-show="q == 2" data-dash data-color="#0F766E"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1)번 그래프 (y ≥ 0)</button>
+          <button data-set="q" data-value="2">(2)번 그래프 (y ≤ 0)</button>
+        </p>
+        <p data-show="q == 1" class="status-pill">구간 [0, 3]에서 y ≥ 0이므로 그대로 정적분한다!</p>
+        <p data-show="q == 2" class="status-pill">구간 [1, 2]에서 y ≤ 0이므로 -(x²-4x-2)를 정적분한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 구간 $[0, 3]$에서 $y = (x+1)^2 \ge 0$</b>:<br>
+        $S = \int_0^3 (x^2 + 2x + 1)\,dx = \Big[ \frac{1}{3}x^3 + x^2 + x \Big]_0^3$<br>
+        $= 9 + 9 + 3 = 21$</p>
+        <p class="step"><b>(2) 구간 $[1, 2]$에서 $y \le 0$이므로 부호 반전</b>:<br>
+        $S = \int_1^2 (-x^2 + 4x + 2)\,dx = \Big[ -\frac{1}{3}x^3 + 2x^2 + 2x \Big]_1^2$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $\left(-\frac{8}{3} + 8 + 4\right) - \left(-\frac{1}{3} + 2 + 2\right) = \frac{17}{3}$<br>
+        <b>정답: (1) $21$ &nbsp; / &nbsp; (2) $\frac{17}{3}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 교과서 [문제] #2 (p.140) 장미꽃 터널 -->
+<section class="slide" id="p140-q2" data-sec="04. 넓이" data-title="교과서 문제 2 (p.140)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>장미꽃 터널 입구 단면의 전체 넓이는 얼마일까?</h2>
+  <div class="calc grid-2" data-ai="장미꽃 터널 단면 분리 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #2 (p.140)</span><br>
+        장미꽃 터널 입구 단면의 꼭짓점이 $A(0,0), B(0,-2), C(3,-2), D(3,0)$이고, 윗부분 아치 $AD$는 곡선 $y = -\frac{1}{3}x^2 + x$의 일부일 때, 터널 입구 단면의 넓이를 구하시오.
+      </div>
+      <figure class="plot" data-x="-0.5, 3.5" data-y="-2.5, 1.2" data-xstep="1" data-ystep="1" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="-(1/3)*x^2 + x" data-x="0, 3" data-label="아치 y = -(1/3)x² + x" data-color="#DC2626"></i>
+        <i data-path="0, 0; 0, -2; 3, -2; 3, 0" data-close data-fill data-color="#0F766E" data-label="직사각형 ABCD (넓이 6)"></i>
+        <i data-point="0, 0" data-label="A(0,0)" data-color="#1E3A8A"></i>
+        <i data-point="3, 0" data-label="D(3,0)" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p><b>단면 구조</b>: 윗부분(포물선 아치) $+$ 아랫부분(직사각형 $ABCD$)</p>
+        <p class="status-pill">직사각형 넓이 = 가로 3 × 세로 2 = 6</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (아랫부분 직사각형 $ABCD$의 넓이 $S_1$)</b>:<br>
+        가로 길이가 $3$, 세로 길이가 $2$이므로 $S_1 = 3 \times 2 = 6$</p>
+        <p class="step"><b>2단계 (윗부분 포물선 아치의 넓이 $S_2$)</b>:<br>
+        $S_2 = \int_0^3 \left(-\frac{1}{3}x^2 + x\right)\,dx = \Big[ -\frac{1}{9}x^3 + \frac{1}{2}x^2 \Big]_0^3$<br>
+        $= -3 + \frac{9}{2} = \frac{3}{2}$</p>
+        <p class="step ans"><b>3단계 (전체 단면의 넓이)</b>:<br>
+        $S = S_1 + S_2 = 6 + \frac{3}{2} = \frac{15}{2}$ &nbsp; $\therefore$ <b>정답: $\frac{15}{2}$ ($7.5$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 교과서 [문제] #3 (p.140) -->
+<section class="slide" id="p140-q3" data-sec="04. 넓이" data-title="교과서 문제 3 (p.140)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>구간 안에서 $x$축과 만나는 곡선의 넓이는 어떻게 구할까?</h2>
+  <div class="calc grid-2" data-ai="문제 3 x절편 구간 분할 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #3 (p.140)</span><br>
+        다음 도형의 넓이를 구하시오.<br>
+        (1) 곡선 $y = x^2 - 7x + 6$과 $x$축 및 두 직선 $x=0, x=2$<br>
+        (2) 곡선 $y = x^3 + 2x^2 - 3x$와 $x$축 및 두 직선 $x=-1, x=1$
+      </div>
+      <figure class="plot" data-x="-1.5, 2.5" data-y="-5, 7" data-xstep="1" data-ystep="2" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^2 - 7*x + 6" data-x="0, 2" data-show="q == 1" data-label="(1) y = (x-1)(x-6)" data-color="#1E3A8A"></i>
+        <i data-vline="1" data-show="q == 1" data-dash data-label="경계 x = 1" data-color="#DC2626"></i>
+        <i data-line="x^3 + 2*x^2 - 3*x" data-x="-1, 1" data-show="q == 2" data-label="(2) y = x(x+3)(x-1)" data-color="#0F766E"></i>
+        <i data-vline="0" data-show="q == 2" data-dash data-label="경계 x = 0" data-color="#DC2626"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1)번 (x = 1에서 부호 변화)</button>
+          <button data-set="q" data-value="2">(2)번 (x = 0에서 부호 변화)</button>
+        </p>
+        <p class="status-pill">y = 0이 되는 x절편에서 적분 구간을 나누어 계산한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) $x^2 - 7x + 6 = (x-1)(x-6) = 0 \implies x = 1$에서 분할</b>:<br>
+        $S = \int_0^1 (x^2 - 7x + 6)\,dx + \int_1^2 (-x^2 + 7x - 6)\,dx$<br>
+        $= \frac{17}{6} + \frac{13}{6} = \frac{30}{6} = 5$</p>
+        <p class="step"><b>(2) $x(x+3)(x-1) = 0 \implies x = 0$에서 분할</b>:<br>
+        $S = \int_{-1}^0 (x^3 + 2x^2 - 3x)\,dx + \int_0^1 (-x^3 - 2x^2 + 3x)\,dx$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $\frac{23}{12} + \frac{7}{12} = \frac{30}{12} = \frac{5}{2}$<br>
+        <b>정답: (1) $5$ &nbsp; / &nbsp; (2) $\frac{5}{2}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 개념 2: 두 곡선 사이의 넓이 (p.51) -->
+<section class="slide" id="concept-two-curves" data-sec="04. 넓이" data-title="두 곡선 사이의 넓이">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>두 곡선이 $x$축 아래로 내려가도 넓이 공식은 같을까?</h2>
+  <div class="calc grid-2" data-ai="두 곡선 평행이동 불변성 탐색기" data-let="y1 = -x0^2 + 2*x0 + 2 + k; y2 = x0^2 - 2*x0 + 2 + k; len = y1 - y2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 두 곡선 사이의 넓이 (p.51)</span><br>
+        닫힌구간 $[a, b]$에서 두 곡선 $y=f(x), y=g(x)$ 및 두 직선 $x=a, x=b$로 둘러싸인 도형의 넓이 $S$는<br>
+        $$S = \int_a^b |f(x) - g(x)|\,dx = \int_a^b (\text{위쪽 식} - \text{아래쪽 식})\,dx$$
+      </div>
+      <figure class="plot" data-x="-0.5, 2.5" data-y="-4, 7" data-xstep="1" data-ystep="2" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="-x^2 + 2*x + 2 + k" data-label="위 곡선 f(x) + k" data-color="#1E3A8A"></i>
+        <i data-line="x^2 - 2*x + 2 + k" data-label="아래 곡선 g(x) + k" data-color="#0F766E"></i>
+        <i data-path="x0, y2; x0, y1" data-label="세로 길이 f(x)-g(x)" data-color="#DC2626"></i>
+        <i data-point="x0, y1" data-color="#1E3A8A"></i>
+        <i data-point="x0, y2" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>$y$축 평행이동 $k =$ <b><output data-expr="k"></output></b> &nbsp;/&nbsp; 탐침 $x =$ <output data-expr="x0" data-digits="1"></output> (모형)</p>
+        <input type="range" name="k" min="-4" max="2" step="1" value="0" aria-label="평행이동 k">
+        <input type="range" name="x0" min="0" max="2" step="0.5" value="1" data-play="5" aria-label="탐침 x">
+        <p class="status-pill">k가 바뀌어도 세로 간격 f(x)-g(x) = <output data-expr="len" data-digits="1"></output>과 넓이는 불변이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 원리</b>: 두 곡선을 $y$축 방향으로 $k$만큼 평행이동해도<br>
+        $\{f(x)+k\} - \{g(x)+k\} = f(x) - g(x)$이므로 넓이는 변하지 않는다.</p>
+        <p class="step ans"><b>구하는 순서</b>:<br>
+        1. $f(x) = g(x)$를 풀어 <b>교점의 $x$좌표</b>를 구한다.<br>
+        2. 구간에서 <b>(위쪽 함수) $-$ (아래쪽 함수)</b>를 정적분한다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 교과서 [문제] #4 (p.142) -->
+<section class="slide" id="p142-q4" data-sec="04. 넓이" data-title="교과서 문제 4 (p.142)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>이차함수 곡선과 직선·곡선으로 둘러싸인 넓이를 구해 보자</h2>
+  <div class="calc grid-2" data-ai="문제 4 두 곡선 교점과 넓이 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #4 (p.142)</span><br>
+        다음 도형의 넓이를 구하시오.<br>
+        (1) 곡선 $y = x^2 - 4x + 3$과 직선 $y = -x + 1$로 둘러싸인 도형<br>
+        (2) 두 곡선 $y = x^2 - 5x + 6, \; y = -x^2 + 3x$로 둘러싸인 도형
+      </div>
+      <figure class="plot" data-x="0, 3.5" data-y="-1.5, 4" data-xstep="1" data-ystep="1" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="-x + 1" data-show="q == 1" data-label="위: y = -x + 1" data-color="#DC2626"></i>
+        <i data-line="x^2 - 4*x + 3" data-show="q == 1" data-label="아래: y = x² - 4x + 3" data-color="#1E3A8A"></i>
+        <i data-line="-x^2 + 3*x" data-show="q == 2" data-label="위: y = -x² + 3x" data-color="#DC2626"></i>
+        <i data-line="x^2 - 5*x + 6" data-show="q == 2" data-label="아래: y = x² - 5x + 6" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1) 교점 x = 1, 2</button>
+          <button data-set="q" data-value="2">(2) 교점 x = 1, 3</button>
+        </p>
+        <p class="status-pill">보너스 공식: ∫_α^β a(x-α)(x-β) dx의 넓이 = |a|/6 · (β - α)³</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 교점</b>: $x^2 - 4x + 3 = -x + 1 \implies (x-1)(x-2) = 0$<br>
+        $S = \int_1^2 (-x^2 + 3x - 2)\,dx = \Big[ -\frac{1}{3}x^3 + \frac{3}{2}x^2 - 2x \Big]_1^2 = \frac{1}{6}$</p>
+        <p class="step"><b>(2) 교점</b>: $x^2 - 5x + 6 = -x^2 + 3x \implies 2(x-1)(x-3) = 0$<br>
+        $S = \int_1^3 (-2x^2 + 8x - 6)\,dx = \Big[ -\frac{2}{3}x^3 + 4x^2 - 6x \Big]_1^3$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $0 - \left(-\frac{2}{3} + 4 - 6\right) = \frac{8}{3}$<br>
+        <b>정답: (1) $\frac{1}{6}$ &nbsp; / &nbsp; (2) $\frac{8}{3}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 교과서 [문제] #5 (p.142) 인공 나뭇잎 -->
+<section class="slide" id="p142-q5" data-sec="04. 넓이" data-title="교과서 문제 5 (p.142)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>두 이차함수로 이루어진 인공 나뭇잎 단면의 넓이는?</h2>
+  <div class="calc grid-2" data-ai="인공 나뭇잎 단면 탐침 탐색기" data-let="yt = -(1/8)*(t^2) + 4; yb = (1/8)*(t^2); h = yt - yb">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #5 (p.142)</span><br>
+        인공 나뭇잎의 위, 아래 경계선이 각각 두 이차함수
+        $$y = -\frac{1}{8}x^2 + 4, \quad y = \frac{1}{8}x^2$$
+        의 그래프의 일부와 같을 때, 이 인공 나뭇잎 단면의 넓이를 구하시오.
+      </div>
+      <figure class="plot" data-x="-5, 5" data-y="-0.5, 4.5" data-xstep="2" data-ystep="1" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="-(1/8)*x^2 + 4" data-x="-4, 4" data-label="위 경계 y = -(1/8)x² + 4" data-color="#0F766E"></i>
+        <i data-line="(1/8)*x^2" data-x="-4, 4" data-label="아래 경계 y = (1/8)x²" data-color="#1E3A8A"></i>
+        <i data-path="t, yb; t, yt" data-label="단면 폭" data-color="#DC2626"></i>
+        <i data-point="-4, 2" data-label="(-4, 2)" data-color="#DC2626"></i>
+        <i data-point="4, 2" data-label="(4, 2)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 위치 $x =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; $\implies$ 세로 폭 $=$ <b><output data-expr="h" data-digits="2"></output></b></p>
+        <input type="range" name="t" min="-4" max="4" step="1" value="0" data-play="6" aria-label="탐침 x">
+        <p class="status-pill">y축 대칭(우함수)이므로 [0, 4] 정적분의 2배로 계산하면 빠르다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (교점의 $x$좌표 구하기)</b>:<br>
+        $-\frac{1}{8}x^2 + 4 = \frac{1}{8}x^2 \implies \frac{1}{4}x^2 = 4 \implies x = -4 \text{ 또는 } x = 4$</p>
+        <p class="step"><b>2단계 ($y$축 대칭을 이용한 정적분)</b>:<br>
+        $S = \int_{-4}^4 \left(4 - \frac{1}{4}x^2\right)\,dx = 2\int_0^4 \left(4 - \frac{1}{4}x^2\right)\,dx$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>: $2\Big[ 4x - \frac{1}{12}x^3 \Big]_0^4 = 2\left(16 - \frac{16}{3}\right) = \frac{64}{3}$<br>
+        <b>정답: $\frac{64}{3}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 교과서 [예제] #4 (p.143) -->
+<section class="slide" id="p143-ex4" data-sec="04. 넓이" data-title="교과서 예제 4 (p.143)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차곡선과 이차곡선이 세 점에서 만날 때 넓이는?</h2>
+  <div class="calc grid-2" data-ai="삼차·이차곡선 교차 넓이 탐색기" data-let="d = x0^3 - 4*x0">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [예제] #4 (p.143)</span><br>
+        두 곡선 $y = x^3 + x^2 - 3x, \; y = x^2 + x$로 둘러싸인 도형의 넓이를 구하시오.
+      </div>
+      <figure class="plot" data-x="-2.5, 2.5" data-y="-4, 6" data-xstep="1" data-ystep="2" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^3 + x^2 - 3*x" data-label="f(x) = x³ + x² - 3x" data-color="#1E3A8A"></i>
+        <i data-line="x^2 + x" data-label="g(x) = x² + x" data-color="#DC2626"></i>
+        <i data-vline="x0" data-dash data-color="#0F766E"></i>
+        <i data-point="-2, 2" data-color="#0F766E"></i>
+        <i data-point="0, 0" data-color="#0F766E"></i>
+        <i data-point="2, 6" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 $x =$ <b><output data-expr="x0" data-digits="1"></output></b> &nbsp; $\implies f(x) - g(x) = x^3 - 4x =$ <b><output data-expr="d" data-digits="2"></output></b></p>
+        <input type="range" name="x0" min="-2" max="2" step="0.5" value="-1" data-play="6" aria-label="탐침 x">
+        <p data-show="x0 < 0" class="status-pill">[-2, 0] 구간: 삼차함수 f(x)가 위쪽 (f - g ≥ 0)</p>
+        <p data-show="x0 >= 0" class="status-pill">[0, 2] 구간: 이차함수 g(x)가 위쪽 (g - f ≥ 0)</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (교점 구하기)</b>: $x^3 + x^2 - 3x = x^2 + x$<br>
+        $\implies x^3 - 4x = x(x+2)(x-2) = 0 \implies x = -2, 0, 2$</p>
+        <p class="step"><b>2단계 (구간 $[-2, 0]$과 $[0, 2]$로 나누어 적분)</b>:<br>
+        $S = \int_{-2}^0 (x^3 - 4x)\,dx + \int_0^2 (-x^3 + 4x)\,dx$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>: $\Big[\frac{1}{4}x^4 - 2x^2\Big]_{-2}^0 + \Big[-\frac{1}{4}x^4 + 2x^2\Big]_0^2$<br>
+        $= 4 + 4 = 8$ &nbsp; $\therefore$ <b>정답: $8$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 교과서 [문제] #6 (p.143) -->
+<section class="slide" id="p143-q6" data-sec="04. 넓이" data-title="교과서 문제 6 (p.143)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>접하는 교점과 뚫고 지나가는 교점이 있을 때의 넓이는?</h2>
+  <div class="calc grid-2" data-ai="문제 6 차함수 그래프와 넓이 탐색기" data-let="diff = x0^3 - 2*x0^2 - x0 + 2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #6 (p.143)</span><br>
+        두 곡선 $y = x^3 - x^2 + 1, \; y = x^2 + x - 1$로 둘러싸인 도형의 넓이를 구하시오.
+      </div>
+      <figure class="plot" data-x="-1.5, 2.5" data-y="-3, 3" data-xstep="1" data-ystep="1" data-height="230" data-xlabel="x" data-ylabel="차함수 y = f(x) - g(x)">
+        <i data-line="x^3 - 2*x^2 - x + 2" data-x="-1.2, 2.2" data-label="f(x) - g(x) = (x+1)(x-1)(x-2)" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-point="-1, 0" data-label="-1" data-color="#DC2626"></i>
+        <i data-point="1, 0" data-label="1" data-color="#DC2626"></i>
+        <i data-point="2, 0" data-label="2" data-color="#DC2626"></i>
+        <i data-point="x0, diff" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 $x =$ <b><output data-expr="x0" data-digits="1"></output></b> &nbsp; $\implies f(x) - g(x) =$ <b><output data-expr="diff" data-digits="2"></output></b></p>
+        <input type="range" name="x0" min="-1" max="2" step="0.5" value="0" aria-label="탐침 x">
+        <p data-show="x0 <= 1" class="status-pill">[-1, 1] 구간: f(x) - g(x) ≥ 0</p>
+        <p data-show="x0 > 1" class="status-pill">[1, 2] 구간: f(x) - g(x) ≤ 0 (부호 반전!)</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (차함수 인수분해로 교점 구하기)</b>:<br>
+        $(x^3 - x^2 + 1) - (x^2 + x - 1) = x^3 - 2x^2 - x + 2 = 0$<br>
+        $\implies (x^2 - 1)(x - 2) = (x+1)(x-1)(x-2) = 0 \implies x = -1, 1, 2$</p>
+        <p class="step"><b>2단계 (구간 $[-1, 1]$과 $[1, 2]$로 나누어 적분)</b>:<br>
+        $S = \int_{-1}^1 (x^3 - 2x^2 - x + 2)\,dx + \int_1^2 (-x^3 + 2x^2 + x - 2)\,dx$</p>
+        <p class="step ans"><b>3단계 (계산 및 정답)</b>:<br>
+        $\frac{8}{3} + \frac{5}{12} = \frac{37}{12}$ &nbsp; $\therefore$ <b>정답: $\frac{37}{12}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 교과서 [스스로 확인하기] #2 (p.144) -->
+<section class="slide" id="p144-q2" data-sec="스스로 확인하기" data-title="스스로 확인하기 2 (p.144)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선과 $x$축 및 두 직선으로 둘러싸인 넓이를 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2 (p.144)</span><br>
+        다음 도형의 넓이를 구하시오.<br>
+        (1) 곡선 $y = 3x^2 - 6x - 9$와 $x$축 및 두 직선 $x=1, x=3$<br>
+        (2) 곡선 $y = -x^2 + 8x - 7$과 $x$축 및 두 직선 $x=0, x=2$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) $3(x+1)(x-3) \le 0$ ($1 \le x \le 3$에서 $x$축 아래)</b>:<br>
+        $S = \int_1^3 (-3x^2 + 6x + 9)\,dx = \Big[ -x^3 + 3x^2 + 9x \Big]_1^3$<br>
+        $= (-27 + 27 + 27) - (-1 + 3 + 9) = 27 - 11 = 16$</p>
+        <p class="step"><b>(2) $-(x-1)(x-7) = 0 \implies x = 1$에서 구간 분할</b>:<br>
+        $S = \int_0^1 (x^2 - 8x + 7)\,dx + \int_1^2 (-x^2 + 8x - 7)\,dx$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $\frac{10}{3} + \frac{8}{3} = \frac{18}{3} = 6$<br>
+        <b>정답: (1) $16$ &nbsp; / &nbsp; (2) $6$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (2)번에서 구간 $[0, 2]$를 어느 점을 기준으로 나누어 적분해야 할까?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. -x² + 8x - 7 = -(x-1)(x-7) = 0이므로 구간 [0, 2] 안의 근인 x = 1에서 부호가 바뀐다.">x = 1</button>
+        <button class="opt" data-why="x = 7은 주어진 구간 [0, 2] 밖에 있다.">x = 7</button>
+        <button class="opt" data-why="x = 1에서 음수에서 양수로 부호가 바뀌므로 구간을 나누어야 한다.">나누지 않고 한 번에 적분한다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 교과서 [스스로 확인하기] #3 (p.144) -->
+<section class="slide" id="p144-q3" data-sec="스스로 확인하기" data-title="스스로 확인하기 3 (p.144)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>두 곡선으로 둘러싸인 도형의 넓이를 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #3 (p.144)</span><br>
+        다음 도형의 넓이를 구하시오.<br>
+        (1) 두 곡선 $y = -x^2 + 2x - 1, \; y = x^2 - 5$로 둘러싸인 도형<br>
+        (2) 두 곡선 $y = x^3 - 2x^2 - x + 2, \; y = x^2 - 1$로 둘러싸인 도형
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 교점</b>: $-x^2 + 2x - 1 = x^2 - 5 \implies 2(x+1)(x-2) = 0$<br>
+        $S = \int_{-1}^2 (-2x^2 + 2x + 4)\,dx = \Big[ -\frac{2}{3}x^3 + x^2 + 4x \Big]_{-1}^2 = 9$</p>
+        <p class="step"><b>(2) 교점</b>: $(x^3 - 2x^2 - x + 2) - (x^2 - 1) = x^3 - 3x^2 - x + 3$<br>
+        $= (x+1)(x-1)(x-3) = 0 \implies x = -1, 1, 3$</p>
+        <p class="step ans"><b>(2) 구간 분할 계산 및 정답</b>:<br>
+        $\int_{-1}^1 (x^3 - 3x^2 - x + 3)\,dx + \int_1^3 (-x^3 + 3x^2 + x - 3)\,dx = 4 + 4 = 8$<br>
+        <b>정답: (1) $9$ &nbsp; / &nbsp; (2) $8$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (1)번에 넓이 공식 $S = \frac{|a|}{6}(\beta - \alpha)^3$을 적용할 때 최고차항 계수의 절댓값 $|a|$와 $(\beta - \alpha)$는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="두 이차항의 차는 -x² - x² = -2x²이므로 |a| = 2이다.">|a| = 1, β - α = 3</button>
+        <button class="opt" data-ok data-why="맞다. (2/6) × 3³ = (1/3) × 27 = 9로 순식간에 검산할 수 있다.">|a| = 2, β - α = 3</button>
+        <button class="opt" data-why="두 교점이 -1과 2이므로 2 - (-1) = 3이다.">|a| = 2, β - α = 1</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 교과서 [스스로 확인하기] #4 (p.144) -->
+<section class="slide" id="p144-q4" data-sec="스스로 확인하기" data-title="스스로 확인하기 4 (p.144)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차곡선 $y = x^3$과 $x$축 사이의 넓이가 $\frac{17}{4}$이 되려면?</h2>
+  <div class="calc grid-2" data-ai="스스로 4 음수 경계 a 탐색기" data-let="s1 = (a^4)/4; s2 = 4; tot = s1 + s2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #4 (p.144)</span><br>
+        곡선 $y = x^3$과 $x$축 및 두 직선 $x = a, \; x = 2$로 둘러싸인 도형의 넓이가 $\frac{17}{4}$일 때, 상수 $a$의 값을 구하시오. (단, $a < 0$)
+      </div>
+      <figure class="plot" data-x="-2, 2.5" data-y="-6, 9" data-xstep="1" data-ystep="3" data-height="230" data-xlabel="x" data-ylabel="y = x³">
+        <i data-line="x^3" data-label="y = x³" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="a" data-dash data-label="x = a (a < 0)" data-color="#DC2626"></i>
+        <i data-vline="2" data-dash data-label="x = 2" data-color="#0F766E"></i>
+        <i data-point="a, a^3" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>음수 $a =$ <b><output data-expr="a" data-digits="1"></output></b> &nbsp; ($[a, 0]$ 넓이 $=$ <output data-expr="s1" data-digits="2"></output>, &nbsp; $[0, 2]$ 넓이 $= 4$)</p>
+        <input type="range" name="a" min="-1.5" max="-0.5" step="0.5" value="-0.5" aria-label="음수 a">
+        <p>전체 넓이 $S = \frac{a^4}{4} + 4 =$ <b><output data-expr="tot" data-digits="2"></output></b> (목표: $\frac{17}{4} = 4.25$)</p>
+        <p data-show="a == -1" class="status-pill">a = -1일 때 넓이가 1/4 + 4 = 17/4(4.25)가 된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($x = 0$을 기준으로 구간 나누기)</b>:<br>
+        $a < 0$이므로 $[a, 0]$에서는 $x^3 \le 0$, $[0, 2]$에서는 $x^3 \ge 0$이다.<br>
+        $S = \int_a^0 (-x^3)\,dx + \int_0^2 x^3\,dx$</p>
+        <p class="step"><b>2단계 (적분 계산 및 방정식 세우기)</b>:<br>
+        $\Big[ -\frac{1}{4}x^4 \Big]_a^0 + \Big[ \frac{1}{4}x^4 \Big]_0^2 = \frac{1}{4}a^4 + 4 = \frac{17}{4}$</p>
+        <p class="step ans">$\frac{1}{4}a^4 = \frac{1}{4} \implies a^4 = 1$<br>
+        $a < 0$이므로 <b>정답: $a = -1$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 교과서 [스스로 확인하기] #5 (p.144) -->
+<section class="slide" id="p144-q5" data-sec="스스로 확인하기" data-title="스스로 확인하기 5 (p.144)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$x$축 아래 넓이 $A$와 위 넓이 $B$가 같을 조건은?</h2>
+  <div class="calc grid-2" data-ai="두 도형 넓이가 같을 조건 탐색기" data-let="sa = 9/2; sb = (a^3)/3 - 1.5*(a^2) + 9/2; net = sb - sa">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #5 (p.144)</span><br>
+        그림과 같이 곡선 $y = x^2 - 3x$와 $x$축 및 직선 $x = a$로 둘러싸인 두 도형 $A, B$의 넓이가 같을 때, 상수 $a$의 값을 구하시오. (단, $a > 3$)
+      </div>
+      <figure class="plot" data-x="-0.5, 5" data-y="-3, 8" data-xstep="1" data-ystep="2" data-height="230" data-xlabel="x" data-ylabel="y = x² - 3x">
+        <i data-line="x^2 - 3*x" data-label="y = x² - 3x" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="a" data-dash data-label="x = a" data-color="#DC2626"></i>
+        <i data-point="3, 0" data-label="3" data-color="#0F766E"></i>
+        <i data-point="a, a^2 - 3*a" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $a =$ <b><output data-expr="a" data-digits="1"></output></b> &nbsp; ($A$ 넓이 $= 4.50$, &nbsp; $B$ 넓이 $=$ <b><output data-expr="sb" data-digits="2"></output></b>)</p>
+        <input type="range" name="a" min="3.0" max="5.0" step="0.5" value="3.5" aria-label="상수 a">
+        <p>전체 정적분 $\int_0^a (x^2 - 3x)\,dx = B - A =$ <b><output data-expr="net" data-digits="2"></output></b></p>
+        <p data-show="a == 4.5" class="status-pill">a = 4.5(9/2)일 때 B - A = 0이 되어 두 넓이가 같다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 원리 ($A$와 $B$의 넓이가 같다 $\iff$ 전체 정적분이 $0$!)</b>:<br>
+        $(A\text{의 넓이}) = (B\text{의 넓이}) \implies \int_0^a (x^2 - 3x)\,dx = 0$</p>
+        <p class="step"><b>2단계 (정적분 계산)</b>:<br>
+        $\Big[ \frac{1}{3}x^3 - \frac{3}{2}x^2 \Big]_0^a = \frac{1}{3}a^3 - \frac{3}{2}a^2 = 0$<br>
+        $\implies a^2\left(\frac{1}{3}a - \frac{3}{2}\right) = 0$</p>
+        <p class="step ans">$a > 3$이므로 $\frac{1}{3}a = \frac{3}{2}$ &nbsp; $\therefore$ <b>정답: $a = \frac{9}{2}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. 교과서 [스스로 확인하기] #6-(1) (p.144) 그늘막 교점 -->
+<section class="slide" id="p144-q6-1" data-sec="스스로 확인하기" data-title="스스로 확인하기 6-(1) (p.144)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>세 이차함수 곡선으로 둘러싸인 그늘막의 꼭짓점 $A, B$는?</h2>
+  <div class="calc grid-2" data-ai="그늘막 경계 교점 탐색기" data-let="yt = 0.5*(t^2) - 2.5*abs(t) + 2; yb = -0.125*(t^2) - 0.5">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #6-(1) (p.144)</span><br>
+        그늘막의 경계선이 세 이차함수 $y = \frac{1}{2}x^2 + \frac{5}{2}x + 2$, $y = \frac{1}{2}x^2 - \frac{5}{2}x + 2$, $y = -\frac{1}{8}x^2 - \frac{1}{2}$의 일부와 같을 때, <b>(1) 두 교점 $A, B$의 좌표</b>를 구하시오.
+      </div>
+      <figure class="plot" data-x="-3, 3" data-y="-2, 2.5" data-xstep="1" data-ystep="1" data-height="230" data-xlabel="x" data-ylabel="y">
+        <i data-line="0.5*x^2 + 2.5*x + 2" data-x="-2, 0" data-label="왼쪽 위 경계" data-color="#1E3A8A"></i>
+        <i data-line="0.5*x^2 - 2.5*x + 2" data-x="0, 2" data-label="오른쪽 위 경계" data-color="#0F766E"></i>
+        <i data-line="-0.125*x^2 - 0.5" data-x="-2, 2" data-label="아래 경계" data-color="#DC2626"></i>
+        <i data-point="-2, -1" data-label="A(-2, -1)" data-color="#1E3A8A"></i>
+        <i data-point="2, -1" data-label="B(2, -1)" data-color="#0F766E"></i>
+        <i data-path="t, yb; t, yt" data-dash data-color="#D97706"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>탐침 $x =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; (위 경계 $y =$ <output data-expr="yt" data-digits="2"></output>, 아래 경계 $y =$ <output data-expr="yb" data-digits="2"></output>)</p>
+        <input type="range" name="t" min="-2" max="2" step="0.5" value="2" aria-label="탐침 x">
+        <p data-show="abs(t) == 2" class="status-pill">x = ±2에서 위 경계와 아래 경계가 y = -1에서 만난다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (점 $B$의 좌표: $x > 0$에서 두 식 연립)</b>:<br>
+        $\frac{1}{2}x^2 - \frac{5}{2}x + 2 = -\frac{1}{8}x^2 - \frac{1}{2}$ (양변에 $8$ 곱하기)<br>
+        $\implies 5x^2 - 20x + 20 = 5(x - 2)^2 = 0 \implies x = 2$</p>
+        <p class="step"><b>2단계 ($x = 2$ 대입 및 $y$축 대칭 이용)</b>:<br>
+        $y = -\frac{1}{8}(4) - \frac{1}{2} = -1$이므로 $B(2, -1)$이고, $y$축 대칭이므로 $A(-2, -1)$</p>
+        <p class="step ans"><b>정답 (1): $A(-2, -1), \quad B(2, -1)$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 교과서 [스스로 확인하기] #6-(2) (p.144) 그늘막 넓이 -->
+<section class="slide" id="p144-q6-2" data-sec="스스로 확인하기" data-title="스스로 확인하기 6-(2) (p.144)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$y$축 대칭을 이용하여 그늘막의 전체 넓이를 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #6-(2) (p.144)</span><br>
+        앞 문항의 세 이차함수 경계선과 두 교점 $A(-2, -1), B(2, -1)$에 대하여, <b>(2) 이 그늘막의 넓이</b>를 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($y$축에 대하여 대칭이므로 $x \ge 0$ 넓이의 $2$배)</b>:<br>
+        구간 $[0, 2]$에서 위쪽 경계는 $y = \frac{1}{2}x^2 - \frac{5}{2}x + 2$,<br>
+        아래쪽 경계는 $y = -\frac{1}{8}x^2 - \frac{1}{2}$이다.</p>
+        <p class="step"><b>2단계 (위쪽 식 $-$ 아래쪽 식 정리)</b>:<br>
+        $\left(\frac{1}{2}x^2 - \frac{5}{2}x + 2\right) - \left(-\frac{1}{8}x^2 - \frac{1}{2}\right) = \frac{5}{8}x^2 - \frac{5}{2}x + \frac{5}{2}$</p>
+        <p class="step ans"><b>3단계 (정적분 계산 및 정답)</b>:<br>
+        $S = 2\int_0^2 \left(\frac{5}{8}x^2 - \frac{5}{2}x + \frac{5}{2}\right)\,dx = 2\Big[ \frac{5}{24}x^3 - \frac{5}{4}x^2 + \frac{5}{2}x \Big]_0^2$<br>
+        $= 2\left(\frac{5}{3} - 5 + 5\right) = \frac{10}{3}$ &nbsp; $\therefore$ <b>정답 (2): $\frac{10}{3}$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 구간 $[0, 2]$에서 오른쪽 그늘막 절반만의 넓이는 얼마인가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 오른쪽 절반 넓이가 5/3이고, y축 대칭이므로 전체 넓이는 2배인 10/3이다.">5/3</button>
+        <button class="opt" data-why="5/6가 아니라 (5/24)×8 = 5/3이다.">5/6</button>
+        <button class="opt" data-why="10/3은 왼쪽과 오른쪽을 합친 전체 그늘막의 넓이다.">10/3</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

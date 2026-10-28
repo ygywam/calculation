@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-def-integral">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 03. 정적분과 그 계산</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  /* 상단 배지 고정 */
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b {
+    color: #1E3A8A;
+  }
+  /* 표지 선생님 성함·직함 편집 상자 */
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  /* 2단 레이아웃 (오른쪽 풀이 영역 폭 확보하여 수식 잘림 방지) */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    gap: 20px;
+    align-items: start;
+  }
+  /* 문제 상자 및 풀이 단계 상자 */
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 8px 14px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 1.38;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    font-size: 20px;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
+  }
+  .ctrl-card p {
+    margin: 3px 0;
+    font-size: 20px;
+  }
+  .ctrl-card input[type=range] {
+    width: 100%;
+    height: 56px;
+  }
+  .ctrl-card button {
+    min-height: 56px;
+    font-size: 20px;
+    padding: 6px 10px;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  /* KaTeX 수식이 상자 폭을 넘지 않도록 안전장치 추가 */
+  .katex-display {
+    margin: 4px 0 !important;
+    overflow-x: hidden;
+  }
+  .katex {
+    font-size: 1.02em !important;
+  }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ</p>
+  </div>
+  <h1>03. 정적분<br>정적분의 성질과 계산</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 개념 1: 정적분의 정의 (S1 - S2) -->
+<section class="slide" id="concept-def-int" data-sec="03. 정적분" data-title="정적분의 정의">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분 $\int_a^b f(x)\,dx$는 넓이와 어떤 관계가 있을까?</h2>
+  <div class="calc grid-2" data-ai="정적분의 기하적 정의 탐색기" data-let="s1 = b <= 2 ? b^2 - (b^3)/3 : 4/3; s2 = b <= 2 ? 0 : (b^3)/3 - b^2 + 4/3; val = s1 - s2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 정적분의 정의 (p.48)</span><br>
+        닫힌구간 $[a, b]$에서 연속인 함수 $f(x)$의 그래프와 $x$축으로 둘러싸인 도형 중 $f(x) \ge 0$인 부분의 넓이를 $S_1$, $f(x) \le 0$인 부분의 넓이를 $S_2$라 할 때<br>
+        $$\int_a^b f(x)\,dx = S_1 - S_2$$
+      </div>
+      <figure class="plot" data-x="0, 3.2" data-y="-3.5, 2.5" data-xstep="1" data-ystep="1" data-height="235" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="2*x - x^2" data-label="f(x) = 2x - x² (예시)" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-vline="b" data-dash data-label="위끝 x = b" data-color="#DC2626"></i>
+        <i data-point="b, 2*b - b^2" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>위끝 $b =$ <b><output data-expr="b" data-digits="1"></output></b> (아래끝 $a = 0$ 고정, 예시 모형)</p>
+        <input type="range" name="b" min="0" max="3" step="0.5" value="3" data-play="6" aria-label="위끝 b">
+        <p>$x$축 위 넓이 $S_1 =$ <output data-expr="s1" data-digits="2"></output> &nbsp;/&nbsp; $x$축 아래 넓이 $S_2 =$ <output data-expr="s2" data-digits="2"></output></p>
+        <p class="status-pill">정적분 값 S₁ - S₂ = <output data-expr="val" data-digits="2"></output></p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>위끝과 아래끝의 관계</b>:<br>
+        1. $a = b$일 때: $\int_a^a f(x)\,dx = 0$ (구간의 폭이 $0$)</p>
+        <p class="step ans">2. $a > b$일 때: $\int_a^b f(x)\,dx = -\int_b^a f(x)\,dx$<br>
+        (위끝과 아래끝을 바꾸면 부호가 바뀐다!)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 개념 2: 정적분과 미분의 관계 증명 (p.48) -->
+<section class="slide" id="concept-ftc1" data-sec="03. 정적분" data-title="정적분과 미분의 관계">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>넓이 함수 $S(x) = \int_a^x f(t)\,dt$를 미분하면 왜 $f(x)$가 될까?</h2>
+  <div class="calc grid-2" data-ai="정적분과 미분의 관계 증분 탐색기" data-let="x1 = 1 + dx; m = 0.5*(1)^2 + 1; M = 0.5*(x1)^2 + 1; ds = ((x1^3 - 1)/6 + dx); avg = ds / dx">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 정적분과 미분의 관계 (p.48)</span><br>
+        $S(x) = \int_a^x f(t)\,dt$일 때, 구간 $[x, x+\Delta x]$에서의 최솟값 $m$, 최댓값 $M$에 대하여 $m\Delta x \le \Delta S \le M\Delta x$가 성립한다.<br>
+        $$\therefore \frac{d}{dx}\int_a^x f(t)\,dt = f(x)$$
+      </div>
+      <figure class="plot" data-x="0, 2.5" data-y="0, 4" data-xstep="0.5" data-ystep="1" data-height="220" data-xlabel="t" data-ylabel="y = f(t)">
+        <i data-line="0.5*x^2 + 1" data-label="y = f(t)" data-color="#1E3A8A"></i>
+        <i data-path="1, 0; x1, 0; x1, M; 1, M" data-close data-dash data-color="#DC2626" data-label="M·Δx"></i>
+        <i data-path="1, 0; x1, 0; x1, m; 1, m" data-close data-fill data-color="#0F766E" data-label="m·Δx"></i>
+        <i data-point="1, m" data-label="(x, f(x))" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>증분 $\Delta x =$ <b><output data-expr="dx" data-digits="2"></output></b> ($x=1$에서 $f(1) = 1.50$, 모형)</p>
+        <input type="range" name="dx" min="0.05" max="1.0" step="0.05" value="0.6" aria-label="증분 Δx">
+        <p>$m =$ <output data-expr="m" data-digits="2"></output> $\le \frac{\Delta S}{\Delta x} =$ <b><output data-expr="avg" data-digits="2"></output></b> $\le M =$ <output data-expr="M" data-digits="2"></output></p>
+        <p data-show="dx <= 0.1" class="status-pill">Δx → 0일 때 모두 f(x) = 1.50에 수렴한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($\Delta x > 0$)</b>: 최대·최소 정리에 의해<br>
+        $m\Delta x \le \Delta S \le M\Delta x \implies m \le \frac{\Delta S}{\Delta x} \le M$</p>
+        <p class="step"><b>2단계 ($\Delta x < 0$)</b>: 구간 $[x+\Delta x, x]$에서<br>
+        $m(-\Delta x) \le -\Delta S \le M(-\Delta x) \implies m \le \frac{\Delta S}{\Delta x} \le M$</p>
+        <p class="step ans"><b>3단계 (극한)</b>: $\lim_{\Delta x \to 0} m = \lim_{\Delta x \to 0} M = f(x)$이므로<br>
+        $S'(x) = \lim_{\Delta x \to 0}\frac{\Delta S}{\Delta x} = f(x)$ &nbsp; $\therefore \frac{d}{dx}\int_a^x f(t)\,dt = f(x)$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 교과서 [문제] #4 (p.49 / 교과서 p.132) -->
+<section class="slide" id="p49-q4" data-sec="03. 정적분" data-title="정적분과 미분의 관계 문제">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분으로 정의된 등식에서 함수와 미정계수를 구해 보자</h2>
+  <div class="calc grid-2" data-ai="정적분 등식 미정계수 탐색기" data-let="s1 = 2 + 1 + a">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #4 (p.49)</span><br>
+        모든 실수 $x$에 대하여
+        $$\int_1^x f(t)\,dt = 2x^2 + x + a$$
+        를 만족시키는 함수 $f(x)$와 상수 $a$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-1, 2.5" data-y="-4, 10" data-xstep="1" data-ystep="2" data-height="225" data-xlabel="x" data-ylabel="y = S(x)">
+        <i data-line="2*x^2 + x + a" data-label="S(x) = 2x² + x + a" data-color="#1E3A8A"></i>
+        <i data-point="1, 0" data-label="목표 (1, 0)" data-color="#DC2626"></i>
+        <i data-point="1, s1" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $a =$ <b><output data-expr="a"></output></b> &nbsp; ($\int_1^1 f(t)\,dt = 0$, 우변 $S(1) =$ <b><output data-expr="s1"></output></b>)</p>
+        <input type="range" name="a" min="-5" max="1" step="1" value="-1" aria-label="상수 a">
+        <p data-show="a == -3" class="status-pill">a = -3일 때 x = 1에서 우변도 0이 되어 등식이 성립한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (양변을 $x$에 대하여 미분)</b>:<br>
+        $\frac{d}{dx}\int_1^x f(t)\,dt = (2x^2 + x + a)'$<br>
+        $\implies f(x) = 4x + 1$</p>
+        <p class="step"><b>2단계 (위끝과 아래끝이 같아지는 $x=1$ 대입)</b>:<br>
+        $\int_1^1 f(t)\,dt = 0$이므로 $2(1)^2 + 1 + a = 0$</p>
+        <p class="step ans"><b>정답</b>: $f(x) = 4x + 1, \quad a = -3$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 개념 3: 부정적분과 정적분의 관계 & 적분의 평균값 정리 (p.49) -->
+<section class="slide" id="concept-ftc2" data-sec="03. 정적분" data-title="부정적분과 정적분의 관계">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>부정적분 $F(x)$로 정적분을 어떻게 계산할까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 미적분학의 기본 정리 (p.49)</span><br>
+        함수 $f(x)$가 닫힌구간 $[a, b]$에서 연속이고, $f(x)$의 한 부정적분을 $F(x)$라 하면<br>
+        $$\int_a^b f(x)\,dx = \Big[ F(x) \Big]_a^b = F(b) - F(a)$$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>유도 1단계</b>: $S(x) = \int_a^x f(t)\,dt$라 하면 $S'(x) = f(x)$이므로<br>
+        $S(x) = F(x) + C$ ($C$는 적분상수)</p>
+        <p class="step"><b>유도 2단계</b>: $x = a$를 대입하면 $S(a) = 0$이므로<br>
+        $F(a) + C = 0 \implies C = -F(a)$</p>
+        <p class="step"><b>유도 3단계</b>: $\int_a^x f(t)\,dt = F(x) - F(a)$에 $x=b$ 대입:<br>
+        $\int_a^b f(x)\,dx = F(b) - F(a)$</p>
+        <p class="step ans"><b>보너스 | 극한과 정적분의 결합</b>:<br>
+        $\lim_{x \to a} \frac{1}{x - a}\int_a^x f(t)\,dt = \lim_{x \to a}\frac{F(x) - F(a)}{x - a} = F'(a) = f(a)$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $f(x) = 3x^2 - 2x + 5$일 때,<br>극한값 $\lim_{x \to 2} \frac{1}{x - 2}\int_2^x f(t)\,dt$의 값은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="적분할 필요 없이 미분계수의 정의에 의해 곧바로 f(2)가 된다.">9</button>
+        <button class="opt" data-ok data-why="맞다. 준 식은 F'(2) = f(2)와 같으므로 3(4) - 2(2) + 5 = 13이다.">13</button>
+        <button class="opt" data-why="f'(2)가 아니라 f(2)의 값을 구해야 한다.">10</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 개념 4: 정적분의 성질과 구간 나누기 (p.49) -->
+<section class="slide" id="concept-prop" data-sec="03. 정적분" data-title="정적분의 성질">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>구간이 같을 때와 이어질 때 정적분을 어떻게 합칠까?</h2>
+  <div class="calc grid-2" data-ai="나누어진 구간의 정적분 결합 탐색기" data-let="i1 = (c^2)/2; i2 = 8 - (c^2)/2; tot = i1 + i2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 정적분의 성질 (p.49)</span><br>
+        1. <b>구간이 같을 때</b>:<br>
+        $\int_a^b \{f(x) \pm g(x)\}\,dx = \int_a^b f(x)\,dx \pm \int_a^b g(x)\,dx$<br>
+        2. <b>구간이 이어질 때 (피적분함수가 같을 때)</b>:<br>
+        $\int_a^c f(x)\,dx + \int_c^b f(x)\,dx = \int_a^b f(x)\,dx$
+      </div>
+      <figure class="plot" data-x="0, 4.5" data-y="0, 5" data-xstep="1" data-ystep="1" data-height="220" data-xlabel="x" data-ylabel="y = x">
+        <i data-line="x" data-label="f(x) = x" data-color="#1E3A8A"></i>
+        <i data-path="0, 0; c, 0; c, c" data-close data-fill data-color="#2563EB" data-label="[0, c] 정적분"></i>
+        <i data-path="c, 0; 4, 0; 4, 4; c, c" data-close data-fill data-color="#0F766E" data-label="[c, 4] 정적분"></i>
+        <i data-vline="c" data-dash data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>경계점 $c =$ <b><output data-expr="c" data-digits="1"></output></b> (전체 구간 $[0, 4]$ 예시 모형)</p>
+        <input type="range" name="c" min="0.5" max="3.5" step="0.5" value="1.5" aria-label="경계점 c">
+        <p>$\int_0^c x\,dx =$ <output data-expr="i1" data-digits="2"></output>, &nbsp; $\int_c^4 x\,dx =$ <output data-expr="i2" data-digits="2"></output></p>
+        <p class="status-pill">경계 c와 무관하게 두 정적분의 합은 <output data-expr="tot" data-digits="1"></output>로 일정하다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>계산 팁 1</b>: 위끝·아래끝이 같으면 피적분함수끼리 먼저 더하거나 빼서 식을 간단히 만든다.</p>
+        <p class="step ans"><b>계산 팁 2</b>: 피적분함수가 같고 위끝($c$)과 아래끝($c$)이 이어지면 한 번의 정적분 $\int_a^b$로 합쳐서 계산한다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 교과서 [문제] #6 (p.134) -->
+<section class="slide" id="p134-q6" data-sec="03. 정적분" data-title="교과서 문제 6 (p.134)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>다항함수의 정적분과 같은 구간의 정적분을 계산해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #6 (p.134)</span><br>
+        다음 정적분의 값을 구하시오.<br>
+        (1) $\int_{-2}^1 (2x^3 - 3x^2 + x)\,dx$<br>
+        (2) $\int_0^3 (x + 1)^2\,dx - \int_0^3 (x - 1)^2\,dx$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 부정적분 구하기</b>:<br>
+        $\Big[ \frac{1}{2}x^4 - x^3 + \frac{1}{2}x^2 \Big]_{-2}^1$<br>
+        $= \left(\frac{1}{2} - 1 + \frac{1}{2}\right) - (8 + 8 + 2) = 0 - 18 = -18$</p>
+        <p class="step"><b>(2) 적분 구간 $[0, 3]$이 같으므로 하나로 합치기</b>:<br>
+        $\int_0^3 \{(x+1)^2 - (x-1)^2\}\,dx = \int_0^3 4x\,dx$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $\Big[ 2x^2 \Big]_0^3 = 18 - 0 = 18$<br>
+        <b>정답: (1) $-18$ &nbsp; / &nbsp; (2) $18$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (2)번에서 두 적분을 합쳤을 때 피적분함수 $(x+1)^2 - (x-1)^2$을 간단히 한 식은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="x² 항과 상수항 1은 서로 지워지고 2x - (-2x) = 4x가 남는다.">2x² + 2</button>
+        <button class="opt" data-ok data-why="맞다. 합친 뒤 정리하면 4x만 남아 훨씬 빠르게 적분할 수 있다.">4x</button>
+        <button class="opt" data-why="부호를 주의하자. +2x - (-2x) = 4x이다.">2x</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 교과서 [문제] #7 (p.134) -->
+<section class="slide" id="p134-q7" data-sec="03. 정적분" data-title="교과서 문제 7 (p.134)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>나누어진 구간의 정적분을 하나로 이어서 계산해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #7 (p.134)</span><br>
+        다음 정적분의 값을 구하시오.<br>
+        (1) $\int_{-2}^1 (2x + 4)\,dx + \int_1^3 (2x + 4)\,dx$<br>
+        (2) $\int_0^1 (3x^2 - 2)\,dx - \int_2^1 (3x^2 - 2)\,dx$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 구간 $[-2, 1]$과 $[1, 3]$ 연결</b>:<br>
+        $\int_{-2}^3 (2x + 4)\,dx = \Big[ x^2 + 4x \Big]_{-2}^3$<br>
+        $= (9 + 12) - (4 - 8) = 21 - (-4) = 25$</p>
+        <p class="step"><b>(2) 위끝·아래끝 바꾸기 ($-\int_2^1 = +\int_1^2$)</b>:<br>
+        $\int_0^1 (3x^2 - 2)\,dx + \int_1^2 (3x^2 - 2)\,dx = \int_0^2 (3x^2 - 2)\,dx$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $\Big[ x^3 - 2x \Big]_0^2 = (8 - 4) - 0 = 4$<br>
+        <b>정답: (1) $25$ &nbsp; / &nbsp; (2) $4$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (2)번에서 $-\int_2^1 (3x^2 - 2)\,dx$를 구간이 이어지도록 바르게 고친 것은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 위끝과 아래끝을 바꾸면 앞의 음수 부호(-)가 양수(+)로 바뀐다.">+ ∫₁² (3x² - 2) dx</button>
+        <button class="opt" data-why="위끝과 아래끝을 바꿨으므로 부호가 +로 바뀌어야 한다.">- ∫₁² (3x² - 2) dx</button>
+        <button class="opt" data-why="피적분함수의 부호는 그대로 두고 적분 구간만 [1, 2]로 바꾼다.">+ ∫₀² (3x² - 2) dx</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 교과서 [문제] #8 (p.135) -->
+<section class="slide" id="p135-q8" data-sec="03. 정적분" data-title="교과서 문제 8 (p.135)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>절댓값 기호가 포함된 함수의 정적분은 어떻게 구할까?</h2>
+  <div class="calc grid-2" data-ai="절댓값 함수 구간 분할 정적분 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #8 (p.135)</span><br>
+        다음 정적분의 값을 구하시오.<br>
+        (1) $\int_0^3 |2x - 3|\,dx$ &nbsp;&nbsp;&nbsp; (2) $\int_2^4 |x^2 - 9|\,dx$
+      </div>
+      <figure class="plot" data-x="-0.5, 4.5" data-y="-1, 8" data-xstep="1" data-ystep="2" data-height="225" data-xlabel="x" data-ylabel="y = |f(x)|">
+        <i data-line="abs(2*x - 3)" data-x="0, 3" data-show="q == 1" data-label="(1) y = |2x - 3|" data-color="#1E3A8A"></i>
+        <i data-vline="1.5" data-show="q == 1" data-dash data-label="꺾이는 점 x = 3/2" data-color="#DC2626"></i>
+        <i data-line="abs(x^2 - 9)" data-x="2, 4" data-show="q == 2" data-label="(2) y = |x² - 9|" data-color="#0F766E"></i>
+        <i data-vline="3" data-show="q == 2" data-dash data-label="꺾이는 점 x = 3" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1) |2x - 3|</button>
+          <button data-set="q" data-value="2">(2) |x² - 9|</button>
+        </p>
+        <p class="status-pill">절댓값 안이 0이 되는 x를 기준으로 구간을 나눈다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) $x = \frac{3}{2}$ 기준 구간 분할</b>:<br>
+        $\int_0^{3/2} (-2x + 3)\,dx + \int_{3/2}^3 (2x - 3)\,dx$<br>
+        $= \frac{9}{4} + \frac{9}{4} = \frac{9}{2}$</p>
+        <p class="step"><b>(2) $x = 3$ 기준 구간 분할</b>:<br>
+        $\int_2^3 (-x^2 + 9)\,dx + \int_3^4 (x^2 - 9)\,dx$<br>
+        $= \Big[-\frac{1}{3}x^3 + 9x\Big]_2^3 + \Big[\frac{1}{3}x^3 - 9x\Big]_3^4 = \frac{8}{3} + \frac{10}{3} = 6$</p>
+        <p class="step ans"><b>정답: (1) $\frac{9}{2}$ &nbsp; / &nbsp; (2) $6$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 정적분으로 정의된 함수 유형 1 (p.50) -->
+<section class="slide" id="p50-const1" data-sec="정적분 포함 함수" data-title="정적분을 상수 k로 놓기 (1)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>위끝·아래끝이 모두 상수인 정적분이 들어 있으면 어떻게 풀까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 유형 1 | 정적분 상수 치환 (p.50)</span><br>
+        함수 $f(x)$가 $f(x) = g(x) + \int_a^b f(t)\,dt$ ($a, b$는 상수) 꼴일 때, 다음 함수 $f(x)$를 구하시오.<br>
+        $$f(x) = -4x + \int_0^3 f(t)\,dt$$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (상수 $k$로 놓기)</b>: 위끝·아래끝이 상수이므로<br>
+        $\int_0^3 f(t)\,dt = k$ ($k$는 상수)로 놓으면 $f(x) = -4x + k$</p>
+        <p class="step"><b>2단계 ($f(t) = -4t + k$를 정적분에 대입)</b>:<br>
+        $k = \int_0^3 (-4t + k)\,dt = \Big[ -2t^2 + kt \Big]_0^3$<br>
+        $\implies k = -18 + 3k$</p>
+        <p class="step ans"><b>3단계 ($k$ 구하기 및 정답)</b>:<br>
+        $2k = 18 \implies k = 9$ &nbsp; $\therefore$ <b>정답: $f(x) = -4x + 9$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위끝과 아래끝이 모두 상수인 정적분 $\int_0^3 f(t)\,dt$를 다루는 올바른 방법은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="위끝과 아래끝이 상수인 정적분은 상수이므로 x에 대하여 미분하면 0이 되어 버린다.">양변을 x에 대하여 미분한다.</button>
+        <button class="opt" data-ok data-why="맞다. 정적분의 결과는 일정한 실수이므로 상수 k로 치환하여 푼다.">정적분 전체를 상수 k로 놓는다.</button>
+        <button class="opt" data-why="적분 구간이 [0, 3]으로 고정되어 있어 x에 숫자를 대입해도 정적분이 0이 되지 않는다.">양변에 x = 0을 대입한다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 정적분으로 정의된 함수 유형 2 (p.50) -->
+<section class="slide" id="p50-const2" data-sec="정적분 포함 함수" data-title="정적분을 상수 k로 놓기 (2)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분 앞에 상수가 곱해진 이차함수 $f(x)$를 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 유형 2 | 정적분 상수 치환 (p.50)</span><br>
+        다음 등식을 만족시키는 다항함수 $f(x)$를 구하시오.<br>
+        $$f(x) = x^2 + 2x + 3\int_0^1 f(t)\,dt$$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (상수 치환)</b>:<br>
+        $\int_0^1 f(t)\,dt = k$ ($k$는 상수)로 놓으면 $f(x) = x^2 + 2x + 3k$</p>
+        <p class="step"><b>2단계 (다시 적분식에 대입)</b>:<br>
+        $k = \int_0^1 (t^2 + 2t + 3k)\,dt = \Big[ \frac{1}{3}t^3 + t^2 + 3kt \Big]_0^1$<br>
+        $\implies k = \frac{1}{3} + 1 + 3k$</p>
+        <p class="step ans"><b>3단계 ($k$ 계산 및 정답)</b>:<br>
+        $-2k = \frac{4}{3} \implies k = -\frac{2}{3}$<br>
+        $\therefore$ <b>정답: $f(x) = x^2 + 2x - 2$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 구한 함수 $f(x) = x^2 + 2x - 2$에 대하여 $f(1)$의 값은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. f(1) = 1 + 2 - 2 = 1이다.">1</button>
+        <button class="opt" data-why="상수항이 3k = 3 × (-2/3) = -2임에 주의하자.">-1</button>
+        <button class="opt" data-why="k = -2/3이므로 3k = -2이다.">3</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 정적분으로 정의된 함수 유형 3 (p.50) -->
+<section class="slide" id="p50-const3" data-sec="정적분 포함 함수" data-title="피적분함수 안의 x 분리하기">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>적분 기호 안에 $x$와 $t$가 섞여 있을 때는 어떻게 분리할까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 유형 3 | 적분 변수 분리 후 치환 (p.50)</span><br>
+        다음 등식을 만족시키는 함수 $f(x)$를 구하시오.<br>
+        $$f(x) = 3x^2 + \int_0^2 (2x - 1)f(t)\,dt$$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (적분 변수 $t$에 대하여 $(2x-1)$은 상수 취급!)</b>:<br>
+        $f(x) = 3x^2 + (2x - 1)\int_0^2 f(t)\,dt$</p>
+        <p class="step"><b>2단계 ($\int_0^2 f(t)\,dt = k$로 치환)</b>:<br>
+        $f(x) = 3x^2 + 2kx - k$를 다시 대입하면<br>
+        $k = \int_0^2 (3t^2 + 2kt - k)\,dt = \Big[ t^3 + kt^2 - kt \Big]_0^2$<br>
+        $\implies k = 8 + 4k - 2k$</p>
+        <p class="step ans"><b>3단계 ($k$ 결정 및 정답)</b>:<br>
+        $k = 8 + 2k \implies k = -8$<br>
+        $\therefore$ <b>정답: $f(x) = 3x^2 - 16x + 8$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $\int_0^2 (2x - 1)f(t)\,dt$에서 $(2x - 1)$을 적분 기호 밖으로 꺼낼 수 있는 이유는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. dt가 붙어 있으므로 적분 변수는 t이고, x는 상수로 취급된다.">적분 변수가 t이므로 x에 대한 식은 상수 취급되기 때문이다.</button>
+        <button class="opt" data-why="일차식이라도 적분 변수 t가 들어 있으면 밖으로 꺼낼 수 없다.">2x - 1이 일차식이기 때문이다.</button>
+        <button class="opt" data-why="적분 구간과는 무관하게 적분 변수가 t이기 때문이다.">위끝이 2이기 때문이다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 교과서 [스스로 확인하기] #2-(1), (2) (p.169) -->
+<section class="slide" id="p169-q2-12" data-sec="스스로 확인하기" data-title="스스로 확인하기 2-(1),(2) (p.169)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분의 기본 계산과 위끝·아래끝 부호를 연습해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2-(1), (2) (p.169)</span><br>
+        다음 정적분의 값을 구하시오.<br>
+        (1) $\int_{-2}^4 x^2\,dx$<br>
+        (2) $\int_1^0 (2x^3 - 5x + 1)\,dx$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 풀이</b>:<br>
+        $\Big[ \frac{1}{3}x^3 \Big]_{-2}^4 = \frac{64}{3} - \left(-\frac{8}{3}\right) = \frac{72}{3} = 24$</p>
+        <p class="step"><b>(2) 위끝과 아래끝을 바꾸어 계산</b>:<br>
+        $-\int_0^1 (2x^3 - 5x + 1)\,dx$<br>
+        $= -\Big[ \frac{1}{2}x^4 - \frac{5}{2}x^2 + x \Big]_0^1$</p>
+        <p class="step ans"><b>(2) 계산 및 정답</b>: $-\left(\frac{1}{2} - \frac{5}{2} + 1\right) = -(-1) = 1$<br>
+        <b>정답: (1) $24$ &nbsp; / &nbsp; (2) $1$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (1)번과 (2)번에서 구한 두 정적분 값의 합은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="(1)에서 64/3 - (-8/3) = 72/3 = 24이다.">23</button>
+        <button class="opt" data-ok data-why="맞다. 24 + 1 = 25이다.">25</button>
+        <button class="opt" data-why="(-2)³ = -8이므로 뺄셈 부호에 주의하자.">19</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 교과서 [스스로 확인하기] #2-(3), (4) (p.169) -->
+<section class="slide" id="p169-q2-34" data-sec="스스로 확인하기" data-title="스스로 확인하기 2-(3),(4) (p.169)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>정적분의 성질을 이용하여 식을 간단히 묶어 계산해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2-(3), (4) (p.169)</span><br>
+        다음 정적분의 값을 구하시오.<br>
+        (3) $\int_{-1}^3 (2x^2 + x - 4)\,dx + \int_{-1}^3 (x^2 + x)\,dx$<br>
+        (4) $\int_{-1}^5 (x^2 + x)\,dx - \int_2^5 (x^2 + x)\,dx$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(3) 구간 $[-1, 3]$이 같으므로 피적분함수 합치기</b>:<br>
+        $\int_{-1}^3 (3x^2 + 2x - 4)\,dx = \Big[ x^3 + x^2 - 4x \Big]_{-1}^3$<br>
+        $= (27 + 9 - 12) - (-1 + 1 + 4) = 24 - 4 = 20$</p>
+        <p class="step"><b>(4) $-\int_2^5 = +\int_5^2$로 고쳐 구간 연결하기</b>:<br>
+        $\int_{-1}^5 (x^2 + x)\,dx + \int_5^2 (x^2 + x)\,dx = \int_{-1}^2 (x^2 + x)\,dx$</p>
+        <p class="step ans"><b>(4) 계산 및 정답</b>:<br>
+        $\Big[ \frac{1}{3}x^3 + \frac{1}{2}x^2 \Big]_{-1}^2 = \left(\frac{8}{3}+2\right) - \left(-\frac{1}{3}+\frac{1}{2}\right) = \frac{9}{2}$<br>
+        <b>정답: (3) $20$ &nbsp; / &nbsp; (4) $\frac{9}{2}$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (4)번에서 두 정적분을 하나로 합쳤을 때 최종 적분 구간은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="[-1, 5]에서 [2, 5] 부분을 빼는 것이므로 [-1, 2]만 남는다.">[2, 5]</button>
+        <button class="opt" data-ok data-why="맞다. [-1, 5] 구간에서 [2, 5] 구간을 제외하면 [-1, 2] 구간의 정적분이 된다.">[-1, 2]</button>
+        <button class="opt" data-why="위끝 5가 소거되고 2가 새로운 위끝이 된다.">[-1, 5]</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. 교과서 [스스로 확인하기] #3 (p.169) -->
+<section class="slide" id="p169-q3" data-sec="스스로 확인하기" data-title="스스로 확인하기 3 (p.169)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>아래끝 미정계수 $a$와 함수 $f(x)$를 함께 찾아보자</h2>
+  <div class="calc grid-2" data-ai="스스로 3 아래끝 탐색기" data-let="ga = a^3 - 2*(a^2) + a - 2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #3 (p.169)</span><br>
+        모든 실수 $x$에 대하여
+        $$\int_a^x f(t)\,dt = x^3 - 2x^2 + x - 2$$
+        를 만족시키는 함수 $f(x)$와 상수 $a$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-1, 3" data-y="-6, 6" data-xstep="1" data-ystep="2" data-height="225" data-xlabel="x" data-ylabel="y = x³ - 2x² + x - 2">
+        <i data-line="x^3 - 2*x^2 + x - 2" data-label="우변 y = x³ - 2x² + x - 2" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#64748B"></i>
+        <i data-point="a, ga" data-label="(a, 우변 값)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $a =$ <b><output data-expr="a" data-digits="1"></output></b> &nbsp; ($x=a$일 때 우변 값 $=$ <b><output data-expr="ga" data-digits="2"></output></b>)</p>
+        <input type="range" name="a" min="-0.5" max="2.5" step="0.5" value="1" aria-label="상수 a">
+        <p data-show="a == 2" class="status-pill">a = 2일 때 우변이 0이 되어 좌변과 일치한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (양변을 $x$에 대하여 미분)</b>:<br>
+        $f(x) = (x^3 - 2x^2 + x - 2)' = 3x^2 - 4x + 1$</p>
+        <p class="step"><b>2단계 ($x = a$ 대입 및 인수분해)</b>:<br>
+        $a^3 - 2a^2 + a - 2 = 0$<br>
+        $\implies (a - 2)(a^2 + 1) = 0$</p>
+        <p class="step ans">$a$는 실수이므로 $a = 2$<br>
+        <b>정답: $f(x) = 3x^2 - 4x + 1, \quad a = 2$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 교과서 [스스로 확인하기] #4 (p.169) -->
+<section class="slide" id="p169-q4" data-sec="스스로 확인하기" data-title="스스로 확인하기 4 (p.169)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>절댓값 그래프의 넓이로 정적분 방정식을 풀어 보자</h2>
+  <div class="calc grid-2" data-ai="절댓값 정적분 방정식 탐색기" data-let="lhs = a^2; rhs = 2*a + 3">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #4 (p.169)</span><br>
+        $\int_0^{2a} |x - a|\,dx = 2a + 3$일 때, 양수 $a$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 8" data-y="0, 4.5" data-xstep="2" data-ystep="1" data-height="225" data-xlabel="x" data-ylabel="y = |x - a|">
+        <i data-line="abs(x - a)" data-x="0, 2*a" data-label="y = |x - a|" data-color="#1E3A8A"></i>
+        <i data-path="0, 0; a, 0; 0, a" data-close data-fill data-color="#2563EB" data-label="넓이 a²/2"></i>
+        <i data-path="a, 0; 2*a, 0; 2*a, a" data-close data-fill data-color="#0F766E" data-label="넓이 a²/2"></i>
+        <i data-point="a, 0" data-label="(a, 0)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>양수 $a =$ <b><output data-expr="a" data-digits="1"></output></b> &nbsp; (구간 $[0, 2a] = [0,$ <output data-expr="2*a" data-digits="1"></output>$]$)</p>
+        <input type="range" name="a" min="1" max="4" step="0.5" value="2" aria-label="양수 a">
+        <p>좌변($a^2$) $=$ <b><output data-expr="lhs" data-digits="2"></output></b> &nbsp;/&nbsp; 우변($2a+3$) $=$ <b><output data-expr="rhs" data-digits="2"></output></b></p>
+        <p data-show="a == 3" class="status-pill">a = 3일 때 좌변(9) = 우변(9)가 되어 등식이 성립한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (구간 나누기 또는 삼각형 넓이 합)</b>:<br>
+        $\int_0^a (-x + a)\,dx + \int_a^{2a} (x - a)\,dx$<br>
+        $= \frac{1}{2}a^2 + \frac{1}{2}a^2 = a^2$</p>
+        <p class="step"><b>2단계 (이차방정식 풀기)</b>:<br>
+        $a^2 = 2a + 3 \implies (a - 3)(a + 1) = 0$</p>
+        <p class="step ans">$a > 0$이므로 <b>정답: $a = 3$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 교과서 [스스로 확인하기] #5 (p.169) -->
+<section class="slide" id="p169-q5" data-sec="스스로 확인하기" data-title="스스로 확인하기 5 (p.169)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>물이 빠져나간 지 15초 후 탱크 안의 물의 높이는?</h2>
+  <div class="calc grid-2" data-ai="원기둥 물탱크 수위 정적분 시뮬레이터" data-let="h = 0.3*(t^2) - 12*t + 120; wy = 190 - h * 1.25; wh = h * 1.25">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #5 (p.169)</span><br>
+        원기둥 모양의 탱크 하부에 구멍을 뚫어 물이 빠져나간 지 $t$ ($0 \le t \le 20$)초 후 물의 높이 $h(t)\text{ cm}$가
+        $$h(t) = 6\int_0^t \left(\frac{1}{10}x - 2\right)\,dx + 120$$
+        일 때, 15초 후 탱크 안의 물의 높이를 구하시오.
+      </div>
+      <div style="display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center">
+        <svg viewBox="0 0 160 220" aria-label="물이 빠져나가는 원기둥 탱크">
+          <rect x="25" y="30" width="110" height="160" rx="8" fill="#F1F5F9" stroke="#475569" stroke-width="4"/>
+          <rect x="29" width="102" rx="4" fill="#38BDF8" data-attr="y: wy; height: wh"/>
+          <text x="80" y="212" font-size="20" font-weight="bold" text-anchor="middle" fill="#1E3A8A">수위 h(t)</text>
+        </svg>
+        <figure class="plot" data-x="0, 20" data-y="0, 130" data-xstep="5" data-ystep="30" data-height="210" data-xlabel="시간 t(초)" data-ylabel="높이 h(cm)">
+          <i data-line="0.3*x^2 - 12*x + 120" data-x="0, max(t, 0.01)" data-label="물의 높이 h(t)" data-color="#1E3A8A"></i>
+          <i data-point="t, h" data-color="#DC2626"></i>
+        </figure>
+      </div>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시간 $t =$ <b><output data-expr="t"></output>초</b> &nbsp; $\implies$ 높이 $h(t) =$ <b><output data-expr="h" data-digits="1"></output> cm</b></p>
+        <input type="range" name="t" min="0" max="20" step="5" value="0" data-play="6" aria-label="시간 t">
+        <p data-show="t == 15" class="status-pill">t = 15초일 때 물의 높이는 7.5 cm(15/2 cm)이다!</p>
+        <p data-show="t != 15">「재생」을 누르거나 슬라이더를 $t = 15$초로 옮겨 보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($t = 15$ 대입 및 정적분 계산)</b>:<br>
+        $\int_0^{15}\left(\frac{1}{10}x - 2\right)\,dx = \Big[ \frac{1}{20}x^2 - 2x \Big]_0^{15}$<br>
+        $= \frac{225}{20} - 30 = \frac{45}{4} - 30 = -\frac{75}{4}$</p>
+        <p class="step ans"><b>2단계 ($h(15)$ 구하기)</b>:<br>
+        $h(15) = 6 \times \left(-\frac{75}{4}\right) + 120 = -\frac{225}{2} + \frac{240}{2} = \frac{15}{2}$<br>
+        <b>정답: $\frac{15}{2}\text{ cm}$ ($7.5\text{ cm}$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

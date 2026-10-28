@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-graph-eq-ineq">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 07. 함수의 그래프 &amp; 08. 방정식과 부등식에의 활용 (p.36~41)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b { color: #1E3A8A; }
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 520px;
+    gap: 20px;
+    align-items: start;
+  }
+  .grid-2 > div { min-width: 0; }
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 8px 14px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 1.38;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    font-size: 20px;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
+  }
+  .ctrl-card p { margin: 3px 0; font-size: 20px; }
+  .ctrl-card input[type=range] { width: 100%; height: 56px; }
+  .ctrl-card button { min-height: 56px; font-size: 20px; padding: 6px 12px; }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display { margin: 4px 0 !important; overflow-x: hidden; }
+  .katex { font-size: 1.02em !important; }
+  table.compare th, table.compare td { font-size: 20px; padding: 4px 8px; text-align: center; }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ (p.36~41)</p>
+  </div>
+  <h1>07. 함수의 그래프<br>08. 방정식과 부등식에의 활용</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 교과서 [문제] #1 & #2 (p.90 / 자료 p.36) -->
+<section class="slide" id="p90-q1-q2" data-sec="07. 함수의 그래프" data-title="교과서 문제 1, 2 (p.90)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차함수와 사차함수의 그래프 개형을 어떻게 그릴까?</h2>
+  <div class="calc grid-2" data-ai="삼차·사차함수 개형 그리기 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #1, #2 (p.90)</span><br>
+        ① $f'(x)=0$의 근 구하기 $\to$ ② 증감표 작성 및 극값 구하기 $\to$ ③ 개형 그리기<br>
+        <b>[#1]</b> (1) $f(x) = x^3 - 6x^2 + 5$ &nbsp; (2) $f(x) = -2x^3 + 6x + 2$<br>
+        <b>[#2]</b> (1) $f(x) = x^4 - 8x^2 + 1$ &nbsp; (2) $f(x) = -3x^4 + 8x^3 - 6x^2 + 1$
+      </div>
+      <figure class="plot" data-x="-3, 4.5" data-y="-28, 10" data-xstep="1" data-ystep="10" data-height="225" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="x^3 - 6*x^2 + 5" data-show="q == 1" data-label="#1-(1) x³ - 6x² + 5" data-color="#1E3A8A"></i>
+        <i data-line="-2*x^3 + 6*x + 2" data-show="q == 2" data-label="#1-(2) -2x³ + 6x + 2" data-color="#DC2626"></i>
+        <i data-line="x^4 - 8*x^2 + 1" data-show="q == 3" data-label="#2-(1) x⁴ - 8x² + 1" data-color="#0F766E"></i>
+        <i data-line="-3*x^4 + 8*x^3 - 6*x^2 + 1" data-show="q == 4" data-label="#2-(2) -3x⁴ + 8x³ - 6x² + 1" data-color="#7C3AED"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:6px;flex-wrap:wrap">그래프 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">#1-(1)</button>
+          <button data-set="q" data-value="2">#1-(2)</button>
+          <button data-set="q" data-value="3">#2-(1)</button>
+          <button data-set="q" data-value="4">#2-(2)</button>
+        </p>
+        <p data-show="q == 4" class="status-pill">#2-(2)는 x=1에서 중근(f'(1)=0, 부호 불변)을 가져 잠깐 쉬어 내려간다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>#1-(1)</b> $f'(x) = 3x(x-4)$: 극대 $f(0)=5$, 극소 $f(4)=-27$</p>
+        <p class="step"><b>#1-(2)</b> $f'(x) = -6(x+1)(x-1)$: 극소 $f(-1)=-2$, 극대 $f(1)=6$</p>
+        <p class="step"><b>#2-(1)</b> $f'(x) = 4x(x+2)(x-2)$: 극대 $f(0)=1$, 극소 $f(\pm 2)=-15$</p>
+        <p class="step ans"><b>#2-(2)</b> $f'(x) = -12x(x-1)^2$: $x=0$에서 극댓값 $f(0)=1$만 갖고 $x=1$에서는 극값을 갖지 않는다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 교과서 [문제] #3 (p.91 / 자료 p.36) 함수의 최대·최소 -->
+<section class="slide" id="p91-q3" data-sec="07. 함수의 그래프" data-title="교과서 문제 3 (p.91)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>닫힌구간에서 극값과 양 끝 함숫값을 비교해 최대·최소를 구하자</h2>
+  <div class="calc grid-2" data-ai="닫힌구간 최대 최소 비교 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #3 (p.91)</span><br>
+        닫힌구간 $[a, b]$에서 함수 $f(x)$의 <b>극값</b>과 <b>양 끝 점 함숫값 $f(a), f(b)$</b> 중 가장 큰 값이 최댓값, 가장 작은 값이 최솟값이다.<br>
+        (1) $f(x) = -2x^3 + 9x^2 - 12x + 7 \quad [0, 2]$<br>
+        (2) $f(x) = 3x^4 - 4x^3 + 1 \quad [-1, 2]$
+      </div>
+      <figure class="plot" data-x="-1.2, 2.2" data-y="-2, 18" data-xstep="1" data-ystep="5" data-height="220" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="-2*x^3 + 9*x^2 - 12*x + 7" data-x="0, 2" data-show="q == 1" data-label="(1) [0, 2] 구간" data-color="#1E3A8A"></i>
+        <i data-point="0, 7" data-show="q == 1" data-label="최대(0, 7)" data-color="#DC2626"></i>
+        <i data-point="1, 2" data-show="q == 1" data-label="최소(1, 2)" data-color="#0F766E"></i>
+        <i data-line="3*x^4 - 4*x^3 + 1" data-x="-1, 2" data-show="q == 2" data-label="(2) [-1, 2] 구간" data-color="#1E3A8A"></i>
+        <i data-point="2, 17" data-show="q == 2" data-label="최대(2, 17)" data-color="#DC2626"></i>
+        <i data-point="1, 0" data-show="q == 2" data-label="최소(1, 0)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1) [0, 2] 최대·최소</button>
+          <button data-set="q" data-value="2">(2) [-1, 2] 최대·최소</button>
+        </p>
+        <p class="status-pill">구간 안의 극값과 양 끝 점 함숫값을 모두 구해 크기를 비교한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 풀이</b>: $f'(x) = -6(x-1)(x-2) = 0 \implies x = 1, 2$<br>
+        $f(0) = 7, \; f(1) = 2, \; f(2) = 3$<br>
+        $\therefore$ <b>최댓값: $7$, &nbsp; 최솟값: $2$</b></p>
+        <p class="step"><b>(2) 풀이</b>: $f'(x) = 12x^2(x-1) = 0 \implies x = 0, 1$<br>
+        $f(-1) = 8, \; f(0) = 1, \; f(1) = 0, \; f(2) = 17$</p>
+        <p class="step ans">$\therefore$ <b>(2) 정답: 최댓값 $17$, &nbsp; 최솟값 $0$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 교과서 [문제] #4 (p.92 / 자료 p.36) 내접 직사각형 넓이 -->
+<section class="slide" id="p92-q4" data-sec="07. 함수의 그래프" data-title="교과서 문제 4 (p.92)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선 $y = -x^2 + 6$에 내접하는 직사각형의 최대 넓이는?</h2>
+  <div class="calc grid-2" data-ai="내접 직사각형 최대 넓이 탐색기" data-let="h = 6 - t^2; s = 2*t*(6 - t^2)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #4 (p.92)</span><br>
+        오른쪽 그림과 같이 곡선 $y = -x^2 + 6$과 $x$축으로 둘러싸인 부분에 내접하는 직사각형의 넓이의 최댓값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-2.8, 2.8" data-y="0, 7" data-xstep="1" data-ystep="2" data-height="230" data-xlabel="x" data-ylabel="y = -x² + 6">
+        <i data-line="-x^2 + 6" data-x="-2.45, 2.45" data-label="y = -x² + 6" data-color="#1E3A8A"></i>
+        <i data-path="-t, 0; t, 0; t, h; -t, h" data-close data-fill data-color="#0F766E" data-label="내접 직사각형"></i>
+        <i data-point="t, h" data-label="(t, 6-t²)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>제1사분면 꼭짓점 $x$좌표 $t =$ <b><output data-expr="t" data-digits="1"></output></b> (가로 $2t$, 세로 <output data-expr="h" data-digits="2"></output>)</p>
+        <input type="range" name="t" min="0.2" max="2.2" step="0.2" value="1.0" aria-label="점의 x좌표 t">
+        <p>직사각형의 넓이 $S(t) =$ <b><output data-expr="s" data-digits="2"></output></b></p>
+        <p data-show="t == 1.4" class="status-pill">t = √2(≈1.41)일 때 넓이가 최댓값 8√2(≈11.31)가 된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (넓이 함수 $S(t)$ 세우기)</b>: 제1사분면 꼭짓점을 $(t, -t^2+6)$ ($0 < t < \sqrt{6}$)이라 하면 가로 길이는 $2t$, 세로 길이는 $-t^2+6$이다.<br>
+        $S(t) = 2t(-t^2 + 6) = -2t^3 + 12t$</p>
+        <p class="step"><b>2단계 (미분하여 극대 찾기)</b>:<br>
+        $S'(t) = -6t^2 + 12 = -6(t + \sqrt{2})(t - \sqrt{2}) = 0 \implies t = \sqrt{2}$에서 극대이자 최대</p>
+        <p class="step ans"><b>3단계 (최댓값 계산)</b>:<br>
+        $S(\sqrt{2}) = 2\sqrt{2}(6 - 2) = 8\sqrt{2}$ &nbsp; $\therefore$ <b>정답: $8\sqrt{2}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 심화 개념: 삼차함수의 비율 관계와 극값 차 공식 (p.37) -->
+<section class="slide" id="concept-cubic-ratio" data-sec="07. 함수의 그래프" data-title="삼차함수의 비율 관계와 넓이 공식 (p.37)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차함수의 $1:1:1$ 비율 관계와 극값 차 공식을 정리하자</h2>
+  <div class="calc grid-2" data-ai="삼차함수 비율 관계 탐색기" data-let="diff = 4*(k^3)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">특강 개념 | 삼차함수의 특징 및 넓이 공식 (p.37)</span><br>
+        삼차함수 $f(x) = ax^3 + bx^2 + cx + d$ ($a>0$)가 $x=\alpha$에서 극대, $x=\beta$에서 극소이고 변곡점과 극점 사이 가로 간격을 $k = \frac{\beta-\alpha}{2}$라 할 때:
+      </div>
+      <figure class="plot" data-x="-2.5, 2.5" data-y="-2.5, 2.5" data-xstep="1" data-ystep="1" data-height="220" data-xlabel="x (교점 -2k, 극대 -k, 변곡 0, 극소 k, 교점 2k)" data-ylabel="y">
+        <i data-line="x^3 - 3*(k^2)*x" data-label="f(x) = x³ - 3k²x" data-color="#1E3A8A"></i>
+        <i data-line="2*(k^3)" data-dash data-label="극대 접선" data-color="#DC2626"></i>
+        <i data-line="-2*(k^3)" data-dash data-label="극소 접선" data-color="#0F766E"></i>
+        <i data-point="-k, 2*(k^3)" data-label="극대(-k)" data-color="#DC2626"></i>
+        <i data-point="0, 0" data-label="변곡(0)" data-color="#64748B"></i>
+        <i data-point="k, -2*(k^3)" data-label="극소(k)" data-color="#0F766E"></i>
+        <i data-point="2*k, 2*(k^3)" data-label="교점(2k)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>한 칸 간격 $k =$ <b><output data-expr="k" data-digits="1"></output></b> ($a=1$) &nbsp; $\implies$ 극댓값 $-$ 극솟값 $= 4k^3 =$ <b><output data-expr="diff" data-digits="2"></output></b></p>
+        <input type="range" name="k" min="0.6" max="1.2" step="0.2" value="1.0" aria-label="간격 k">
+        <p class="status-pill">[교점 : 극대 : 변곡점 : 극소 : 교점]의 간격은 1 : 1 : 1 : 1 등간격이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1. 극댓값과 극솟값의 차 (도함수 넓이 공식)</b>:<br>
+        $|f(\beta) - f(\alpha)| = \int_\alpha^\beta |f'(x)|\,dx = \frac{|3a|}{6}(\beta - \alpha)^3 = \frac{|a|}{2}(\beta - \alpha)^3 = 4|a|k^3$</p>
+        <p class="step"><b>2. 접점과 다른 교점 사이의 거리 $d$가 주어질 때 ($d = 3k$)</b>:<br>
+        극댓값과 극솟값의 차 $h = 4|a|\left(\frac{d}{3}\right)^3 = \frac{4}{27}|a|d^3$</p>
+        <p class="step ans"><b>3. 삼차·사차함수가 극값을 가질 조건 (올림포스 개념)</b>:<br>
+        • 삼차함수 극값 존재 $\iff$ 이차방정식 $f'(x)=0$의 판별식 <b>$D > 0$</b><br>
+        • 사차함수가 극대·극소를 모두 가질 조건 $\iff$ $f'(x)=0$이 <b>서로 다른 세 실근</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 교과서 [스스로 확인하기] #1 (p.93 / 자료 p.38) -->
+<section class="slide" id="p93-q1" data-sec="스스로 확인하기 (p.93)" data-title="스스로 확인하기 1 (p.93)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>증감표의 빈칸을 채워 $f(x) = x^3 - 3x^2 + 1$의 개형을 그리자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #1 (p.93)</span><br>
+        $f(x) = x^3 - 3x^2 + 1$에서 $f'(x) = 3x^2 - 6x = 3x(x-2) = 0$<br>
+        $\implies x = 0 \text{ 또는 } x =$ <span class="blank">$2$</span>
+      </div>
+      <table class="compare" style="width:100%; margin-bottom:8px;">
+        <thead>
+          <tr><th>$x$</th><th>$\cdots$</th><th>$0$</th><th>$\cdots$</th><th><span class="blank">$2$</span></th><th>$\cdots$</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>$f'(x)$</th><td>$+$</td><td>$0$</td><td><span class="blank">$-$</span></td><td>$0$</td><td>$+$</td></tr>
+          <tr><th>$f(x)$</th><td>$\nearrow$</td><td>$1$</td><td>$\searrow$</td><td><span class="blank">$-3$</span></td><td>$\nearrow$</td></tr>
+        </tbody>
+      </table>
+      <figure class="plot" data-x="-1.5, 3.2" data-y="-4, 2.5" data-xstep="1" data-ystep="2" data-height="175" data-xlabel="x" data-ylabel="y = x³ - 3x² + 1">
+        <i data-line="x^3 - 3*x^2 + 1" data-label="f(x) = x³ - 3x² + 1" data-color="#1E3A8A"></i>
+        <i data-point="0, 1" data-label="극대(0, 1)" data-color="#DC2626"></i>
+        <i data-point="2, -3" data-label="극소(2, -3)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($f'(x) = 0$의 근)</b>:<br>
+        $3x(x - 2) = 0$에서 $x = 0$ 또는 $x = 2$</p>
+        <p class="step"><b>2단계 (구간 $(0, 2)$에서 $f'(x)$의 부호)</b>:<br>
+        $0 < x < 2$에서 $f'(x) < 0$이므로 부호는 <b>$-$</b>이고 함수는 감소($\searrow$)한다.</p>
+        <p class="step ans"><b>3단계 (극솟값 $f(2)$ 구하기)</b>:<br>
+        $f(2) = 8 - 12 + 1 = -3$이므로 $x=0$에서 극댓값 $1$, $x=2$에서 극솟값 <b>$-3$</b>을 갖는다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 교과서 [스스로 확인하기] #2 & #3 (p.93 / 자료 p.38) -->
+<section class="slide" id="p93-q2-q3" data-sec="스스로 확인하기 (p.93)" data-title="스스로 확인하기 2, 3 (p.93)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>그래프 개형과 닫힌구간에서의 최댓값·최솟값을 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2, #3 (p.93)</span><br>
+        <b>[#2 개형]</b> (1) $f(x) = 4x^3 - 6x^2$ &nbsp; (2) $f(x) = 2x^4 - 4x^2 - 2$<br>
+        <b>[#3 최대·최소]</b><br>
+        (1) $f(x) = 2x^3 + 3x^2 + 1 \quad [-2, 1]$<br>
+        (2) $f(x) = x^4 + 4x^3 + 4x^2 - 5 \quad [-3, -1]$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>[#2 개형 핵심]</b><br>
+        • (1) $f'(x)=12x(x-1)$: 극대 $f(0)=0$, 극소 $f(1)=-2$<br>
+        • (2) $f'(x)=8x(x+1)(x-1)$: 극대 $f(0)=-2$, 극소 $f(\pm 1)=-4$</p>
+        <p class="step"><b>[#3-(1) 풀이]</b> $f'(x) = 6x(x+1) = 0 \implies x = -1, 0$<br>
+        $f(-2) = -3, \; f(-1) = 2, \; f(0) = 1, \; f(1) = 6$<br>
+        $\therefore$ <b>최댓값: $6$, &nbsp; 최솟값: $-3$</b></p>
+        <p class="step ans"><b>[#3-(2) 풀이]</b> $f'(x) = 4x(x+1)(x+2) = 0 \implies x = -2, -1$<br>
+        $f(-3) = 4, \; f(-2) = -5, \; f(-1) = -4$<br>
+        $\therefore$ <b>최댓값: $4$, &nbsp; 최솟값: $-5$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: #3-(1)에서 구간 $[-2, 1]$의 최댓값 $6$과 최솟값 $-3$은 각각 어디에서 나타나는가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 극댓값 f(-1)=2보다 오른쪽 끝점 f(1)=6이 더 크고, 극솟값 f(0)=1보다 왼쪽 끝점 f(-2)=-3이 더 작다.">양 끝 점 x = 1과 x = -2에서 나타난다.</button>
+        <button class="opt" data-why="극댓값 f(-1)=2와 극솟값 f(0)=1보다 양 끝 점에서의 함숫값이 더 크고 작다.">극점 x = -1과 x = 0에서 나타난다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 교과서 [스스로 확인하기] #4 (p.93 / 자료 p.38) -->
+<section class="slide" id="p93-q4" data-sec="스스로 확인하기 (p.93)" data-title="스스로 확인하기 4 (p.93)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선 $y = x^2$ 위의 점 P와 점 $A(3, 0)$ 사이의 최단 거리는?</h2>
+  <div class="calc grid-2" data-ai="점과 곡선 사이 최단 거리 탐색기" data-let="d2 = (t - 3)^2 + t^4; d = sqrt(d2)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #4 (p.93)</span><br>
+        곡선 $y = x^2$ 위를 움직이는 점 P와 점 $A(3, 0)$에 대하여 선분 $AP$의 길이의 최솟값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-1, 3.5" data-y="-0.5, 5" data-xstep="1" data-ystep="1" data-height="225" data-xlabel="x" data-ylabel="y = x²">
+        <i data-line="x^2" data-label="y = x²" data-color="#1E3A8A"></i>
+        <i data-path="3, 0; t, t^2" data-label="선분 AP" data-color="#DC2626"></i>
+        <i data-point="3, 0" data-label="A(3, 0)" data-color="#1E3A8A"></i>
+        <i data-point="t, t^2" data-label="P(t, t²)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>점 P의 $x$좌표 $t =$ <b><output data-expr="t" data-digits="1"></output></b> &nbsp; $\implies \overline{AP}^2 =$ <output data-expr="d2" data-digits="2"></output>, &nbsp; $\overline{AP} =$ <b><output data-expr="d" data-digits="2"></output></b></p>
+        <input type="range" name="t" min="0" max="2.2" step="0.2" value="1.6" aria-label="점 P의 x좌표 t">
+        <p data-show="t == 1" class="status-pill">t = 1, 즉 P(1, 1)일 때 AP² = 5가 되어 길이가 최소(√5 ≈ 2.24)이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($\overline{AP}^2$을 함수 $g(t)$로 놓기)</b>:<br>
+        점 $P(t, t^2)$이라 하면<br>
+        $g(t) = \overline{AP}^2 = (t - 3)^2 + (t^2 - 0)^2 = t^4 + t^2 - 6t + 9$</p>
+        <p class="step"><b>2단계 (미분하여 최솟점 찾기)</b>:<br>
+        $g'(t) = 4t^3 + 2t - 6 = 2(t - 1)(2t^2 + 2t + 3) = 0$<br>
+        $2t^2 + 2t + 3 > 0$이므로 $t = 1$에서 극소이자 최소이다.</p>
+        <p class="step ans"><b>3단계 (최솟값 계산)</b>: $\overline{AP}^2$의 최솟값은 $g(1) = 1 + 1 - 6 + 9 = 5$<br>
+        $\therefore$ 선분 $AP$의 길이의 최솟값은 <b>$\sqrt{5}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 교과서 [스스로 확인하기] #5 (p.93 / 자료 p.38) -->
+<section class="slide" id="p93-q5" data-sec="스스로 확인하기 (p.93)" data-title="스스로 확인하기 5 (p.93)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>제품 P의 이익이 최대가 되려면 한 달에 몇 kg 생산해야 할까?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #5 (p.93)</span><br>
+        어떤 업체에서 제품 P를 한 달에 $x\text{ kg}$ 생산할 때 생기는 이익을 $f(x)$원이라고 하면
+        $$f(x) = -x^3 + 600x^2 - 5000 \quad (x > 0)$$
+        이라고 한다. 이익이 최대가 되려면 한 달에 몇 $\text{kg}$ 생산해야 하는지 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (도함수 $f'(x)$ 구하기)</b>:<br>
+        $f'(x) = -3x^2 + 1200x = -3x(x - 400) = 0$</p>
+        <p class="step"><b>2단계 (극대이자 최대인 생산량 확인)</b>:<br>
+        $x > 0$에서 $x = 400$을 기준으로 $f'(x)$의 부호가 $(+) \to (-)$로 바뀌므로<br>
+        $f(x)$는 $x = 400$에서 극대이자 최대이다.</p>
+        <p class="step ans">따라서 이익이 최대가 되려면 한 달에 <b>$400\text{ kg}$</b>을 생산해야 한다.<br>
+        <b>정답: $400\text{ kg}$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $x > 0$인 구간에서 미분가능한 함수 $f(x)$가 유일한 극댓값을 가지면, 그 극댓값은 그 구간에서 어떤 값과 같을까?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 구간 안에서 극값이 극댓값 하나뿐이면 그 극댓값이 곧 최댓값이 된다.">구간에서의 최댓값과 같다.</button>
+        <button class="opt" data-why="극값이 유일하고 극대이면 그 값이 곧 최댓값이다.">최댓값인지 알 수 없다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 개념: 08. 방정식과 부등식에의 활용 & 문제 #1 (p.96 / 자료 p.39) -->
+<section class="slide" id="p96-q1" data-sec="08. 방정식과 부등식" data-title="방정식의 실근의 개수와 문제 1 (p.96)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>함수의 그래프와 $x$축의 교점으로 방정식의 실근 개수를 구하자</h2>
+  <div class="calc grid-2" data-ai="방정식의 실근 개수 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #1 (p.96)</span><br>
+        방정식 $f(x) = 0$의 서로 다른 실근의 개수는 함수 $y = f(x)$의 그래프와 <b>$x$축의 교점의 개수</b>와 같다. 다음 방정식의 서로 다른 실근의 개수를 구하시오.<br>
+        (1) $x^3 - 3x^2 - 9x - 5 = 0$ &nbsp;&nbsp; (2) $2x^4 - 4x^2 + 1 = 0$
+      </div>
+      <figure class="plot" data-x="-2.5, 4.5" data-y="-35, 10" data-xstep="1" data-ystep="10" data-height="220" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="x^3 - 3*x^2 - 9*x - 5" data-show="q == 1" data-label="(1) f(-1)=0 접함, 교점 2개" data-color="#1E3A8A"></i>
+        <i data-line="5*(2*x^4 - 4*x^2 + 1)" data-show="q == 2" data-label="(2) 극대>0, 극소<0, 교점 4개 (5배 확대)" data-color="#0F766E"></i>
+        <i data-line="0" data-dash data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1) 삼차방정식</button>
+          <button data-set="q" data-value="2">(2) 사차방정식</button>
+        </p>
+        <p data-show="q == 1" class="status-pill">(1) 극댓값 f(-1) = 0이므로 x축에 접하여 실근은 2개다!</p>
+        <p data-show="q == 2" class="status-pill">(2) 극댓값 f(0)=1 > 0, 극솟값 f(±1)=-1 < 0이므로 실근은 4개다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 풀이</b>: $f(x) = x^3 - 3x^2 - 9x - 5$라 하면<br>
+        $f'(x) = 3(x+1)(x-3) = 0 \implies$ 극댓값 $f(-1) = 0$, 극솟값 $f(3) = -32$<br>
+        $x=-1$에서 $x$축에 접하므로 서로 다른 실근은 <b>$2$개</b></p>
+        <p class="step ans"><b>(2) 풀이</b>: $f(x) = 2x^4 - 4x^2 + 1$이라 하면<br>
+        $f'(x) = 8x(x+1)(x-1) = 0 \implies$ 극댓값 $f(0) = 1 > 0$, 극솟값 $f(\pm 1) = -1 < 0$<br>
+        $x$축과 네 점에서 만나므로 서로 다른 실근은 <b>$4$개</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 교과서 [문제] #2 (p.97 / 자료 p.39) -->
+<section class="slide" id="p97-q2" data-sec="08. 방정식과 부등식" data-title="교과서 문제 2 (p.97)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>상수 $k$의 범위에 따라 $2x^3 - 3x^2 + k = 0$의 실근 개수는?</h2>
+  <div class="calc grid-2" data-ai="문제 2 상수 분리 실근 개수 탐색기" data-let="mk = -k">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #2 (p.97)</span><br>
+        방정식 $2x^3 - 3x^2 + k = 0$의 서로 다른 실근의 개수를 실수 $k$의 값의 범위에 따라 조사하시오.
+      </div>
+      <figure class="plot" data-x="-1, 2" data-y="-2, 2" data-xstep="1" data-ystep="1" data-height="225" data-xlabel="x" data-ylabel="y = 2x³ - 3x², y = -k">
+        <i data-line="2*x^3 - 3*x^2" data-label="f(x) = 2x³ - 3x²" data-color="#1E3A8A"></i>
+        <i data-line="-k" data-dash data-label="직선 y = -k" data-color="#DC2626"></i>
+        <i data-point="0, 0" data-label="극대(0, 0)" data-color="#0F766E"></i>
+        <i data-point="1, -1" data-label="극소(1, -1)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $k =$ <b><output data-expr="k" data-digits="1"></output></b> &nbsp; (직선 높이 $y = -k =$ <b><output data-expr="mk" data-digits="1"></output></b>)</p>
+        <input type="range" name="k" min="-1" max="2" step="0.5" value="0.5" aria-label="상수 k">
+        <p data-show="k > 0 && k < 1" class="status-pill">0 &lt; k &lt; 1 (-1 &lt; -k &lt; 0) : 세 점에서 만나므로 실근 3개!</p>
+        <p data-show="k == 0 || k == 1" class="status-pill">k = 0 또는 k = 1 : 극점에서 접하므로 실근 2개!</p>
+        <p data-show="k < 0 || k > 1" class="status-pill">k &lt; 0 또는 k &gt; 1 : 한 점에서만 만나므로 실근 1개!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (상수항 분리)</b>: $2x^3 - 3x^2 = -k$로 변형하여<br>
+        곡선 $y = 2x^3 - 3x^2$과 직선 $y = -k$의 교점 개수를 조사한다.<br>
+        $f'(x) = 6x(x-1) = 0 \implies$ 극댓값 $f(0) = 0$, 극솟값 $f(1) = -1$</p>
+        <p class="step ans"><b>2단계 ($-k$의 위치에 따른 실근 개수 정리)</b>:<br>
+        ① $-1 < -k < 0 \iff$ <b>$0 < k < 1$일 때: $3$개</b><br>
+        ② $-k = -1, 0 \iff$ <b>$k = 0 \text{ 또는 } k = 1$일 때: $2$개</b><br>
+        ③ $-k < -1 \text{ 또는 } -k > 0 \iff$ <b>$k < 0 \text{ 또는 } k > 1$일 때: $1$개</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 교과서 [문제] #3 (p.98 / 자료 p.39) 부등식의 증명 -->
+<section class="slide" id="p98-q3" data-sec="08. 방정식과 부등식" data-title="교과서 문제 3 (p.98)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>최솟값이 $0$ 이상임을 보여 부등식이 성립함을 증명하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #3 (p.98)</span><br>
+        다음 부등식이 성립함을 보이시오.<br>
+        (1) $x \ge 0$일 때, $x^2 + x \le x^3 + 1$<br>
+        (2) 모든 실수 $x$에 대하여 $3x^4 + 32 \ge 4x^3 + 12x^2$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 증명</b>: $f(x) = (x^3 + 1) - (x^2 + x) = x^3 - x^2 - x + 1$이라 하면<br>
+        $f'(x) = 3x^2 - 2x - 1 = (3x + 1)(x - 1) = 0$<br>
+        $x \ge 0$에서 $f(x)$는 $x = 1$에서 극소이자 최소이고, 최솟값 $f(1) = 0$이다.<br>
+        따라서 $x \ge 0$일 때 $f(x) \ge 0$, 즉 $x^2 + x \le x^3 + 1$이 성립한다.</p>
+        <p class="step ans"><b>(2) 증명</b>: $f(x) = 3x^4 - 4x^3 - 12x^2 + 32$라 하면<br>
+        $f'(x) = 12x^3 - 12x^2 - 24x = 12x(x + 1)(x - 2) = 0$<br>
+        극솟값 $f(-1) = 27, \; f(2) = 0$ 중 최솟값은 $f(2) = 0 \ge 0$이므로 모든 실수 $x$에 대하여 부등식이 성립한다.</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 어떤 구간에서 부등식 $f(x) \ge g(x)$가 항상 성립함을 증명하는 가장 표준적인 방법은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. h(x) = f(x) - g(x)로 놓고 그 구간에서 h(x)의 최솟값이 0 이상임을 보이면 된다.">h(x) = f(x) - g(x)의 최솟값이 0 이상임을 보인다.</button>
+        <button class="opt" data-why="도함수가 아니라 원함수 h(x)의 최솟값이 0 이상이어야 한다.">f'(x) - g'(x) ≥ 0임을 보인다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 교과서 [문제] #4 (p.98 / 자료 p.39) -->
+<section class="slide" id="p98-q4" data-sec="08. 방정식과 부등식" data-title="교과서 문제 4 (p.98)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$x \ge 0$에서 부등식 $\frac{1}{3}x^3 - 2x^2 + k > 0$이 성립할 조건은?</h2>
+  <div class="calc grid-2" data-ai="문제 4 부등식 성립 조건 탐색기" data-let="ymin = k - 32/3">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #4 (p.98)</span><br>
+        $x \ge 0$일 때, 부등식 $\frac{1}{3}x^3 - 2x^2 + k > 0$이 성립하도록 하는 실수 $k$의 값의 범위를 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 6" data-y="-6, 16" data-xstep="1" data-ystep="5" data-height="225" data-xlabel="x (x ≥ 0)" data-ylabel="y = (1/3)x³ - 2x² + k">
+        <i data-line="(x^3)/3 - 2*x^2 + k" data-label="f(x) = (1/3)x³ - 2x² + k" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#DC2626"></i>
+        <i data-point="4, ymin" data-label="최솟점 (4, k - 32/3)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>실수 $k =$ <b><output data-expr="k"></output></b> &nbsp; $\implies x \ge 0$에서의 최솟값 $f(4) =$ <b><output data-expr="ymin" data-digits="2"></output></b></p>
+        <input type="range" name="k" min="6" max="15" step="1" value="11" aria-label="실수 k">
+        <p data-show="ymin > 0" class="status-pill">k &gt; 32/3 (≈10.67) : 최솟값이 0보다 크므로 항상 성립한다!</p>
+        <p data-show="ymin <= 0">최솟값이 $0$ 이하이므로 $x \ge 0$에서 성립하지 않는 곳이 있다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($x \ge 0$에서의 최솟값 찾기)</b>:<br>
+        $f(x) = \frac{1}{3}x^3 - 2x^2 + k$라 하면 $f'(x) = x^2 - 4x = x(x - 4) = 0$<br>
+        $x \ge 0$에서 $f(x)$는 $x = 4$에서 극소이자 최소이다.</p>
+        <p class="step"><b>2단계 (최솟값 $> 0$ 조건 적용)</b>:<br>
+        $f(4) = \frac{64}{3} - 32 + k = -\frac{32}{3} + k > 0$</p>
+        <p class="step ans">$\therefore$ <b>정답: $k > \frac{32}{3}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 교과서 [스스로 확인하기] #2 & #3 (p.99 / 자료 p.40) -->
+<section class="slide" id="p99-q2-q3" data-sec="스스로 확인하기 (p.99)" data-title="스스로 확인하기 2, 3 (p.99)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>실근의 개수를 구하고 사차부등식이 성립함을 증명해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2, #3 (p.99)</span><br>
+        <b>[#2]</b> 다음 방정식의 서로 다른 실근의 개수를 구하시오.<br>
+        &nbsp; (1) $2x^3 - 6x + 5 = 0$ &nbsp;&nbsp; (2) $x^4 + 16x = 4x^3 + 5$<br>
+        <b>[#3]</b> 모든 실수 $x$에 대하여 부등식 $x^4 - 4x^3 + 27 \ge 0$이 성립함을 보이시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>[#2-(1) 풀이]</b> $f(x) = 2x^3 - 6x + 5 \implies f'(x) = 6(x+1)(x-1) = 0$<br>
+        극댓값 $f(-1) = 9 > 0$, 극솟값 $f(1) = 1 > 0$ (둘 다 양수!) $\implies$ <b>실근 $1$개</b></p>
+        <p class="step"><b>[#2-(2) 풀이]</b> $f(x) = x^4 - 4x^3 + 16x - 5$로 이항하면<br>
+        $f'(x) = 4(x^3 - 3x^2 + 4) = 4(x+1)(x-2)^2 = 0$<br>
+        $x = -1$에서 최솟값 $f(-1) = -16 < 0$이므로 $x$축과 두 점에서 만난다 $\implies$ <b>실근 $2$개</b></p>
+        <p class="step ans"><b>[#3 증명]</b> $f(x) = x^4 - 4x^3 + 27$이라 하면 $f'(x) = 4x^2(x - 3) = 0$<br>
+        $x = 3$에서 극소이자 최소이고 <b>최솟값 $f(3) = 81 - 108 + 27 = 0 \ge 0$</b>이므로 모든 실수 $x$에 대하여 성립한다.</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: #2-(1)에서 삼차함수의 극댓값($9$)과 극솟값($1$)의 부호가 같으면($f(\alpha)f(\beta) > 0$), $x$축과의 교점은 몇 개인가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 극댓값과 극솟값이 모두 x축 위에 있으므로 x축을 한 번만 뚫고 지나간다.">1개</button>
+        <button class="opt" data-why="극댓값과 극솟값의 부호가 반대일 때 3개가 된다.">3개</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. 교과서 [스스로 확인하기] #4 & #5 (p.99 / 자료 p.40) -->
+<section class="slide" id="p99-q4-q5" data-sec="스스로 확인하기 (p.99)" data-title="스스로 확인하기 4, 5 (p.99)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>사차방정식의 네 실근 조건과 곡선·직선의 두 교점 조건은?</h2>
+  <div class="calc grid-2" data-ai="스스로 4, 5 실근 조건 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #4, #5 (p.99)</span><br>
+        <b>[#4]</b> 방정식 $x^4 - 6x^2 + a = 0$이 서로 다른 네 실근을 갖도록 하는 실수 $a$의 값의 범위를 구하시오.<br>
+        <b>[#5]</b> 곡선 $y = 2x^3 + 3x^2$과 직선 $y = 12x + k$가 서로 다른 두 점에서 만나도록 하는 양수 $k$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-2.8, 2.8" data-y="-10, 5" data-xstep="1" data-ystep="5" data-height="215" data-xlabel="x" data-ylabel="y = x⁴ - 6x² + a">
+        <i data-line="x^4 - 6*x^2 + a" data-label="#4: f(x) = x⁴ - 6x² + a" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#DC2626"></i>
+        <i data-point="0, a" data-label="극대(0, a)" data-color="#DC2626"></i>
+        <i data-point="1.732, a - 9" data-label="극소(√3, a-9)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>[#4 확인] 실수 $a =$ <b><output data-expr="a"></output></b> (극댓값 $a$, 극솟값 $a - 9 =$ <output data-expr="a - 9"></output>)</p>
+        <input type="range" name="a" min="-2" max="11" step="1" value="4" aria-label="실수 a">
+        <p data-show="a > 0 && a < 9" class="status-pill">0 &lt; a &lt; 9일 때 극댓값 &gt; 0, 극솟값 &lt; 0이어서 네 실근을 갖는다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>[#4 풀이]</b> $f(x) = x^4 - 6x^2 + a \implies f'(x) = 4x(x+\sqrt{3})(x-\sqrt{3}) = 0$<br>
+        극댓값 $f(0) = a > 0$이고 극솟값 $f(\pm\sqrt{3}) = a - 9 < 0$이어야 하므로<br>
+        $\therefore$ <b>#4 정답: $0 < a < 9$</b></p>
+        <p class="step ans"><b>[#5 풀이]</b> $2x^3 + 3x^2 - 12x = k$로 변형하고 좌변을 $g(x)$라 하면<br>
+        $g'(x) = 6(x+2)(x-1) = 0 \implies$ 극댓값 $g(-2) = 20$, 극솟값 $g(1) = -7$<br>
+        양수 $k$는 극댓값과 같아야 하므로 <b>#5 정답: $k = 20$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 교과서 [스스로 확인하기] #6 (p.99 / 자료 p.40) 치환형 부등식 -->
+<section class="slide" id="p99-q6" data-sec="스스로 확인하기 (p.99)" data-title="스스로 확인하기 6 (p.99)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$x^2 + 1 = t$로 치환할 때 $t$의 범위에 주의하여 부등식을 풀자</h2>
+  <div class="calc grid-2" data-ai="치환형 부등식 최솟값 탐색기" data-let="gt = t^3 - 12*t">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #6 (p.99)</span><br>
+        부등식 $(x^2 + 1)^3 - 12(x^2 + 1) \ge k$에 대하여 답하시오.<br>
+        (1) $x^2 + 1 = t$라 할 때, $t$의 값의 범위를 구하시오.<br>
+        (2) 주어진 부등식을 $t$에 대한 부등식으로 나타내시오.<br>
+        (3) 모든 실수 $x$에 대하여 성립하는 실수 $k$의 최댓값을 구하시오.
+      </div>
+      <figure class="plot" data-x="0, 4" data-y="-20, 20" data-xstep="1" data-ystep="10" data-height="215" data-xlabel="치환 변수 t (t ≥ 1)" data-ylabel="g(t) = t³ - 12t">
+        <i data-line="x^3 - 12*x" data-x="0, 1" data-dash data-color="#94A3B8"></i>
+        <i data-line="x^3 - 12*x" data-x="1, 4" data-label="t ≥ 1 구간: g(t) = t³ - 12t" data-color="#1E3A8A"></i>
+        <i data-point="2, -16" data-label="최솟점 (2, -16)" data-color="#DC2626"></i>
+        <i data-point="t, gt" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>치환 변수 $t =$ <b><output data-expr="t" data-digits="1"></output></b> ($t \ge 1$) &nbsp; $\implies g(t) = t^3 - 12t =$ <b><output data-expr="gt" data-digits="1"></output></b></p>
+        <input type="range" name="t" min="1" max="3.5" step="0.5" value="2" aria-label="변수 t">
+        <p data-show="t == 2" class="status-pill">t = 2일 때 g(t)가 최솟값 -16을 가지므로 k ≤ -16이어야 한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) $t$의 범위</b>: 모든 실수 $x$에 대하여 $x^2 \ge 0$이므로 <b>$t \ge 1$</b></p>
+        <p class="step"><b>(2) $t$에 대한 부등식</b>: <b>$t^3 - 12t \ge k$ ($t \ge 1$)</b></p>
+        <p class="step ans"><b>(3) $k$의 최댓값</b>: $g(t) = t^3 - 12t$라 하면 $g'(t) = 3(t+2)(t-2) = 0$<br>
+        $t \ge 1$에서 최솟값은 $g(2) = 8 - 24 = -16$이므로 $k \le -16$<br>
+        $\therefore$ 실수 $k$의 최댓값은 <b>$-16$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 개념 및 교과서 [활동] #1 (p.100 / 자료 p.41) 극값의 부호와 삼차방정식의 실근 -->
+<section class="slide" id="p100-act1" data-sec="08. 방정식과 부등식" data-title="극값의 부호와 삼차방정식의 실근 (p.100)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>극댓값과 극솟값의 곱 $f(\alpha)f(\beta)$의 부호로 실근 개수를 판별하자</h2>
+  <div class="calc grid-2" data-ai="극값 곱을 이용한 실근 개수 탐색기" data-let="ya = k + 5; yb = k - 27; prod = ya * yb">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [활동] #1 (p.100 / 자료 p.41)</span><br>
+        삼차함수 $f(x)$가 극댓값 $f(\alpha)$, 극솟값 $f(\beta)$를 가질 때:<br>
+        ① $f(\alpha)f(\beta) < 0 \implies$ <b>실근 $3$개</b>, ② $f(\alpha)f(\beta) = 0 \implies$ <b>실근 $2$개</b>, ③ $f(\alpha)f(\beta) > 0 \implies$ <b>실근 $1$개</b><br>
+        방정식 $x^3 - 3x^2 - 9x + k = 0$의 실근의 개수를 조사해 보자.
+      </div>
+      <figure class="plot" data-x="-3, 5" data-y="-35, 35" data-xstep="1" data-ystep="15" data-height="215" data-xlabel="x" data-ylabel="f(x) = x³ - 3x² - 9x + k">
+        <i data-line="x^3 - 3*x^2 - 9*x + k" data-label="f(x)" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#DC2626"></i>
+        <i data-point="-1, ya" data-label="극대(-1, k+5)" data-color="#DC2626"></i>
+        <i data-point="3, yb" data-label="극소(3, k-27)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $k =$ <b><output data-expr="k"></output></b> (극댓값 $k+5 =$ <output data-expr="ya"></output>, 극솟값 $k-27 =$ <output data-expr="yb"></output>)</p>
+        <input type="range" name="k" min="-10" max="32" step="1" value="10" aria-label="상수 k">
+        <p data-show="prod < 0" class="status-pill">-5 &lt; k &lt; 27 : f(-1)f(3) &lt; 0이므로 서로 다른 세 실근!</p>
+        <p data-show="prod == 0" class="status-pill">k = -5 또는 k = 27 : f(-1)f(3) = 0이므로 실근 2개!</p>
+        <p data-show="prod > 0" class="status-pill">k &lt; -5 또는 k &gt; 27 : f(-1)f(3) &gt; 0이므로 실근 1개!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (극댓값과 극솟값 구하기)</b>:<br>
+        $f'(x) = 3(x+1)(x-3) = 0 \implies$ 극댓값 $f(-1) = k + 5$, 극솟값 $f(3) = k - 27$</p>
+        <p class="step ans"><b>2단계 ($f(-1)f(3) = (k+5)(k-27)$의 부호 판별)</b>:<br>
+        ① $(k+5)(k-27) < 0 \iff$ <b>$-5 < k < 27$일 때: $3$개</b><br>
+        ② $(k+5)(k-27) = 0 \iff$ <b>$k = -5 \text{ 또는 } k = 27$일 때: $2$개</b><br>
+        ③ $(k+5)(k-27) > 0 \iff$ <b>$k < -5 \text{ 또는 } k > 27$일 때: $1$개</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

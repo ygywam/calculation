@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-indef-integral">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 01. 부정적분 &amp; 02. 부정적분의 계산</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  /* 상단 배지 고정 */
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b {
+    color: #1E3A8A;
+  }
+  /* 표지 선생님 성함·직함 편집 상자 */
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  /* 2단 레이아웃 (오른쪽 풀이 영역 폭 넉넉히 확보하여 수식 잘림 방지) */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    gap: 20px;
+    align-items: start;
+  }
+  /* 문제 상자 및 풀이 단계 상자 */
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 8px 14px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 8px;
+    font-size: 22px;
+    line-height: 1.38;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin: 4px 0;
+    font-size: 20px;
+    line-height: 1.34;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
+  }
+  .ctrl-card p {
+    margin: 3px 0;
+    font-size: 20px;
+  }
+  .ctrl-card input[type=range] {
+    width: 100%;
+    height: 56px;
+  }
+  .ctrl-card button {
+    min-height: 56px;
+    font-size: 20px;
+    padding: 6px 12px;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display {
+    margin: 4px 0 !important;
+    overflow-x: hidden;
+  }
+  .katex {
+    font-size: 1.02em !important;
+  }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ</p>
+  </div>
+  <h1>01. 부정적분<br>02. 부정적분의 계산</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 개념 01: 부정적분의 뜻 -->
+<section class="slide" id="concept-antideriv" data-sec="01. 부정적분" data-title="부정적분의 뜻">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>미분해서 $f(x)$가 되는 함수는 왜 무수히 많을까?</h2>
+  <div class="calc grid-2" data-ai="부정적분과 적분상수 C 익스플로라그램" data-let="yt = t^2 + c; mt = 2*t">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 부정적분</span><br>
+        $F'(x) = f(x)$일 때, $F(x)$를 $f(x)$의 <b>부정적분</b>이라 한다.<br>
+        $$\int f(x)\,dx = F(x) + C \quad (\text{단, } C\text{는 적분상수})$$
+      </div>
+      <figure class="plot" data-x="-3, 3" data-y="-4, 10" data-xstep="1" data-ystep="2" data-height="250" data-xlabel="x" data-ylabel="y = F(x)">
+        <i data-line="x^2" data-dash data-label="x² (C=0)" data-color="#94A3B8"></i>
+        <i data-line="x^2 + c" data-label="F(x) = x² + C" data-color="#1E3A8A"></i>
+        <i data-line="mt*(x - t) + yt" data-x="t - 1, t + 1" data-label="접선 (기울기 2t)" data-color="#DC2626"></i>
+        <i data-point="t, yt" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>적분상수 $C =$ <b><output data-expr="c"></output></b> &nbsp; / &nbsp; 접점 $x =$ <output data-expr="t" data-digits="1"></output></p>
+        <input type="range" name="c" min="-3" max="4" step="1" value="1" aria-label="적분상수 C">
+        <input type="range" name="t" min="-2" max="2" step="0.5" value="1" data-play="6" aria-label="접점 x좌표 t">
+        <p class="status-pill">C가 바뀌어도 x = <output data-expr="t" data-digits="1"></output>에서의 접선 기울기는 <output data-expr="mt" data-digits="1"></output>로 일정하다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>미분과 적분의 역연산 관계</b>:<br>
+        $(x^2 + C)' = 2x \iff \int 2x\,dx = x^2 + C$</p>
+        <p class="step ans">상수 $C$는 미분하면 $0$이 되므로, $f(x)$의 부정적분은 그래프를 $y$축 방향으로 평행이동한 무수히 많은 함수다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 교과서 [문제] #2 (p117) -->
+<section class="slide" id="p117-q2" data-sec="01. 부정적분" data-title="교과서 문제 2 (p.117)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>부정적분 등식에서 피적분함수 $f(x)$를 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #2 (p.117)</span><br>
+        다음 등식을 만족시키는 함수 $f(x)$를 구하시오. (단, $C$는 적분상수)<br>
+        (1) $\int f(x)\,dx = 2x^2 + 5x + C$<br>
+        (2) $\int f(x)\,dx = -x^3 - 4x^2 + C$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 원리</b>: $\int f(x)\,dx = F(x) + C$의 양변을 $x$에 대하여 미분하면 $f(x) = F'(x)$이다.</p>
+        <p class="step"><b>(1) 풀이</b>: $f(x) = \frac{d}{dx}(2x^2 + 5x + C) = 4x + 5$</p>
+        <p class="step ans"><b>(2) 풀이 및 정답</b>:<br>
+        $f(x) = \frac{d}{dx}(-x^3 - 4x^2 + C) = -3x^2 - 8x$<br>
+        정답: (1) $4x + 5$ &nbsp; / &nbsp; (2) $-3x^2 - 8x$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (1)의 함수 $f(x)$와 (2)의 함수 $f(x)$에 대하여 $f(1)$의 값을 각각 구하면?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="적분상수 C는 미분하면 0이 된다. 미분한 도함수에 x=1을 대입하자.">7과 -5</button>
+        <button class="opt" data-ok data-why="맞다. (1) f(1) = 4+5 = 9이고, (2) f(1) = -3-8 = -11이다.">9와 -11</button>
+        <button class="opt" data-why="-4x²을 미분하면 -8x이므로 x=1일 때 -3-8 = -11이다.">9와 -7</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 교과서 [스스로 확인하기] #3 (p118) -->
+<section class="slide" id="p118-q3" data-sec="01. 부정적분" data-title="스스로 확인하기 3 (p.118)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>양변을 미분하여 함수 $f(x)$를 찾아보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #3 (p.118)</span><br>
+        다음 등식을 만족시키는 함수 $f(x)$를 구하시오. (단, $C$는 적분상수)<br>
+        (1) $\int f(x)\,dx = x^3 - 5x + C$<br>
+        (2) $\int f(x)\,dx = -\frac{1}{4}x^4 + x^3 - 3x + C$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 양변 미분</b>:<br>
+        $f(x) = (x^3 - 5x + C)' = 3x^2 - 5$</p>
+        <p class="step"><b>(2) 양변 미분</b>:<br>
+        $f(x) = \left(-\frac{1}{4}x^4 + x^3 - 3x + C\right)' = -x^3 + 3x^2 - 3$</p>
+        <p class="step ans"><b>정답</b>:<br>
+        (1) $f(x) = 3x^2 - 5$<br>
+        (2) $f(x) = -x^3 + 3x^2 - 3$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (2)에서 구한 $f(x)$에 대하여 $f(2)$의 값은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. f(2) = -8 + 12 - 3 = 1이다.">1</button>
+        <button class="opt" data-why="x³ 앞에 음수 부호(-)가 있으므로 -8 + 12 - 3을 계산해야 한다.">4</button>
+        <button class="opt" data-why="미분하기 전의 식이 아니라 미분한 f(x)에 x=2를 대입한다.">-2</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 교과서 [스스로 확인하기] #4 (p118) -->
+<section class="slide" id="p118-q4" data-sec="01. 부정적분" data-title="스스로 확인하기 4 (p.118)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>부정적분 중 하나가 주어졌을 때 $f(2)$의 값은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #4 (p.118)</span><br>
+        함수 $f(x)$의 부정적분 중 하나가 $-2x^2 + 3x$일 때, $f(2)$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (부정적분의 정의)</b>:<br>
+        $F(x) = -2x^2 + 3x$가 $f(x)$의 한 부정적분이므로<br>
+        $F'(x) = f(x)$이다.</p>
+        <p class="step"><b>2단계 (도함수 구하기)</b>:<br>
+        $f(x) = \frac{d}{dx}(-2x^2 + 3x) = -4x + 3$</p>
+        <p class="step ans"><b>3단계 ($x=2$ 대입)</b>:<br>
+        $f(2) = -4(2) + 3 = -5$ &nbsp; $\Rightarrow$ <b>정답: $-5$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $f(x)$의 부정적분이 $F(x)$일 때, 항상 성립하는 관계식은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="부정적분 F(x)를 미분해야 f(x)가 된다.">f'(x) = F(x)</button>
+        <button class="opt" data-ok data-why="맞다. F(x)를 미분한 도함수가 f(x)이다.">F'(x) = f(x)</button>
+        <button class="opt" data-why="적분 기호 안에는 f(x)가 들어가야 한다.">∫F(x)dx = f(x) + C</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 교과서 [스스로 확인하기] #5 (p118) -->
+<section class="slide" id="p118-q5" data-sec="01. 부정적분" data-title="스스로 확인하기 5 (p.118)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>한 함수의 두 부정적분 $F(x), G(x)$의 차는 어떻게 될까?</h2>
+  <div class="calc grid-2" data-ai="두 부정적분의 차 익스플로라그램" data-let="fy = x0^2 - 2*x0 + 7; gy = x0^2 - 2*x0 + 3; diff = fy - gy">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #5 (p.118)</span><br>
+        다항함수 $f(x)$의 두 부정적분 $F(x), G(x)$에 대하여 $F(1) = 6, G(1) = 2$일 때, $F(2) - G(2)$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-0.5, 3" data-y="0, 12" data-xstep="1" data-ystep="3" data-height="250" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^2 - 2*x + 7" data-label="F(x)" data-color="#1E3A8A"></i>
+        <i data-line="x^2 - 2*x + 3" data-label="G(x)" data-color="#0F766E"></i>
+        <i data-path="x0, gy; x0, fy" data-label="차이 F(x)-G(x)" data-color="#DC2626"></i>
+        <i data-point="x0, fy" data-color="#1E3A8A"></i>
+        <i data-point="x0, gy" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card" data-ai="모형 수치">
+        <p>탐침 위치 $x =$ <b><output data-expr="x0" data-digits="1"></output></b> (예시 모형)</p>
+        <input type="range" name="x0" min="0" max="2.5" step="0.5" value="1" data-play="5" aria-label="위치 x">
+        <p>$F(x) =$ <output data-expr="fy" data-digits="2"></output>, &nbsp; $G(x) =$ <output data-expr="gy" data-digits="2"></output></p>
+        <p class="status-pill">어느 x에서 재도 F(x) - G(x) = <output data-expr="diff" data-digits="0"></output>로 일정하다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step">$F(x), G(x)$가 모두 $f(x)$의 부정적분이므로 적분상수만 다르다.<br>즉, $F(x) - G(x) = C$ (상수)</p>
+        <p class="step">$x=1$을 대입하면 $C = F(1) - G(1) = 6 - 2 = 4$</p>
+        <p class="step ans">따라서 모든 실수 $x$에 대하여 $F(x) - G(x) = 4$이므로<br>
+        <b>정답: $F(2) - G(2) = 4$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 교과서 [스스로 확인하기] #6 (p118) -->
+<section class="slide" id="p118-q6" data-sec="01. 부정적분" data-title="스스로 확인하기 6 (p.118)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>접선의 기울기와 극댓값으로 함수를 구해 보자</h2>
+  <div class="calc grid-2" data-ai="접선 기울기와 극댓값 탐색기" data-let="ymax = 2 + c; f1 = 2 + c">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #6 (p.118)</span><br>
+        함수 $f(x)$의 그래프 위의 점 $(x, f(x))$에서의 접선의 기울기가 $4 - 4x$이고 함수 $f(x)$의 극댓값이 $3$일 때, 다음 물음에 답하시오.<br>
+        (1) $f'(x)$를 구하시오. &nbsp; (2) $f(1)$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-1, 3" data-y="-4, 6" data-xstep="1" data-ystep="2" data-height="250" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="-2*x^2 + 4*x + c" data-label="f(x) = -2x² + 4x + C" data-color="#1E3A8A"></i>
+        <i data-line="3" data-dash data-label="목표 극댓값 y = 3" data-color="#DC2626"></i>
+        <i data-point="1, ymax" data-label="극대 (1, 2+C)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>적분상수 $C =$ <b><output data-expr="c"></output></b> &nbsp; $\Rightarrow$ 극댓값 $f(1) =$ <b><output data-expr="ymax"></output></b></p>
+        <input type="range" name="c" min="-2" max="3" step="1" value="0" aria-label="적분상수 C">
+        <p data-show="c == 1" class="status-pill">C = 1일 때 x = 1에서의 극댓값이 정확히 3이 된다!</p>
+        <p data-show="c != 1">$C$를 조절해 곡선의 극댓값(꼭짓점 높이)을 $3$에 맞춰 보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 도함수</b>: 점 $(x, f(x))$에서의 접선의 기울기가 $4 - 4x$이므로<br>
+        $f'(x) = 4 - 4x$ &nbsp; ($\because ( -2x^2 + 4x + C )' = 4 - 4x$)</p>
+        <p class="step"><b>(2) 극댓값</b>: $f'(x) = -4(x - 1) = 0$에서<br>
+        함수 $f(x)$는 $x = 1$에서 극대이자 최대다.</p>
+        <p class="step ans">극댓값은 $x=1$에서의 함숫값 그 자체이므로<br>
+        <b>정답: (1) $f'(x) = 4 - 4x$ &nbsp; / &nbsp; (2) $f(1) = 3$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 개념 02: 부정적분의 계산 (p120~121) -->
+<section class="slide" id="concept-calc" data-sec="02. 부정적분의 계산" data-title="xⁿ의 부정적분과 성질">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>다항함수의 부정적분은 어떤 공식으로 계산할까?</h2>
+  <div class="calc grid-2" data-ai="거듭제곱 함수의 부정적분 탐색기" data-let="np1 = n + 1">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">핵심 개념 | 부정적분의 계산</span><br>
+        1. $n$이 양의 정수일 때: $\int x^n\,dx = \frac{1}{n+1}x^{n+1} + C$, &nbsp; $\int 1\,dx = x + C$<br>
+        2. 실수배·합·차: $\int kf(x)\,dx = k\int f(x)\,dx$<br>
+        $\int \{f(x) \pm g(x)\}\,dx = \int f(x)\,dx \pm \int g(x)\,dx$
+      </div>
+      <figure class="plot" data-x="-2, 2" data-y="-4, 5" data-xstep="1" data-ystep="2" data-height="245" data-xlabel="x" data-ylabel="y">
+        <i data-line="x^n" data-dash data-label="도함수 y = xⁿ" data-color="#DC2626"></i>
+        <i data-line="(x^(n+1))/(n+1) + c" data-label="부정적분 y = xⁿ⁺¹/(n+1) + C" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">차수 $n$ 선택:
+          <button data-set="n" data-value="1" aria-pressed="true">n = 1 (x)</button>
+          <button data-set="n" data-value="2">n = 2 (x²)</button>
+          <button data-set="n" data-value="3">n = 3 (x³)</button>
+        </p>
+        <p>적분상수 $C =$ <output data-expr="c"></output></p>
+        <input type="range" name="c" min="-2" max="2" step="1" value="0" aria-label="적분상수 C">
+        <p class="status-pill">∫ x^<output data-expr="n"></output> dx = (1/<output data-expr="np1"></output>) x^<output data-expr="np1"></output> + C</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 기억법</b>: 적분하면 <b>차수에 $+1$</b>을 하고, 그 커진 지수의 <b>역수 $\frac{1}{n+1}$</b>을 앞에 곱한다.</p>
+        <p class="step ans">곱으로 된 식은 <b>전개하여 합의 꼴로 고친 뒤</b> 각 항을 따로 부정적분한다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 교과서 [문제] #2 (p121) -->
+<section class="slide" id="p121-q2" data-sec="02. 부정적분의 계산" data-title="교과서 문제 2 (p.121)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>다항식과 곱의 꼴의 부정적분을 계산해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #2 (p.121)</span><br>
+        다음 부정적분을 구하시오.<br>
+        (1) $\int (x^2 - 10x + 1)\,dx$<br>
+        (2) $\int (4x^2 - 1)(2x - 3)\,dx$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 항별 적분</b>:<br>
+        $\int x^2\,dx - 10\int x\,dx + \int 1\,dx$<br>
+        $= \frac{1}{3}x^3 - 5x^2 + x + C$</p>
+        <p class="step"><b>(2) 먼저 전개하기</b>:<br>
+        $(4x^2 - 1)(2x - 3) = 8x^3 - 12x^2 - 2x + 3$</p>
+        <p class="step ans"><b>(2) 적분 및 정답</b>:<br>
+        $\int (8x^3 - 12x^2 - 2x + 3)\,dx$<br>
+        $= 2x^4 - 4x^3 - x^2 + 3x + C$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (2)번처럼 두 다항식의 곱을 부정적분할 때 가장 먼저 해야 할 일은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="적분에서는 곱셈을 각각 따로 적분하여 곱할 수 없다!">(4x²-1)과 (2x-3)을 각각 적분하여 곱한다.</button>
+        <button class="opt" data-ok data-why="맞다. 다항식의 곱은 반드시 전개하여 덧셈·뺄셈 꼴로 바꾼 뒤 적분한다.">식을 전개하여 다항식의 합·차 꼴로 고친다.</button>
+        <button class="opt" data-why="미분이 아니라 부정적분을 구하는 문제다.">곱의 미분법을 적용한다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 교과서 [문제] #3 (p122) -->
+<section class="slide" id="p122-q3" data-sec="02. 부정적분의 계산" data-title="교과서 문제 3 (p.122)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수 $f'(x)$와 함숫값 하나로 $f(x)$를 결정하자</h2>
+  <div class="calc grid-2" data-ai="초기조건으로 적분상수 C 찾기" data-let="y1 = 6 - 1 + c; y2 = -8 + 12 + 2 + c">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #3 (p.122)</span><br>
+        다음 조건을 만족시키는 함수 $f(x)$를 구하시오.<br>
+        (1) $f'(x) = 12x - 1, \quad f(1) = -2$<br>
+        (2) $f'(x) = -3x^2 + 6x + 1, \quad f(2) = 1$
+      </div>
+      <figure class="plot" data-x="-1.5, 3.5" data-y="-8, 10" data-xstep="1" data-ystep="4" data-height="235" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="6*x^2 - x + c" data-show="q == 1" data-label="(1) 6x² - x + C" data-color="#1E3A8A"></i>
+        <i data-point="1, -2" data-show="q == 1" data-label="지나는 점 (1, -2)" data-color="#DC2626"></i>
+        <i data-line="-x^3 + 3*x^2 + x + c" data-show="q == 2" data-label="(2) -x³ + 3x² + x + C" data-color="#0F766E"></i>
+        <i data-point="2, 1" data-show="q == 2" data-label="지나는 점 (2, 1)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1)번 그래프</button>
+          <button data-set="q" data-value="2">(2)번 그래프</button>
+        </p>
+        <p>적분상수 $C =$ <b><output data-expr="c"></output></b></p>
+        <input type="range" name="c" min="-8" max="2" step="1" value="-3" aria-label="적분상수 C">
+        <p data-show="q == 1 && c == -7" class="status-pill">(1) C = -7일 때 점 (1, -2)를 정확히 지난다!</p>
+        <p data-show="q == 2 && c == -5" class="status-pill">(2) C = -5일 때 점 (2, 1)을 정확히 지난다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 풀이</b>: $f(x) = \int (12x - 1)\,dx = 6x^2 - x + C$<br>
+        $f(1) = 5 + C = -2 \implies C = -7$</p>
+        <p class="step"><b>(2) 풀이</b>: $f(x) = -x^3 + 3x^2 + x + C$<br>
+        $f(2) = -8 + 12 + 2 + C = 1 \implies C = -5$</p>
+        <p class="step ans"><b>정답</b>: (1) $f(x) = 6x^2 - x - 7$<br>
+        (2) $f(x) = -x^3 + 3x^2 + x - 5$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 교과서 [문제] #4 (p122) -->
+<section class="slide" id="p122-q4" data-sec="02. 부정적분의 계산" data-title="교과서 문제 4 (p.122)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>접선의 기울기 조건과 지나는 점으로 곡선을 찾자</h2>
+  <div class="calc grid-2" data-ai="곡선 복원 익스플로라그램" data-let="ym1 = 2 - 3 + c; yt = 2*t^2 + 3*t + c; mt = 4*t + 3">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [문제] #4 (p.122)</span><br>
+        곡선 $y = f(x)$ 위의 점 $(x, f(x))$에서의 접선의 기울기가 $4x + 3$이다. 이 곡선이 점 $(-1, 3)$을 지날 때, 함수 $f(x)$를 구하시오.
+      </div>
+      <figure class="plot" data-x="-3, 2" data-y="-2, 10" data-xstep="1" data-ystep="2" data-height="250" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="2*x^2 + 3*x + c" data-label="f(x) = 2x² + 3x + C" data-color="#1E3A8A"></i>
+        <i data-line="mt*(x - t) + yt" data-x="t - 0.8, t + 0.8" data-dash data-label="접선 (기울기 4t+3)" data-color="#0F766E"></i>
+        <i data-point="-1, 3" data-label="목표점 (-1, 3)" data-color="#DC2626"></i>
+        <i data-point="-1, ym1" data-color="#1E3A8A"></i>
+        <i data-point="t, yt" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>적분상수 $C =$ <b><output data-expr="c"></output></b> ($f(-1) =$ <b><output data-expr="ym1"></output></b>) &nbsp;/&nbsp; 접점 $x =$ <output data-expr="t" data-digits="1"></output></p>
+        <input type="range" name="c" min="0" max="6" step="1" value="1" aria-label="적분상수 C">
+        <input type="range" name="t" min="-2" max="1" step="0.5" value="-1" data-play="5" aria-label="접점 x좌표 t">
+        <p data-show="c == 4" class="status-pill">C = 4일 때 곡선이 점 (-1, 3)을 정확히 지난다!</p>
+        <p data-show="c != 4">$C$를 움직여 파란 점이 목표점 $(-1, 3)$에 닿게 맞춰 보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (도함수 식 세우기)</b>:<br>
+        점 $(x, f(x))$에서의 접선의 기울기가 $4x + 3$이므로 $f'(x) = 4x + 3$</p>
+        <p class="step"><b>2단계 (부정적분)</b>:<br>
+        $f(x) = \int (4x + 3)\,dx = 2x^2 + 3x + C$</p>
+        <p class="step ans">점 $(-1, 3)$을 지나므로 $f(-1) = 2 - 3 + C = 3 \Rightarrow C = 4$<br>
+        <b>정답: $f(x) = 2x^2 + 3x + 4$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 교과서 [스스로 확인하기] #2 (p123) -->
+<section class="slide" id="p123-q2" data-sec="02. 부정적분의 계산" data-title="스스로 확인하기 2 (p.123)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>여러 가지 다항함수의 부정적분을 구해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #2 (p.123)</span><br>
+        다음 부정적분을 구하시오.<br>
+        (1) $\int x^{99}\,dx$<br>
+        (2) $\int (12x^5 - 8x^3 + 3x - 2)\,dx$<br>
+        (3) $\int (x^2 + 1)(x^2 - 1)\,dx$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 풀이</b>: 지수 $99 + 1 = 100$이므로<br>
+        $\int x^{99}\,dx = \frac{1}{100}x^{100} + C$</p>
+        <p class="step"><b>(2) 풀이</b>: 각 항을 부정적분하면<br>
+        $2x^6 - 2x^4 + \frac{3}{2}x^2 - 2x + C$</p>
+        <p class="step ans"><b>(3) 합차공식 전개 후 적분</b>:<br>
+        $\int (x^4 - 1)\,dx = \frac{1}{5}x^5 - x + C$</p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (3)에서 적분상수 $C = 0$일 때, 구한 부정적분에 $x = 5$를 대입한 값은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="(1/5)×5⁵ = 5⁴ = 625이고, 여기서 5를 빼야 한다.">625</button>
+        <button class="opt" data-ok data-why="맞다. (1/5)×5⁵ - 5 = 625 - 5 = 620이다.">620</button>
+        <button class="opt" data-why="5⁴ = 625이다.">120</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 교과서 [스스로 확인하기] #3 (p123) -->
+<section class="slide" id="p123-q3" data-sec="02. 부정적분의 계산" data-title="스스로 확인하기 3 (p.123)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>두 부정적분을 하나로 묶어서 간단히 계산해 보자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #3 (p.123)</span><br>
+        다음 부정적분을 구하시오.<br>
+        (1) $\int (2x^3 + 3)\,dx + \int (2x^3 - 3)\,dx$<br>
+        (2) $\int \frac{x^4}{x^2 + 1}\,dx - \int \frac{1}{x^2 + 1}\,dx$
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>핵심 전략</b>: $\int f(x)\,dx \pm \int g(x)\,dx = \int \{f(x) \pm g(x)\}\,dx$<br>
+        성질을 써서 <b>기호 안의 식을 먼저 합친다!</b></p>
+        <p class="step"><b>(1) 풀이</b>: $\int \{(2x^3 + 3) + (2x^3 - 3)\}\,dx$<br>
+        $= \int 4x^3\,dx = x^4 + C$</p>
+        <p class="step ans"><b>(2) 합치고 약분하기</b>:<br>
+        $\int \frac{x^4 - 1}{x^2 + 1}\,dx = \int \frac{(x^2+1)(x^2-1)}{x^2 + 1}\,dx = \int (x^2 - 1)\,dx$<br>
+        <b>정답: (1) $x^4 + C$ &nbsp; / &nbsp; (2) $\frac{1}{3}x^3 - x + C$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: (2)에서 두 분수식을 하나로 합쳐 약분했을 때 남는 피적분함수는?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-why="(x⁴-1) = (x²+1)(x²-1)이므로 분모 (x²+1)이 약분되고 (x²-1)이 남는다.">x² + 1</button>
+        <button class="opt" data-ok data-why="맞다. 합차공식으로 인수분해하면 x² - 1만 남아 쉽게 적분할 수 있다.">x² - 1</button>
+        <button class="opt" data-why="차수가 4차에서 2차로 줄어든다.">x³ - 1</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 교과서 [스스로 확인하기] #4 (p123) -->
+<section class="slide" id="p123-q4" data-sec="02. 부정적분의 계산" data-title="스스로 확인하기 4 (p.123)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차·사차함수의 도함수와 함숫값으로 $f(x)$를 구하자</h2>
+  <div class="calc grid-2" data-ai="삼차·사차함수 적분상수 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #4 (p.123)</span><br>
+        다음 조건을 만족시키는 함수 $f(x)$를 구하시오.<br>
+        (1) $f'(x) = 9x^2 - 8x, \quad f(1) = -1$<br>
+        (2) $f'(x) = 4x^3 - 6x + 3, \quad f(2) = 6$
+      </div>
+      <figure class="plot" data-x="-1, 3" data-y="-8, 12" data-xstep="1" data-ystep="4" data-height="235" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="3*x^3 - 4*x^2 + c" data-show="q == 1" data-label="(1) 3x³ - 4x² + C" data-color="#1E3A8A"></i>
+        <i data-point="1, -1" data-show="q == 1" data-label="(1, -1)" data-color="#DC2626"></i>
+        <i data-line="x^4 - 3*x^2 + 3*x + c" data-show="q == 2" data-label="(2) x⁴ - 3x² + 3x + C" data-color="#0F766E"></i>
+        <i data-point="2, 6" data-show="q == 2" data-label="(2, 6)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p style="display:flex;gap:10px;align-items:center">문항 선택:
+          <button data-set="q" data-value="1" aria-pressed="true">(1)번 확인</button>
+          <button data-set="q" data-value="2">(2)번 확인</button>
+        </p>
+        <p>적분상수 $C =$ <b><output data-expr="c"></output></b></p>
+        <input type="range" name="c" min="-6" max="4" step="1" value="2" aria-label="적분상수 C">
+        <p data-show="q == 1 && c == 0" class="status-pill">(1) C = 0일 때 점 (1, -1)을 지난다!</p>
+        <p data-show="q == 2 && c == -4" class="status-pill">(2) C = -4일 때 점 (2, 6)을 지난다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 풀이</b>: $f(x) = 3x^3 - 4x^2 + C$<br>
+        $f(1) = 3 - 4 + C = -1 \implies C = 0$</p>
+        <p class="step"><b>(2) 풀이</b>: $f(x) = x^4 - 3x^2 + 3x + C$<br>
+        $f(2) = 16 - 12 + 6 + C = 6 \implies C = -4$</p>
+        <p class="step ans"><b>정답</b>: (1) $f(x) = 3x^3 - 4x^2$<br>
+        (2) $f(x) = x^4 - 3x^2 + 3x - 4$</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. 교과서 [스스로 확인하기] #5 (p123) -->
+<section class="slide" id="p123-q5" data-sec="02. 부정적분의 계산" data-title="스스로 확인하기 5 (p.123)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수 그래프에서 이차함수 $f(x)$를 구해 보자</h2>
+  <div class="calc grid-2" data-ai="도함수 직선으로부터 이차함수 복원" data-let="f3 = -3 + c; f2 = 0 + c">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #5 (p.123)</span><br>
+        이차함수 $y = f(x)$에 대하여 그 도함수 $y = f'(x)$의 그래프가 $(0, 2)$와 $(1, 0)$을 지나는 직선이다. $f(3) = 2$일 때, $f(2)$의 값을 구하시오.
+      </div>
+      <figure class="plot" data-x="-1, 3.5" data-y="-3, 8" data-xstep="1" data-ystep="2" data-height="250" data-xlabel="x" data-ylabel="y">
+        <i data-line="-2*x + 2" data-dash data-label="도함수 y = f'(x)" data-color="#64748B"></i>
+        <i data-line="-x^2 + 2*x + c" data-label="이차함수 y = f(x)" data-color="#1E3A8A"></i>
+        <i data-point="3, 2" data-label="조건 (3, 2)" data-color="#DC2626"></i>
+        <i data-point="2, f2" data-label="(2, f(2))" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>적분상수 $C =$ <b><output data-expr="c"></output></b> &nbsp; ($f(3) =$ <output data-expr="f3"></output>, &nbsp; $f(2) =$ <b><output data-expr="f2"></output></b>)</p>
+        <input type="range" name="c" min="0" max="7" step="1" value="2" aria-label="적분상수 C">
+        <p data-show="c == 5" class="status-pill">C = 5일 때 f(3) = 2를 만족하고, f(2) = 5가 된다!</p>
+        <p data-show="c != 5">$C$를 움직여 이차함수가 빨간 점 $(3, 2)$를 지나게 맞춰 보자.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($f'(x)$ 구하기)</b>: 두 점 $(0, 2), (1, 0)$을 지나는 직선이므로<br>
+        기울기는 $-2$, $y$절편은 $2 \Rightarrow f'(x) = -2x + 2$</p>
+        <p class="step"><b>2단계 (부정적분)</b>: $f(x) = \int (-2x + 2)\,dx = -x^2 + 2x + C$<br>
+        $f(3) = -9 + 6 + C = 2 \Rightarrow C = 5$</p>
+        <p class="step ans">$f(x) = -x^2 + 2x + 5$이므로<br>
+        <b>정답: $f(2) = -4 + 4 + 5 = 5$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 교과서 [스스로 확인하기] #6 (p123) -->
+<section class="slide" id="p123-q6" data-sec="02. 부정적분의 계산" data-title="스스로 확인하기 6 (p.123)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$F(x)$와 $f(x)$가 함께 들어 있는 식은 어떻게 풀까?</h2>
+  <div class="calc grid-2" data-ai="부정적분 관계식 미분 및 복원" data-let="fm1 = 9 + 2 + c">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">교과서 [스스로 확인하기] #6 (p.123)</span><br>
+        다항함수 $f(x)$와 그 한 부정적분 $F(x)$에 대하여<br>
+        $$F(x) = xf(x) - 6x^3 + x^2 - 1$$
+        이 성립한다. $f(-1) = 2$일 때, 다음 물음에 답하시오.<br>
+        (1) 양변을 미분하여 $f'(x)$ 구하기 &nbsp; (2) $f(x)$ 구하기
+      </div>
+      <figure class="plot" data-x="-2, 2" data-y="-12, 16" data-xstep="1" data-ystep="4" data-height="235" data-xlabel="x" data-ylabel="y = f(x)">
+        <i data-line="9*x^2 - 2*x + c" data-label="f(x) = 9x² - 2x + C" data-color="#1E3A8A"></i>
+        <i data-point="-1, 2" data-label="(-1, 2)" data-color="#DC2626"></i>
+        <i data-point="-1, fm1" data-color="#1E3A8A"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>적분상수 $C =$ <b><output data-expr="c"></output></b> &nbsp; $\Rightarrow$ $f(-1) = 11 + C =$ <b><output data-expr="fm1"></output></b></p>
+        <input type="range" name="c" min="-12" max="-4" step="1" value="-6" aria-label="적분상수 C">
+        <p data-show="c == -9" class="status-pill">C = -9일 때 f(-1) = 2를 정확히 만족한다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>(1) 양변 미분 ($F'(x) = f(x)$와 곱의 미분법)</b>:<br>
+        $f(x) = \{f(x) + xf'(x)\} - 18x^2 + 2x$<br>
+        $xf'(x) = 18x^2 - 2x \Rightarrow$ <b>$f'(x) = 18x - 2$</b></p>
+        <p class="step"><b>(2) 부정적분</b>: $f(x) = \int (18x - 2)\,dx = 9x^2 - 2x + C$</p>
+        <p class="step ans">$f(-1) = 9 + 2 + C = 2 \Rightarrow C = -9$<br>
+        <b>정답: (1) $f'(x) = 18x - 2$ / (2) $f(x) = 9x^2 - 2x - 9$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>

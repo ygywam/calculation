@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="ko" data-deck="sflhs-calc1-olympos-diff">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>미적분Ⅰ | 올림포스 미분 유형확인 · 고난도 · 대단원 종합 (p.45~49)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.css">
+<script defer src="https://cdn.jsdelivr.net/gh/N-lifescience/resonance@2/engine/exploragram.js"></script>
+<style>
+  body[data-theme="ppt"] {
+    --accent: #1E3A8A;
+    --tab: #1E3A8A;
+    --tab-ink: #FFFFFF;
+    --qnum: #1E3A8A;
+    --pill: #0F766E;
+    --bar-c: #2563EB;
+  }
+  body[data-theme="ppt"] section.slide.cover {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    color: #FFFFFF;
+  }
+  body[data-theme="ppt"] section.slide.cover h1,
+  body[data-theme="ppt"] section.slide.cover .kicker,
+  body[data-theme="ppt"] section.slide.cover::after {
+    color: #FFFFFF;
+  }
+  .sflhs-badge {
+    position: absolute;
+    z-index: 6;
+    top: 22px;
+    right: 48px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: #F8FAFC;
+    border: 2px solid #CBD5E1;
+    color: #1E293B;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .sflhs-badge b { color: #1E3A8A; }
+  .teacher-edit-box {
+    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    padding: 10px 18px;
+    border-radius: 12px;
+  }
+  .teacher-input {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+  .teacher-input:focus {
+    outline: 2px solid #60A5FA;
+    background: rgba(15, 23, 42, 0.75);
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 520px;
+    gap: 22px;
+    align-items: start;
+  }
+  .grid-2 > div { min-width: 0; }
+  .prob-box {
+    background: #F8FAFC;
+    border-left: 6px solid #1E3A8A;
+    padding: 12px 16px;
+    border-radius: 0 12px 12px 0;
+    margin-bottom: 10px;
+    font-size: 23px;
+    line-height: 1.44;
+  }
+  .prob-src {
+    display: inline-block;
+    background: #DBEAFE;
+    color: #1E3A8A;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .sol-list p.step {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-left: 5px solid #0F766E;
+    padding: 9px 14px;
+    border-radius: 8px;
+    margin: 6px 0;
+    font-size: 22px;
+    line-height: 1.42;
+    overflow-wrap: anywhere;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+  .sol-list p.step.ans {
+    background: #FEF3C7;
+    border-color: #F59E0B;
+    border-left: 6px solid #D97706;
+    font-weight: 700;
+    color: #92400E;
+  }
+  .ctrl-card {
+    background: #F1F5F9;
+    border-radius: 14px;
+    padding: 10px 16px;
+    font-size: 21px;
+  }
+  .ctrl-card p { margin: 4px 0; font-size: 21px; }
+  .ctrl-card input[type=range] { width: 100%; height: 56px; }
+  .ctrl-card button { min-height: 56px; font-size: 20px; padding: 6px 12px; }
+  .status-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: #E0F2FE;
+    color: #0369A1;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .katex-display { margin: 4px 0 !important; overflow-x: hidden; }
+  .katex { font-size: 1.03em !important; }
+</style>
+</head>
+<body data-theme="ppt">
+
+<!-- 01. 표지 -->
+<section class="slide cover" id="cover" data-title="표지">
+  <div class="band">
+    <p class="kicker">서울외국어고등학교 · 미적분Ⅰ (자료 p.45~49)</p>
+  </div>
+  <h1>올림포스 미분 총정리<br>유형확인 · 고난도 · 대단원 종합 (1슬라이드 1문항)</h1>
+  <div class="teacher-edit-box" data-no-ink>
+    <input type="text" id="teacher-role-input" class="teacher-input" style="width: 240px;" value="수학의 기록조율사," aria-label="선생님 소개 문구" autocomplete="off">
+    <input type="text" id="teacher-name-input" class="teacher-input" style="width: 150px;" value="조용희T." aria-label="선생님 성함(모든 슬라이드 배지에 반영)" autocomplete="off">
+  </div>
+</section>
+
+<!-- 02. 올림포스 [유형확인] #12 (p.49) -->
+<section class="slide" id="olym-12" data-sec="올림포스 유형확인" data-title="유형확인 #12 (p.49)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차함수가 실수 전체의 집합에서 증가하도록 하는 $a$의 범위는?</h2>
+  <div class="calc grid-2" data-ai="삼차함수 증가 조건 도함수 판별식 탐색기" data-let="disc = a^2 - 36">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #12 (p.49 / 자료 p.45)</span><br>
+        함수 $f(x) = 2x^3 + ax^2 + 6x - 1$이 실수 전체의 집합에서 증가하도록 하는 실수 $a$의 최댓값을 $M$, 최솟값을 $m$이라 할 때, $M - m$의 값은?
+      </div>
+      <figure class="plot" data-x="-2.5, 2.5" data-y="-8, 25" data-xstep="1" data-ystep="10" data-height="215" data-xlabel="x" data-ylabel="도함수 f'(x) = 6x² + 2ax + 6">
+        <i data-line="6*x^2 + 2*a*x + 6" data-label="f'(x) = 6x² + 2ax + 6" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>실수 $a =$ <b><output data-expr="a"></output></b> &nbsp; $\implies \frac{D}{4} = a^2 - 36 =$ <b><output data-expr="disc"></output></b></p>
+        <input type="range" name="a" min="-8" max="8" step="2" value="4" aria-label="실수 a">
+        <p data-show="disc <= 0" class="status-pill">-6 ≤ a ≤ 6 : f'(x) ≥ 0이 항상 성립하므로 실수 전체에서 증가!</p>
+        <p data-show="disc > 0">$f'(x) < 0$인 구간이 생겨 감소하는 구간이 존재한다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (실수 전체에서 증가할 조건)</b>:<br>
+        모든 실수 $x$에 대하여 $f'(x) = 6x^2 + 2ax + 6 \ge 0$이어야 한다.</p>
+        <p class="step"><b>2단계 (판별식 $\frac{D}{4} \le 0$ 적용)</b>:<br>
+        $\frac{D}{4} = a^2 - 36 \le 0 \implies -6 \le a \le 6$</p>
+        <p class="step ans"><b>3단계 ($M - m$ 계산)</b>:<br>
+        $M = 6, \; m = -6 \implies M - m = 12$ &nbsp; <b>(정답: $12$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03. 올림포스 [유형확인] #15 (p.50) -->
+<section class="slide" id="olym-15" data-sec="올림포스 유형확인" data-title="유형확인 #15 (p.50)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$x = 3$에서 극솟값 $2$를 가질 때 상수 $a, b$의 값을 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #15 (p.50 / 자료 p.45)</span><br>
+        함수 $f(x) = \frac{1}{3}x^3 - x^2 + ax + b$가 $x = 3$에서 극솟값 $2$를 가질 때, 두 상수 $a, b$에 대하여 $a + b$의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($f'(3) = 0$으로 상수 $a$ 구하기)</b>:<br>
+        $f'(x) = x^2 - 2x + a$에서 $x = 3$을 대입하면<br>
+        $f'(3) = 9 - 6 + a = 0 \implies a = -3$</p>
+        <p class="step"><b>2단계 ($f(3) = 2$로 상수 $b$ 구하기)</b>:<br>
+        $f(3) = \frac{1}{3}(27) - 9 + (-3)(3) + b = 2$<br>
+        $9 - 9 - 9 + b = 2 \implies b = 11$</p>
+        <p class="step ans"><b>3단계 ($a + b$ 계산)</b>:<br>
+        $a + b = -3 + 11 = 8$ &nbsp; <b>(정답: $8$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 미분가능한 함수 $f(x)$가 $x = 3$에서 극솟값 $2$를 갖는다는 조건을 두 개의 등식으로 바꾸면?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 극점에서의 미분계수는 0이므로 f'(3) = 0이고, 함숫값은 f(3) = 2이다.">f'(3) = 0 이고 f(3) = 2</button>
+        <button class="opt" data-why="f'(3)이 0이고 f(3)이 2이다.">f'(3) = 2 이고 f(3) = 0</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04. 올림포스 [유형확인] #18 (p.50) -->
+<section class="slide" id="olym-18" data-sec="올림포스 유형확인" data-title="유형확인 #18 (p.50)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$x = 0$에서 극솟값 $0$, 극댓값이 $4$인 삼차함수에서 $f(1)$은?</h2>
+  <div class="calc grid-2" data-ai="올림포스 18번 삼차함수 비율 관계 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #18 (p.50 / 자료 p.46)</span><br>
+        최고차항의 계수가 $1$인 삼차함수 $f(x)$가 $x = 0$에서 극솟값 $0$을 갖고 함수 $f(x)$의 극댓값이 $4$일 때, $f(1)$의 값은?
+      </div>
+      <figure class="plot" data-x="-3.5, 1.5" data-y="-1, 5" data-xstep="1" data-ystep="2" data-height="220" data-xlabel="x" data-ylabel="y = x²(x + 3)">
+        <i data-line="x^3 + 3*x^2" data-label="f(x) = x³ + 3x²" data-color="#1E3A8A"></i>
+        <i data-line="4" data-dash data-label="극댓값 y = 4" data-color="#DC2626"></i>
+        <i data-point="-2, 4" data-label="극대(-2, 4)" data-color="#DC2626"></i>
+        <i data-point="0, 0" data-label="극소(0, 0)" data-color="#0F766E"></i>
+        <i data-point="1, 4" data-label="교점(1, 4)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p class="status-pill">[비율 관계 팁] 극대(-2) : 변곡(-1) : 극소(0) : 교점(1)이 1:1:1 등간격이므로 f(1) = f(-2) = 4이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($f(0)=0, f'(0)=0$으로 식 세우기)</b>:<br>
+        $x=0$에서 $x$축에 접하므로 $f(x) = x^3 + ax^2$ ($a > 0$)이라 놓는다.</p>
+        <p class="step"><b>2단계 (극댓값 $4$를 이용해 $a$ 구하기)</b>:<br>
+        $f'(x) = 3x^2 + 2ax = x(3x + 2a) = 0 \implies x = -\frac{2a}{3}$에서 극대<br>
+        $f\left(-\frac{2a}{3}\right) = \frac{4a^3}{27} = 4 \implies a^3 = 27 \implies a = 3$</p>
+        <p class="step ans"><b>3단계 ($f(1)$ 계산)</b>:<br>
+        $f(x) = x^3 + 3x^2 \implies f(1) = 1 + 3 = 4$ &nbsp; <b>(정답: $4$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05. 올림포스 [유형확인] #21 (p.51) -->
+<section class="slide" id="olym-21" data-sec="올림포스 유형확인" data-title="유형확인 #21 (p.51)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$f'(2) = 0$이고 극값을 갖지 않는 삼차함수에서 $f'(4)$는?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #21 (p.51 / 자료 p.46)</span><br>
+        최고차항의 계수가 $1$인 삼차함수 $f(x)$가 $f'(2) = 0$이고 극값을 갖지 않을 때, $f'(4)$의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (삼차함수가 극값을 갖지 않을 조건)</b>:<br>
+        삼차함수 $f(x) = x^3 + \cdots$가 극값을 갖지 않으려면 이차방정식 $f'(x) = 0$이 <b>중근</b> 또는 허근을 가져야 한다.</p>
+        <p class="step"><b>2단계 ($f'(2) = 0$으로부터 $f'(x)$ 결정)</b>:<br>
+        $f'(2) = 0$이라는 실근이 존재하므로 $x = 2$가 반드시 <b>중근</b>이어야 한다!<br>
+        최고차항 계수가 $1$이므로 $f'(x) = 3(x - 2)^2$</p>
+        <p class="step ans"><b>3단계 ($f'(4)$ 계산)</b>:<br>
+        $f'(4) = 3(4 - 2)^2 = 12$ &nbsp; <b>(정답: $12$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 이차함수 $y = f'(x)$가 $x = 2$에서 $x$축에 접할 때($f'(x) = 3(x-2)^2$), $x = 2$ 좌우에서 $f'(x)$의 부호는 어떻게 되는가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. (+)에서 (+)로 부호가 바뀌지 않으므로 f(x)는 x = 2에서 극값을 갖지 않고 계속 증가한다.">(+) → (+)로 부호가 바뀌지 않는다.</button>
+        <button class="opt" data-why="중근에서는 부호가 바뀌지 않는다.">(+) → (-)로 부호가 바뀐다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06. 올림포스 [유형확인] #24 (p.51) -->
+<section class="slide" id="olym-24" data-sec="올림포스 유형확인" data-title="유형확인 #24 (p.51)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>닫힌구간 $[0, 3a]$에서 삼차함수의 최댓값·최솟값으로 계수를 찾자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #24 (p.51 / 자료 p.46)</span><br>
+        닫힌구간 $[0, 3a]$에서 함수 $f(x) = x^3 - 12a^2x + b$의 최댓값이 $12$, 최솟값이 $-4$일 때, 두 양수 $a, b$에 대하여 $a + b$의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (도함수와 극점 구하기)</b>:<br>
+        $f'(x) = 3x^2 - 12a^2 = 3(x + 2a)(x - 2a) = 0$<br>
+        $a > 0$이므로 구간 $[0, 3a]$ 안에서 $x = 2a$일 때 극소이자 최소이다.</p>
+        <p class="step"><b>2단계 (구간 $[0, 3a]$에서 함숫값 비교)</b>:<br>
+        • $f(0) = b$ (최댓값)<br>
+        • $f(2a) = 8a^3 - 24a^3 + b = -16a^3 + b$ (최솟값)<br>
+        • $f(3a) = 27a^3 - 36a^3 + b = -9a^3 + b$</p>
+        <p class="step ans"><b>3단계 ($a, b$ 계산 및 정답)</b>:<br>
+        최댓값 $f(0) = b = 12$, 최솟값 $-16a^3 + 12 = -4 \implies a^3 = 1 \implies a = 1$<br>
+        $\therefore a + b = 1 + 12 = 13$ &nbsp; <b>(정답: $13$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: $a > 0$일 때 구간 $[0, 3a]$에서 $f(0) = b$와 $f(3a) = -9a^3 + b$ 중 어느 값이 더 큰가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. a > 0이면 -9a³ < 0이므로 f(0) = b가 f(3a)보다 항상 크다.">f(0) = b가 더 크다.</button>
+        <button class="opt" data-why="-9a³이 음수이므로 f(3a)는 b보다 작다.">f(3a) = -9a³ + b가 더 크다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07. 올림포스 [유형확인] #27 (p.52) -->
+<section class="slide" id="olym-27" data-sec="올림포스 유형확인" data-title="유형확인 #27 (p.52)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>원뿔에 내접하는 원기둥의 부피가 최대가 될 때는?</h2>
+  <div class="calc grid-2" data-ai="원뿔 내접 원기둥 최대 부피 탐색기" data-let="h = 6 - 1.5*r; vcoef = (r^2)*(6 - 1.5*r)">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #27 (p.52 / 자료 p.46)</span><br>
+        밑면의 반지름의 길이가 $4$, 높이가 $6$인 원뿔에 내접하는 원기둥이 있다. 이 원기둥의 부피의 최댓값은?
+      </div>
+      <div style="display:grid;grid-template-columns:210px 1fr;gap:12px;align-items:center">
+        <svg viewBox="0 0 220 220" aria-label="원뿔에 내접하는 원기둥 단면">
+          <polygon points="110,20 30,200 190,200" fill="#F8FAFC" stroke="#475569" stroke-width="3"/>
+          <line x1="110" y1="20" x2="110" y2="200" stroke="#94A3B8" stroke-dasharray="4 4" stroke-width="2"/>
+          <rect fill="#DBEAFE" stroke="#1E3A8A" stroke-width="3" data-attr="x: 110 - r * 20; y: 200 - h * 30; width: r * 40; height: h * 30"/>
+          <text x="110" y="216" font-size="20" text-anchor="middle" fill="#1E3A8A">밑면 반지름 4, 높이 6</text>
+        </svg>
+        <figure class="plot" data-x="0, 4" data-y="0, 16" data-xstep="1" data-ystep="5" data-height="210" data-xlabel="원기둥 반지름 r" data-ylabel="부피 V / π">
+          <i data-line="(x^2)*(6 - 1.5*x)" data-label="V(r)/π = 6r² - (3/2)r³" data-color="#1E3A8A"></i>
+          <i data-point="2.667, 14.22" data-label="최대 (8/3, 128/9)" data-color="#DC2626"></i>
+          <i data-point="r, vcoef" data-color="#0F766E"></i>
+        </figure>
+      </div>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>원기둥 반지름 $r =$ <b><output data-expr="r" data-digits="2"></output></b> (높이 $h =$ <output data-expr="h" data-digits="2"></output>) &nbsp; $\implies V(r) =$ <b><output data-expr="vcoef" data-digits="2"></output>$\pi$</b></p>
+        <input type="range" name="r" min="0.5" max="3.8" step="0.1" value="2.7" aria-label="반지름 r">
+        <p class="status-pill">r = 8/3(밑면 반지름의 2/3)일 때 부피가 최대(128/9 π)가 된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (닮음비로 높이 $h$를 $r$로 나타내기)</b>:<br>
+        원기둥 밑면 반지름을 $r$ ($0 < r < 4$), 높이를 $h$라 하면<br>
+        $(6 - h) : r = 6 : 4 = 3 : 2 \implies h = 6 - \frac{3}{2}r$</p>
+        <p class="step"><b>2단계 (부피 함수 $V(r)$ 미분)</b>:<br>
+        $V(r) = \pi r^2\left(6 - \frac{3}{2}r\right) = \pi\left(-\frac{3}{2}r^3 + 6r^2\right)$<br>
+        $V'(r) = -\frac{3}{2}\pi r(3r - 8) = 0 \implies r = \frac{8}{3}$에서 극대이자 최대</p>
+        <p class="step ans"><b>3단계 (최댓값 계산)</b>: $V\left(\frac{8}{3}\right) = \pi \times \frac{64}{9} \times 2 = \frac{128}{9}\pi$ &nbsp; <b>(정답: $\frac{128}{9}\pi$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. 올림포스 [유형확인] #30 (p.52) -->
+<section class="slide" id="olym-30" data-sec="올림포스 유형확인" data-title="유형확인 #30 (p.52)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>방정식 $f(x) = g(x)$가 서로 다른 두 실근을 갖도록 하는 $k$의 합은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #30 (p.52 / 자료 p.46)</span><br>
+        두 함수 $f(x) = 2x^3 + 17x, \; g(x) = 15x^2 - 19x + k$에 대하여 방정식 $f(x) = g(x)$가 서로 다른 두 실근을 갖도록 하는 모든 실수 $k$의 값의 합은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($k$만 우변에 남기고 이항하기)</b>:<br>
+        $2x^3 + 17x = 15x^2 - 19x + k \iff 2x^3 - 15x^2 + 36x = k$<br>
+        좌변을 $h(x) = 2x^3 - 15x^2 + 36x$라 놓는다.</p>
+        <p class="step"><b>2단계 ($h(x)$의 극댓값과 극솟값 구하기)</b>:<br>
+        $h'(x) = 6x^2 - 30x + 36 = 6(x - 2)(x - 3) = 0$<br>
+        • 극댓값 $h(2) = 16 - 60 + 72 = 28$<br>
+        • 극솟값 $h(3) = 54 - 135 + 108 = 27$</p>
+        <p class="step ans"><b>3단계 (서로 다른 두 실근 조건)</b>:<br>
+        $k = 28$ 또는 $k = 27$일 때 두 점에서 만나므로 합은 $28 + 27 = 55$ &nbsp; <b>(정답: $55$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 삼차함수 $y = h(x)$의 그래프와 상수함수 $y = k$의 직선이 정확히 두 점에서 만나는 순간은 언제인가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 직선 y = k가 극대점 또는 극소점에 접할 때 교점이 2개가 된다.">k가 h(x)의 극댓값(28) 또는 극솟값(27)과 같을 때</button>
+        <button class="opt" data-why="극솟값과 극댓값 사이에 있으면 세 점에서 만난다.">k가 극솟값과 극댓값 사이에 있을 때 (27 &lt; k &lt; 28)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. 올림포스 [유형확인] #33 (p.53) -->
+<section class="slide" id="olym-33" data-sec="올림포스 유형확인" data-title="유형확인 #33 (p.53)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>닫힌구간 $[-2, 2]$에서 부등식 $f(x) \ge g(x)$가 성립할 조건은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #33 (p.53 / 자료 p.47)</span><br>
+        두 함수 $f(x) = x^3 + 2x^2 + 2x, \; g(x) = 3x^2 + 2x + k$가 있다. $-2 \le x \le 2$인 모든 실수 $x$에 대하여 부등식 $f(x) \ge g(x)$가 성립하도록 하는 실수 $k$의 값의 범위가 $k \le a$일 때, 상수 $a$의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (상수 $k$를 분리하여 부등식 정리)</b>:<br>
+        $x^3 + 2x^2 + 2x \ge 3x^2 + 2x + k \iff x^3 - x^2 \ge k$<br>
+        좌변을 $h(x) = x^3 - x^2$이라 하면 구간 $[-2, 2]$에서 $h(x)$의 최솟값이 $k$ 이상이어야 한다.</p>
+        <p class="step"><b>2단계 (구간 $[-2, 2]$에서 $h(x)$의 최솟값 구하기)</b>:<br>
+        $h'(x) = 3x^2 - 2x = x(3x - 2) = 0 \implies x = 0, \frac{2}{3}$<br>
+        $h(-2) = -8 - 4 = -12, \; h\left(\frac{2}{3}\right) = -\frac{4}{27}$이므로 최솟값은 $-12$이다.</p>
+        <p class="step ans"><b>3단계 ($k$의 범위 및 $a$ 결정)</b>:<br>
+        $k \le -12$이어야 하므로 $a = -12$ &nbsp; <b>(정답: $-12$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 닫힌구간 $[-2, 2]$에서 함수 $h(x) = x^3 - x^2$의 최솟값은 어디에서 나타나는가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 극솟값 h(2/3) = -4/27보다 왼쪽 끝점 함숫값 h(-2) = -12가 훨씬 작다.">구간 왼쪽 끝점 x = -2 (함숫값 -12)</button>
+        <button class="opt" data-why="극솟값 -4/27보다 끝점 함숫값 -12가 더 작으므로 끝점까지 반드시 확인해야 한다.">극소점 x = 2/3 (함숫값 -4/27)</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. 올림포스 [유형확인] #36 (p.53) -->
+<section class="slide" id="olym-36" data-sec="올림포스 유형확인" data-title="유형확인 #36 (p.53)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>지면으로부터 $20\text{ m}$ 높이에서 던진 물체의 최고 높이는?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [유형확인] #36 (p.53 / 자료 p.47)</span><br>
+        지면으로부터 $20\text{ m}$의 높이에서 $10\text{ m/s}$의 속도로 지면과 수직으로 위로 던져 올린 물체의 $t$초 후의 높이 $x\text{ m}$가 $x = 20 + 10t - 5t^2$이다. 이 물체가 최고 높이에 도달했을 때, 지면으로부터의 높이는?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (속도 함수 $v(t)$ 구하기)</b>:<br>
+        높이 $x$를 시각 $t$에 대하여 미분하면<br>
+        $v(t) = \frac{dx}{dt} = 10 - 10t$</p>
+        <p class="step"><b>2단계 (최고 높이에 도달하는 시각 $t$ 구하기)</b>:<br>
+        최고 높이에서 순간 속도 $v(t) = 0$이므로 $10 - 10t = 0 \implies t = 1$초</p>
+        <p class="step ans"><b>3단계 ($t = 1$일 때의 높이 계산)</b>:<br>
+        $x(1) = 20 + 10(1) - 5(1)^2 = 25\text{ (m)}$ &nbsp; <b>(정답: $25\text{ m}$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 수직으로 던져 올린 물체가 최고 높이에 도달하는 순간의 물리적 조건은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 올라가다가 내려오기 직전 멈추는 순간이므로 속도 v(t) = 0이다.">속도 v(t) = 0이다.</button>
+        <button class="opt" data-why="가속도는 중력가속도로 일정(-10 m/s²)하며 0이 아니다.">가속도 a(t) = 0이다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. 올림포스 [서술형] #03 (p.54) -->
+<section class="slide" id="olym-s03" data-sec="올림포스 서술형·고난도" data-title="서술형 #03 (p.54)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>두 점 P, Q의 속도의 합이 $0$일 때 점 P의 가속도를 구하자</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [서술형] #03 (p.54 / 자료 p.47)</span><br>
+        수직선 위를 움직이는 두 점 P, Q의 시각 $t$ ($t \ge 0$)에서의 위치가 각각 $x_P = t^3 - 4t^2 - 16t, \; x_Q = t^2 - 8t$이다. 시각 $t = a$에서의 두 점 P, Q의 속도의 합이 $0$일 때, 시각 $t = a$에서의 점 P의 가속도를 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (두 점 P, Q의 속도 구하기)</b>:<br>
+        $v_P(t) = 3t^2 - 8t - 16, \quad v_Q(t) = 2t - 8$</p>
+        <p class="step"><b>2단계 ($v_P(a) + v_Q(a) = 0$에서 시각 $a$ 구하기)</b>:<br>
+        $(3a^2 - 8a - 16) + (2a - 8) = 3a^2 - 6a - 24 = 3(a + 2)(a - 4) = 0$<br>
+        $a \ge 0$이므로 $a = 4$</p>
+        <p class="step ans"><b>3단계 (시각 $t = 4$에서의 점 P의 가속도)</b>:<br>
+        $a_P(t) = v_P'(t) = 6t - 8$이므로 $a_P(4) = 24 - 8 = 16$ &nbsp; <b>(정답: $16$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 위 문제에서 구한 시각 $t = 4$에서 점 Q의 가속도 $a_Q(4)$는 얼마인가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. v_Q(t) = 2t - 8을 미분하면 a_Q(t) = 2로 일정하다.">2</button>
+        <button class="opt" data-why="점 P의 가속도가 16이고, 점 Q의 가속도는 (2t-8)' = 2이다.">16</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12. 올림포스 [고난도문항] #02 (p.55) -->
+<section class="slide" id="olym-hard-02" data-sec="올림포스 서술형·고난도" data-title="고난도문항 #02 (p.55)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>절댓값 함수 $g(x) = |f(x)| - k$의 극소 위치가 $2$개일 조건은?</h2>
+  <div class="calc grid-2" data-ai="고난도 02 절댓값 함수 극소 탐색기" data-let="fmin = c - 9; fmax = c + 5/3">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [고난도문항] #02 (p.55 / 자료 p.47)</span><br>
+        함수 $f(x) = \frac{1}{3}x^3 - x^2 - 3x + k$에 대하여 $g(x) = |f(x)| - k$라 하자. 두 집합<br>
+        $A = \{a \mid g(x)\text{는 } x=a\text{에서 극소}\}, \; B = \{g(a) \mid g(x)\text{는 } x=a\text{에서 극소}\}$<br>
+        에 대하여 $n(A) = 2, \; n(B) = 1$일 때, 양수 $k$의 값은?
+      </div>
+      <figure class="plot" data-x="-3, 5.2" data-y="-2, 12" data-xstep="1" data-ystep="4" data-height="215" data-xlabel="x" data-ylabel="y = |f(x)|">
+        <i data-line="abs((x^3)/3 - x^2 - 3*x + c)" data-label="y = |f(x)|" data-color="#1E3A8A"></i>
+        <i data-line="(x^3)/3 - x^2 - 3*x + c" data-dash data-label="y = f(x)" data-color="#94A3B8"></i>
+        <i data-point="-1, abs(fmax)" data-label="x=-1" data-color="#DC2626"></i>
+        <i data-point="3, abs(fmin)" data-label="x=3" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>양수 $k =$ <b><output data-expr="c"></output></b> &nbsp; ($f(-1) =$ <output data-expr="fmax" data-digits="2"></output>, &nbsp; 극솟값 $f(3) =$ <b><output data-expr="fmin"></output></b>)</p>
+        <input type="range" name="c" min="5" max="12" step="1" value="9" aria-label="양수 k">
+        <p data-show="c == 9" class="status-pill">k = 9일 때 극솟값 f(3) = 0이 되어 |f(x)|의 극소점이 2개이고 함숫값이 같다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($f(x)$의 극값 조사)</b>:<br>
+        $f'(x) = x^2 - 2x - 3 = (x+1)(x-3) = 0$<br>
+        극댓값 $f(-1) = k + \frac{5}{3} > 0$, 극솟값 $f(3) = k - 9$</p>
+        <p class="step"><b>2단계 ($n(A) = 2, \; n(B) = 1$ 해석 — 핵심!)</b>:<br>
+        $|f(x)|$가 극소가 되는 $x$좌표가 정확히 $2$개($n(A)=2$)이고 그때의 극솟값이 서로 같으려면($n(B)=1$), 곡선 $y=f(x)$의 극소점 $(3, k-9)$가 $x$축에 접해야 한다!</p>
+        <p class="step ans">따라서 $f(3) = k - 9 = 0 \implies$ <b>정답: $k = 9$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13. 올림포스 [대단원종합문제] #3 (p.56) -->
+<section class="slide" id="olym-comp-3" data-sec="올림포스 대단원종합" data-title="대단원종합 #3 (p.56)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>닫힌구간 $[-2, 1]$에서 롤의 정리를 만족시키는 상수 $c$는?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #3 (p.56 / 자료 p.48)</span><br>
+        함수 $f(x) = x^3 - 3x + 2$에 대하여 닫힌구간 $[-2, 1]$에서 롤의 정리를 만족시키는 상수 $c$의 값은?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (롤의 정리 조건 확인)</b>:<br>
+        $f(-2) = -8 + 6 + 2 = 0$, $f(1) = 1 - 3 + 2 = 0$으로 양 끝 함숫값이 같고,<br>
+        열린구간 $(-2, 1)$에서 $f'(c) = 0$인 $c$를 찾는다.</p>
+        <p class="step"><b>2단계 ($f'(c) = 0$ 풀기)</b>:<br>
+        $f'(c) = 3c^2 - 3 = 3(c + 1)(c - 1) = 0 \implies c = -1 \text{ 또는 } c = 1$</p>
+        <p class="step ans"><b>3단계 (열린구간 $(-2, 1)$ 조건 확인)</b>:<br>
+        $-2 < c < 1$이어야 하므로 ($c=1$은 경계점이므로 제외!)<br>
+        <b>정답: $c = -1$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 롤의 정리나 평균값 정리에서 상수 $c$를 고를 때 반드시 확인해야 하는 구간 조건은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 양 끝점 -2와 1을 제외한 열린구간 (-2, 1) 안에 속하는 c = -1만 정답이다.">양 끝점을 제외한 열린구간 (-2, 1) 안의 값만 고른다.</button>
+        <button class="opt" data-why="양 끝점은 열린구간에 포함되지 않는다.">양 끝점 c = 1도 함께 답으로 고른다.</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14. 올림포스 [대단원종합문제] #6 (p.56) -->
+<section class="slide" id="olym-comp-6" data-sec="올림포스 대단원종합" data-title="대단원종합 #6 (p.56)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>원점을 출발한 점 P가 다시 원점을 지나는 순간의 속도는?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #6 (p.56 / 자료 p.48)</span><br>
+        원점을 출발하여 수직선 위를 움직이는 점 P의 시각 $t$ ($t > 0$)에서의 위치가<br>
+        $$x = t^4 - t^3 - 2t^2$$
+        이다. 점 P가 원점을 출발한 후 다시 원점을 지나는 순간의 속도는?
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (다시 원점을 지나는 시각 $t$ 구하기)</b>:<br>
+        원점을 지날 때 위치 $x = 0$이므로<br>
+        $t^4 - t^3 - 2t^2 = t^2(t + 1)(t - 2) = 0$<br>
+        $t > 0$이므로 $t = 2$</p>
+        <p class="step"><b>2단계 (속도 함수 $v(t)$ 구하기)</b>:<br>
+        $v(t) = \frac{dx}{dt} = 4t^3 - 3t^2 - 4t$</p>
+        <p class="step ans"><b>3단계 ($t = 2$에서의 속도 계산)</b>:<br>
+        $v(2) = 4(8) - 3(4) - 4(2) = 32 - 12 - 8 = 12$ &nbsp; <b>(정답: $12$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: '다시 원점을 지나는 순간'을 방정식으로 세울 때 $0$으로 놓아야 하는 식은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 원점의 좌표가 0이므로 위치 x(t) = 0을 만족하는 양수 t를 찾는다.">위치 x(t) = 0</button>
+        <button class="opt" data-why="속도 v(t) = 0은 정지하거나 운동 방향을 바꾸는 순간이다.">속도 v(t) = 0</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15. 올림포스 [대단원종합문제] #9 (p.57) -->
+<section class="slide" id="olym-comp-9" data-sec="올림포스 대단원종합" data-title="대단원종합 #9 (p.57)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>곡선 밖의 점 $(a, 0)$에서 그은 두 접선의 접점 거리 조건은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #9 (p.57 / 자료 p.48)</span><br>
+        점 $(a, 0)$에서 곡선 $y = x^2 + 1$에 그은 두 접선의 접점의 $x$좌표를 각각 $x_1, x_2$ ($x_1 < x_2$)라 하자. $x_2 - x_1 = 2\sqrt{10}$일 때, 양수 $a$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (접점 $(t, t^2+1)$에서의 접선의 방정식)</b>:<br>
+        $y' = 2x$이므로 접선의 방정식은 $y - (t^2 + 1) = 2t(x - t) \implies y = 2tx - t^2 + 1$</p>
+        <p class="step"><b>2단계 (점 $(a, 0)$ 대입 및 근과 계수의 관계)</b>:<br>
+        $0 = 2at - t^2 + 1 \implies t^2 - 2at - 1 = 0$<br>
+        이 방정식의 두 실근이 $x_1, x_2$이므로 $x_1 + x_2 = 2a, \quad x_1 x_2 = -1$</p>
+        <p class="step ans"><b>3단계 ($x_2 - x_1 = 2\sqrt{10}$ 이용)</b>:<br>
+        $(x_2 - x_1)^2 = (x_1 + x_2)^2 - 4x_1 x_2 = 4a^2 + 4 = (2\sqrt{10})^2 = 40$<br>
+        $4a^2 = 36 \implies a^2 = 9$ ($a > 0$) &nbsp; $\therefore$ <b>정답: $a = 3$</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 곡선 밖의 한 점에서 그은 접선 문제를 풀 때 가장 먼저 미지수 $t$로 놓아야 하는 것은?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 접점의 좌표를 (t, f(t))로 놓고 접선의 방정식을 세운 뒤 곡선 밖의 점을 대입한다.">접점의 x좌표 t</button>
+        <button class="opt" data-why="접점의 좌표를 먼저 미지수 t로 놓는 것이 표준 풀이다.">접선의 y절편</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16. 올림포스 [대단원종합문제] #12 (p.57) -->
+<section class="slide" id="olym-comp-12" data-sec="올림포스 대단원종합" data-title="대단원종합 #12 (p.57)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>도함수 $y = f'(x)$의 그래프에서 극값과 감소 구간을 판별하자</h2>
+  <div class="calc grid-2" data-ai="올림포스 12 도함수 그래프 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #12 (p.57 / 자료 p.48)</span><br>
+        다항함수 $f(x)$에 대하여 도함수 $y = f'(x)$의 그래프가 그림과 같을 때, 보기에서 옳은 것만을 있는 대로 고른 것은?<br>
+        ㄱ. 함수 $f(x)$는 $x = 0$에서 극소이다.<br>
+        ㄴ. 함수 $f(x)$는 열린구간 $(1, 3)$에서 감소한다.<br>
+        ㄷ. 함수 $f(x)$가 $x = n$에서 극값을 갖는 $3$ 이하의 자연수 $n$의 값의 합은 $6$이다.
+      </div>
+      <figure class="plot" data-x="-0.4, 3.3" data-y="-1.5, 1.5" data-xstep="1" data-ystep="1" data-height="205" data-xlabel="x" data-ylabel="도함수 y = f'(x)">
+        <i data-line="-1.5*x*(x - 1)*((x - 2)^2)*(x - 3)" data-label="y = f'(x)" data-color="#1E3A8A"></i>
+        <i data-line="0" data-dash data-color="#DC2626"></i>
+        <i data-point="0, 0" data-label="0(-→+)" data-color="#0F766E"></i>
+        <i data-point="1, 0" data-label="1(+→-)" data-color="#DC2626"></i>
+        <i data-point="2, 0" data-label="2(-→-)" data-color="#64748B"></i>
+        <i data-point="3, 0" data-label="3(-→+)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p class="status-pill">x = 2에서는 f'(2) = 0이지만 좌우 부호가 (-) → (-)로 유지된다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>ㄱ (참)</b>: $x = 0$ 좌우에서 $f'(x)$의 부호가 $(-) \to (+)$로 바뀌므로 $x = 0$에서 극소이다.</p>
+        <p class="step"><b>ㄴ (참)</b>: 열린구간 $(1, 3)$에서 $x = 2$일 때만 $f'(2) = 0$이고 나머지 점에서 $f'(x) < 0$이므로 구간 $(1, 3)$에서 계속 감소한다.</p>
+        <p class="step ans"><b>ㄷ (거짓)</b>: $x = 2$에서는 부호가 바뀌지 않아 극값을 갖지 않는다!<br>
+        극값을 갖는 $3$ 이하의 자연수는 $n = 1, 3$뿐이므로 합은 $1 + 3 = 4 \ne 6$<br>
+        <b>정답: ㄱ, ㄴ</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17. 올림포스 [대단원종합문제] #15 (p.58) -->
+<section class="slide" id="olym-comp-15" data-sec="올림포스 대단원종합" data-title="대단원종합 #15 (p.58)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>원점을 출발하여 수직으로 멀어지는 두 점 사이의 거리 변화율은?</h2>
+  <div class="calc grid-2" data-ai="두 점 PQ 선분 길이 변화율 탐색기" data-let="py = t; qx = 2*t; len = sqrt(5)*t">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #15 (p.58 / 자료 p.48)</span><br>
+        좌표평면 위의 원점 O를 동시에 출발하여 $y$축의 양의 방향으로 매초 $1$의 속력으로 움직이는 점 P와 $x$축의 양의 방향으로 매초 $2$의 속력으로 움직이는 점 Q가 있을 때, 선분 $PQ$의 길이의 변화율은?
+      </div>
+      <figure class="plot" data-x="0, 6.5" data-y="0, 3.5" data-xstep="1" data-ystep="1" data-height="220" data-xlabel="x (점 Q: 2t)" data-ylabel="y (점 P: t)">
+        <i data-path="0, py; qx, 0" data-label="선분 PQ (길이 √5 t)" data-color="#DC2626"></i>
+        <i data-point="0, py" data-label="P(0, t)" data-color="#1E3A8A"></i>
+        <i data-point="qx, 0" data-label="Q(2t, 0)" data-color="#0F766E"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>시각 $t =$ <b><output data-expr="t" data-digits="1"></output>초</b> ($P(0, t), \; Q(2t, 0)$) &nbsp; $\implies \overline{PQ} = \sqrt{5}t \approx$ <b><output data-expr="len" data-digits="2"></output></b></p>
+        <input type="range" name="t" min="0.5" max="3" step="0.5" value="1.5" data-play="5" aria-label="시각 t">
+        <p class="status-pill">선분 PQ의 길이가 매초 √5씩 일정하게 늘어나므로 변화율은 √5이다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($t$초 후 점 P, Q의 좌표)</b>:<br>
+        $P(0, t), \quad Q(2t, 0)$ ($t > 0$)</p>
+        <p class="step"><b>2단계 (선분 $PQ$의 길이 $l$을 $t$에 대한 식으로 나타내기)</b>:<br>
+        $l = \overline{PQ} = \sqrt{(2t)^2 + t^2} = \sqrt{5t^2} = \sqrt{5}t$</p>
+        <p class="step ans"><b>3단계 (시각 $t$에 대하여 미분)</b>:<br>
+        $\frac{dl}{dt} = \sqrt{5}$ &nbsp; $\therefore$ <b>정답: $\sqrt{5}$</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18. 올림포스 [대단원종합문제] #18 (p.58) -->
+<section class="slide" id="olym-comp-18" data-sec="올림포스 대단원종합" data-title="대단원종합 #18 (p.58)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>$y = |2x^3 + 3x^2 - 12x + k|$가 극값을 갖는 실수가 $5$개이려면?</h2>
+  <div class="calc grid-2" data-ai="올림포스 18 절댓값 극값 5개 탐색기" data-let="ymax = k + 20; ymin = k - 7">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #18 (p.58 / 자료 p.49)</span><br>
+        함수 $f(x) = 2x^3 + 3x^2 - 12x + k$에 대하여 함수 $y = |f(x)|$가 $x = a$에서 극값을 갖도록 하는 실수 $a$의 개수가 $5$일 때, 이를 만족시키는 정수 $k$의 개수를 구하시오.
+      </div>
+      <figure class="plot" data-x="-3.5, 2.5" data-y="-2, 25" data-xstep="1" data-ystep="5" data-height="220" data-xlabel="x" data-ylabel="y = |f(x)|">
+        <i data-line="abs(2*x^3 + 3*x^2 - 12*x + k)" data-label="y = |f(x)|" data-color="#1E3A8A"></i>
+        <i data-line="2*x^3 + 3*x^2 - 12*x + k" data-dash data-label="y = f(x)" data-color="#94A3B8"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>정수 $k =$ <b><output data-expr="k"></output></b> (극댓값 $f(-2) = k+20 =$ <output data-expr="ymax"></output>, 극솟값 $f(1) = k-7 =$ <output data-expr="ymin"></output>)</p>
+        <input type="range" name="k" min="-22" max="9" step="1" value="0" aria-label="정수 k">
+        <p data-show="k > -20 && k < 7" class="status-pill">-20 &lt; k &lt; 7 : x축과 서로 다른 세 점에서 만나 접어 올리면 극값이 5개다!</p>
+        <p data-show="k <= -20 || k >= 7">교점이 1개 또는 2개뿐이어서 $|f(x)|$의 극값이 3개이다.</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($y = |f(x)|$가 극값 $5$개를 가질 조건)</b>:<br>
+        원래 삼차함수의 극점 $2$개에 더해, $x$축을 뚫고 지나가며 꺾이는 점(극소점)이 $3$개 생겨야 하므로 방정식 <b>$f(x) = 0$이 서로 다른 세 실근</b>을 가져야 한다!</p>
+        <p class="step"><b>2단계 (극댓값 $\times$ 극솟값 $< 0$)</b>:<br>
+        $f'(x) = 6(x+2)(x-1) = 0 \implies$ 극댓값 $f(-2) = k + 20$, 극솟값 $f(1) = k - 7$<br>
+        $(k + 20)(k - 7) < 0 \implies -20 < k < 7$</p>
+        <p class="step ans"><b>3단계 (정수 $k$의 개수)</b>:<br>
+        $7 - (-20) - 1 = 26$ &nbsp; $\therefore$ <b>정답: $26$개</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 19. 올림포스 [대단원종합문제] #21 (p.59) -->
+<section class="slide" id="olym-comp-21" data-sec="올림포스 대단원종합" data-title="대단원종합 #21 (p.59)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>삼차방정식이 음근 $1$개와 서로 다른 양근 $2$개를 가질 조건은?</h2>
+  <div class="calc grid-2" data-ai="음근 1개와 양근 2개 탐색기">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #21 (p.59 / 자료 p.49)</span><br>
+        방정식 $x^3 - 3x^2 - 24x - k = 0$이 한 개의 음수인 근과 서로 다른 두 개의 양수인 근을 갖도록 하는 정수 $k$의 개수는?
+      </div>
+      <figure class="plot" data-x="-4, 6.5" data-y="-90, 40" data-xstep="2" data-ystep="40" data-height="215" data-xlabel="x" data-ylabel="y = x³ - 3x² - 24x">
+        <i data-line="x^3 - 3*x^2 - 24*x" data-label="f(x) = x³ - 3x² - 24x" data-color="#1E3A8A"></i>
+        <i data-line="k" data-dash data-label="직선 y = k" data-color="#DC2626"></i>
+        <i data-point="0, 0" data-label="y절편(0, 0)" data-color="#0F766E"></i>
+        <i data-point="4, -80" data-label="극소(4, -80)" data-color="#DC2626"></i>
+      </figure>
+    </div>
+    <div>
+      <div class="ctrl-card">
+        <p>상수 $k =$ <b><output data-expr="k"></output></b> (극솟값 $-80$, $y$절편 $0$, 극댓값 $28$)</p>
+        <input type="range" name="k" min="-85" max="10" step="5" value="-40" aria-label="상수 k">
+        <p data-show="k > -80 && k < 0" class="status-pill">-80 &lt; k &lt; 0 : y축 왼쪽(x&lt;0)에서 1개, 오른쪽(x&gt;0)에서 2개 만난다!</p>
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 ($x^3 - 3x^2 - 24x = k$로 변형하여 극값과 $y$절편 조사)</b>:<br>
+        $f(x) = x^3 - 3x^2 - 24x$라 하면 $f'(x) = 3(x+2)(x-4) = 0$<br>
+        극댓값 $f(-2) = 28$, 극솟값 $f(4) = -80$, <b>$y$절편 $f(0) = 0$</b></p>
+        <p class="step"><b>2단계 (음근 $1$개 + 양근 $2$개 조건)</b>:<br>
+        직선 $y = k$가 극솟값($-80$)과 $y$절편($0$) 사이를 지나야 하므로<br>
+        $-80 < k < 0$</p>
+        <p class="step ans"><b>3단계 (정수 $k$의 개수)</b>:<br>
+        $-79$부터 $-1$까지 총 <b>$79$개 (정답: $79$)</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20. 올림포스 [대단원종합문제] #23 (p.59) -->
+<section class="slide" id="olym-comp-23" data-sec="올림포스 대단원종합" data-title="대단원종합 #23 (p.59)">
+  <div class="sflhs-badge" data-enter="off" aria-hidden="true">서울외고 미적분Ⅰ <b>조용희T.</b></div>
+  <h2>점 $(1, 0)$에서 곡선 $y = x^3 + 3x^2$에 그은 세 접선의 기울기의 합은?</h2>
+  <div class="grid-2">
+    <div>
+      <div class="prob-box">
+        <span class="prob-src">올림포스 [대단원종합문제] #23 (p.59 / 자료 p.49)</span><br>
+        점 $(1, 0)$에서 곡선 $y = x^3 + 3x^2$에 그은 세 접선의 기울기를 각각 $m_1, m_2, m_3$ ($m_1 < m_2 < m_3$)이라 할 때, $m_1 + m_2 + m_3$의 값을 구하시오.
+      </div>
+      <div class="sol-list">
+        <p class="step"><b>1단계 (접점 $(t, t^3+3t^2)$에서의 접선의 방정식 세우기)</b>:<br>
+        $y' = 3x^2 + 6x$이므로 접선의 방정식은<br>
+        $y - (t^3 + 3t^2) = (3t^2 + 6t)(x - t)$</p>
+        <p class="step"><b>2단계 (점 $(1, 0)$을 대입하여 접점의 $x$좌표 $t$ 구하기)</b>:<br>
+        $-t^3 - 3t^2 = (3t^2 + 6t)(1 - t) = -3t^3 - 3t^2 + 6t$<br>
+        $\implies 2t^3 - 6t = 2t(t^2 - 3) = 0 \implies t = 0 \text{ 또는 } t = \pm\sqrt{3}$</p>
+        <p class="step ans"><b>3단계 (세 접선의 기울기 $f'(t) = 3t^2 + 6t$의 합)</b>:<br>
+        • $t = 0 \implies m = 0$<br>
+        • $t = -\sqrt{3} \implies m_1 = 9 - 6\sqrt{3}$, &nbsp;$t = \sqrt{3} \implies m_3 = 9 + 6\sqrt{3}$<br>
+        $\therefore m_1 + m_2 + m_3 = (9 - 6\sqrt{3}) + 0 + (9 + 6\sqrt{3}) = 18$ &nbsp; <b>(정답: $18$)</b></p>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:700; margin-bottom:8px;">즉시 확인: 세 접점의 $x$좌표 $t_1, t_2, t_3$이 $2t^3 - 6t = 0$의 세 근일 때, 근과 계수의 관계($t_1+t_2+t_3=0, \sum t_i^2 = 6$)를 이용하면 $\sum (3t_i^2 + 6t_i)$는 얼마인가?</p>
+      <div class="quiz" data-cols="1">
+        <button class="opt" data-ok data-why="맞다. 3(t₁² + t₂² + t₃²) + 6(t₁ + t₂ + t₃) = 3(6) + 6(0) = 18로 근을 직접 구하지 않고도 검산할 수 있다.">3 × 6 + 6 × 0 = 18</button>
+        <button class="opt" data-why="t₁ + t₂ + t₃ = 0이고 t₁² + t₂² + t₃² = 6이므로 3 × 6 = 18이다.">3 × 3 + 6 × 0 = 9</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 21. 전체 목차 -->
+<section class="slide toc" id="toc" data-title="전체 목차"></section>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const roleInput = document.getElementById('teacher-role-input');
+  const nameInput = document.getElementById('teacher-name-input');
+  const badges = document.querySelectorAll('.sflhs-badge b');
+
+  const savedRole = localStorage.getItem('sflhs-calc1-teacher-role');
+  const savedName = localStorage.getItem('sflhs-calc1-teacher-name');
+
+  if (savedRole !== null && roleInput) roleInput.value = savedRole;
+  if (savedName !== null && nameInput) {
+    nameInput.value = savedName;
+    badges.forEach(b => { b.textContent = savedName; });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      localStorage.setItem('sflhs-calc1-teacher-role', roleInput.value);
+    });
+    roleInput.addEventListener('change', (e) => e.target.blur());
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      const val = nameInput.value;
+      badges.forEach(b => { b.textContent = val; });
+      localStorage.setItem('sflhs-calc1-teacher-name', val);
+    });
+    nameInput.addEventListener('change', (e) => e.target.blur());
+  }
+});
+</script>
+</body>
+</html>
